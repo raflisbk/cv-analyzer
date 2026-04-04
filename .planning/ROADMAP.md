@@ -29,7 +29,14 @@
 4. Uploaded files are stored in Cloudflare R2 with temporary access and auto-delete after 24h
 5. Backend implements async processing pipeline with job queue for non-blocking operations
 
-**Plans**: TBD
+**Plans**: 5 plans across 4 waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Backend Foundation & Database Setup (Wave 1)
+- [x] 01-02-PLAN.md — Frontend Foundation & UI Setup (Wave 1)
+- [ ] 01-03-PLAN.md — Document Parsing & Storage Services (Wave 2)
+- [ ] 01-04-PLAN.md — Async Processing & API Endpoints (Wave 3)
+- [ ] 01-05-PLAN.md — Upload UI & Frontend Integration (Wave 4)
 
 **UI hint**: yes
 
