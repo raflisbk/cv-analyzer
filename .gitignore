@@ -1,119 +1,18 @@
-# Python
+# ============================================================================
+# CV Analyzer - Git Ignore Configuration
+# ============================================================================
+
+# ============================================================================
+# Python Backend
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environment
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-besttime/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb_checkpoints/
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Test environment files (local testing only)
-.env.test
-docker-compose.test.yml
-TEST_*.md
-
-# Logs
-logs/
-*.log
-log/
-
-# Data files
-data/raw/*
-data/interim/*
-data/external/*
-data/processed/*
-!data/raw/.gitkeep
-!data/interim/.gitkeep
-!data/external/.gitkeep
-!data/processed/.gitkeep
-
-# Collection state
-data/collection_state.json
-
-# Reports
-reports/metrics/*
-reports/figures/*
-!reports/metrics/.gitkeep
-!reports/figures/.gitkeep
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Reference & Documentation (EXCLUDED FROM GIT)
-.ref/
-
-# Planning & AI agent files
-.planning/
-.agent/
-.claude/
-
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Coverage
-.coverage
-htmlcov/
-.pytest_cache/
-
-# MyPy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Ruff
-.ruff_cache/
 
 # Distribution / packaging
 .Python
@@ -129,41 +28,98 @@ parts/
 sdist/
 var/
 wheels/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Unit test / coverage
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
 .tox/
+.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
+*.py,cover
 .hypothesis/
+.pytest_cache/
+cover/
 
 # Translations
 *.mo
 *.pot
 
-# Scrapy
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
 .scrapy
 
 # Sphinx documentation
 docs/_build/
 
 # PyBuilder
+.pybuilder/
 target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
 
 # pyenv
 .python-version
 
-# celery beat schedule file
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
 celerybeat-schedule
+celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # Spyder project settings
 .spyderproject
@@ -175,69 +131,265 @@ celerybeat-schedule
 # mkdocs documentation
 /site
 
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
 # Pyre type checker
 .pyre/
 
+# pytype static type analyzer
+.pytype/
 
-# Archives
-*.zip
-*.tar.gz
-*.7z
-*.rar
+# Cython debug symbols
+cython_debug/
 
+# Ruff
+.ruff_cache/
 
-# Files
-*.txt
-*.md
-*.sh
-*.arrow
-!README.md
-!**/[Rr][Ee][Aa][Dd][Mm][Ee].[mM][dD]
-!requirements.txt
-!environment.yml
-!env.yml
-!configs.txt
-!**/*.gitkeep
-skills-lock.json
-**/skills-lock.json
+# ============================================================================
+# Frontend (Next.js / React)
+# ============================================================================
 
-temp/
-**/temp/
-cache/
-**/cache/
-
-**/models/
-!rffx-content/backend/app/models/
-!backend/app/models/
-
-.next/
+# Dependencies
 node_modules/
-**/node_modules/
-**/dist/
-.vercel/
-.turbo/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# Tests folders
-tests/
-**/tests/
-!backend/tests/
+# Testing
+/coverage
+*.lcov
 
-# AI / Planning tool folders
-.claude/
-**/.claude/
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Production
+/build
+dist/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint
+.eslintcache
+
+# ============================================================================
+# Databases
+# ============================================================================
+
+# PostgreSQL
+*.sql
+*.dump
+*.backup
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Redis
+dump.rdb
+
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+*.code-workspace
+.history/
+
+# JetBrains IDEs (PyCharm, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================================================
+# Operating System
+# ============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.log
+*.pid
+
+# ============================================================================
+# Project Specific
+# ============================================================================
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+backend/.env
+frontend/.env.local
+
+# Uploaded files (local development)
+backend/uploads/
+backend/storage/
+
+# Cloudflare R2 local simulation
+.r2/
+
+# Alembic
+backend/alembic/versions/*.py
+!backend/alembic/versions/.gitkeep
+
+# Logs
+logs/
+*.log
+backend/logs/
+frontend/logs/
+
+# Test artifacts
+test-results/
+screenshots/
+videos/
+
+# Documentation builds
+docs/_build/
+docs/site/
+
+# ============================================================================
+# AI and Planning Files (Not committed to main repo)
+# ============================================================================
+
+# GSD Planning artifacts
 .planning/
-**/.planning/
-.agent/
-**/.agent/
+
+# AI Agent files
 .agents/
-**/.agents/
-agents/
-**/agents/
+.claude/
 
-# Websearch global folder
-websearch-global/
-**/websearch-global/
+# GitHub Copilot
+.copilot/
 
-!rffx-content/frontend/lib/
+# Skills
+skills-lock.json
+
+# ============================================================================
+# Exceptions (Files to INCLUDE)
+# ============================================================================
+
+# Allow specific backend folders that might be ignored by lib/ pattern
+!backend/app/
+!backend/tests/
+!backend/alembic/
+!backend/alembic/versions/.gitkeep
+
+# Allow frontend lib folder (TypeScript utilities)
 !frontend/lib/
-rffx-content/ngrok.yml
+!frontend/lib/**/*
+
+# Allow specific config files
+!backend/pyproject.toml
+!backend/requirements.txt
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json
+!frontend/next.config.js
+!frontend/tailwind.config.ts
+!frontend/components.json
+
+# ============================================================================
+# Keep empty directories
+# ============================================================================
+
+# Backend
+!backend/uploads/.gitkeep
+!backend/logs/.gitkeep
+!backend/tests/.gitkeep
+!backend/alembic/versions/.gitkeep
+
+# Frontend
+!frontend/public/.gitkeep
