@@ -239,4 +239,5 @@ websearch-global/
 **/websearch-global/
 
 !rffx-content/frontend/lib/
+!frontend/lib/
 rffx-content/ngrok.yml
