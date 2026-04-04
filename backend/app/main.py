@@ -1,13 +1,15 @@
-from datetime import datetime
+from datetime import UTC, datetime
+
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import sentry_sdk
-from sentry_sdk.integrations.fastapi import FastApiIntegration
 from prometheus_fastapi_instrumentator import Instrumentator
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 # Import settings and logging before anything else
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
+
 
 settings = get_settings()
 
@@ -19,17 +21,23 @@ if settings.CV_ANALYZER_SENTRY_DSN:
         environment=settings.CV_ANALYZER_ENV,
         traces_sample_rate=1.0 if settings.CV_ANALYZER_ENV == "development" else 0.1,
     )
-    logger.info("Sentry SDK initialized", extra={"environment": settings.CV_ANALYZER_ENV})
+    logger.info(
+        "Sentry SDK initialized", extra={"environment": settings.CV_ANALYZER_ENV}
+    )
 
 # Create FastAPI application
 app = FastAPI(
     title="CV Analyzer API",
     version="0.1.0",
-    description="AI-powered CV analysis and improvement suggestions"
+    description="AI-powered CV analysis and improvement suggestions",
 )
 
 # Add CORS middleware
-origins = settings.CV_ANALYZER_CORS_ORIGINS.split(",") if settings.CV_ANALYZER_CORS_ORIGINS else []
+origins = (
+    settings.CV_ANALYZER_CORS_ORIGINS.split(",")
+    if settings.CV_ANALYZER_CORS_ORIGINS
+    else []
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -52,8 +60,8 @@ async def startup_event():
         extra={
             "app_name": settings.CV_ANALYZER_APP_NAME,
             "version": settings.CV_ANALYZER_VERSION,
-            "environment": settings.CV_ANALYZER_ENV
-        }
+            "environment": settings.CV_ANALYZER_ENV,
+        },
     )
 
 
@@ -62,11 +70,9 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": "0.1.0"
+        "timestamp": datetime.now(UTC).isoformat(),
+        "version": "0.1.0",
     }
 
 
-# API v1 routes will be added here
-# from app.api.v1 import api_router
-# app.include_router(api_router, prefix="/api/v1")
+# TODO: API v1 routes will be added in later plans
