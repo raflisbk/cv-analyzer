@@ -208,6 +208,7 @@ cache/
 
 **/models/
 !rffx-content/backend/app/models/
+!backend/app/models/
 
 .next/
 node_modules/
@@ -219,6 +220,7 @@ node_modules/
 # Tests folders
 tests/
 **/tests/
+!backend/tests/
 
 # AI / Planning tool folders
 .claude/
