@@ -83,7 +83,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Error Handling & Reliability
 
-- [ ] **ERROR-01**: System validates input file type and size before upload
+- [x] **ERROR-01**: System validates input file type and size before upload
 - [ ] **ERROR-02**: System handles LLM API failures gracefully with fallbacks
 - [ ] **ERROR-03**: System implements rate limiting per IP address
 - [ ] **ERROR-04**: System logs errors for monitoring without exposing sensitive data
@@ -134,7 +134,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UPLOAD-05 | System handles international CV formats | Pending |
 | UPLOAD-06 | System validates extraction quality and shows error if parsing fails | Pending |
 | UPLOAD-07 | Uploaded files are stored in Cloudflare R2 with temporary access | Pending |
-| ERROR-01 | System validates input file type and size before upload | Pending |
+| ERROR-01 | System validates input file type and size before upload | Complete |
 | ERROR-05 | System implements data retention policy (auto-delete after 24h) | Pending |
 
 ### Phase 2: Basic Analysis Engine

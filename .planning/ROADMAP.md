@@ -32,8 +32,8 @@
 **Plans**: 5 plans across 4 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Backend Foundation & Database Setup (Wave 1)
-- [x] 01-02-PLAN.md — Frontend Foundation & UI Setup (Wave 1)
+- [x] 01-01-PLAN.md — Backend Foundation & Database Setup (Wave 1) ✅ **COMPLETE**
+- [x] 01-02-PLAN.md — Frontend Foundation & UI Setup (Wave 1) ✅ **COMPLETE**
 - [ ] 01-03-PLAN.md — Document Parsing & Storage Services (Wave 2)
 - [ ] 01-04-PLAN.md — Async Processing & API Endpoints (Wave 3)
 - [ ] 01-05-PLAN.md — Upload UI & Frontend Integration (Wave 4)
