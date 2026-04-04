@@ -5,9 +5,10 @@
 **This project uses Conda environment management.**
 
 ### Required Environment
+
 - **Name:** `sbk-cv-analyzer`
-- **Python:** 3.13.9
-- **Package Manager:** pip (managed by Conda)
+- **Python:** 3.11.15
+- **Package Manager:** pip
 
 ### Activating Environment
 
@@ -132,6 +133,7 @@ cp .env.example .env
 ```
 
 Required variables (see `.env.example` for full list):
+
 - `CV_ANALYZER_DB_HOST` - PostgreSQL host
 - `CV_ANALYZER_DB_NAME` - Database name
 - `CV_ANALYZER_REDIS_URL` - Redis connection URL

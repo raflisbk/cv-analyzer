@@ -4,7 +4,6 @@ Implements UPLOAD-04: OCR fallback for scanned PDFs
 Implements UPLOAD-05: International CV format handling
 """
 
-
 from app.core.logging import structured_logger as logger
 
 
