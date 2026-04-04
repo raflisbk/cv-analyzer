@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from prometheus_fastapi_instrumentator import Instrumentator
+
+# Import settings and logging before anything else
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 
