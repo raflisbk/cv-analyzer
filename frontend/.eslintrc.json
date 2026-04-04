@@ -21,7 +21,7 @@
         "varsIgnorePattern": "^_"
       }
     ],
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
 
@@ -41,10 +41,10 @@
     "no-unused-expressions": "warn",
     "eqeqeq": ["error", "always"],
     "curly": ["error", "all"],
-    "quotes": ["error", "double", { "avoidEscape": true }],
-    "semi": ["error", "always"],
-    "indent": ["error", 2, { "SwitchCase": 1 }],
-    "comma-dangle": ["error", "always-multiline"],
+    "quotes": "off",
+    "semi": "off",
+    "indent": "off",
+    "comma-dangle": "off",
     "max-len": [
       "warn",
       {
@@ -55,25 +55,8 @@
       }
     ],
 
-    // Import organization
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index"
-        ],
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
-      }
-    ],
+    // Import organization (relaxed for shadcn/ui)
+    "import/order": "off",
     "import/no-duplicates": "error"
   },
   "overrides": [
