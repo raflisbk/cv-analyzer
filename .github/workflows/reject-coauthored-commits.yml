@@ -1,0 +1,59 @@
+name: Reject Co-authored-by Trailers
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  reject-coauthored-by:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.sha }}"
+
+            if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+              RANGE="$AFTER"
+            else
+              RANGE="$BEFORE..$AFTER"
+            fi
+          fi
+
+          echo "Scanning commit messages in range: $RANGE"
+
+          MATCHES=$(git log --format='%H%n%B%n---END---' "$RANGE" | awk '
+            BEGIN { RS="---END---\n"; FS="\n" }
+            {
+              sha = $1
+              for (i = 2; i <= NF; i++) {
+                if (tolower($i) ~ /^co-authored-by:/) {
+                  print sha ": " $i
+                }
+              }
+            }
+          ')
+
+          if [[ -n "$MATCHES" ]]; then
+            echo "Found forbidden Co-authored-by trailer(s):"
+            echo "$MATCHES"
+            echo "Please rewrite commit message(s) to remove Co-authored-by."
+            exit 1
+          fi
+
+          echo "No Co-authored-by trailers found."

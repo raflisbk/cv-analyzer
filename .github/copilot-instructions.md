@@ -569,10 +569,8 @@ git status
 # Add all changes
 git add .
 
-# Commit with co-author
-git commit -m "feat: description
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+# Commit
+git commit -m "feat: description"
 
 # View recent commits
 git log --oneline -10
