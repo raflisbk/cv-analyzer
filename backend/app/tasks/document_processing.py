@@ -43,9 +43,7 @@ class ProgressTask(Task):
         }
 
         # Store in Redis with 1-hour TTL
-        redis_client.setex(
-            f"job:progress:{job_id}", 3600, json.dumps(progress_data)
-        )
+        redis_client.setex(f"job:progress:{job_id}", 3600, json.dumps(progress_data))
 
         # Publish to channel for SSE streaming per D-14
         redis_client.publish(f"job:updates:{job_id}", json.dumps(progress_data))
@@ -179,11 +177,11 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
         except MaxRetriesExceededError:
             # All retries exhausted
             error_msg = f"Failed to extract text after 3 attempts: {e!s}"
-            logger.error("Max retries exceeded", extra={"job_id": job_id, "error": error_msg})
-
-            asyncio.run(
-                update_job_status(JobStatus.FAILED, error=error_msg)
+            logger.error(
+                "Max retries exceeded", extra={"job_id": job_id, "error": error_msg}
             )
+
+            asyncio.run(update_job_status(JobStatus.FAILED, error=error_msg))
 
             self.update_progress(job_id, "failed", 0, error_msg)
             return {"error": error_msg}

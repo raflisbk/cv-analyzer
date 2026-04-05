@@ -11,22 +11,21 @@ from fastapi.testclient import TestClient
 
 from app.db.session import get_db
 from app.main import app
-from app.models.job import Job, JobStatus
+from app.models.job import JobStatus
 
 
 # Override database dependency for all tests
 async def override_get_db():
     mock_session = AsyncMock()
-    # Mock job object
-    mock_job = Job(
-        id=uuid4(),
-        status=JobStatus.UPLOADING,
-        file_id="test-file-id-123",
-        file_metadata={"filename": "test.pdf", "size": 13, "mime_type": "application/pdf"},
-    )
     mock_session.add = MagicMock()
     mock_session.commit = AsyncMock()
-    mock_session.refresh = AsyncMock(side_effect=lambda obj: setattr(obj, 'id', uuid4()) if not hasattr(obj, 'id') or obj.id is None else None)
+    mock_session.refresh = AsyncMock(
+        side_effect=lambda obj: (
+            setattr(obj, "id", uuid4())
+            if not hasattr(obj, "id") or obj.id is None
+            else None
+        )
+    )
     yield mock_session
 
 

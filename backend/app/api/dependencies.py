@@ -1,7 +1,6 @@
 """Shared API dependencies"""
 
 from app.core.config import Settings, get_settings
-from app.db.session import AsyncSession, get_db
 
 
 # Dependency injection helpers

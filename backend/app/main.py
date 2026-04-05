@@ -9,6 +9,7 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 # Import settings and logging before anything else
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
+from app.api.v1.router import router as api_v1_router
 
 
 settings = get_settings()
@@ -76,6 +77,4 @@ async def health_check():
 
 
 # Mount API v1 router per D-52
-from app.api.v1.router import router as api_v1_router
-
 app.include_router(api_v1_router, prefix="/api")

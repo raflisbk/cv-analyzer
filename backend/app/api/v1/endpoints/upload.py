@@ -116,7 +116,9 @@ async def upload_file(file: UploadFile, db: AsyncSession = Depends(get_db)):
         )
 
     except Exception as e:
-        logger.error("Upload failed", extra={"filename": file.filename, "error": str(e)})
+        logger.error(
+            "Upload failed", extra={"filename": file.filename, "error": str(e)}
+        )
 
         return WrappedResponse(
             error=ErrorDetail(
