@@ -32,7 +32,7 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
     });
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     onDropRejected,
     accept: {
@@ -43,6 +43,7 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
     maxSize: 5 * 1024 * 1024, // 5MB per D-02
     multiple: false, // Per D-03
     disabled,
+    noClick: true, // Prevent double-open; button uses explicit open()
     onDragEnter: () => setIsDragOver(true),
     onDragLeave: () => setIsDragOver(false),
   });
@@ -88,7 +89,12 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
       </p>
 
       {/* Per D-01: file picker button equally visible */}
-      <Button variant="outline" type="button" disabled={disabled}>
+      <Button
+        variant="outline"
+        type="button"
+        disabled={disabled}
+        onClick={(e) => { e.stopPropagation(); open(); }}
+      >
         Choose File
       </Button>
 
