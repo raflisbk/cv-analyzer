@@ -16,7 +16,13 @@ celery_app = Celery(
     "cv_analyzer",
     broker=settings.CV_ANALYZER_REDIS_URL,
     backend=settings.CV_ANALYZER_REDIS_URL,
-    include=["app.tasks.document_processing", "app.tasks.cleanup"],
+    include=[
+        "app.tasks.document_processing",
+        "app.tasks.nlp_analysis",
+        "app.tasks.scoring",
+        "app.tasks.grammar_check",
+        "app.tasks.cleanup",
+    ],
 )
 
 # Celery configuration
