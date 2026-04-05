@@ -6,7 +6,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Document Pipeline** - Robust file upload, parsing, and async architecture
+- [ ] **Phase 1: Foundation & Document Pipeline** - Robust file upload, parsing, and async architecture ✅ **COMPLETE**
 - [ ] **Phase 2: Basic Analysis Engine** - NLP-based scoring, section detection, and validation
 - [ ] **Phase 3: AI Intelligence Layer** - LLM-powered analysis, suggestions, and cost controls
 - [ ] **Phase 4: Streaming & Comparison** - Real-time UX, job comparison, and visualizations
@@ -36,7 +36,7 @@ Plans:
 - [x] 01-02-PLAN.md — Frontend Foundation & UI Setup (Wave 1) ✅ **COMPLETE**
 - [x] 01-03-PLAN.md — Document Parsing & Storage Services (Wave 2) ✅ **COMPLETE**
 - [x] 01-04-PLAN.md — Async Processing & API Endpoints (Wave 3) ✅ **COMPLETE**
-- [ ] 01-05-PLAN.md — Upload UI & Frontend Integration (Wave 4)
+- [x] 01-05-PLAN.md — Upload UI & Frontend Integration (Wave 4) ✅ **COMPLETE**
 
 **UI hint**: yes
 
