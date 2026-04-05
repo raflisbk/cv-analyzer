@@ -37,6 +37,7 @@ celery_app.conf.update(
     task_soft_time_limit=540,  # 9 minutes soft limit
     worker_prefetch_multiplier=1,  # One task at a time per worker
     worker_max_tasks_per_child=50,  # Restart worker after 50 tasks
+    broker_connection_retry_on_startup=True,  # Suppress Celery 6.0 deprecation warning
 )
 
 # Scheduled tasks per D-20 (24-hour cleanup)
