@@ -75,4 +75,7 @@ async def health_check():
     }
 
 
-# TODO: API v1 routes will be added in later plans
+# Mount API v1 router per D-52
+from app.api.v1.router import router as api_v1_router
+
+app.include_router(api_v1_router, prefix="/api")
