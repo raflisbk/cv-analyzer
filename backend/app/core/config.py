@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     CV_ANALYZER_MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5MB per D-02
     CV_ANALYZER_UPLOAD_RATE_LIMIT: str = "5/hour"  # per D-31
 
+    # OpenAI API (Phase 2: embedding scoring per D-07, D-10)
+    CV_ANALYZER_OPENAI_API_KEY: str = ""
+    # Analysis pipeline rate limit per D-15
+    CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
+
     # CORS
     CV_ANALYZER_CORS_ORIGINS: str = "*"  # CSV string, "*" for dev (D-50)
 

@@ -2,6 +2,9 @@
 # CV Analyzer - Git Ignore Configuration
 # ============================================================================
 
+# ESCO data (large file, download separately)
+backend/data/esco_skills.csv
+
 # ============================================================================
 # Python Backend
 # ============================================================================
@@ -321,9 +324,8 @@ backend/storage/
 # Cloudflare R2 local simulation
 .r2/
 
-# Alembic
-backend/alembic/versions/*.py
-!backend/alembic/versions/.gitkeep
+# Alembic (do NOT ignore migration version files - they must be committed)
+# backend/alembic/versions/*.py  -- removed: migrations must be tracked
 
 # Logs
 logs/

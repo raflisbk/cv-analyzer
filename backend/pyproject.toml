@@ -26,7 +26,12 @@ dependencies = [
     "sentry-sdk[fastapi]==2.18.0",
     "prometheus-fastapi-instrumentator==7.0.0",
     "slowapi==0.1.9",
-    "alembic==1.13.1"
+    "alembic==1.13.1",
+    "spacy>=3.7",
+    "language-tool-python>=2.7",
+    "rapidfuzz>=3.0",
+    "openai>=1.0",
+    "tenacity>=8.0",
 ]
 
 [tool.setuptools]

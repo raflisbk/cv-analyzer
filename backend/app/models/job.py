@@ -2,7 +2,7 @@ import enum
 import uuid
 
 from sqlalchemy import JSON, Column, Enum, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.db.base import Base
 from app.models.base import TimestampMixin
@@ -38,3 +38,9 @@ class Job(Base, TimestampMixin):
         JSON, default=dict
     )  # File metadata (name, size, type) per D-21
     result = Column(JSON, nullable=True)  # Analysis results (JSONB) per D-47
+
+    # Phase 2 NLP analysis results (JSONB for PostgreSQL operators) per D-24
+    nlp_result = Column(JSONB, nullable=True)  # sections + entities from spaCy
+    scores = Column(JSONB, nullable=True)  # 5 score values (overall + 4 dims)
+    grammar_issues = Column(JSONB, nullable=True)  # list of grammar/spell issues
+    ats_checks = Column(JSONB, nullable=True)  # list of ATS check results
