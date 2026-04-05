@@ -388,16 +388,58 @@ pytest
 - **Python Version:** 3.13.9
 - **Package Manager:** pip (within conda env)
 
-See [BACKEND_SETUP.md](.github/BACKEND_SETUP.md) for detailed backend setup instructions.
+**Installed Dependencies (Wave 1 & 2):**
+- fastapi 0.135.2, uvicorn 0.42.0
+- celery 5.6.3, redis 7.4.0
+- sqlalchemy 2.0.43, psycopg 3.3.3
+- pydantic 2.12.5, alembic 1.18.4
+- loguru 0.7.3, boto3 1.42.83
+- PyMuPDF 1.27.2.2, python-docx 1.2.0
+- pdf2image 1.17.0, opencv-python 4.13.0.92
+- langdetect 1.0.9
+- sentry-sdk, prometheus-fastapi-instrumentator, slowapi
 
-Frontend (when implemented):
+**Environment Variables:**
+Copy `backend/.env.example` to `backend/.env` and configure:
+- `CV_ANALYZER_DB_HOST` - PostgreSQL host
+- `CV_ANALYZER_DB_NAME` - Database name  
+- `CV_ANALYZER_REDIS_URL` - Redis connection URL
+- `CV_ANALYZER_R2_ENDPOINT` - Cloudflare R2 endpoint
+- `CV_ANALYZER_R2_ACCESS_KEY` - R2 access key
+- `CV_ANALYZER_R2_SECRET_KEY` - R2 secret key
+
+**Troubleshooting Backend:**
+- **ModuleNotFoundError:** Ensure conda env is activated: `conda activate sbk-cv-analyzer`
+- **Wrong Python version:** Deactivate all envs, then re-activate: `conda deactivate && conda activate sbk-cv-analyzer`
+- **VS Code:** Select interpreter: `Ctrl+Shift+P` → "Python: Select Interpreter" → Choose `sbk-cv-analyzer`
+
+### Frontend Commands
+
 ```bash
 cd frontend
-npm run dev         # Dev server
-npm run build       # Production build
-npm run test        # Run tests
-npm run lint        # ESLint
+
+# Development server
+npm run dev         # http://localhost:3000
+
+# Production build
+npm run build
+
+# Run tests (when implemented)
+npm run test
+
+# Linting
+npm run lint        # ESLint check
+
+# Type checking
+npx tsc --noEmit
+
+# Formatting
+npx prettier --write .
 ```
+
+**Troubleshooting Frontend:**
+- **ESLint not found:** Run `npm install` in frontend directory
+- **Import errors:** Delete `node_modules` and `package-lock.json`, then `npm install`
 
 ## Important Constraints
 
@@ -405,6 +447,212 @@ npm run lint        # ESLint
 - **Timeline**: Quality over speed, no hard deadline
 - **Deployment**: Must be live production URL for portfolio
 - **LLM APIs**: Claude/OpenAI keys available
+
+## Quick Reference Card
+
+### Daily Development Workflow
+
+**Start Backend:**
+```bash
+# 1. Activate conda environment (ALWAYS FIRST!)
+conda activate sbk-cv-analyzer
+
+# 2. Navigate and run server
+cd backend
+uvicorn app.main:app --reload
+# Server: http://localhost:8000
+# Docs: http://localhost:8000/docs
+```
+
+**Start Frontend:**
+```bash
+cd frontend
+npm run dev
+# Server: http://localhost:3000
+```
+
+**Start Celery Worker:**
+```bash
+conda activate sbk-cv-analyzer
+cd backend
+celery -A app.tasks.celery_app worker --loglevel=info
+```
+
+### Code Quality Checks
+
+**Before Committing Backend:**
+```bash
+conda activate sbk-cv-analyzer
+cd backend
+
+# 1. Format
+black .
+
+# 2. Lint
+ruff check --fix .
+
+# 3. Verify imports
+python -c "from app.main import app; print('✓ OK')"
+```
+
+**Before Committing Frontend:**
+```bash
+cd frontend
+
+# 1. Lint
+npm run lint
+
+# 2. Type check
+npx tsc --noEmit
+
+# 3. Build check
+npm run build
+```
+
+### Database Operations
+
+```bash
+conda activate sbk-cv-analyzer
+cd backend
+
+# Create migration
+alembic revision --autogenerate -m "description"
+
+# Apply migrations
+alembic upgrade head
+
+# Rollback one migration
+alembic downgrade -1
+
+# Check current version
+alembic current
+```
+
+### Common Commands
+
+**Check Environment:**
+```bash
+# Which conda env is active?
+conda env list
+
+# Which Python?
+python --version  # Should be 3.13.9
+which python      # Should be in conda env
+
+# List installed packages
+pip list
+```
+
+**GSD Workflow:**
+```bash
+# Check progress
+/gsd-progress
+
+# Execute phase
+/gsd-execute-phase 1
+
+# Execute specific wave
+/gsd-execute-phase 1 --wave 2
+
+# Execute specific plan
+/gsd-execute-plan .planning/phases/01-.../01-01-PLAN.md
+
+# List running agents
+/tasks
+```
+
+**Git Workflow:**
+```bash
+# Check status
+git status
+
+# Add all changes
+git add .
+
+# Commit with co-author
+git commit -m "feat: description
+
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+
+# View recent commits
+git log --oneline -10
+```
+
+### File Structure
+
+```
+cv-analyzer/
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI application
+│   │   ├── core/                # Config, logging, security
+│   │   ├── db/                  # Database session, base
+│   │   ├── models/              # SQLAlchemy models
+│   │   ├── schemas/             # Pydantic schemas
+│   │   ├── api/                 # API routes
+│   │   ├── services/            # Business logic (storage, parser, ocr)
+│   │   └── tasks/               # Celery tasks
+│   ├── tests/                   # Test files
+│   ├── alembic/                 # Database migrations
+│   ├── pyproject.toml           # Dependencies + Black/Ruff config
+│   ├── requirements.txt         # Pinned dependencies
+│   └── .env.example             # Environment template
+├── frontend/
+│   ├── app/                     # Next.js app directory
+│   ├── components/              # React components
+│   │   ├── ui/                  # shadcn/ui components
+│   │   └── upload/              # Upload-specific components
+│   ├── lib/                     # Utilities and types
+│   ├── hooks/                   # Custom React hooks
+│   ├── .eslintrc.json           # ESLint config
+│   ├── tailwind.config.ts       # Tailwind config
+│   └── package.json             # Dependencies
+├── .github/
+│   └── copilot-instructions.md  # This file - project guide
+├── .gitignore                   # Git ignore patterns
+└── .planning/                   # GSD workflow (not committed)
+    ├── PROJECT.md               # Project definition
+    ├── ROADMAP.md               # Phase breakdown
+    ├── STATE.md                 # Current position
+    ├── REQUIREMENTS.md          # All requirements
+    └── phases/                  # Phase plans
+```
+
+### Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `backend/pyproject.toml` | Python dependencies, Black config, Ruff config |
+| `backend/requirements.txt` | Pinned Python dependencies |
+| `backend/.env` | Environment variables (NOT committed) |
+| `backend/alembic.ini` | Database migration config |
+| `frontend/.eslintrc.json` | ESLint rules (relaxed for shadcn/ui) |
+| `frontend/package.json` | Node dependencies |
+| `frontend/tsconfig.json` | TypeScript config |
+| `frontend/tailwind.config.ts` | Tailwind CSS config |
+| `.gitignore` | Files to ignore in git |
+| `.github/copilot-instructions.md` | Project conventions and rules (this file) |
+
+### Common Issues & Solutions
+
+**Backend:**
+- **"ModuleNotFoundError"** → Activate conda: `conda activate sbk-cv-analyzer`
+- **Wrong Python version** → `conda deactivate && conda activate sbk-cv-analyzer`
+- **Black/Ruff not found** → `pip install black ruff` (in conda env)
+- **Import errors** → Verify conda env, reinstall package with pip
+
+**Frontend:**
+- **"ESLint not found"** → Run `npm install` in frontend/
+- **Build errors** → Delete `node_modules/` and `.next/`, then `npm install`
+- **Type errors** → Run `npx tsc --noEmit` to see all errors
+
+**Database:**
+- **Connection errors** → Check PostgreSQL is running, verify .env credentials
+- **Migration errors** → Check alembic current version, review migration file
+
+**General:**
+- **"Planning files not found"** → `.planning/` is gitignored, only exists locally after GSD commands
+- **Linting failures** → Run auto-fix first: `black .` and `ruff check --fix .`
 
 ## File Organization
 
