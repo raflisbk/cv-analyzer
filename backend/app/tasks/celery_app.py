@@ -3,10 +3,17 @@ Celery application configuration
 Implements D-12: Redis/Celery for production reliability
 """
 
+import asyncio
+import sys
+
 from celery import Celery
 from celery.schedules import crontab
 
 from app.core.config import get_settings
+
+# Windows: psycopg async requires SelectorEventLoop, not ProactorEventLoop (default on Win)
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 settings = get_settings()
