@@ -1,6 +1,6 @@
 import pytest
 
-from app.services.parser import DocumentParser, ParsingError, parse_document
+from app.services.parser import ParsingError, parse_document
 
 
 def test_parse_document_rejects_unsupported_type():

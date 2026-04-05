@@ -6,10 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 
+from app.api.v1.router import router as api_v1_router
+
 # Import settings and logging before anything else
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.api.v1.router import router as api_v1_router
 
 
 settings = get_settings()
