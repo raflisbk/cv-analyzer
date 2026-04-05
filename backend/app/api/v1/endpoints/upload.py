@@ -9,8 +9,10 @@ import uuid
 from datetime import UTC, datetime
 
 from celery import chain as celery_chain
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, Request, UploadFile
 
+from app.core.config import get_settings
+from app.core.limiter import limiter
 from app.core.logging import structured_logger as logger
 from app.core.security import FileValidationError, validate_file
 from app.db.session import AsyncSession, get_db
@@ -24,11 +26,18 @@ from app.tasks.nlp_analysis import nlp_analyze_task
 from app.tasks.scoring import score_cv_task
 
 
+settings = get_settings()
+
 router = APIRouter()
 
 
 @router.post("/upload", response_model=WrappedResponse[UploadResponse])
-async def upload_file(file: UploadFile, db: AsyncSession = Depends(get_db)):
+@limiter.limit(settings.CV_ANALYZER_UPLOAD_RATE_LIMIT)
+async def upload_file(
+    request: Request,  # noqa: ARG001 — required by slowapi for rate limiting
+    file: UploadFile,
+    db: AsyncSession = Depends(get_db),
+):
     """
     Upload CV file for analysis
 

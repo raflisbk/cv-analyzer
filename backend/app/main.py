@@ -7,11 +7,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from sentry_sdk.integrations.fastapi import FastApiIntegration
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.router import router as api_v1_router
 
 # Import settings and logging before anything else
 from app.core.config import get_settings
+from app.core.limiter import limiter
 from app.core.logging import structured_logger as logger
 from app.services.grammar.checker import get_tool as get_grammar_tool
 
@@ -36,6 +39,10 @@ app = FastAPI(
     version="0.1.0",
     description="AI-powered CV analysis and improvement suggestions",
 )
+
+# Attach rate limiter state and exception handler per slowapi docs
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Add CORS middleware
 origins = (
