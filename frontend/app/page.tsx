@@ -139,8 +139,18 @@ export default function Home() {
 
         {/* Show SSE error if reconnection failed */}
         {streamError && (
-          <div className="mt-4 text-center text-sm text-red-600">
-            Connection lost. Please refresh the page.
+          <div className="mt-4 text-center space-y-2">
+            <p className="text-sm text-red-600">Connection lost. Please try again.</p>
+            <button
+              onClick={() => {
+                setSelectedFile(null);
+                setJobId(null);
+                uploadMutation.reset();
+              }}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Start over
+            </button>
           </div>
         )}
       </div>

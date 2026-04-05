@@ -21,13 +21,13 @@ export function useJobStream(jobId: string | null) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (!jobId) {
-      // Reset state when jobId is cleared (user clicks "Analyze another CV")
-      setProgress(null);
-      setIsConnected(false);
-      setError(null);
-      return;
-    }
+    // Always reset state whenever jobId changes — prevents stale progress
+    // from a previous job leaking into a new job or the upload zone.
+    setProgress(null);
+    setIsConnected(false);
+    setError(null);
+
+    if (!jobId) return;
 
     const apiUrl =
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
