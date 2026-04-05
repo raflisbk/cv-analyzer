@@ -1,6 +1,9 @@
 name: Reject Co-authored-by Trailers
 
 on:
+  pull_request:
+    branches:
+      - "main"
   push:
     branches:
       - "**"
@@ -8,45 +11,65 @@ on:
 jobs:
   reject-coauthored-by:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Validate commit messages
-        shell: bash
-        run: |
-          set -euo pipefail
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const trailerRegex = /^co-authored-by:/gim;
+            const matches = [];
 
-          BEFORE="${{ github.event.before }}"
-          AFTER="${{ github.sha }}"
+            if (context.eventName === "pull_request") {
+              const pull_number = context.payload.pull_request.number;
+              const commits = await github.paginate(github.rest.pulls.listCommits, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number,
+                per_page: 100,
+              });
 
-          if [[ "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
-            RANGE="$AFTER"
-          else
-            RANGE="$BEFORE..$AFTER"
-          fi
-
-          echo "Scanning commit messages in range: $RANGE"
-
-          MATCHES=$(git log --format='%H%n%B%n---END---' "$RANGE" | awk '
-            BEGIN { RS="---END---\n"; FS="\n" }
-            {
-              sha = $1
-              for (i = 2; i <= NF; i++) {
-                if (tolower($i) ~ /^co-authored-by:/) {
-                  print sha ": " $i
+              for (const commit of commits) {
+                const message = commit.commit.message || "";
+                if (trailerRegex.test(message)) {
+                  const line = message.split("\n").find((l) => /^co-authored-by:/i.test(l)) || "Co-authored-by detected";
+                  matches.push(`${commit.sha.substring(0, 7)}: ${line}`);
                 }
+                trailerRegex.lastIndex = 0;
+              }
+            } else {
+              const before = context.payload.before;
+              const after = context.payload.after;
+              const isNewBranch = before === "0000000000000000000000000000000000000000";
+
+              const commits = isNewBranch
+                ? (await github.rest.repos.listCommits({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    sha: after,
+                    per_page: 100,
+                  })).data
+                : (await github.rest.repos.compareCommits({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    base: before,
+                    head: after,
+                  })).data.commits;
+
+              for (const commit of commits) {
+                const message = commit.commit?.message || "";
+                if (trailerRegex.test(message)) {
+                  const line = message.split("\n").find((l) => /^co-authored-by:/i.test(l)) || "Co-authored-by detected";
+                  matches.push(`${commit.sha.substring(0, 7)}: ${line}`);
+                }
+                trailerRegex.lastIndex = 0;
               }
             }
-          ')
 
-          if [[ -n "$MATCHES" ]]; then
-            echo "Found forbidden Co-authored-by trailer(s):"
-            echo "$MATCHES"
-            echo "Please rewrite commit message(s) to remove Co-authored-by."
-            exit 1
-          fi
-
-          echo "No Co-authored-by trailers found."
+            if (matches.length > 0) {
+              core.setFailed(`Found forbidden Co-authored-by trailer(s):\n${matches.join("\n")}`);
+            } else {
+              core.info("No Co-authored-by trailers found.");
+            }
