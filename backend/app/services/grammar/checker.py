@@ -13,21 +13,34 @@ from app.core.logging import structured_logger as logger
 
 
 _tool: language_tool_python.LanguageTool | None = None
+_tool_unavailable: bool = False  # Set True if Java/LanguageTool fails to start
 
 
-def get_tool() -> language_tool_python.LanguageTool:
+def get_tool() -> language_tool_python.LanguageTool | None:
     """
     Lazy-load LanguageTool singleton.
     First call is slow (Java server startup + optional JAR download).
     Subsequent calls are fast (reuse running server).
+    Returns None if Java is unavailable — callers must handle this.
     """
-    global _tool  # noqa: PLW0603
+    global _tool, _tool_unavailable  # noqa: PLW0603
+    if _tool_unavailable:
+        return None
     if _tool is None:
         logger.info(
             "Starting LanguageTool server (Java required, first call may take 30s)..."
         )
-        _tool = language_tool_python.LanguageTool("en-US")
-        logger.info("LanguageTool server ready")
+        try:
+            _tool = language_tool_python.LanguageTool("en-US")
+            logger.info("LanguageTool server ready")
+        except Exception as exc:
+            _tool_unavailable = True
+            logger.warning(
+                "LanguageTool unavailable — Java may be missing or broken. "
+                "Grammar checks will be skipped.",
+                extra={"error": str(exc)},
+            )
+            return None
     return _tool
 
 
@@ -51,6 +64,9 @@ def check_grammar(text: str) -> list[dict]:
         Returns empty list if LanguageTool finds no issues.
     """
     tool = get_tool()
+    if tool is None:
+        logger.warning("Grammar check skipped — LanguageTool unavailable (Java missing/broken)")
+        return []
     matches = tool.check(text)
 
     issues: list[dict] = []

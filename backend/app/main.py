@@ -82,12 +82,19 @@ async def _prewarm_language_tool() -> None:
     """
     Pre-warm LanguageTool on startup to avoid 30s cold start on first grammar check.
     Runs in background thread to not block FastAPI startup.
+    Failure is non-fatal — grammar checks will return empty list if Java unavailable.
     Per Pitfall 2 in 02-RESEARCH.md.
     """
     loop = asyncio.get_event_loop()
-    with concurrent.futures.ThreadPoolExecutor() as pool:
-        await loop.run_in_executor(pool, get_grammar_tool)
-    logger.info("LanguageTool pre-warm complete")
+    try:
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            await loop.run_in_executor(pool, get_grammar_tool)
+        logger.info("LanguageTool pre-warm complete")
+    except Exception as exc:
+        logger.warning(
+            "LanguageTool pre-warm failed — grammar checks will be skipped",
+            extra={"error": str(exc)},
+        )
 
 
 @app.get("/health")
