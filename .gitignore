@@ -351,6 +351,9 @@ docs/site/
 .agents/
 .claude/
 
+# Local private AI instructions (keep CLAUDE.md tracked)
+CLAUDE.local.md
+
 # GitHub Copilot
 .copilot/
 

@@ -88,7 +88,12 @@ Start work through a GSD command to maintain planning artifacts:
      - Database files (`*.db`, `*.sqlite`)
      - Uploaded files in development
 
-3. **Run Linters**
+  3. **Update Backend Dependency Manifest**
+    - If backend dependencies changed during the wave/phase, update `backend/pyproject.toml` first.
+    - Keep `backend/requirements.txt` aligned only when explicitly needed for tooling compatibility.
+    - Treat `backend/pyproject.toml` as the source of truth for backend dependency installation.
+
+  4. **Run Linters**
    
    **Backend (Python):**
    ```bash
@@ -107,7 +112,7 @@ Start work through a GSD command to maintain planning artifacts:
    npx tsc --noEmit          # Type check
    ```
 
-4. **Verify Builds**
+5. **Verify Builds**
    
    **Backend:**
    ```bash
@@ -122,7 +127,7 @@ Start work through a GSD command to maintain planning artifacts:
    npm run build             # Ensure build succeeds
    ```
 
-5. **Commit Clean Code**
+6. **Commit Clean Code**
    - All linting errors fixed
    - All files properly ignored
    - Build passes
