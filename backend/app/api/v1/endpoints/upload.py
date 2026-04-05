@@ -8,6 +8,7 @@ Implements ERROR-01: Validate file type and size
 import uuid
 from datetime import UTC, datetime
 
+from celery import chain as celery_chain
 from fastapi import APIRouter, Depends, UploadFile
 
 from app.core.logging import structured_logger as logger
@@ -18,6 +19,9 @@ from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.upload import UploadResponse
 from app.services.storage import storage_service
 from app.tasks.document_processing import process_document_task
+from app.tasks.grammar_check import grammar_check_task
+from app.tasks.nlp_analysis import nlp_analyze_task
+from app.tasks.scoring import score_cv_task
 
 
 router = APIRouter()
@@ -78,17 +82,23 @@ async def upload_file(file: UploadFile, db: AsyncSession = Depends(get_db)):
 
         logger.info("Job created", extra={"job_id": str(job.id), "file_id": file_id})
 
-        # Trigger async processing (non-blocking) per D-12
-        process_document_task.delay(
-            job_id=str(job.id),
-            file_id=file_id,
-            file_metadata={
-                "filename": file.filename,
-                "mime_type": file_info["mime_type"],
-                "size": file_info["size"],
-                "extension": file_info["extension"],
-            },
+        # Trigger 4-task analysis pipeline per D-17 (.si() = immutable signatures)
+        pipeline = celery_chain(
+            process_document_task.si(
+                str(job.id),
+                file_id,
+                {
+                    "filename": file.filename,
+                    "mime_type": file_info["mime_type"],
+                    "size": file_info["size"],
+                    "extension": file_info["extension"],
+                },
+            ),
+            nlp_analyze_task.si(str(job.id)),
+            score_cv_task.si(str(job.id)),
+            grammar_check_task.si(str(job.id)),
         )
+        pipeline.delay()
 
         return WrappedResponse(
             data=UploadResponse(job_id=str(job.id)),

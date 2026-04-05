@@ -1,3 +1,5 @@
+import asyncio
+import concurrent.futures
 from datetime import UTC, datetime
 
 import sentry_sdk
@@ -11,6 +13,7 @@ from app.api.v1.router import router as api_v1_router
 # Import settings and logging before anything else
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
+from app.services.grammar.checker import get_tool as get_grammar_tool
 
 
 settings = get_settings()
@@ -65,6 +68,19 @@ async def startup_event():
             "environment": settings.CV_ANALYZER_ENV,
         },
     )
+
+
+@app.on_event("startup")
+async def _prewarm_language_tool() -> None:
+    """
+    Pre-warm LanguageTool on startup to avoid 30s cold start on first grammar check.
+    Runs in background thread to not block FastAPI startup.
+    Per Pitfall 2 in 02-RESEARCH.md.
+    """
+    loop = asyncio.get_event_loop()
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        await loop.run_in_executor(pool, get_grammar_tool)
+    logger.info("LanguageTool pre-warm complete")
 
 
 @app.get("/health")

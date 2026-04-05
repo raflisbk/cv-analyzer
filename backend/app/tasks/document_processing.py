@@ -136,8 +136,8 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
             self.update_progress(job_id, "failed", 0, error_msg)
             return {"error": error_msg}
 
-        # Stage 3: Complete (100%)
-        self.update_progress(job_id, "complete", 100, "Processing complete!")
+        # Stage 3: Parsing complete (100%) — final "complete" is emitted by grammar_check_task
+        self.update_progress(job_id, "parsing", 100, "Document parsed successfully!")
 
         # Store results
         result_data = {
@@ -146,7 +146,8 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
             "file_metadata": file_metadata,
         }
 
-        asyncio.run(update_job_status(JobStatus.COMPLETE, result=result_data))
+        # Keep job in ANALYZING so the NLP/scoring/grammar pipeline can continue
+        asyncio.run(update_job_status(JobStatus.ANALYZING, result=result_data))
 
         logger.info(
             "Document processing complete",
