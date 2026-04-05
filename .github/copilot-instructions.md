@@ -169,6 +169,12 @@ which python            # Should point to conda env
 - **ALWAYS use Conda environment:** `conda activate sbk-cv-analyzer`
 - **Python Version:** 3.13.9
 - **Package Manager:** pip (within conda env)
+- **Dependency Source:** `backend/pyproject.toml` (do not install from `backend/requirements.txt`)
+
+**Backend dependency install rule (Copilot):**
+- Always install backend dependencies from `pyproject.toml`.
+- Use `pip install -e backend` from repository root (or `cd backend && pip install -e .`).
+- Do not use `pip install -r backend/requirements.txt` unless explicitly requested by the user.
 
 **Code Quality Tools:**
 - **Formatter:** Black (line-length: 88)
@@ -387,6 +393,7 @@ pytest
 - **Conda Environment:** `sbk-cv-analyzer`
 - **Python Version:** 3.13.9
 - **Package Manager:** pip (within conda env)
+- **Install Command:** `pip install -e backend` (source of truth: `backend/pyproject.toml`)
 
 **Installed Dependencies (Wave 1 & 2):**
 - fastapi 0.135.2, uvicorn 0.42.0
