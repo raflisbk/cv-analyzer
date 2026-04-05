@@ -25,14 +25,17 @@ export async function apiFetch<T>(
   options?: RequestInit
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`;
-  
+  const isFormData = options?.body instanceof FormData;
+
   try {
     const response = await fetch(url, {
       ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
+      headers: isFormData
+        ? options?.headers // Let browser set Content-Type + boundary for FormData
+        : {
+            "Content-Type": "application/json",
+            ...options?.headers,
+          },
     });
     
     const data: WrappedResponse<T> = await response.json();

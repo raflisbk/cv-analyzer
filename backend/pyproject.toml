@@ -94,6 +94,7 @@ ignore = [
     "B008",   # do not perform function call in argument defaults
     "PLR0913", # too many arguments
     "TRY003",  # avoid specifying long messages outside exception class
+    "UP046",   # Generic[T] syntax required for Python 3.11 compatibility
 ]
 
 # Exclude paths

@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,8 +25,16 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
     [onFileSelected]
   );
 
+  const onDropRejected = useCallback(() => {
+    toast.error("Invalid file", {
+      description: "Only PDF or DOCX files up to 5MB are supported.",
+      duration: 5000,
+    });
+  }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       "application/pdf": [".pdf"],
       "application/msword": [".doc"],

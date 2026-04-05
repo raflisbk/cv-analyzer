@@ -1,6 +1,6 @@
 import uuid
 from datetime import UTC, datetime
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +23,7 @@ class ResponseMeta(BaseModel):
     timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
-class WrappedResponse[T](BaseModel):
+class WrappedResponse(BaseModel, Generic[T]):
     """Wrapped response format per D-23
 
     Provides consistent API response structure with data, error, and metadata fields.
