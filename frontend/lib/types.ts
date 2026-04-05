@@ -46,3 +46,51 @@ export interface Job {
   created_at: string;
   updated_at: string;
 }
+
+// ============================================================
+// Phase 2: Analysis Result types (per D-23)
+// ============================================================
+
+export interface ScoreResult {
+  overall: number;
+  clarity: number;
+  impact: number;
+  completeness: number;
+  relevance: number;
+}
+
+export interface SectionResult {
+  type: string;
+  text: string;
+  entities: Array<{ text: string; label: string; type: string }>;
+}
+
+export interface GrammarIssue {
+  text: string;
+  offset: number;
+  suggestion: string;
+  rule: string;
+}
+
+export interface AtsCheck {
+  check: string;
+  status: "pass" | "warn" | "fail";
+  detail?: string;
+}
+
+export interface AnalysisResult {
+  job_id: string;
+  status:
+    | "pending"
+    | "uploading"
+    | "extracting"
+    | "parsing"
+    | "analyzing"
+    | "complete"
+    | "failed";
+  scores: ScoreResult | null;
+  sections: SectionResult[];
+  skills: string[];
+  grammar_issues: GrammarIssue[];
+  ats_checks: AtsCheck[];
+}

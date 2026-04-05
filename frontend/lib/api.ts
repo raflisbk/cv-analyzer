@@ -3,6 +3,7 @@
  */
 
 import { WrappedResponse } from "./types";
+import type { AnalysisResult } from "./types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -81,4 +82,11 @@ export async function uploadFile(file: File): Promise<{ job_id: string }> {
     headers: {}, // Let browser set Content-Type for FormData
     body: formData,
   });
+}
+
+/**
+ * Get full analysis results for a completed job per D-23
+ */
+export async function getJobResults(jobId: string): Promise<AnalysisResult> {
+  return apiFetch<AnalysisResult>(`/jobs/${jobId}/results`);
 }

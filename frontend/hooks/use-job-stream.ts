@@ -15,7 +15,11 @@ interface ProgressUpdate {
   message: string;
 }
 
-export function useJobStream(jobId: string | null) {
+interface UseJobStreamOptions {
+  onComplete?: (jobId: string) => void;
+}
+
+export function useJobStream(jobId: string | null, options?: UseJobStreamOptions) {
   const [progress, setProgress] = useState<ProgressUpdate | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -48,6 +52,10 @@ export function useJobStream(jobId: string | null) {
             percentage: data.percentage,
             message: data.message,
           });
+          // Trigger onComplete callback per D-19
+          if (data.stage === "complete" && options?.onComplete && jobId) {
+            options.onComplete(jobId);
+          }
         }
       },
       (err: Error) => {
