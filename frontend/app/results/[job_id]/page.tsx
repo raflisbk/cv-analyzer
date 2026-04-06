@@ -7,9 +7,12 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useJobResults } from "@/hooks/use-job-results";
+import type { JobRole } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { ExportStickyBar } from "@/components/results/export-sticky-bar";
 import { ResultsError } from "@/components/results/results-error";
 import { ResultsSkeleton } from "@/components/results/results-skeleton";
 import { ResultsTabs } from "@/components/results/results-tabs";
@@ -21,6 +24,17 @@ export default function ResultsPage() {
   const jobId = params.job_id as string;
 
   const { data, isLoading, isError, error } = useJobResults(jobId);
+
+  // Fetch job roles for Compare tab dropdown per D-C5, COMPARE-02
+  const { data: jobRolesData } = useQuery<JobRole[]>({
+    queryKey: ["job-roles"],
+    queryFn: async () => {
+      const res = await fetch("/api/v1/job-roles");
+      const json = await res.json();
+      return json.data as JobRole[];
+    },
+    staleTime: Infinity, // Job roles don't change
+  });
 
   // Error state — network error or API error per UI-SPEC §5 "Error states"
   if (isError) {
@@ -54,9 +68,10 @@ export default function ResultsPage() {
   }
 
   const isProcessing = !data || data.status !== "complete";
+  const isComplete = data?.status === "complete";
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className={`min-h-screen bg-background${isComplete ? " pb-16" : ""}`}>
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Page header per UI-SPEC §7 B */}
         <div className="flex items-center justify-between mb-8">
@@ -115,8 +130,8 @@ export default function ResultsPage() {
               </div>
             )}
 
-            {/* Tabs: Overview | Scores | Skills | Grammar per D-20 */}
-            <ResultsTabs result={data} />
+            {/* Tabs: Overview | Scores | Skills | Grammar | Compare per D-20, Phase 4 */}
+            <ResultsTabs result={data} jobRoles={jobRolesData ?? []} />
 
             {/* Analyze Another CV button per UI-SPEC §5 */}
             <div className="flex justify-center pt-4">
@@ -127,6 +142,14 @@ export default function ResultsPage() {
           </div>
         )}
       </div>
+      {/* ExportStickyBar — slides up when analysis complete per UI-SPEC §7.5, D-C12 */}
+      {data && (
+        <ExportStickyBar
+          jobId={jobId}
+          analysisStatus={data.status}
+          topSuggestionText={data.suggestions?.[0]?.suggestions?.[0]?.text}
+        />
+      )}
     </main>
   );
 }

@@ -1,0 +1,113 @@
+"use client";
+
+/**
+ * ExportStickyBar — Fixed bottom export toolbar.
+ * Slides up with translate-y animation when analysisStatus === "complete".
+ * Per UI-SPEC §7.5, D-C12, EXPORT-01, EXPORT-02.
+ */
+
+import { useEffect, useState } from "react";
+import { Check, Clipboard, Download } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
+interface ExportStickyBarProps {
+  jobId: string;
+  analysisStatus: string;
+  /** Top suggestion text for clipboard copy per D-C12, EXPORT-02 */
+  topSuggestionText?: string;
+}
+
+export function ExportStickyBar({
+  jobId,
+  analysisStatus,
+  topSuggestionText,
+}: ExportStickyBarProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // Slide-up animation: delay 100ms after paint per UI-SPEC §7.5
+  useEffect(() => {
+    if (analysisStatus === "complete") {
+      const timer = setTimeout(() => setIsVisible(true), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+    }
+  }, [analysisStatus]);
+
+  async function handleCopySuggestion() {
+    const text = topSuggestionText ?? "No suggestions available";
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      toast("Suggestion copied to clipboard");
+      // Revert icon after 2000ms per UI-SPEC §8
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch {
+      toast("Failed to copy to clipboard");
+    }
+  }
+
+  async function handleDownloadPdf() {
+    toast("PDF download started");
+    try {
+      const response = await fetch(`/api/v1/jobs/${jobId}/export/pdf`);
+      if (!response.ok) { throw new Error("PDF generation failed"); }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      // Trigger browser download dialog
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `cv-analysis-${jobId.slice(0, 8)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast("PDF download failed. Try again.");
+    }
+  }
+
+  // Render nothing (no DOM space) when analysis not complete
+  if (analysisStatus !== "complete") { return null; }
+
+  return (
+    /* h-12=48px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
+    <div
+      className={`fixed bottom-0 left-0 right-0 h-12 z-50 bg-background border-t border-border
+        px-4 flex items-center justify-end gap-2
+        transition-all duration-300 ease-out
+        ${isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
+      role="toolbar"
+      aria-label="Export options"
+    >
+      {/* Copy Suggestion — variant outline, size sm per UI-SPEC §7.5 */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleCopySuggestion}
+        className="min-h-[44px]"
+        aria-label="Copy top suggestion to clipboard"
+      >
+        {copySuccess
+          ? <Check className="h-4 w-4 mr-2" />
+          : <Clipboard className="h-4 w-4 mr-2" />
+        }
+        Copy Suggestion
+      </Button>
+
+      {/* Download PDF — variant default (primary), size sm per UI-SPEC §7.5 */}
+      <Button
+        variant="default"
+        size="sm"
+        onClick={handleDownloadPdf}
+        className="min-h-[44px]"
+        aria-label="Download analysis as PDF"
+      >
+        <Download className="h-4 w-4 mr-2" />
+        Download PDF
+      </Button>
+    </div>
+  );
+}
