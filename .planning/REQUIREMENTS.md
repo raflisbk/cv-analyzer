@@ -55,15 +55,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **STREAM-01**: System shows real-time analysis progress via Server-Sent Events
 - [ ] **STREAM-02**: Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.)
-- [ ] **STREAM-03**: Backend implements async job queue with SSE streaming endpoint
+- [x] **STREAM-03**: Backend implements async job queue with SSE streaming endpoint
 - [ ] **STREAM-04**: System handles connection failures and reconnection gracefully
 
 ### Job Comparison
 
 - [ ] **COMPARE-01**: User can paste job description for comparison
-- [ ] **COMPARE-02**: User can select job from pre-defined database
-- [ ] **COMPARE-03**: System calculates match percentage between CV and job description
-- [ ] **COMPARE-04**: System performs role-specific scoring based on job requirements
+- [x] **COMPARE-02**: User can select job from pre-defined database
+- [x] **COMPARE-03**: System calculates match percentage between CV and job description
+- [x] **COMPARE-04**: System performs role-specific scoring based on job requirements
 - [ ] **COMPARE-05**: System displays skills gap analysis (present vs required skills)
 - [ ] **COMPARE-06**: System highlights missing qualifications and experience gaps
 
@@ -86,7 +86,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ERROR-01**: System validates input file type and size before upload
 - [ ] **ERROR-02**: System handles LLM API failures gracefully with fallbacks
 - [ ] **ERROR-03**: System implements rate limiting per IP address
-- [ ] **ERROR-04**: System logs errors for monitoring without exposing sensitive data
+- [x] **ERROR-04**: System logs errors for monitoring without exposing sensitive data
 - [ ] **ERROR-05**: System implements data retention policy (auto-delete after 24h)
 
 ## v2 Requirements
@@ -177,12 +177,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------------|--------|
 | STREAM-01 | System shows real-time analysis progress via Server-Sent Events | Pending |
 | STREAM-02 | Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.) | Pending |
-| STREAM-03 | Backend implements async job queue with SSE streaming endpoint | Pending |
+| STREAM-03 | Backend implements async job queue with SSE streaming endpoint | Complete |
 | STREAM-04 | System handles connection failures and reconnection gracefully | Pending |
 | COMPARE-01 | User can paste job description for comparison | Pending |
-| COMPARE-02 | User can select job from pre-defined database | Pending |
-| COMPARE-03 | System calculates match percentage between CV and job description | Pending |
-| COMPARE-04 | System performs role-specific scoring based on job requirements | Pending |
+| COMPARE-02 | User can select job from pre-defined database | Complete |
+| COMPARE-03 | System calculates match percentage between CV and job description | Complete |
+| COMPARE-04 | System performs role-specific scoring based on job requirements | Complete |
 | COMPARE-05 | System displays skills gap analysis (present vs required skills) | Pending |
 | COMPARE-06 | System highlights missing qualifications and experience gaps | Pending |
 | UX-01 | System displays skills gap heatmap visualization | Pending |
@@ -193,7 +193,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXPORT-01 | User can download analysis results as PDF | Pending |
 | EXPORT-02 | User can copy individual suggestions to clipboard | Pending |
 | EXPORT-03 | System formats exported report with professional layout | Pending |
-| ERROR-04 | System logs errors for monitoring without exposing sensitive data | Pending |
+| ERROR-04 | System logs errors for monitoring without exposing sensitive data | Complete |
 
 ### Phase 5: Advanced Features
 
