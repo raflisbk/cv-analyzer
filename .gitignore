@@ -5,6 +5,11 @@
 # ESCO data (large file, download separately)
 backend/data/esco_skills.csv
 
+# Test/sample CV files at root
+*.pdf
+*.doc
+*.docx
+
 # ============================================================================
 # Python Backend
 # ============================================================================
