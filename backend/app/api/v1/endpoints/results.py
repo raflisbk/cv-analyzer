@@ -14,6 +14,7 @@ from app.models.job import Job
 from app.schemas.analysis import (
     AnalysisResult,
     AtsCheck,
+    ComparisonResult,
     GrammarIssue,
     ScoreResult,
     SectionResult,
@@ -137,6 +138,19 @@ async def get_job_results(
                 # Malformed JSONB — treat as LLM failed (return null, not 500 error)
                 suggestions = None
 
+        # Build ComparisonResult from comparison_result JSONB column (Phase 4 D-C9)
+        # None = comparison not triggered or failed; populated = comparison complete
+        # Guard isinstance: MagicMock-based tests don't set these fields → treat as None
+        comparison_result: ComparisonResult | None = None
+        safe_comparison_status: str | None = (
+            job.comparison_status if isinstance(job.comparison_status, str) else None
+        )
+        if job.comparison_result and safe_comparison_status == "complete":
+            try:
+                comparison_result = ComparisonResult(**job.comparison_result)
+            except Exception:
+                comparison_result = None  # Malformed JSONB — treat as not available
+
         analysis_result = AnalysisResult(
             job_id=str(job.id),
             status=job.status,
@@ -146,6 +160,8 @@ async def get_job_results(
             grammar_issues=grammar_issues,
             ats_checks=ats_checks,
             suggestions=suggestions,  # Phase 3: None=LLM failed, []=empty, [...]=results
+            comparison_result=comparison_result,  # Phase 4 addition
+            comparison_status=safe_comparison_status,  # Phase 4 addition
         )
 
         return WrappedResponse(
