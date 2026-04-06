@@ -56,7 +56,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **STREAM-01**: System shows real-time analysis progress via Server-Sent Events
 - [x] **STREAM-02**: Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.)
 - [x] **STREAM-03**: Backend implements async job queue with SSE streaming endpoint
-- [ ] **STREAM-04**: System handles connection failures and reconnection gracefully
+- [x] **STREAM-04**: System handles connection failures and reconnection gracefully
 
 ### Job Comparison
 
@@ -72,8 +72,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **UX-01**: System displays skills gap heatmap visualization
 - [ ] **UX-02**: System provides before/after comparison view for suggestions
 - [ ] **UX-03**: System implements responsive design for mobile/desktop
-- [ ] **UX-04**: System shows loading states during async processing
-- [ ] **UX-05**: System uses shadcn/ui components with Tailwind styling
+- [x] **UX-04**: System shows loading states during async processing
+- [x] **UX-05**: System uses shadcn/ui components with Tailwind styling
 
 ### Export & Results
 
@@ -178,7 +178,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STREAM-01 | System shows real-time analysis progress via Server-Sent Events | Complete |
 | STREAM-02 | Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.) | Complete |
 | STREAM-03 | Backend implements async job queue with SSE streaming endpoint | Complete |
-| STREAM-04 | System handles connection failures and reconnection gracefully | Pending |
+| STREAM-04 | System handles connection failures and reconnection gracefully | Complete |
 | COMPARE-01 | User can paste job description for comparison | Complete |
 | COMPARE-02 | User can select job from pre-defined database | Complete |
 | COMPARE-03 | System calculates match percentage between CV and job description | Complete |
@@ -188,8 +188,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-01 | System displays skills gap heatmap visualization | Pending |
 | UX-02 | System provides before/after comparison view for suggestions | Pending |
 | UX-03 | System implements responsive design for mobile/desktop | Pending |
-| UX-04 | System shows loading states during async processing | Pending |
-| UX-05 | System uses shadcn/ui components with Tailwind styling | Pending |
+| UX-04 | System shows loading states during async processing | Complete |
+| UX-05 | System uses shadcn/ui components with Tailwind styling | Complete |
 | EXPORT-01 | User can download analysis results as PDF | Complete |
 | EXPORT-02 | User can copy individual suggestions to clipboard | Pending |
 | EXPORT-03 | System formats exported report with professional layout | Complete |
