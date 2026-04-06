@@ -16,6 +16,7 @@ const stages = [
   { id: "extracting", label: "Extracting text" },
   { id: "analyzing", label: "Analyzing content" },
   { id: "generating", label: "Generating suggestions" }, // Phase 3 (D-19)
+  { id: "comparing", label: "Comparing against job description" }, // Phase 4 (D-C2, UI-SPEC §5)
   { id: "complete", label: "Complete" },
 ];
 
@@ -30,6 +31,7 @@ const STAGE_MAP: Record<string, string> = {
   scoring: "analyzing",
   grammar_check: "analyzing", // Phase 2: was missing from STAGE_MAP
   generating_suggestions: "generating", // Phase 3: LLM suggestion stage (D-19)
+  comparing_job: "comparing",           // Phase 4: CV vs JD comparison stage (D-C2, D-C13)
   complete: "complete",
 };
 

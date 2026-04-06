@@ -105,6 +105,7 @@ export interface AnalysisResult {
     | "parsing"
     | "analyzing"
     | "generating" // Phase 3: LLM suggestion generation stage (D-19)
+    | "comparing"  // Phase 4: comparison task running (D-C9)
     | "complete"
     | "failed";
   scores: ScoreResult | null;
@@ -118,4 +119,45 @@ export interface AnalysisResult {
   // []        = LLM succeeded, nothing to suggest → render "no suggestions" state
   // [...]     = populated suggestions → render suggestion cards
   suggestions?: SuggestionCard[] | null;
+  // Phase 4: Comparison data per D-C9
+  // undefined = comparison not triggered
+  // null      = comparison failed
+  // ComparisonResult = comparison complete
+  comparison_result?: ComparisonResult | null;
+  comparison_status?: "pending" | "comparing" | "complete" | "failed" | null;
+}
+
+// ============================================================
+// Phase 4: Comparison types (per D-C6, D-C9, COMPARE-03..06)
+// ============================================================
+
+/** LLM comparison output per D-C6. Fields match backend ComparisonResult Pydantic schema. */
+export interface ComparisonResult {
+  match_pct: number;              // 0–100 integer
+  matched_skills: string[];
+  missing_skills: string[];
+  matched_experience: string[];
+  missing_experience: string[];
+  overall_recommendation: string;
+}
+
+/** Skills grouped by gap status for SkillsGapDisplay per COMPARE-05, UX-01. */
+export interface SkillGapGroup {
+  present: string[];    // from matched_skills
+  missing: string[];    // from missing_skills
+  partial: string[];    // optional partial matches
+}
+
+/** Job role summary for comparison dropdown per D-C5, COMPARE-02. */
+export interface JobRole {
+  id: string;
+  title: string;
+  seniority: "junior" | "mid" | "senior";
+  industry: string;
+}
+
+/** Export options for ExportStickyBar per D-C12, EXPORT-01, EXPORT-02. */
+export interface ExportOptions {
+  jobId: string;
+  topSuggestionText?: string;  // For clipboard copy via navigator.clipboard.writeText()
 }
