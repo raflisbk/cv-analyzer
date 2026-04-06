@@ -53,18 +53,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Real-Time Streaming
 
-- [ ] **STREAM-01**: System shows real-time analysis progress via Server-Sent Events
-- [ ] **STREAM-02**: Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.)
+- [x] **STREAM-01**: System shows real-time analysis progress via Server-Sent Events
+- [x] **STREAM-02**: Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.)
 - [x] **STREAM-03**: Backend implements async job queue with SSE streaming endpoint
 - [ ] **STREAM-04**: System handles connection failures and reconnection gracefully
 
 ### Job Comparison
 
-- [ ] **COMPARE-01**: User can paste job description for comparison
+- [x] **COMPARE-01**: User can paste job description for comparison
 - [x] **COMPARE-02**: User can select job from pre-defined database
 - [x] **COMPARE-03**: System calculates match percentage between CV and job description
 - [x] **COMPARE-04**: System performs role-specific scoring based on job requirements
-- [ ] **COMPARE-05**: System displays skills gap analysis (present vs required skills)
+- [x] **COMPARE-05**: System displays skills gap analysis (present vs required skills)
 - [ ] **COMPARE-06**: System highlights missing qualifications and experience gaps
 
 ### Visualization & UX
@@ -77,9 +77,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Export & Results
 
-- [ ] **EXPORT-01**: User can download analysis results as PDF
+- [x] **EXPORT-01**: User can download analysis results as PDF
 - [ ] **EXPORT-02**: User can copy individual suggestions to clipboard
-- [ ] **EXPORT-03**: System formats exported report with professional layout
+- [x] **EXPORT-03**: System formats exported report with professional layout
 
 ### Error Handling & Reliability
 
@@ -175,24 +175,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Description | Status |
 |-------------|-------------|--------|
-| STREAM-01 | System shows real-time analysis progress via Server-Sent Events | Pending |
-| STREAM-02 | Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.) | Pending |
+| STREAM-01 | System shows real-time analysis progress via Server-Sent Events | Complete |
+| STREAM-02 | Frontend displays streaming updates ("Extracting text...", "Analyzing...", etc.) | Complete |
 | STREAM-03 | Backend implements async job queue with SSE streaming endpoint | Complete |
 | STREAM-04 | System handles connection failures and reconnection gracefully | Pending |
-| COMPARE-01 | User can paste job description for comparison | Pending |
+| COMPARE-01 | User can paste job description for comparison | Complete |
 | COMPARE-02 | User can select job from pre-defined database | Complete |
 | COMPARE-03 | System calculates match percentage between CV and job description | Complete |
 | COMPARE-04 | System performs role-specific scoring based on job requirements | Complete |
-| COMPARE-05 | System displays skills gap analysis (present vs required skills) | Pending |
+| COMPARE-05 | System displays skills gap analysis (present vs required skills) | Complete |
 | COMPARE-06 | System highlights missing qualifications and experience gaps | Pending |
 | UX-01 | System displays skills gap heatmap visualization | Pending |
 | UX-02 | System provides before/after comparison view for suggestions | Pending |
 | UX-03 | System implements responsive design for mobile/desktop | Pending |
 | UX-04 | System shows loading states during async processing | Pending |
 | UX-05 | System uses shadcn/ui components with Tailwind styling | Pending |
-| EXPORT-01 | User can download analysis results as PDF | Pending |
+| EXPORT-01 | User can download analysis results as PDF | Complete |
 | EXPORT-02 | User can copy individual suggestions to clipboard | Pending |
-| EXPORT-03 | System formats exported report with professional layout | Pending |
+| EXPORT-03 | System formats exported report with professional layout | Complete |
 | ERROR-04 | System logs errors for monitoring without exposing sensitive data | Complete |
 
 ### Phase 5: Advanced Features
