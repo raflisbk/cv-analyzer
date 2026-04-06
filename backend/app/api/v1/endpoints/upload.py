@@ -22,6 +22,7 @@ from app.schemas.upload import UploadResponse
 from app.services.storage import storage_service
 from app.tasks.document_processing import process_document_task
 from app.tasks.grammar_check import grammar_check_task
+from app.tasks.llm_suggest import llm_suggest_task
 from app.tasks.nlp_analysis import nlp_analyze_task
 from app.tasks.scoring import score_cv_task
 
@@ -91,7 +92,7 @@ async def upload_file(
 
         logger.info("Job created", extra={"job_id": str(job.id), "file_id": file_id})
 
-        # Trigger 4-task analysis pipeline per D-17 (.si() = immutable signatures)
+        # Trigger 5-task analysis pipeline per D-17, D-19 (.si() = immutable signatures)
         pipeline = celery_chain(
             process_document_task.si(
                 str(job.id),
@@ -106,6 +107,7 @@ async def upload_file(
             nlp_analyze_task.si(str(job.id)),
             score_cv_task.si(str(job.id)),
             grammar_check_task.si(str(job.id)),
+            llm_suggest_task.si(str(job.id)),  # Phase 3: LLM suggestions (D-19)
         )
         pipeline.delay()
 

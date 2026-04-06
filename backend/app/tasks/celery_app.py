@@ -11,6 +11,7 @@ from celery.schedules import crontab
 
 from app.core.config import get_settings
 
+
 # Windows: psycopg async requires SelectorEventLoop, not ProactorEventLoop (default on Win)
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -28,6 +29,7 @@ celery_app = Celery(
         "app.tasks.nlp_analysis",
         "app.tasks.scoring",
         "app.tasks.grammar_check",
+        "app.tasks.llm_suggest",  # Phase 3: LLM suggestion generation (D-19)
         "app.tasks.cleanup",
     ],
 )

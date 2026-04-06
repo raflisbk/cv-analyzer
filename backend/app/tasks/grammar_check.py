@@ -1,7 +1,7 @@
 """
 Grammar check + ATS check Celery task per D-17, D-18.
-FINAL task in the analysis pipeline chain.
-Runs grammar check and ATS check, saves results, emits 'complete' SSE stage.
+Mid-pipeline task in the analysis pipeline chain. llm_suggest_task runs after this.
+Runs grammar check and ATS check, saves results, then continues to llm_suggest_task.
 """
 
 import asyncio
@@ -27,13 +27,13 @@ from app.tasks.document_processing import ProgressTask
 )
 def grammar_check_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
     """
-    Grammar check + ATS check task. FINAL TASK in pipeline.
-    Per D-17: fourth task in chain. Per D-18: emits 'grammar_check' then 'complete'.
+    Grammar check + ATS check task.
+    Phase 3: no longer final — llm_suggest_task chains after this task.
 
     Reads job.result['text'] and job.nlp_result from DB.
     Writes grammar_issues and ats_checks JSONB columns.
-    Sets job.status = COMPLETE.
-    ALWAYS emits 'complete' on success (per D-17 design).
+    Sets job.status = ANALYZING (pipeline continues to llm_suggest_task).
+    Per D-19: emits 'grammar_check' stage only. llm_suggest_task emits 'complete'.
     """
 
     async def _get_job_data() -> tuple[str | None, list[dict] | None]:
@@ -61,7 +61,9 @@ def grammar_check_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             if job:
                 job.grammar_issues = grammar_issues
                 job.ats_checks = ats_checks
-                job.status = JobStatus.COMPLETE
+                job.status = (
+                    JobStatus.ANALYZING
+                )  # Pipeline continues to llm_suggest_task (Phase 3 D-19)
                 await session.commit()
 
     async def _mark_failed(error_msg: str) -> None:
@@ -110,11 +112,8 @@ def grammar_check_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
 
         asyncio.run(_save_final_results(grammar_issues, ats_checks))
 
-        # FINAL: emit 'complete' — this is the terminal SSE stage per D-18
-        self.update_progress(job_id, "complete", 100, "Analysis complete!")
-
         logger.info(
-            "Grammar check and ATS analysis complete",
+            "Grammar check and ATS analysis complete (pipeline continues to llm_suggest_task)",
             extra={
                 "job_id": job_id,
                 "grammar_issues": len(grammar_issues),
