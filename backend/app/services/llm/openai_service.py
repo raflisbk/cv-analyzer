@@ -57,8 +57,12 @@ Generate improvement suggestions for this CV."""
 
 
 def _build_system_prompt(rag_context: str) -> str:
-    context_text = "\n\n".join(rag_context) if isinstance(rag_context, list) else rag_context
-    return _SYSTEM_PROMPT_TEMPLATE.format(rag_context=context_text or "No additional context available.")
+    context_text = (
+        "\n\n".join(rag_context) if isinstance(rag_context, list) else rag_context
+    )
+    return _SYSTEM_PROMPT_TEMPLATE.format(
+        rag_context=context_text or "No additional context available."
+    )
 
 
 def _build_user_prompt(cv_text: str, sections: list[dict]) -> str:
@@ -130,6 +134,90 @@ class OpenAILLMService:
 
         return {
             "raw_json": raw_json,
+            "prompt_tokens": usage.prompt_tokens,
+            "completion_tokens": usage.completion_tokens,
+        }
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
+    def compare_cv(self, cv_text: str, jd_text: str) -> dict:
+        """
+        Compare CV against job description via gpt-4o-mini JSON mode per D-C6.
+
+        Returns dict with keys: comparison (dict), prompt_tokens (int), completion_tokens (int).
+        Uses same 3x tenacity retry as generate_suggestions().
+        Raises after 3 retries if OpenAI API unavailable (caller handles per D-C8).
+        """
+        settings = get_settings()
+        client = get_openai_client()
+
+        # Truncate inputs to stay within token limits
+        cv_truncated = cv_text[:4000]
+        jd_truncated = jd_text[:2000]
+
+        system_prompt = (
+            "You are an expert CV/resume evaluator. "
+            "Compare the provided CV against the job description and return a JSON object. "
+            "Be specific, evidence-based, and concise.\n\n"
+            "Return ONLY valid JSON matching this exact schema:\n"
+            "{\n"
+            '  "match_pct": <integer 0-100>,\n'
+            '  "matched_skills": [<string>],\n'
+            '  "missing_skills": [<string>],\n'
+            '  "matched_experience": [<string>],\n'
+            '  "missing_experience": [<string>],\n'
+            '  "overall_recommendation": <string, max 200 chars>\n'
+            "}"
+        )
+
+        user_prompt = (
+            f"Job Description:\n{jd_truncated}\n\n"
+            f"=== CANDIDATE CV ===\n{cv_truncated}\n\n"
+            "Compare the CV against the job description. "
+            "Focus on technical skills, years of experience, and key qualifications. "
+            "Return the JSON comparison."
+        )
+
+        response = client.chat.completions.create(
+            model=settings.CV_ANALYZER_LLM_MODEL,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            max_tokens=settings.CV_ANALYZER_LLM_MAX_TOKENS,
+        )
+
+        raw_json = response.choices[0].message.content
+        usage = response.usage
+        comparison_data = json.loads(raw_json)
+
+        # Increment Prometheus counters per D-16
+        llm_tokens_counter.labels(
+            provider="openai",
+            model=settings.CV_ANALYZER_LLM_MODEL,
+            type="prompt",
+        ).inc(usage.prompt_tokens)
+        llm_tokens_counter.labels(
+            provider="openai",
+            model=settings.CV_ANALYZER_LLM_MODEL,
+            type="completion",
+        ).inc(usage.completion_tokens)
+
+        logger.info(
+            "CV comparison generated",
+            extra={
+                "model": settings.CV_ANALYZER_LLM_MODEL,
+                "prompt_tokens": usage.prompt_tokens,
+                "completion_tokens": usage.completion_tokens,
+            },
+        )
+
+        return {
+            "comparison": comparison_data,
             "prompt_tokens": usage.prompt_tokens,
             "completion_tokens": usage.completion_tokens,
         }

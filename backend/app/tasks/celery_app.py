@@ -30,6 +30,7 @@ celery_app = Celery(
         "app.tasks.scoring",
         "app.tasks.grammar_check",
         "app.tasks.llm_suggest",  # Phase 3: LLM suggestion generation (D-19)
+        "app.tasks.comparison",  # Phase 4: CV vs JD comparison task per D-C1
         "app.tasks.cleanup",
     ],
 )
