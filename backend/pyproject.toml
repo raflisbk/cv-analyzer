@@ -34,8 +34,8 @@ dependencies = [
     "tenacity>=8.0",
     "pgvector>=0.3.0",
     # Linux/Railway: apt-get install -y libpango-1.0-0 libcairo2 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
-    # Windows dev: conda install -c conda-forge weasyprint
-    "weasyprint>=68.0",
+    # Windows dev: conda install -n sbk-cv-analyzer -c conda-forge weasyprint
+    "weasyprint>=60.0",
 ]
 
 [tool.setuptools]
