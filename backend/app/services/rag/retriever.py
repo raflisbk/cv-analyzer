@@ -1,0 +1,56 @@
+"""
+RAG retrieval using pgvector cosine distance per RAG-01, RAG-02, D-13.
+Retrieves top-K chunks from knowledge_chunks table by cosine similarity.
+section_type filter improves relevance for specific CV sections.
+"""
+
+from sqlalchemy import select
+
+from app.core.logging import structured_logger as logger
+from app.db.session import async_session_maker
+from app.models.knowledge_chunk import KnowledgeChunk
+
+
+async def retrieve_relevant_chunks(
+    query_embedding: list[float],
+    section_type: str | None = None,
+    limit: int = 5,
+) -> list[str]:
+    """
+    Retrieve top-K chunks by cosine similarity using pgvector <=> operator per RAG-02.
+
+    Args:
+        query_embedding: 3072-dim vector from get_rag_embedding().
+        section_type: Optional CV section filter (e.g. "experience", "skills").
+                      If provided, only chunks tagged with this section_type are queried.
+        limit: Max chunks to return (default 5 per D-13).
+
+    Returns:
+        List of content strings for injection into LLM system prompt per RAG-03.
+        Returns [] on retrieval failure (non-fatal per D-18).
+    """
+    try:
+        async with async_session_maker() as session:
+            stmt = (
+                select(KnowledgeChunk.content)
+                .order_by(KnowledgeChunk.embedding.cosine_distance(query_embedding))
+                .limit(limit)
+            )
+            if section_type:
+                stmt = stmt.where(KnowledgeChunk.section_type == section_type)
+
+            result = await session.execute(stmt)
+            chunks = [row[0] for row in result.fetchall()]
+            logger.debug(
+                "RAG chunks retrieved",
+                extra={"count": len(chunks), "section_type": section_type},
+            )
+            return chunks
+    except Exception as e:
+        # D-18: RAG failure is non-fatal — log warning and return empty list
+        # llm_suggest_task will proceed with LLM call without RAG context
+        logger.warning(
+            "RAG retrieval failed, proceeding without context",
+            extra={"error": str(e), "section_type": section_type},
+        )
+        return []

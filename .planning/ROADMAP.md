@@ -77,7 +77,7 @@ Plans:
 **Plans**: 5 plans across 5 waves
 
 Plans:
-- [ ] 03-01-PLAN.md — Infrastructure Setup: pgvector package, Docker image, migrations, config (Wave 1)
+- [x] 03-01-PLAN.md — Infrastructure Setup: pgvector package, Docker image, migrations, config (Wave 1)
 - [ ] 03-02-PLAN.md — LLM Service + RAG Service: Protocol/OpenAI impl, pgvector retrieval, seed script (Wave 2)
 - [ ] 03-03-PLAN.md — Celery Task + Grammar Chain Fix: de-finalize grammar_check, create llm_suggest_task (Wave 3)
 - [ ] 03-04-PLAN.md — API Schema Extension: SuggestionItem/Card schemas, results endpoint update (Wave 4)
