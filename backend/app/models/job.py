@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import JSON, Column, Enum, Integer, String
+from sqlalchemy import JSON, Column, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.db.base import Base
@@ -16,7 +16,8 @@ class JobStatus(str, enum.Enum):
     EXTRACTING = "extracting"
     PARSING = "parsing"
     ANALYZING = "analyzing"
-    GENERATING = "generating"   # Phase 3: LLM suggestion generation stage (D-19)
+    GENERATING = "generating"  # Phase 3: LLM suggestion generation stage (D-19)
+    COMPARING = "comparing"  # Phase 4: CV vs JD comparison task per D-C1
     COMPLETE = "complete"
     FAILED = "failed"
 
@@ -47,5 +48,21 @@ class Job(Base, TimestampMixin):
     ats_checks = Column(JSONB, nullable=True)  # list of ATS check results
 
     # Phase 3: LLM suggestions per D-20
-    suggestions = Column(JSONB, nullable=True)       # list[SuggestionCard] or None (LLM failed)
-    llm_tokens_used = Column(Integer, nullable=True)  # total tokens (prompt + completion)
+    suggestions = Column(
+        JSONB, nullable=True
+    )  # list[SuggestionCard] or None (LLM failed)
+    llm_tokens_used = Column(
+        Integer, nullable=True
+    )  # total tokens (prompt + completion)
+
+    # Phase 4: Comparison results per D-C9
+    comparison_result = Column(JSONB, nullable=True)  # LLM JSON output
+    comparison_status = Column(
+        String(20), nullable=True
+    )  # pending|comparing|complete|failed
+    jd_text = Column(Text, nullable=True)  # raw JD text
+    jd_role_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("job_roles.id"),
+        nullable=True,
+    )
