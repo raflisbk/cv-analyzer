@@ -9,7 +9,7 @@
 - [x] **Phase 1: Foundation & Document Pipeline** - Robust file upload, parsing, and async architecture ✅ **COMPLETE**
 - [x] **Phase 2: Basic Analysis Engine** - NLP-based scoring, section detection, and validation ✅ **COMPLETE**
 - [ ] **Phase 3: AI Intelligence Layer** - LLM-powered analysis, suggestions, and cost controls
-- [ ] **Phase 4: Streaming & Comparison** - Real-time UX, job comparison, and visualizations
+- [x] **Phase 4: Streaming & Comparison** - Real-time UX, job comparison, and visualizations (completed 2026-04-06)
 - [ ] **Phase 5: Advanced Features** - RAG knowledge base and polish (optional)
 
 ## Phase Details
@@ -107,7 +107,7 @@ Plans:
 - [x] 04-03-PLAN.md — Export Backend: WeasyPrint PDF endpoint + Jinja2 template + results.py extension (Wave 2)
 - [x] 04-04-PLAN.md — Frontend Types + Compare Input: types.ts + SSE stage + CompareTab + MatchScoreCard (Wave 2)
 - [x] 04-05-PLAN.md — Compare Result Components: SkillsGapDisplay + MissingQualificationsList + Skeleton + BeforeAfter (Wave 3)
-- [ ] 04-06-PLAN.md — Wiring + Export UI: Tab 5 + SuggestionCard toggle + ExportStickyBar + responsive (Wave 4)
+- [x] 04-06-PLAN.md — Wiring + Export UI: Tab 5 + SuggestionCard toggle + ExportStickyBar + responsive (Wave 4)
 
 **UI hint**: yes
 
@@ -136,7 +136,7 @@ Plans:
 | 1. Foundation & Document Pipeline | 5/5 | ✅ Complete | 2026-04-05 |
 | 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
 | 3. AI Intelligence Layer | 0/5 | Planned | - |
-| 4. Streaming & Comparison | 5/7 | In Progress|  |
+| 4. Streaming & Comparison | 7/7 | Complete   | 2026-04-06 |
 | 5. Advanced Features | 0/0 | Not started | - |
 
 ## Phase Dependencies
