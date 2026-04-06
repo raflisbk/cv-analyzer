@@ -60,6 +60,34 @@ class SuggestionCard(BaseModel):
     suggestions: list[SuggestionItem]
 
 
+class ComparisonResult(BaseModel):
+    """LLM comparison output per D-C6, COMPARE-03."""
+
+    match_pct: int  # 0-100 integer
+    matched_skills: list[str]
+    missing_skills: list[str]
+    matched_experience: list[str]
+    missing_experience: list[str]
+    overall_recommendation: str  # max 200 chars per system prompt
+
+
+class SkillGapGroup(BaseModel):
+    """Skills grouped by gap status per COMPARE-05, UX-01."""
+
+    present: list[str] = []  # matched_skills from ComparisonResult
+    missing: list[str] = []  # missing_skills from ComparisonResult
+    partial: list[str] = []  # skills partially mentioned (not in LLM output directly)
+
+
+class JobRole(BaseModel):
+    """Job role summary for dropdown per D-C5, COMPARE-02."""
+
+    id: str
+    title: str
+    seniority: str  # junior | mid | senior
+    industry: str
+
+
 class AnalysisResult(BaseModel):
     """
     Full analysis result per D-23.
@@ -85,3 +113,9 @@ class AnalysisResult(BaseModel):
     # []    = LLM succeeded but no suggestions — show "no suggestions" state
     # [...] = AI improvement suggestions organized by CV section
     suggestions: list[SuggestionCard] | None = None
+
+    # Phase 4: Comparison data per D-C9, D-C17
+    # None = comparison not yet triggered
+    # {"comparison_status": "pending"} = triggered but not complete
+    comparison_result: ComparisonResult | None = None
+    comparison_status: str | None = None  # pending|comparing|complete|failed
