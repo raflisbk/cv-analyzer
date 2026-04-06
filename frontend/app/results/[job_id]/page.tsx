@@ -23,7 +23,7 @@ export default function ResultsPage() {
   const router = useRouter();
   const jobId = params.job_id as string;
 
-  const { data, isLoading, isError, error } = useJobResults(jobId);
+  const { data, isLoading, isError, error, refetch } = useJobResults(jobId);
 
   // Fetch job roles for Compare tab dropdown per D-C5, COMPARE-02
   const { data: jobRolesData } = useQuery<JobRole[]>({
@@ -131,7 +131,11 @@ export default function ResultsPage() {
             )}
 
             {/* Tabs: Overview | Scores | Skills | Grammar | Compare per D-20, Phase 4 */}
-            <ResultsTabs result={data} jobRoles={jobRolesData ?? []} />
+            <ResultsTabs
+              result={data}
+              jobRoles={jobRolesData ?? []}
+              onCompareComplete={() => { void refetch(); }}
+            />
 
             {/* Analyze Another CV button per UI-SPEC §5 */}
             <div className="flex justify-center pt-4">

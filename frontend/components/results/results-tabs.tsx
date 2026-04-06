@@ -25,9 +25,11 @@ import { SuggestionCards } from "./suggestion-cards";
 interface ResultsTabsProps {
   result: AnalysisResult;
   jobRoles?: JobRole[];
+  /** Forwarded to CompareTab — triggers parent refetch when SSE comparison completes */
+  onCompareComplete?: () => void;
 }
 
-export function ResultsTabs({ result, jobRoles = [] }: ResultsTabsProps) {
+export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: ResultsTabsProps) {
   return (
     // overflow-x-auto for mobile tab scrolling per UI-SPEC §11
     <Tabs defaultValue="overview" className="w-full">
@@ -113,6 +115,7 @@ export function ResultsTabs({ result, jobRoles = [] }: ResultsTabsProps) {
           jobRoles={jobRoles}
           comparisonResult={result.comparison_result}
           comparisonStatus={result.comparison_status}
+          onCompareComplete={onCompareComplete}
         >
           {/* Render comparison results as CompareTab children when complete */}
           {result.comparison_status === "pending" || result.comparison_status === "comparing" ? (

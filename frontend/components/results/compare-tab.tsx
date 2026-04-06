@@ -6,11 +6,12 @@
  * Per UI-SPEC §7.1, D-C17, D-C20, UX-04, UX-05.
  */
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SSEConnection } from "@/lib/sse";
 import type { ComparisonResult, JobRole } from "@/lib/types";
 
 interface CompareTabProps {
@@ -18,6 +19,8 @@ interface CompareTabProps {
   jobRoles?: JobRole[];
   comparisonResult?: ComparisonResult | null;
   comparisonStatus?: string | null;
+  /** Called when SSE emits complete/failed — triggers parent refetch per STREAM-04 */
+  onCompareComplete?: () => void;
   /** Render slots — filled with SkillsGapDisplay etc. in 04-05/04-06 */
   children?: React.ReactNode;
 }
@@ -27,15 +30,28 @@ export function CompareTab({
   jobRoles = [],
   comparisonResult,
   comparisonStatus,
+  onCompareComplete,
   children,
 }: CompareTabProps) {
   const [jdText, setJdText] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Local SSE stage — drives loading state in real-time per STREAM-04 */
+  const [streamStage, setStreamStage] = useState<string | null>(null);
+  const sseRef = useRef<SSEConnection | null>(null);
+
+  // Cleanup SSE on unmount
+  useEffect(() => {
+    return () => {
+      sseRef.current?.close();
+    };
+  }, []);
 
   const isLoading =
-    comparisonStatus === "pending" || comparisonStatus === "comparing";
+    streamStage === "comparing_job" ||
+    comparisonStatus === "pending" ||
+    comparisonStatus === "comparing";
   const isComplete = comparisonStatus === "complete" && comparisonResult !== null;
   const isFailed = comparisonStatus === "failed";
 
@@ -61,7 +77,31 @@ export function CompareTab({
       if (!response.ok) {
         throw new Error("Comparison request failed");
       }
-      // SSE stream (already connected) will emit comparing_job → complete stages
+
+      // Open fresh SSE connection to stream comparison progress per STREAM-04
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+      const connection = new SSEConnection(
+        `${apiUrl}/stream/${jobId}`,
+        (data) => {
+          if (data.stage) {
+            setStreamStage(data.stage);
+            if (data.stage === "complete" || data.stage === "failed") {
+              connection.close();
+              sseRef.current = null;
+              setStreamStage(null);
+              onCompareComplete?.();
+            }
+          }
+        },
+        () => {
+          // SSE error — fall back to parent polling
+          setStreamStage(null);
+          onCompareComplete?.();
+        }
+      );
+      connection.connect();
+      sseRef.current = connection;
     } catch {
       setError(
         "We couldn't compare your CV right now. Check your connection and try again."
