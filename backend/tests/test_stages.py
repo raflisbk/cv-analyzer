@@ -17,9 +17,9 @@ def test_comparing_stage_name_convention():
     from app.tasks import comparison  # noqa: PLC0415
 
     # Verify module exists and exposes compare_cv_task
-    assert hasattr(comparison, "compare_cv_task"), (
-        "compare_cv_task not found in app.tasks.comparison"
-    )
+    assert hasattr(
+        comparison, "compare_cv_task"
+    ), "compare_cv_task not found in app.tasks.comparison"
 
 
 def test_comparing_stage_is_valid_sse_stage():
