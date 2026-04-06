@@ -17,6 +17,8 @@ from app.schemas.analysis import (
     GrammarIssue,
     ScoreResult,
     SectionResult,
+    SuggestionCard,
+    SuggestionItem,
 )
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
@@ -110,6 +112,31 @@ async def get_job_results(
                     )
                 )
 
+        # Build SuggestionCard list from suggestions JSONB column (Phase 3 D-20)
+        # None  = LLM failed (ERROR-02) → suggestions=null in response (frontend shows "unavailable")
+        # []    = LLM succeeded, nothing to suggest → suggestions=[] (frontend shows "no suggestions")
+        # [...] = Populated suggestions → suggestions=[...] (frontend renders cards)
+        suggestions: list[SuggestionCard] | None = None
+        if job.suggestions is not None:
+            try:
+                suggestions = [
+                    SuggestionCard(
+                        section=card.get("section", ""),
+                        suggestions=[
+                            SuggestionItem(
+                                priority=item.get("priority", "quick_win"),
+                                text=item.get("text", ""),
+                                type=item.get("type", "action_verb"),
+                            )
+                            for item in card.get("suggestions", [])
+                        ],
+                    )
+                    for card in job.suggestions
+                ]
+            except Exception:
+                # Malformed JSONB — treat as LLM failed (return null, not 500 error)
+                suggestions = None
+
         analysis_result = AnalysisResult(
             job_id=str(job.id),
             status=job.status,
@@ -118,6 +145,7 @@ async def get_job_results(
             skills=skills,
             grammar_issues=grammar_issues,
             ats_checks=ats_checks,
+            suggestions=suggestions,  # Phase 3: None=LLM failed, []=empty, [...]=results
         )
 
         return WrappedResponse(
