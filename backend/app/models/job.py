@@ -16,6 +16,7 @@ class JobStatus(str, enum.Enum):
     EXTRACTING = "extracting"
     PARSING = "parsing"
     ANALYZING = "analyzing"
+    GENERATING = "generating"   # Phase 3: LLM suggestion generation stage (D-19)
     COMPLETE = "complete"
     FAILED = "failed"
 
@@ -44,3 +45,7 @@ class Job(Base, TimestampMixin):
     scores = Column(JSONB, nullable=True)  # 5 score values (overall + 4 dims)
     grammar_issues = Column(JSONB, nullable=True)  # list of grammar/spell issues
     ats_checks = Column(JSONB, nullable=True)  # list of ATS check results
+
+    # Phase 3: LLM suggestions per D-20
+    suggestions = Column(JSONB, nullable=True)       # list[SuggestionCard] or None (LLM failed)
+    llm_tokens_used = Column(Integer, nullable=True)  # total tokens (prompt + completion)

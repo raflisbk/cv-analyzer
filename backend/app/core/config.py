@@ -36,6 +36,13 @@ class Settings(BaseSettings):
     # Analysis pipeline rate limit per D-15
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
+    # Phase 3: LLM + RAG settings (per D-02, D-11, D-14)
+    CV_ANALYZER_LLM_MODEL: str = "gpt-4o-mini"
+    CV_ANALYZER_LLM_MAX_TOKENS: int = 1500
+    CV_ANALYZER_LLM_CACHE_TTL: int = 86400  # 24h in seconds (D-14)
+    CV_ANALYZER_RAG_TOP_K: int = 5  # Top-K retrieval (D-13)
+    CV_ANALYZER_RAG_EMBEDDING_MODEL: str = "text-embedding-3-large"  # D-11
+
     # CORS
     CV_ANALYZER_CORS_ORIGINS: str = "*"  # CSV string, "*" for dev (D-50)
 
