@@ -6,8 +6,8 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Document Pipeline** - Robust file upload, parsing, and async architecture ✅ **COMPLETE**
-- [ ] **Phase 2: Basic Analysis Engine** - NLP-based scoring, section detection, and validation
+- [x] **Phase 1: Foundation & Document Pipeline** - Robust file upload, parsing, and async architecture ✅ **COMPLETE**
+- [x] **Phase 2: Basic Analysis Engine** - NLP-based scoring, section detection, and validation ✅ **COMPLETE**
 - [ ] **Phase 3: AI Intelligence Layer** - LLM-powered analysis, suggestions, and cost controls
 - [ ] **Phase 4: Streaming & Comparison** - Real-time UX, job comparison, and visualizations
 - [ ] **Phase 5: Advanced Features** - RAG knowledge base and polish (optional)
@@ -74,7 +74,14 @@ Plans:
 4. System tracks token usage and implements cost controls with rate limits
 5. System retrieves CV best practices from vector knowledge base and integrates into LLM prompts
 
-**Plans**: TBD
+**Plans**: 5 plans across 5 waves
+
+Plans:
+- [ ] 03-01-PLAN.md — Infrastructure Setup: pgvector package, Docker image, migrations, config (Wave 1)
+- [ ] 03-02-PLAN.md — LLM Service + RAG Service: Protocol/OpenAI impl, pgvector retrieval, seed script (Wave 2)
+- [ ] 03-03-PLAN.md — Celery Task + Grammar Chain Fix: de-finalize grammar_check, create llm_suggest_task (Wave 3)
+- [ ] 03-04-PLAN.md — API Schema Extension: SuggestionItem/Card schemas, results endpoint update (Wave 4)
+- [ ] 03-05-PLAN.md — Frontend Suggestion Components: types, processing stages, suggestion cards UI (Wave 5)
 
 ### Phase 4: Streaming & Comparison
 
@@ -117,9 +124,9 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Document Pipeline | 0/0 | Not started | - |
-| 2. Basic Analysis Engine | 0/0 | Not started | - |
-| 3. AI Intelligence Layer | 0/0 | Not started | - |
+| 1. Foundation & Document Pipeline | 5/5 | ✅ Complete | 2026-04-05 |
+| 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
+| 3. AI Intelligence Layer | 0/5 | Planned | - |
 | 4. Streaming & Comparison | 0/0 | Not started | - |
 | 5. Advanced Features | 0/0 | Not started | - |
 

@@ -2,21 +2,160 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
-status: Phase 01 Complete — Ready for Phase 02
-last_updated: "2026-04-05T13:04:00.000Z"
+current_phase: 03
+status: Phase 02 Complete — Ready for Phase 03
+last_updated: "2026-04-06T04:50:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 2
+  total_plans: 11
+  completed_plans: 11
 ---
 
 # Project State: CV Analyzer
 
 **Created:** 2026-04-03
-**Current Phase:** 02
-**Current Focus:** Phase 01 COMPLETE ✅ — Ready to plan Phase 02 (Basic Analysis Engine)
+**Current Phase:** 03
+**Current Focus:** Phase 02 COMPLETE ✅ — Ready to plan Phase 03 (AI Intelligence Layer)
+
+## Project Reference
+
+**Core Value:** Demonstrate AI Engineer mastery through production-ready CV analysis
+
+**What This Is:**
+A web-based CV/resume analyzer application that provides multi-dimensional scoring, improvement suggestions, and job role comparison. Built as a portfolio project to demonstrate AI Engineer mastery through production-ready architecture and modern AI capabilities.
+
+**Target Audience:**
+
+- Primary: Recruiters and hiring managers evaluating AI Engineer candidates
+- Secondary: Job seekers wanting to improve their CVs
+
+**AI Capabilities to Showcase:**
+
+1. LLM Integration — Semantic understanding, reasoning, prompt engineering, structured output
+2. NLP Techniques — Text extraction, skill recognition, entity matching, keyword analysis
+3. RAG Architecture — Vector embeddings, semantic search, knowledge retrieval
+4. AI Engineering Patterns — Async processing, streaming responses, evaluation metrics
+
+## Current Position
+
+Phase: 02 (basic-analysis-engine) — **COMPLETE** ✅
+**Phase:** 2 - Basic Analysis Engine
+**All Plans Complete:** 02-01 ✅ | 02-02 ✅ | 02-03 ✅ | 02-04 ✅ | 02-05 ✅ | 02-06 ✅
+**UAT:** 10/10 tests passed ✅
+
+**Progress Bar:** ▰▰▰▰▰▰▰▰▰▰ 100% (6/6 plans complete in Phase 2)
+
+**Phase 2 Achievements:**
+
+- ✅ Section detection: header, summary, experience, education, skills, certifications
+- ✅ Skill extraction: curated whitelist (~150 tech skills), n-gram sliding window, no ESCO noise
+- ✅ CV scoring: rule-based fallback (action verbs, quantified achievements, section coverage)
+- ✅ Grammar checking: LanguageTool integration with graceful Java degradation
+- ✅ ATS checks: formatting validation, section presence, keyword detection
+- ✅ Results page: 4 tabs (Overview, Scores, Skills, Grammar) with animated gauge charts
+- ✅ Real-time SSE stages: uploading → extracting → analyzing → complete
+- ✅ Rate limiting: slowapi IP-based, 5 uploads/hour
+- ✅ Windows fixes: Celery --pool=solo, SelectorEventLoop, react-dropzone 15
+
+## Performance Metrics
+
+**Quality Metrics:**
+
+- Requirements validated: 17/17 Phase 2 requirements
+- All 10 UAT tests passed: 2026-04-06
+- Known limitations: scoring is rule-based (Phase 3 will add LLM/embedding scoring)
+
+## Accumulated Context
+
+### Key Decisions
+
+| Decision | Rationale | Outcome |
+| -------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
+| FastAPI backend | Python async framework, ideal for AI/ML apps | ✅ Implemented |
+| Next.js frontend | Modern React framework, App Router, server components | ✅ Implemented |
+| shadcn/ui UI library | Popular 2025, Tailwind-based, impressive for portfolio | ✅ Implemented |
+| PostgreSQL + pgvector | Single DB for relational + vector storage, production-ready | ✅ Schema ready |
+| Celery --pool=solo on Windows | prefork uses spawn which crashes on Windows | ✅ Runtime flag |
+| asyncio.WindowsSelectorEventLoopPolicy | psycopg requires SelectorEventLoop | ✅ Set in celery_app.py |
+| Curated skill whitelist over ESCO | ESCO 14K entries span all industries → false positives | ✅ ~150 curated skills |
+| Rule-based scoring fallback | No OpenAI key in Phase 2; Phase 3 adds LLM scoring | ✅ scoring_method field |
+| react-dropzone 15.0.0 | v14 incompatible with React 19 event delegation | ✅ Upgraded |
+
+### Architecture Approach
+
+**Major Components:**
+
+1. **Document Parser** ✅ — Extract text from PDF/DOC, handle OCR, normalize formatting
+2. **Analysis Orchestrator** ✅ — Coordinate async pipeline stages, manage progress streaming
+3. **NLP Service** ✅ — Skill extraction, section detection, entity recognition
+4. **Scoring Service** ✅ — Rule-based multi-dimensional scoring (Phase 3: LLM scoring)
+5. **Grammar Service** ✅ — LanguageTool integration with graceful degradation
+6. **LLM Service** — Semantic analysis, scoring, suggestion generation (Phase 3)
+7. **Vector Store** — Semantic search for RAG retrieval (Phase 3)
+
+### Active Todos
+
+**Immediate:**
+
+- Plan and execute Phase 03 (AI Intelligence Layer)
+  - LLM integration (Claude/OpenAI) for semantic scoring
+  - Structured output with validation
+  - Cost controls (token tracking, rate limits, caching)
+  - RAG with pgvector for best practices retrieval
+
+### Blockers
+
+- OpenAI/Claude API key needed for Phase 3 LLM integration
+
+### Session Continuity
+
+**Last Session:** 2026-04-06T04:50:00Z
+**Phase 2 completed:** 2026-04-06
+
+**Next Actions:**
+
+1. Run `/gsd-discuss-phase 3` to gather Phase 3 context
+2. Run `/gsd-plan-phase 3` to create execution plans
+3. Run `/gsd-execute-phase 3` to implement AI Intelligence Layer
+
+## Technical Stack
+
+**Backend:**
+
+- ✅ FastAPI 0.135.2 + Uvicorn 0.42.0
+- ✅ SQLAlchemy 2.0.43 + psycopg 3.3.3 (async PostgreSQL)
+- ✅ Celery 5.6.3 + Redis 7.4.0 (async job queue)
+- ✅ spaCy en_core_web_lg (NLP pipeline)
+- ✅ PyMuPDF 1.27.2 + python-docx 1.2.0 (document parsing)
+- ✅ Loguru 0.7.3 (structured JSON logging)
+- ✅ slowapi (rate limiting)
+- ⏳ Claude/OpenAI APIs (Phase 3)
+- ⏳ pgvector (Phase 3)
+
+**Frontend:**
+
+- ✅ Next.js 15 + React 19
+- ✅ shadcn/ui + Tailwind CSS
+- ✅ react-dropzone 15.0.0
+- ✅ SSE hooks with auto-reconnect
+- ✅ Animated gauge charts (@visx)
+- ✅ Results page with 4 tabs
+
+**Infrastructure:**
+
+- ✅ Docker Compose (PostgreSQL + Redis local dev)
+- ⏳ Cloudflare R2 (Phase 3+)
+- ⏳ Vercel + Railway deployment (Phase 5)
+
+## Deployment Targets
+
+**Production URL:** TBD (after Phase 4 completion)
+**Portfolio Demo:** Live production URL showcasing all AI capabilities
+
+---
+
+*State updated: 2026-04-06 — Phase 2 complete*
 
 ## Project Reference
 
