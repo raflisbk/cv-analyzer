@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 2cm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #0f172a;
+    line-height: 1.5;
+  }
+  h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 18px; font-weight: 600; margin-top: 24px; margin-bottom: 12px;
+       border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; }
+  h3 { font-size: 15px; font-weight: 600; margin-top: 16px; margin-bottom: 8px; }
+  .meta { color: #64748b; font-size: 12px; margin-bottom: 24px; }
+  .score-overview {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-bottom: 8px;
+  }
+  .score-box {
+    border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 12px 16px; min-width: 120px; text-align: center;
+  }
+  .score-box .num { font-size: 28px; font-weight: 700; color: #3b82f6; }
+  .score-box .label { font-size: 12px; color: #64748b; }
+  .badge {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 4px; font-size: 12px; margin: 2px;
+  }
+  .badge-skill { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-pass { background: #dcfce7; color: #166534; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-fail { background: #fee2e2; color: #991b1b; }
+  .section-card {
+    border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 16px; margin-bottom: 12px;
+  }
+  .suggestion-item { margin-bottom: 12px; padding-left: 12px;
+                     border-left: 3px solid #3b82f6; }
+  .suggestion-section { font-weight: 600; margin-bottom: 4px; }
+  .ats-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .grammar-item { margin-bottom: 8px; }
+  .grammar-original { color: #ef4444; }
+  .grammar-suggestion { color: #22c55e; }
+  .match-score-big {
+    font-size: 48px; font-weight: 700;
+    text-align: center; margin: 16px 0 4px;
+  }
+  .match-label { text-align: center; font-size: 14px; color: #64748b; margin-bottom: 16px; }
+  .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e2e8f0;
+            font-size: 11px; color: #94a3b8; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<h1>CV Analysis Report</h1>
+<p class="meta">
+  File: {{ filename }} &nbsp;|&nbsp;
+  Generated: {{ generated_at }} &nbsp;|&nbsp;
+  Job ID: {{ job_id[:8] }}
+</p>
+
+<!-- Overall Score -->
+{% if scores %}
+<h2>Scores</h2>
+<div class="score-overview">
+  <div class="score-box">
+    <div class="num">{{ scores.overall if scores.overall is defined else scores['overall'] }}</div>
+    <div class="label">Overall</div>
+  </div>
+  <div class="score-box">
+    <div class="num">{{ scores.clarity if scores.clarity is defined else scores['clarity'] }}</div>
+    <div class="label">Clarity</div>
+  </div>
+  <div class="score-box">
+    <div class="num">{{ scores.impact if scores.impact is defined else scores['impact'] }}</div>
+    <div class="label">Impact</div>
+  </div>
+  <div class="score-box">
+    <div class="num">{{ scores.completeness if scores.completeness is defined else scores['completeness'] }}</div>
+    <div class="label">Completeness</div>
+  </div>
+  <div class="score-box">
+    <div class="num">{{ scores.relevance if scores.relevance is defined else scores['relevance'] }}</div>
+    <div class="label">Relevance</div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Skills -->
+{% if skills %}
+<h2>Extracted Skills</h2>
+<div>
+  {% for skill in skills %}
+  <span class="badge badge-skill">{{ skill }}</span>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ATS Checks -->
+{% if ats_checks %}
+<h2>ATS Compatibility</h2>
+{% for check in ats_checks %}
+<div class="ats-row">
+  {% set status = check.status if check.status is defined else check['status'] %}
+  {% set check_name = check.check if check.check is defined else check['check'] %}
+  {% set detail = check.detail if check.detail is defined else check['detail'] %}
+  <span class="badge badge-{{ status }}">{{ status | upper }}</span>
+  <div>
+    <strong>{{ check_name }}</strong>
+    {% if detail %}<br><span style="color:#64748b;font-size:12px;">{{ detail }}</span>{% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Grammar Issues -->
+{% if grammar_issues %}
+<h2>Grammar &amp; Spelling</h2>
+{% for issue in grammar_issues[:20] %}
+<div class="grammar-item">
+  {% set text = issue.text if issue.text is defined else issue['text'] %}
+  {% set suggestion = issue.suggestion if issue.suggestion is defined else issue['suggestion'] %}
+  {% set rule = issue.rule if issue.rule is defined else issue['rule'] %}
+  <span class="grammar-original">"{{ text }}"</span>
+  &rarr; <span class="grammar-suggestion">{{ suggestion }}</span>
+  <span style="color:#94a3b8;font-size:11px;">({{ rule }})</span>
+</div>
+{% endfor %}
+{% if grammar_issues | length > 20 %}
+<p style="color:#64748b;font-size:12px;">... and {{ grammar_issues | length - 20 }} more issues</p>
+{% endif %}
+{% endif %}
+
+<!-- AI Suggestions -->
+{% if suggestions %}
+<h2>AI Improvement Suggestions</h2>
+{% for card in suggestions %}
+<div class="section-card">
+  {% set section = card.section if card.section is defined else card['section'] %}
+  {% set card_suggestions = card.suggestions if card.suggestions is defined else card['suggestions'] %}
+  <div class="suggestion-section">{{ section }}</div>
+  {% for item in card_suggestions %}
+  {% set priority = item.priority if item.priority is defined else item['priority'] %}
+  {% set item_text = item.text if item.text is defined else item['text'] %}
+  <div class="suggestion-item">
+    <span class="badge {% if priority == 'high_impact' %}badge-fail{% else %}badge-warn{% endif %}">
+      {{ priority | replace('_', ' ') | title }}
+    </span>
+    {{ item_text }}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Comparison Results -->
+{% if comparison_result and comparison_status == 'complete' %}
+<h2>Job Match Analysis</h2>
+{% set match_pct = comparison_result.match_pct if comparison_result.match_pct is defined else comparison_result['match_pct'] %}
+<div class="match-score-big"
+     style="color: {% if match_pct >= 80 %}#22c55e
+                    {% elif match_pct >= 60 %}#3b82f6
+                    {% elif match_pct >= 40 %}#f59e0b
+                    {% else %}#ef4444{% endif %};">
+  {{ match_pct }}%
+</div>
+<div class="match-label">
+  {% if match_pct >= 85 %}Excellent match
+  {% elif match_pct >= 70 %}Good match
+  {% elif match_pct >= 50 %}Fair match
+  {% else %}Low match{% endif %}
+</div>
+
+{% set matched_skills = comparison_result.matched_skills if comparison_result.matched_skills is defined else comparison_result['matched_skills'] %}
+{% set missing_skills = comparison_result.missing_skills if comparison_result.missing_skills is defined else comparison_result['missing_skills'] %}
+{% set missing_experience = comparison_result.missing_experience if comparison_result.missing_experience is defined else comparison_result['missing_experience'] %}
+{% set overall_recommendation = comparison_result.overall_recommendation if comparison_result.overall_recommendation is defined else comparison_result['overall_recommendation'] %}
+
+<h3>Matched Skills</h3>
+<div>
+  {% for skill in matched_skills %}
+  <span class="badge badge-green">{{ skill }}</span>
+  {% endfor %}
+</div>
+
+<h3>Missing Skills</h3>
+<div>
+  {% for skill in missing_skills %}
+  <span class="badge badge-red">{{ skill }}</span>
+  {% endfor %}
+</div>
+
+{% if missing_experience %}
+<h3>Experience Gaps</h3>
+{% for exp in missing_experience %}
+<div class="grammar-item">&#8226; {{ exp }}</div>
+{% endfor %}
+{% endif %}
+
+{% if overall_recommendation %}
+<h3>Recommendation</h3>
+<p>{{ overall_recommendation }}</p>
+{% endif %}
+{% endif %}
+
+<div class="footer">
+  Generated by CV Analyzer &mdash; AI-powered resume analysis
+</div>
+
+</body>
+</html>
