@@ -15,6 +15,7 @@ const stages = [
   { id: "uploading", label: "Uploading" },
   { id: "extracting", label: "Extracting text" },
   { id: "analyzing", label: "Analyzing content" },
+  { id: "generating", label: "Generating suggestions" }, // Phase 3 (D-19)
   { id: "complete", label: "Complete" },
 ];
 
@@ -27,6 +28,8 @@ const STAGE_MAP: Record<string, string> = {
   analyzing_sections: "analyzing",
   extracting_skills: "analyzing",
   scoring: "analyzing",
+  grammar_check: "analyzing", // Phase 2: was missing from STAGE_MAP
+  generating_suggestions: "generating", // Phase 3: LLM suggestion stage (D-19)
   complete: "complete",
 };
 

@@ -15,6 +15,7 @@ import { AtsChecklist } from "./ats-checklist";
 import { GrammarIssuesList } from "./grammar-issues-list";
 import { ScoreDashboard } from "./score-dashboard";
 import { SkillsList } from "./skills-list";
+import { SuggestionCards } from "./suggestion-cards";
 
 interface ResultsTabsProps {
   result: AnalysisResult;
@@ -56,10 +57,15 @@ export function ResultsTabs({ result }: ResultsTabsProps) {
         </TabsTrigger>
       </TabsList>
 
-      {/* Overview tab — ATS Checklist per UI-SPEC §7 C1 */}
+      {/* Overview tab — ATS Checklist + AI Suggestions per UI-SPEC §7 C1 + Phase 3 */}
       <TabsContent value="overview" className="p-6 bg-secondary rounded-b-lg">
         <h2 className="text-xl font-semibold mb-4">ATS Compatibility Check</h2>
         <AtsChecklist checks={result.ats_checks} />
+        {/* Phase 3: AI suggestions below ATS checklist (D-05) */}
+        <SuggestionCards
+          cards={result.suggestions}
+          isLoading={result.status === "generating"}
+        />
       </TabsContent>
 
       {/* Scores tab — 4 gauge charts per UI-SPEC §7 C2 */}

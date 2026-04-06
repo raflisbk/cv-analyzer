@@ -78,6 +78,24 @@ export interface AtsCheck {
   detail?: string;
 }
 
+// ============================================================
+// Phase 3: AI Suggestion types (per LLM-01..04, D-06, D-08)
+// ============================================================
+
+export type SuggestionPriority = "high_impact" | "quick_win";
+export type SuggestionType = "action_verb" | "impact_metric" | "missing_section";
+
+export interface SuggestionItem {
+  priority: SuggestionPriority;
+  text: string;
+  type: SuggestionType;
+}
+
+export interface SuggestionCard {
+  section: string; // e.g. "Experience", "Skills", "Summary"
+  suggestions: SuggestionItem[];
+}
+
 export interface AnalysisResult {
   job_id: string;
   status:
@@ -86,6 +104,7 @@ export interface AnalysisResult {
     | "extracting"
     | "parsing"
     | "analyzing"
+    | "generating" // Phase 3: LLM suggestion generation stage (D-19)
     | "complete"
     | "failed";
   scores: ScoreResult | null;
@@ -93,4 +112,10 @@ export interface AnalysisResult {
   skills: string[];
   grammar_issues: GrammarIssue[];
   ats_checks: AtsCheck[];
+  // Phase 3: AI suggestions (D-20)
+  // undefined = pre-Phase 3 job (field absent in DB) → render nothing
+  // null      = LLM failed (ERROR-02, D-17) → render "unavailable" state
+  // []        = LLM succeeded, nothing to suggest → render "no suggestions" state
+  // [...]     = populated suggestions → render suggestion cards
+  suggestions?: SuggestionCard[] | null;
 }
