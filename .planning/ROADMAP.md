@@ -98,7 +98,16 @@ Plans:
 4. User can download analysis results as PDF and copy suggestions to clipboard
 5. System handles connection failures gracefully, implements responsive design, and logs errors without exposing sensitive data
 
-**Plans**: TBD
+**Plans**: 7 plans across 5 waves (0–4)
+
+Plans:
+- [ ] 04-00-PLAN.md — Setup: WeasyPrint install, shadcn textarea, 5 test stubs (Wave 0)
+- [ ] 04-01-PLAN.md — DB Foundation: Alembic migration + JobRole model + schemas + mask_pii (Wave 1)
+- [ ] 04-02-PLAN.md — Comparison Backend: compare_cv_task + GET /job-roles + POST /jobs/{id}/compare (Wave 2)
+- [ ] 04-03-PLAN.md — Export Backend: WeasyPrint PDF endpoint + Jinja2 template + results.py extension (Wave 2)
+- [ ] 04-04-PLAN.md — Frontend Types + Compare Input: types.ts + SSE stage + CompareTab + MatchScoreCard (Wave 2)
+- [ ] 04-05-PLAN.md — Compare Result Components: SkillsGapDisplay + MissingQualificationsList + Skeleton + BeforeAfter (Wave 3)
+- [ ] 04-06-PLAN.md — Wiring + Export UI: Tab 5 + SuggestionCard toggle + ExportStickyBar + responsive (Wave 4)
 
 **UI hint**: yes
 
