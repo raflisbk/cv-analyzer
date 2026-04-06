@@ -103,8 +103,8 @@ Plans:
 Plans:
 - [x] 04-00-PLAN.md — Setup: WeasyPrint install, shadcn textarea, 5 test stubs (Wave 0)
 - [x] 04-01-PLAN.md — DB Foundation: Alembic migration + JobRole model + schemas + mask_pii (Wave 1)
-- [ ] 04-02-PLAN.md — Comparison Backend: compare_cv_task + GET /job-roles + POST /jobs/{id}/compare (Wave 2)
-- [ ] 04-03-PLAN.md — Export Backend: WeasyPrint PDF endpoint + Jinja2 template + results.py extension (Wave 2)
+- [x] 04-02-PLAN.md — Comparison Backend: compare_cv_task + GET /job-roles + POST /jobs/{id}/compare (Wave 2)
+- [x] 04-03-PLAN.md — Export Backend: WeasyPrint PDF endpoint + Jinja2 template + results.py extension (Wave 2)
 - [x] 04-04-PLAN.md — Frontend Types + Compare Input: types.ts + SSE stage + CompareTab + MatchScoreCard (Wave 2)
 - [ ] 04-05-PLAN.md — Compare Result Components: SkillsGapDisplay + MissingQualificationsList + Skeleton + BeforeAfter (Wave 3)
 - [ ] 04-06-PLAN.md — Wiring + Export UI: Tab 5 + SuggestionCard toggle + ExportStickyBar + responsive (Wave 4)
@@ -136,7 +136,7 @@ Plans:
 | 1. Foundation & Document Pipeline | 5/5 | ✅ Complete | 2026-04-05 |
 | 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
 | 3. AI Intelligence Layer | 0/5 | Planned | - |
-| 4. Streaming & Comparison | 3/7 | In Progress|  |
+| 4. Streaming & Comparison | 5/7 | In Progress|  |
 | 5. Advanced Features | 0/0 | Not started | - |
 
 ## Phase Dependencies
