@@ -5,6 +5,9 @@
 # ESCO data (large file, download separately)
 backend/data/esco_skills.csv
 
+# Generated pip/conda output files
+[0-9]*.[0-9]*
+
 # Test/sample CV files at root
 *.pdf
 *.doc
