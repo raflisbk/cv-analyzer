@@ -14,6 +14,7 @@ import type {
   SuggestionPriority,
   SuggestionType,
 } from "@/lib/types";
+import { SuggestionBeforeAfter } from "./suggestion-before-after";
 
 function getPriorityBadgeClasses(priority: SuggestionPriority): string {
   if (priority === "high_impact") {
@@ -64,7 +65,14 @@ export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
       <h3 className="text-base font-semibold text-foreground mb-3">{card.section}</h3>
       <div className="space-y-3">
         {card.suggestions.map((item, i) => (
-          <SuggestionItemRow key={i} item={item} />
+          <div key={i}>
+            <SuggestionItemRow item={item} />
+            {/* Before/after toggle per D-C19, UX-02 */}
+            <SuggestionBeforeAfter
+              beforeText={item.text}
+              id={`${card.section}-${i}`}
+            />
+          </div>
         ))}
       </div>
     </Card>

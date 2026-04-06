@@ -3,25 +3,31 @@
  * Uses shadcn Tabs (Radix Tabs wrapper).
  */
 
-import { BarChart3, LayoutDashboard, SpellCheck, Sparkles } from "lucide-react";
+import { ArrowLeftRight, BarChart3, LayoutDashboard, SpellCheck, Sparkles } from "lucide-react";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import type { AnalysisResult } from "@/lib/types";
+import type { AnalysisResult, JobRole } from "@/lib/types";
 import { AtsChecklist } from "./ats-checklist";
+import { CompareTab } from "./compare-tab";
+import { ComparisonSkeleton } from "./comparison-skeleton";
 import { GrammarIssuesList } from "./grammar-issues-list";
+import { MatchScoreCard } from "./match-score-card";
+import { MissingQualificationsList } from "./missing-qualifications-list";
 import { ScoreDashboard } from "./score-dashboard";
+import { SkillsGapDisplay } from "./skills-gap-display";
 import { SkillsList } from "./skills-list";
 import { SuggestionCards } from "./suggestion-cards";
 
 interface ResultsTabsProps {
   result: AnalysisResult;
+  jobRoles?: JobRole[];
 }
 
-export function ResultsTabs({ result }: ResultsTabsProps) {
+export function ResultsTabs({ result, jobRoles = [] }: ResultsTabsProps) {
   return (
     // overflow-x-auto for mobile tab scrolling per UI-SPEC §11
     <Tabs defaultValue="overview" className="w-full">
@@ -54,6 +60,14 @@ export function ResultsTabs({ result }: ResultsTabsProps) {
         >
           <SpellCheck className="h-4 w-4" />
           Grammar
+        </TabsTrigger>
+        {/* Tab 5: Compare — Phase 4 per D-C17 */}
+        <TabsTrigger
+          value="compare"
+          className="min-h-[44px] flex items-center gap-2"
+        >
+          <ArrowLeftRight className="h-4 w-4" />
+          Compare
         </TabsTrigger>
       </TabsList>
 
@@ -90,6 +104,27 @@ export function ResultsTabs({ result }: ResultsTabsProps) {
       <TabsContent value="grammar" className="p-6 bg-secondary rounded-b-lg">
         <h2 className="text-xl font-semibold mb-4">Grammar &amp; Spelling</h2>
         <GrammarIssuesList issues={result.grammar_issues} />
+      </TabsContent>
+
+      {/* Compare tab — Phase 4 per D-C17 */}
+      <TabsContent value="compare" className="p-6 bg-secondary rounded-b-lg">
+        <CompareTab
+          jobId={result.job_id}
+          jobRoles={jobRoles}
+          comparisonResult={result.comparison_result}
+          comparisonStatus={result.comparison_status}
+        >
+          {/* Render comparison results as CompareTab children when complete */}
+          {result.comparison_status === "pending" || result.comparison_status === "comparing" ? (
+            <ComparisonSkeleton />
+          ) : result.comparison_status === "complete" && result.comparison_result ? (
+            <div className="space-y-6">
+              <MatchScoreCard result={result.comparison_result} />
+              <SkillsGapDisplay result={result.comparison_result} />
+              <MissingQualificationsList result={result.comparison_result} />
+            </div>
+          ) : null}
+        </CompareTab>
       </TabsContent>
     </Tabs>
   );
