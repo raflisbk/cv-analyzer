@@ -65,12 +65,12 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **COMPARE-03**: System calculates match percentage between CV and job description
 - [x] **COMPARE-04**: System performs role-specific scoring based on job requirements
 - [x] **COMPARE-05**: System displays skills gap analysis (present vs required skills)
-- [ ] **COMPARE-06**: System highlights missing qualifications and experience gaps
+- [x] **COMPARE-06**: System highlights missing qualifications and experience gaps
 
 ### Visualization & UX
 
-- [ ] **UX-01**: System displays skills gap heatmap visualization
-- [ ] **UX-02**: System provides before/after comparison view for suggestions
+- [x] **UX-01**: System displays skills gap heatmap visualization
+- [x] **UX-02**: System provides before/after comparison view for suggestions
 - [ ] **UX-03**: System implements responsive design for mobile/desktop
 - [x] **UX-04**: System shows loading states during async processing
 - [x] **UX-05**: System uses shadcn/ui components with Tailwind styling
@@ -184,9 +184,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMPARE-03 | System calculates match percentage between CV and job description | Complete |
 | COMPARE-04 | System performs role-specific scoring based on job requirements | Complete |
 | COMPARE-05 | System displays skills gap analysis (present vs required skills) | Complete |
-| COMPARE-06 | System highlights missing qualifications and experience gaps | Pending |
-| UX-01 | System displays skills gap heatmap visualization | Pending |
-| UX-02 | System provides before/after comparison view for suggestions | Pending |
+| COMPARE-06 | System highlights missing qualifications and experience gaps | Complete |
+| UX-01 | System displays skills gap heatmap visualization | Complete |
+| UX-02 | System provides before/after comparison view for suggestions | Complete |
 | UX-03 | System implements responsive design for mobile/desktop | Pending |
 | UX-04 | System shows loading states during async processing | Complete |
 | UX-05 | System uses shadcn/ui components with Tailwind styling | Complete |
