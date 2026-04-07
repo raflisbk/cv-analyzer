@@ -125,7 +125,14 @@ Plans:
 3. Application is deployed to production URL for portfolio sharing
 4. Code quality and architecture demonstrate deep understanding of full-stack AI engineering
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 05-00-PLAN.md — Deployment Infrastructure: Dockerfile, docker-entrypoint.sh, .env.example, .dockerignore (Wave 0)
+- [ ] 05-01-PLAN.md — RAG Knowledge Base: 11 curated .txt files + seed_knowledge.py rewrite (Wave 1)
+- [ ] 05-02-PLAN.md — Sample CV Demo: Alex Chen PDF + "Try with sample CV →" button (Wave 1)
+- [ ] 05-03-PLAN.md — Reliability & Docs: ERROR-02/05 verification tests + DEPLOYMENT.md guide (Wave 2)
+- [ ] 05-04-PLAN.md — Production Deploy Checklist: Vercel + Railway + R2 + seed knowledge base (Wave 3, human-guided)
 
 **Note**: This phase is optional polish if Phases 1-4 are complete and robust. All v1 requirements are covered in Phases 1-4.
 
@@ -137,7 +144,7 @@ Plans:
 | 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
 | 3. AI Intelligence Layer | 0/5 | Planned | - |
 | 4. Streaming & Comparison | 7/7 | Complete   | 2026-04-06 |
-| 5. Advanced Features | 0/0 | Not started | - |
+| 5. Advanced Features | 0/5 | Not started | - |
 
 ## Phase Dependencies
 
