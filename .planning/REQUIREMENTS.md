@@ -39,8 +39,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **LLM-01**: System generates AI-powered improvement suggestions with examples
 - [ ] **LLM-02**: System provides specific action verb recommendations
 - [ ] **LLM-03**: System analyzes and suggests impact metrics improvements
-- [ ] **LLM-04**: System uses structured JSON output with validation
-- [ ] **LLM-05**: System implements LLM service abstraction layer for provider switching
+- [x] **LLM-04**: System uses structured JSON output with validation
+- [x] **LLM-05**: System implements LLM service abstraction layer for provider switching
 - [ ] **LLM-06**: System tracks token usage and implements cost controls
 
 ### RAG Knowledge Base
@@ -161,8 +161,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LLM-01 | System generates AI-powered improvement suggestions with examples | Pending |
 | LLM-02 | System provides specific action verb recommendations | Pending |
 | LLM-03 | System analyzes and suggests impact metrics improvements | Pending |
-| LLM-04 | System uses structured JSON output with validation | Pending |
-| LLM-05 | System implements LLM service abstraction layer for provider switching | Pending |
+| LLM-04 | System uses structured JSON output with validation | Complete |
+| LLM-05 | System implements LLM service abstraction layer for provider switching | Complete |
 | LLM-06 | System tracks token usage and implements cost controls | Pending |
 | RAG-01 | System retrieves CV best practices from vector knowledge base | Pending |
 | RAG-02 | System uses semantic search to find relevant improvement patterns | Pending |
