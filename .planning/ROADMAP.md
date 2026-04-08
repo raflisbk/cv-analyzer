@@ -122,7 +122,7 @@ Plans:
 - [x] 04-10-PLAN.md — Gap Closure: Add Before/After text comparison (Wave 2) ✅
 - [x] 04-11-PLAN.md — Gap Closure: Fix export bar animation (Wave 1) ✅
 - [x] 04-12-PLAN.md — Gap Closure: Add WeasyPrint to requirements.txt (Wave 1)
-- [ ] 04-13-PLAN.md — Gap Closure: Move ExportStickyBar outside main element (Wave 1)
+- [x] 04-13-PLAN.md — Gap Closure: Move ExportStickyBar outside main element (Wave 1)
 
 **UI hint**: yes
 

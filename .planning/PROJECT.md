@@ -34,6 +34,8 @@ Users upload CV files (PDF/DOC), receive comprehensive analysis including comple
 **Validated in Phase 4 (Streaming & Comparison):**
 - [x] Real-time streaming analysis progress (SSE)
 - [x] Role comparison: match CV against job descriptions
+- [x] PDF export with WeasyPrint
+- [x] Before/After suggestion display
 
 ### Active
 
@@ -111,4 +113,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 after Phase 3 (AI Intelligence Layer) completion*
+*Last updated: 2026-04-08 after Phase 4 (Streaming & Comparison) completion*
