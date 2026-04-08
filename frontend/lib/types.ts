@@ -89,6 +89,7 @@ export interface SuggestionItem {
   priority: SuggestionPriority;
   text: string;
   type: SuggestionType;
+  originalText?: string;  // Original CV text for before/after comparison
 }
 
 export interface SuggestionCard {
