@@ -17,6 +17,7 @@ export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [completedJobId, setCompletedJobId] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const uploadMutation = useUpload();
 
@@ -83,7 +84,7 @@ export default function Home() {
         <Card className="max-w-[600px] w-full mx-auto">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold text-foreground">
-              Analyzing Your CV
+              Analysis Complete!
             </h2>
             {/* All stages complete */}
             <div className="space-y-2">
@@ -102,14 +103,24 @@ export default function Home() {
             {/* Analysis complete message per UI-SPEC §7 A */}
             <p className="text-sm text-green-700 font-semibold flex items-center gap-1">
               <CheckCircle2 className="h-4 w-4" />
-              Analysis complete!
+              Your CV is ready to view
             </p>
             {/* "View Results" button per D-19, UI-SPEC §7 A */}
             <Button
               className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300"
-              onClick={() => router.push(`/results/${completedJobId}`)}
+              disabled={isNavigating}
+              onClick={async () => {
+                setIsNavigating(true);
+                await router.push(`/results/${completedJobId}`);
+              }}
             >
-              View Results
+              {isNavigating ? (
+                <>
+                  <span className="animate-pulse">Loading results...</span>
+                </>
+              ) : (
+                "View Results"
+              )}
             </Button>
           </CardContent>
         </Card>

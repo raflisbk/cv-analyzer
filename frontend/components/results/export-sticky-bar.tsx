@@ -50,11 +50,26 @@ export function ExportStickyBar({
   }
 
   async function handleDownloadPdf() {
-    toast("PDF download started");
+    toast("Preparing PDF download...");
     try {
+      console.log(`Fetching PDF from: /api/v1/jobs/${jobId}/export/pdf`);
       const response = await fetch(`/api/v1/jobs/${jobId}/export/pdf`);
-      if (!response.ok) { throw new Error("PDF generation failed"); }
+
+      console.log(`Response status: ${response.status}`, response);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('PDF generation failed:', errorText);
+        throw new Error(`PDF generation failed: ${response.status} ${errorText}`);
+      }
+
       const blob = await response.blob();
+      console.log(`PDF blob size: ${blob.size} bytes`);
+
+      if (blob.size === 0) {
+        throw new Error("Received empty PDF");
+      }
+
       const url = URL.createObjectURL(blob);
       // Trigger browser download dialog
       const a = document.createElement("a");
@@ -64,8 +79,11 @@ export function ExportStickyBar({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch {
-      toast("PDF download failed. Try again.");
+
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      console.error('PDF download error:', error);
+      toast.error(`PDF download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
