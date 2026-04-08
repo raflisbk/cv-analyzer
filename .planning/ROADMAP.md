@@ -117,7 +117,7 @@ Plans:
 - [x] 04-05-PLAN.md — Compare Result Components: SkillsGapDisplay + MissingQualificationsList + Skeleton + BeforeAfter (Wave 3) ✅
 - [x] 04-06-PLAN.md — Wiring + Export UI: Tab 5 + SuggestionCard toggle + ExportStickyBar + responsive (Wave 4) ✅
 - [x] 04-07-PLAN.md — Gap Closure: Fix export endpoint type mismatch (Wave 1)
-- [ ] 04-08-PLAN.md — Gap Closure: Install pgvector dependency (Wave 1)
+- [x] 04-08-PLAN.md — Gap Closure: Install pgvector dependency (Wave 1)
 - [ ] 04-09-PLAN.md — Gap Closure: Fix Next.js IPv6 connection (Wave 1)
 - [ ] 04-10-PLAN.md — Gap Closure: Add Before/After text comparison (Wave 2)
 - [ ] 04-11-PLAN.md — Gap Closure: Fix export bar animation (Wave 1)

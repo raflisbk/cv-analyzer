@@ -87,45 +87,49 @@ export function ExportStickyBar({
     }
   }
 
-  // Render nothing (no DOM space) when analysis not complete
-  if (analysisStatus !== "complete") { return null; }
-
+  // Always render the wrapper div to enable CSS transitions
+  // Element is hidden below viewport (translate-y-full) when not complete
   return (
     /* h-12=48px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
     <div
       className={`fixed bottom-0 left-0 right-0 h-12 z-50 bg-background border-t border-border
         px-4 flex items-center justify-end gap-2
         transition-all duration-300 ease-out
-        ${isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
+        ${analysisStatus === "complete" && isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
       role="toolbar"
       aria-label="Export options"
     >
-      {/* Copy Suggestion — variant outline, size sm per UI-SPEC §7.5 */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleCopySuggestion}
-        className="min-h-[44px]"
-        aria-label="Copy top suggestion to clipboard"
-      >
-        {copySuccess
-          ? <Check className="h-4 w-4 mr-2" />
-          : <Clipboard className="h-4 w-4 mr-2" />
-        }
-        Copy Suggestion
-      </Button>
+      {/* Only render content when analysis is complete */}
+      {analysisStatus === "complete" && (
+        <>
+          {/* Copy Suggestion — variant outline, size sm per UI-SPEC §7.5 */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopySuggestion}
+            className="min-h-[44px]"
+            aria-label="Copy top suggestion to clipboard"
+          >
+            {copySuccess
+              ? <Check className="h-4 w-4 mr-2" />
+              : <Clipboard className="h-4 w-4 mr-2" />
+            }
+            Copy Suggestion
+          </Button>
 
-      {/* Download PDF — variant default (primary), size sm per UI-SPEC §7.5 */}
-      <Button
-        variant="default"
-        size="sm"
-        onClick={handleDownloadPdf}
-        className="min-h-[44px]"
-        aria-label="Download analysis as PDF"
-      >
-        <Download className="h-4 w-4 mr-2" />
-        Download PDF
-      </Button>
+          {/* Download PDF — variant default (primary), size sm per UI-SPEC §7.5 */}
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleDownloadPdf}
+            className="min-h-[44px]"
+            aria-label="Download analysis as PDF"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </Button>
+        </>
+      )}
     </div>
   );
 }
