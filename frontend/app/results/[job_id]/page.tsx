@@ -71,81 +71,83 @@ export default function ResultsPage() {
   const isComplete = data?.status === "complete";
 
   return (
-    <main className={`min-h-screen bg-background${isComplete ? " pb-16" : ""}`}>
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Page header per UI-SPEC §7 B */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-xl font-semibold text-foreground">
-            CV Analysis Results
-          </h1>
-          {/* Polling indicator per UI-SPEC §8 */}
-          {isProcessing && (
-            <div
-              className="flex items-center gap-2 text-sm text-muted-foreground"
-              aria-live="polite"
-              aria-busy="true"
-            >
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Checking for results…
+    <>
+      <main className={`min-h-screen bg-background${isComplete ? " pb-16" : ""}`}>
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          {/* Page header per UI-SPEC §7 B */}
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-xl font-semibold text-foreground">
+              CV Analysis Results
+            </h1>
+            {/* Polling indicator per UI-SPEC §8 */}
+            {isProcessing && (
+              <div
+                className="flex items-center gap-2 text-sm text-muted-foreground"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Checking for results…
+              </div>
+            )}
+          </div>
+
+          {/* Loading/Processing state per UI-SPEC §7 B */}
+          {isProcessing ? (
+            <div className="space-y-4">
+              <div className="text-center space-y-2 mb-8">
+                <h2 className="text-xl font-semibold text-foreground">
+                  Analyzing your CV…
+                </h2>
+                <p className="text-base text-muted-foreground">
+                  This usually takes 15–30 seconds.
+                </p>
+              </div>
+              <ResultsSkeleton />
+            </div>
+          ) : (
+            /* Complete state per UI-SPEC §7 C */
+            <div className="space-y-8">
+              {/* Overall score hero per UI-SPEC §7 C */}
+              {data.scores && (
+                <div className="flex flex-col items-center py-8 gap-2">
+                  <span
+                    className="text-5xl font-bold"
+                    style={{
+                      color:
+                        data.scores.overall >= 80
+                          ? "#16a34a"
+                          : data.scores.overall >= 60
+                            ? "#d97706"
+                            : "#dc2626",
+                    }}
+                  >
+                    {data.scores.overall}
+                  </span>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Overall Score
+                  </p>
+                  <ScoreRangeBadge score={data.scores.overall} />
+                </div>
+              )}
+
+              {/* Tabs: Overview | Scores | Skills | Grammar | Compare per D-20, Phase 4 */}
+              <ResultsTabs
+                result={data}
+                jobRoles={jobRolesData ?? []}
+                onCompareComplete={() => { void refetch(); }}
+              />
+
+              {/* Analyze Another CV button per UI-SPEC §5 */}
+              <div className="flex justify-center pt-4">
+                <Button variant="outline" onClick={() => router.push("/")}>
+                  Analyze Another CV
+                </Button>
+              </div>
             </div>
           )}
         </div>
-
-        {/* Loading/Processing state per UI-SPEC §7 B */}
-        {isProcessing ? (
-          <div className="space-y-4">
-            <div className="text-center space-y-2 mb-8">
-              <h2 className="text-xl font-semibold text-foreground">
-                Analyzing your CV…
-              </h2>
-              <p className="text-base text-muted-foreground">
-                This usually takes 15–30 seconds.
-              </p>
-            </div>
-            <ResultsSkeleton />
-          </div>
-        ) : (
-          /* Complete state per UI-SPEC §7 C */
-          <div className="space-y-8">
-            {/* Overall score hero per UI-SPEC §7 C */}
-            {data.scores && (
-              <div className="flex flex-col items-center py-8 gap-2">
-                <span
-                  className="text-5xl font-bold"
-                  style={{
-                    color:
-                      data.scores.overall >= 80
-                        ? "#16a34a"
-                        : data.scores.overall >= 60
-                          ? "#d97706"
-                          : "#dc2626",
-                  }}
-                >
-                  {data.scores.overall}
-                </span>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Overall Score
-                </p>
-                <ScoreRangeBadge score={data.scores.overall} />
-              </div>
-            )}
-
-            {/* Tabs: Overview | Scores | Skills | Grammar | Compare per D-20, Phase 4 */}
-            <ResultsTabs
-              result={data}
-              jobRoles={jobRolesData ?? []}
-              onCompareComplete={() => { void refetch(); }}
-            />
-
-            {/* Analyze Another CV button per UI-SPEC §5 */}
-            <div className="flex justify-center pt-4">
-              <Button variant="outline" onClick={() => router.push("/")}>
-                Analyze Another CV
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
+      </main>
       {/* ExportStickyBar — slides up when analysis complete per UI-SPEC §7.5, D-C12 */}
       {data && (
         <ExportStickyBar
@@ -154,6 +156,6 @@ export default function ResultsPage() {
           topSuggestionText={data.suggestions?.[0]?.suggestions?.[0]?.text}
         />
       )}
-    </main>
+    </>
   );
 }

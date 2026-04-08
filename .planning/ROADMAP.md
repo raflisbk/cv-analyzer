@@ -106,7 +106,7 @@ Plans:
 4. User can download analysis results as PDF and copy suggestions to clipboard
 5. System handles connection failures gracefully, implements responsive design, and logs errors without exposing sensitive data
 
-**Plans**: 12 plans across 4 waves (0–3)
+**Plans**: 14 plans across 4 waves (0–3)
 
 Plans:
 - [x] 04-00-PLAN.md — Setup: WeasyPrint install, shadcn textarea, 5 test stubs (Wave 0) ✅
@@ -116,11 +116,13 @@ Plans:
 - [x] 04-04-PLAN.md — Frontend Types + Compare Input: types.ts + SSE stage + CompareTab + MatchScoreCard (Wave 2) ✅
 - [x] 04-05-PLAN.md — Compare Result Components: SkillsGapDisplay + MissingQualificationsList + Skeleton + BeforeAfter (Wave 3) ✅
 - [x] 04-06-PLAN.md — Wiring + Export UI: Tab 5 + SuggestionCard toggle + ExportStickyBar + responsive (Wave 4) ✅
-- [x] 04-07-PLAN.md — Gap Closure: Fix export endpoint type mismatch (Wave 1)
-- [x] 04-08-PLAN.md — Gap Closure: Install pgvector dependency (Wave 1)
-- [x] 04-09-PLAN.md — Gap Closure: Fix Next.js IPv6 connection (Wave 1)
-- [x] 04-10-PLAN.md — Gap Closure: Add Before/After text comparison (Wave 2)
-- [x] 04-11-PLAN.md — Gap Closure: Fix export bar animation (Wave 1)
+- [x] 04-07-PLAN.md — Gap Closure: Fix export endpoint type mismatch (Wave 1) ✅
+- [x] 04-08-PLAN.md — Gap Closure: Install pgvector dependency (Wave 1) ✅
+- [x] 04-09-PLAN.md — Gap Closure: Fix Next.js IPv6 connection (Wave 1) ✅
+- [x] 04-10-PLAN.md — Gap Closure: Add Before/After text comparison (Wave 2) ✅
+- [x] 04-11-PLAN.md — Gap Closure: Fix export bar animation (Wave 1) ✅
+- [x] 04-12-PLAN.md — Gap Closure: Add WeasyPrint to requirements.txt (Wave 1)
+- [ ] 04-13-PLAN.md — Gap Closure: Move ExportStickyBar outside main element (Wave 1)
 
 **UI hint**: yes
 
@@ -156,7 +158,7 @@ Plans:
 | 1. Foundation & Document Pipeline | 5/5 | ✅ Complete | 2026-04-05 |
 | 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
 | 3. AI Intelligence Layer | 5/5 | ✅ Complete | 2026-04-08 |
-| 4. Streaming & Comparison | 7/12 | 🔄 In Progress (gap closure) | 2026-04-08 |
+| 4. Streaming & Comparison | 11/14 | 🔄 In Progress (gap closure) | 2026-04-08 |
 | 5. Advanced Features | 0/5 | Not started | - |
 
 ## Phase Dependencies
@@ -193,5 +195,5 @@ Phase 5: Advanced Features (optional polish)
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-08 (Phase 4 gap closure plans added)*
+*Last updated: 2026-04-08 (Phase 4 gap closure plans 04-12, 04-13 added)*
 *Next: `/gsd:execute-phase 04 --gaps-only`*
