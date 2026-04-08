@@ -28,18 +28,58 @@ _DIMENSION_WEIGHTS: dict[str, float] = {
 
 # Rule-based fallback scoring keywords
 _IMPACT_VERBS = [
-    "achieved", "built", "created", "delivered", "designed", "developed",
-    "drove", "grew", "implemented", "improved", "increased", "launched",
-    "led", "managed", "optimized", "reduced", "saved", "scaled", "shipped",
+    "achieved",
+    "built",
+    "created",
+    "delivered",
+    "designed",
+    "developed",
+    "drove",
+    "grew",
+    "implemented",
+    "improved",
+    "increased",
+    "launched",
+    "led",
+    "managed",
+    "optimized",
+    "reduced",
+    "saved",
+    "scaled",
+    "shipped",
 ]
 _SECTION_KEYWORDS = [
-    "experience", "education", "skills", "summary", "objective",
-    "projects", "certifications", "awards", "publications", "contact",
+    "experience",
+    "education",
+    "skills",
+    "summary",
+    "objective",
+    "projects",
+    "certifications",
+    "awards",
+    "publications",
+    "contact",
 ]
 _TECH_KEYWORDS = [
-    "python", "javascript", "typescript", "java", "sql", "react", "node",
-    "aws", "docker", "kubernetes", "git", "api", "database", "agile",
-    "machine learning", "data", "cloud", "linux", "ci/cd",
+    "python",
+    "javascript",
+    "typescript",
+    "java",
+    "sql",
+    "react",
+    "node",
+    "aws",
+    "docker",
+    "kubernetes",
+    "git",
+    "api",
+    "database",
+    "agile",
+    "machine learning",
+    "data",
+    "cloud",
+    "linux",
+    "ci/cd",
 ]
 
 
@@ -56,32 +96,33 @@ def _rule_based_score(text: str) -> dict:
     # Clarity: avg sentence length (shorter = clearer), bullet-point presence
     sentences = re.split(r"[.!?]+", text)
     non_empty = [s.strip() for s in sentences if s.strip()]
-    avg_len = (sum(len(s.split()) for s in non_empty) / len(non_empty)) if non_empty else 20
+    avg_len = (
+        (sum(len(s.split()) for s in non_empty) / len(non_empty)) if non_empty else 20
+    )
     bullet_count = text.count("•") + text.count("-") + text.count("*")
-    clarity = min(100, max(30,
-        80 - max(0, avg_len - 15) * 2   # penalise long sentences
-        + min(20, bullet_count)          # reward bullet points
-    ))
+    clarity = min(
+        100,
+        max(
+            30,
+            80
+            - max(0, avg_len - 15) * 2  # penalise long sentences
+            + min(20, bullet_count),  # reward bullet points
+        ),
+    )
 
     # Impact: action verbs and quantified achievements (numbers/%)
     verb_hits = sum(1 for v in _IMPACT_VERBS if v in lower)
     number_hits = len(re.findall(r"\b\d+[%x]?\b", text))
-    impact = min(100, max(20,
-        40 + min(30, verb_hits * 5) + min(30, number_hits * 3)
-    ))
+    impact = min(100, max(20, 40 + min(30, verb_hits * 5) + min(30, number_hits * 3)))
 
     # Completeness: section coverage
     section_hits = sum(1 for kw in _SECTION_KEYWORDS if kw in lower)
     length_score = min(20, word_count // 50)  # reward longer CVs up to 1000 words
-    completeness = min(100, max(10,
-        section_hits * 8 + length_score
-    ))
+    completeness = min(100, max(10, section_hits * 8 + length_score))
 
     # Relevance: technical and industry keywords
     tech_hits = sum(1 for kw in _TECH_KEYWORDS if kw in lower)
-    relevance = min(100, max(20,
-        30 + min(70, tech_hits * 5)
-    ))
+    relevance = min(100, max(20, 30 + min(70, tech_hits * 5)))
 
     overall = int(
         clarity * _DIMENSION_WEIGHTS["clarity"]

@@ -65,7 +65,9 @@ def check_grammar(text: str) -> list[dict]:
     """
     tool = get_tool()
     if tool is None:
-        logger.warning("Grammar check skipped — LanguageTool unavailable (Java missing/broken)")
+        logger.warning(
+            "Grammar check skipped — LanguageTool unavailable (Java missing/broken)"
+        )
         return []
     matches = tool.check(text)
 

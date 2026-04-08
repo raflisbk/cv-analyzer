@@ -19,16 +19,17 @@ import sys
 import time
 from pathlib import Path
 
+
 # Add backend to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import requests  # noqa: E402
-from sqlalchemy import text  # noqa: E402
+import requests
+from sqlalchemy import text
 
-from app.db.session import async_session_maker  # noqa: E402
-from app.models.knowledge_chunk import KnowledgeChunk  # noqa: E402
-from app.services.rag.chunker import chunk_text  # noqa: E402
-from app.services.rag.embeddings import get_rag_embedding  # noqa: E402
+from app.db.session import async_session_maker
+from app.models.knowledge_chunk import KnowledgeChunk
+from app.services.rag.chunker import chunk_text
+from app.services.rag.embeddings import get_rag_embedding
 
 
 # Public career guide URLs for knowledge base per RAG-04
@@ -80,7 +81,9 @@ async def seed() -> None:
         count = result.scalar()
         if count and count > 0:
             print(f"Knowledge base already has {count} chunks. Skipping seed.")
-            print("To re-seed, run: DELETE FROM knowledge_chunks; then re-run this script.")
+            print(
+                "To re-seed, run: DELETE FROM knowledge_chunks; then re-run this script."
+            )
             return
 
     total_chunks = 0

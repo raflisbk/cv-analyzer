@@ -1,243 +1,212 @@
-<!-- GSD:project-start source:PROJECT.md -->
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## Project
 
-**CV Analyzer**
+**CV Analyzer** — A portfolio project demonstrating AI Engineer mastery through a production-ready CV/resume analyzer with multi-dimensional scoring, LLM-powered suggestions, and job role comparison.
 
-A web-based CV/resume analyzer application that provides multi-dimensional scoring, improvement suggestions, and job role comparison. Built as a portfolio project to demonstrate AI Engineer mastery through production-ready architecture and modern AI capabilities.
+**Core Value:** Every technical decision prioritizes showcasing modern AI engineering patterns — LLM integration, RAG architecture, async processing, streaming responses, and production deployment.
 
-Users upload CV files (PDF/DOC), receive comprehensive analysis including completeness scores, impact metrics, skill gaps, and actionable improvement recommendations. The application also compares CVs against job descriptions to identify matching strengths and weaknesses.
-
-**Core Value:** **Demonstrate AI Engineer mastery** — Every technical decision prioritizes showcasing deep understanding of modern AI engineering, from LLM integration and RAG architecture to production deployment and real-time streaming.
-
-### Constraints
-
-- **Budget**: Use free-tier cloud services (Vercel, Railway, Cloudflare R2) — minimize costs
-- **Timeline**: Portfolio project — no hard deadline, quality over speed
-- **Tech Stack**: Python (FastAPI) + Next.js + PostgreSQL with pgvector
-- **LLM Access**: Has API keys available (Claude/OpenAI)
-- **Deployment**: Must be live production URL for portfolio sharing
-<!-- GSD:project-end -->
-
-<!-- GSD:stack-start source:codebase/STACK.md -->
-## Technology Stack
-
-## Languages
-- Python 3.x - Throughout the codebase, primarily used in skill scripts and agents
-- JavaScript - Used in some skill templates and frontend components
-- TypeScript - Used in some skill implementations and SDKs
-- JSON - Configuration and data serialization
-- Markdown - Documentation
-## Runtime
-- Python 3.x runtime
-- Node.js runtime (for JavaScript/TypeScript components)
-- pip (Python) - Used in requirements.txt files
-- npm (Node.js) - Referenced in configuration
-- skills-lock.json - Present, manages skill dependencies
-## Frameworks
-- Anthropic Claude Skills Framework - Primary framework for agent skills
-- MCP (Model Context Protocol) - Used for protocol communication
-- Custom agent architecture - Throughout the codebase
-- pytest - Referenced in gitignore
-- unittest - Python standard library testing
-- Python setuptools - Package management
-- Git - Version control
-## Key Dependencies
-- anthropic>=0.39.0 - Anthropic AI client library
-- mcp>=1.1.0 - Model Context Protocol implementation
-- pillow>=10.0.0 - Image processing (for mcp-builder skill)
-- imageio>=2.31.0 - Image I/O operations
-- imageio-ffmpeg>=0.4.9 - Video processing
-- numpy>=1.24.0 - Numerical computing
-- Custom skill management system - Based on skills-lock.json
-- GitHub integration - Multiple skill sources
-## Configuration
-- .env files present (excluded from git)
-- Multiple .env.* patterns for different environments
-- Python virtual environment support
-- Python egg/wheel packaging
-- Node.js module management
-- Skills lock file for dependency management
-## Platform Requirements
-- Python 3.x environment
-- Node.js environment
-- Git for version control
-- Virtual environment support
-- Python runtime
-- Agent execution environment
-- Skill deployment infrastructure
-<!-- GSD:stack-end -->
-
-<!-- GSD:conventions-start source:CONVENTIONS.md -->
-## Conventions
-
-## Naming Patterns
-- Snake_case for all Python files
-- Descriptive names that clearly indicate purpose
-- No camelCase or PascalCase observed
-- Snake_case function names
-- Private functions use single underscore prefix (e.g., `_setup_libreoffice_macro`)
-- Clear, descriptive names that follow Python naming conventions
-- Snake_case variable names
-- Meaningful names that describe content/purpose
-- No abbreviated names observed in analyzed code
-- PascalCase (CamelCase with first letter uppercase)
-- Clear, descriptive names
-- Follow Python class naming conventions
-- Snake_case method names
-- Public methods follow function naming conventions
-- Private methods use underscore prefix
-## Code Style
-- No explicit formatting configuration found
-- Consistent indentation observed in code samples
-- Line lengths vary, suggesting no strict line length limits
-- No dedicated linter configuration files found
-- Ruff cache directory listed in .gitignore suggests potential Ruff usage
-- MyPy cache directory listed in .gitignore suggests potential type checking
-- Extensive use of type hints in modern code
-- Union types using `|` syntax (e.g., `str | Path`)
-- Generic types used (e.g., `list[str]`, `dict[str, Any]`)
-- Optional types with proper typing
-## Import Organization
-- Standard library imports first
-- Third-party imports second
-- Local imports third
-- Blank lines between groups
-- No path alias configuration found
-- Relative imports used within packages
-- Absolute imports from external packages
-## Error Handling
-- Try-except blocks with specific exception handling
-- Functions return tuple[None, str] for error reporting
-- Clear error messages with context
-- Proper exception chaining where appropriate
-## Logging
-- Logger instance per module
-- Proper logging level usage
-- Error messages use logger.error()
-- Informative messages use logger.info()
-## Comments
-- Complex algorithms and business logic
-- API documentation for public interfaces
-- Important implementation details
-- Configuration and setup explanations
-- Comprehensive docstrings for classes and public methods
-- Args and Returns sections present
-- Clear descriptions of purpose
-## Function Design
-- Generally moderate function sizes
-- Clear separation of concerns
-- Functions focused on single responsibility
-- Parameters clearly typed
-- Optional parameters with defaults
-- No excessive parameter counts observed
-- Clear return types
-- Consistent error handling patterns
-- Optional returns using `Optional` types
-## Module Design
-- Clear public interface design
-- Private functions properly underscored
-- Classes as primary export units
-- `__init__.py` files used for package structure
-- No complex barrel file patterns observed
-- Skill-based directory structure
-- Clear separation of concerns per skill
-- Helper modules appropriately organized
-## Configuration Management
-- Configuration through environment variables where needed
-- No global configuration files found
-- Per-skill requirements management
-- Extensive type hints in modern code
-- Dataclass usage for structured data
-- Proper typing for all public interfaces
-## Testing Patterns
-- No dedicated test framework configuration found
-- No test files detected in codebase
-- Manual verification and testing methods observed
-- Good separation of concerns
-- Proper error handling patterns
-- Clear documentation
-- Type hints where appropriate
-<!-- GSD:conventions-end -->
-
-<!-- GSD:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
-## Pattern Overview
-- Centralized skill management system for GitHub Copilot agents
-- Modular skill organization with clear separation of concerns
-- Skill lockfile for dependency management and versioning
-- Documentation-driven approach with markdown-based skill definitions
-- Multi-technology support across various domains (frontend, backend, DevOps, etc.)
-## Layers
-- Purpose: Project-level configuration and management
-- Location: `./`
-- Contains: License, skill lockfile, project configuration
-- Depends on: Skills organization system
-- Used by: Skill management and deployment
-- Purpose: Categorization and management of individual skills
-- Location: `./.agents/skills/`
-- Contains: Individual skill directories with metadata
-- Depends on: Root layer structure
-- Used by: Skill discovery and selection
-- Purpose: Encapsulated functionality for specific domains
-- Location: `./.agents/skills/[skill-name]/`
-- Contains: SKILL.md, references, templates, scripts
-- Depends on: Skills organization structure
-- Used by: GitHub Copilot agent execution
-- Purpose: Actual code implementation and examples
-- Location: `./.agents/skills/[skill-name]/scripts/`, `./.agents/skills/[skill-name]/templates/`
-- Contains: Source code, templates, examples
-- Depends on: Skill definition and references
-- Used by: Direct execution by AI agents
-## Data Flow
-## Key Abstractions
-- Purpose: Encapsulated domain-specific knowledge and patterns
-- Examples: `[.agents/skills/accessibility-a11y/`, `.agents/skills/architecture-patterns/`, `.agents/skills/api-design-principles/`]
-- Pattern: Self-contained directories with SKILL.md and supporting materials
-- Purpose: Dependency management for skills ecosystem
-- Examples: `[skills-lock.json]`
-- Pattern: JSON-based registry of skill sources and versions
-- Purpose: Detailed guidance and patterns beyond core skill definition
-- Examples: `[.agents/skills/architecture-patterns/references/`, `.agents/skills/accessibility-compliance/references/`]
-- Pattern: Organized markdown documentation domain-specific topics
-- Purpose: Boilerplate code structures for common patterns
-- Examples: `[.agents/skills/algorithmic-art/templates/`, `.agents/skills/api-design-principles/templates/`]
-- Pattern: Reusable code structures with placeholders and examples
-## Entry Points
-- Location: Various skill directories via GitHub Copilot CLI
-- Triggers: Natural language requests from developers
-- Responsibilities: Route to appropriate skill based on request context
-- Location: `[.agents/skills/[skill-name]/SKILL.md]`
-- Triggers: Skill discovery and selection process
-- Responsibilities: Provide skill description, usage patterns, and core guidance
-- Location: `[.agents/skills/[skill-name]/scripts/]`
-- Triggers: Skill implementation requirements
-- Responsibilities: Generate code, diagrams, or provide automation
-## Error Handling
-- Skill-level error handling in SKILL.md with fallback patterns
-- Reference materials provide troubleshooting guidance
-- Script implementations include error recovery mechanisms
-## Cross-Cutting Concerns
-<!-- GSD:architecture-end -->
+**Monorepo Structure:**
+- `backend/` — FastAPI application (Python 3.11+)
+- `frontend/` — Next.js 15 with App Router (TypeScript/React 19)
+- `.planning/` — GSD workflow artifacts (gitignored, local only)
 
-<!-- GSD:workflow-start source:GSD defaults -->
-## GSD Workflow Enforcement
+**Tech Stack:**
+- Backend: FastAPI + PostgreSQL (pgvector) + Redis/Celery + Cloudflare R2
+- Frontend: Next.js 15 + shadcn/ui + Tailwind CSS
+- AI: Claude/OpenAI APIs + RAG with vector embeddings
+- Deploy: Vercel (frontend) + Railway (backend)
 
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
+**Key Architecture Patterns:**
+- Async job processing with Celery for non-blocking operations
+- Server-Sent Events (SSE) for real-time progress streaming to frontend
+- RAG architecture with pgvector for semantic search of CV best practices
+- Structured JSON logging with loguru
+- Document parsing with OCR fallback for scanned PDFs
 
-Use these entry points:
-- `/gsd:quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd:debug` for investigation and bug fixing
-- `/gsd:execute-phase` for planned phase work
+**Data Flow:** Upload → R2 storage → Background task → Parser → NLP extraction → LLM analysis → SSE streaming → Results display
 
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
-<!-- GSD:workflow-end -->
+## Essential Commands
 
+### Backend (Python/FastAPI)
 
+**CRITICAL: Always activate Conda environment first:**
+```bash
+conda activate sbk-cv-analyzer
+```
 
-<!-- GSD:profile-start -->
-## Developer Profile
+**Development server:**
+```bash
+cd backend
+uvicorn app.main:app --reload --port 8000
+# API: http://localhost:8000
+# Docs: http://localhost:8000/docs
+```
 
-> Profile not yet configured. Run `/gsd:profile-user` to generate your developer profile.
-> This section is managed by `generate-claude-profile` -- do not edit manually.
-<!-- GSD:profile-end -->
+**Database migrations:**
+```bash
+cd backend
+alembic upgrade head                    # Apply migrations
+alembic revision --autogenerate -m "msg"  # Create migration
+```
+
+**Celery worker (background tasks):**
+```bash
+cd backend
+celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
+```
+
+**Code quality:**
+```bash
+cd backend
+black .                  # Format code
+ruff check .            # Lint code
+ruff check --fix .      # Auto-fix issues
+```
+
+**Install dependencies:**
+```bash
+# From project root (preferred)
+pip install -e backend
+
+# Or from backend directory
+cd backend && pip install -e .
+```
+
+### Frontend (Next.js/React)
+
+**Development server:**
+```bash
+cd frontend
+npm run dev         # http://localhost:3000
+```
+
+**Production build:**
+```bash
+cd frontend
+npm run build
+```
+
+**Code quality:**
+```bash
+cd frontend
+npm run lint              # ESLint check
+npx prettier --write .    # Format code
+npx tsc --noEmit          # Type check
+```
+
+## Development Workflow
+
+### Environment Setup
+
+**Required services:**
+- PostgreSQL 16+ with pgvector extension (local: Docker Compose)
+- Redis (for Celery job queue)
+- Cloudflare R2 (file storage)
+
+**Backend environment:** `backend/.env` (use `backend/.env.example` as template)
+**Frontend environment:** `frontend/.env.local` (if needed)
+
+### GSD Workflow
+
+This project uses GSD (Get Shit Done) for structured development. Before making code changes:
+
+- `/gsd:quick` — Small fixes, doc updates, ad-hoc tasks
+- `/gsd:execute-phase {N}` — Execute planned phase work
+- `/gsd:debug` — Investigation and bug fixing
+- `/gsd:progress` — Check project status
+
+**Planning files in `.planning/`:**
+- `ROADMAP.md` — Phase breakdown with dependencies
+- `STATE.md` — Current position and decisions
+- `phases/{NN}-{slug}/` — Phase-specific plans and context
+
+### Code Quality Standards
+
+**Backend (Python):**
+- Formatter: Black (line-length: 88)
+- Linter: Ruff (comprehensive rules: E, W, F, I, N, UP, B, C4, etc.)
+- Type hints required on public interfaces
+- Modern syntax: `str | None`, `list[str]`, `dict[str, Any]`
+
+**Frontend (TypeScript):**
+- Linter: ESLint (extends `next/core-web-vitals`, `next/typescript`)
+- Formatter: Prettier
+- Max line length: 100 characters
+- Quotes: double, Semi: always, Indent: 2 spaces
+
+### Project Phases
+
+1. **Phase 1** — Foundation & Document Pipeline (file upload, parsing, async)
+2. **Phase 2** — Basic Analysis Engine (NLP scoring, section detection)
+3. **Phase 3** — AI Intelligence Layer (LLM suggestions, cost controls)
+4. **Phase 4** — Streaming & Comparison (real-time UX, job matching)
+5. **Phase 5** — Advanced Features (deployment, polish, optional)
+
+Progress: Phases 1-4 complete, Phase 5 pending.
+
+## Key Design Decisions
+
+1. **Celery over BackgroundTasks** — Enables job persistence, retry, and horizontal scaling
+2. **pgvector over separate vector DB** — Single database simplifies deployment and reduces costs
+3. **R2 with presigned URLs** — Direct browser upload/download reduces backend bandwidth
+4. **SSE over WebSockets** — Simpler for one-way streaming, better for serverless
+5. **Async-first architecture** — All I/O operations async, never block on LLM calls
+6. **Rule-based + LLM scoring** — Graceful degradation when LLM unavailable
+7. **Curated skill whitelist** — ~150 tech skills vs ESCO's 14K cross-industry noise
+
+## File Structure
+
+```
+cv-analyzer/
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI application
+│   │   ├── core/                # Config, logging, security
+│   │   ├── db/                  # Database session, base
+│   │   ├── models/              # SQLAlchemy models (Job, JobRole, KnowledgeChunk)
+│   │   ├── schemas/             # Pydantic schemas (request/response)
+│   │   ├── api/                 # API routes (/api/v1/upload, /jobs, etc.)
+│   │   ├── services/            # Business logic (parser, nlp, llm, rag, storage)
+│   │   ├── tasks/               # Celery tasks (cv_analysis_task, etc.)
+│   │   └── templates/           # Jinja2 templates (PDF export)
+│   ├── alembic/                 # Database migrations
+│   ├── pyproject.toml           # Dependencies + tool config (Black/Ruff)
+│   └── requirements.txt         # Pinned dependencies
+├── frontend/
+│   ├── app/                     # Next.js App Router
+│   │   ├── page.tsx             # Homepage (upload)
+│   │   ├── results/[job_id]/    # Results page with tabs
+│   │   └── layout.tsx           # Root layout
+│   ├── components/
+│   │   ├── ui/                  # shadcn/ui base components
+│   │   ├── upload/              # Upload zone, progress indicator
+│   │   └── results/             # Results tabs, charts, comparison
+│   ├── hooks/                   # Custom React hooks (useSSE, useCopyToClipboard)
+│   └── lib/                     # Utilities (cn, types)
+└── .github/
+    └── copilot-instructions.md  # Detailed conventions and workflow
+```
+
+## Important Notes
+
+**Conda Environment Required:**
+Backend Python code MUST run in `sbk-cv-analyzer` conda environment. Verify with:
+```bash
+conda env list          # Should show * next to sbk-cv-analyzer
+python --version        # Should be 3.11+
+```
+
+**Windows-Specific:**
+- Celery requires `--pool=solo` flag (prefork uses spawn which crashes)
+- asyncio requires `WindowsSelectorEventLoopPolicy` (set in celery_app.py)
+- react-dropzone must be v15.0.0+ (v14 incompatible with React 19)
+
+**GSD Workflow:**
+The `.planning/` directory contains phase plans, UAT results, and execution context. These are gitignored and only exist locally after running GSD commands.
+
+**For comprehensive conventions**, see `.github/copilot-instructions.md`.
