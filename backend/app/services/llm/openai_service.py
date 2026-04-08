@@ -31,7 +31,8 @@ Respond with ONLY valid JSON matching this exact schema:
         {{
           "priority": "<high_impact|quick_win>",
           "text": "<specific actionable suggestion>",
-          "type": "<action_verb|impact_metric|missing_section>"
+          "type": "<action_verb|impact_metric|missing_section>",
+          "original_text": "<EXACT text from the CV being improved, copy verbatim>"
         }}
       ]
     }}
@@ -44,6 +45,8 @@ Rules:
 - "action_verb" = replace weak verbs (e.g., managed → led, helped → drove)
 - "impact_metric" = add quantifiable results (e.g., increased sales by 30%)
 - "missing_section" = add absent but valuable section
+- For each suggestion, you MUST provide "original_text": the EXACT text from the user's CV that this suggestion is improving (copy it verbatim)
+- "original_text" enables before/after comparison to show users what to change
 - Generate 2-4 suggestions per section, focusing on sections with most room for improvement
 - Be specific: reference actual content from the CV text
 """
