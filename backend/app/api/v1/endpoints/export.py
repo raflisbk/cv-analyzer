@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import select
 from weasyprint import HTML
@@ -33,12 +33,12 @@ _jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
 @router.get(
     "/jobs/{job_id}/export/pdf",
     summary="Export CV analysis as PDF",
-    response_class=StreamingResponse,
+    response_class=Response,
 )
 async def export_pdf(
     job_id: str,
     db: AsyncSession = Depends(get_db),
-) -> StreamingResponse:
+) -> Response:
     """
     Generate and stream PDF of CV analysis per D-C11, EXPORT-01, EXPORT-03.
 
