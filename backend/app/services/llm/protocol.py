@@ -15,6 +15,7 @@ class SuggestionItemOutput(BaseModel):
     priority: Literal["high_impact", "quick_win"]
     text: str
     type: Literal["action_verb", "impact_metric", "missing_section"]
+    original_text: str | None = None
 
 
 class SuggestionCardOutput(BaseModel):
