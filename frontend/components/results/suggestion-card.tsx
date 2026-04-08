@@ -5,8 +5,10 @@
  */
 "use client";
 
-import { AlertCircle, TrendingUp, Zap } from "lucide-react";
+import { useState } from "react";
+import { AlertCircle, ChevronDown, ChevronUp, TrendingUp, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type {
   SuggestionCard,
@@ -14,7 +16,6 @@ import type {
   SuggestionPriority,
   SuggestionType,
 } from "@/lib/types";
-import { SuggestionBeforeAfter } from "./suggestion-before-after";
 
 function getPriorityBadgeClasses(priority: SuggestionPriority): string {
   if (priority === "high_impact") {
@@ -55,6 +56,66 @@ function SuggestionItemRow({ item }: SuggestionItemRowProps) {
   );
 }
 
+interface SuggestionBeforeAfterProps {
+  beforeText?: string;
+  afterText: string;
+  id: string;
+}
+
+function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAfterProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const contentId = `suggestion-before-${id}`;
+  const triggerId = `suggestion-before-trigger-${id}`;
+
+  return (
+    <div className="mt-4 pt-4 border-t border-border">
+      <Button
+        id={triggerId}
+        variant="ghost"
+        size="sm"
+        className="text-sm font-medium h-auto p-0 hover:bg-transparent"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
+        aria-controls={contentId}
+      >
+        {isOpen ? "Hide original context" : "Show original context"}
+        {isOpen
+          ? <ChevronUp className="h-3 w-3 ml-1" />
+          : <ChevronDown className="h-3 w-3 ml-1" />
+        }
+      </Button>
+
+      <div
+        id={contentId}
+        role="region"
+        aria-labelledby={triggerId}
+        className={`overflow-hidden transition-all duration-200 ${
+          isOpen ? "max-h-96 mt-4" : "max-h-0"
+        }`}
+      >
+        <div className="space-y-2">
+          {beforeText ? (
+            <>
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm font-semibold text-red-700 mb-1">Before:</p>
+                <p className="text-sm text-red-900">{beforeText}</p>
+              </div>
+              <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm font-semibold text-green-700 mb-1">After:</p>
+                <p className="text-sm text-green-900">{afterText}</p>
+              </div>
+            </>
+          ) : (
+            <div className="p-3 bg-muted rounded-md">
+              <p className="text-sm text-muted-foreground">No original text available for comparison.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface SuggestionCardItemProps {
   card: SuggestionCard;
 }
@@ -69,7 +130,8 @@ export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
             <SuggestionItemRow item={item} />
             {/* Before/after toggle per D-C19, UX-02 */}
             <SuggestionBeforeAfter
-              beforeText={item.text}
+              beforeText={item.originalText}
+              afterText={item.text}
               id={`${card.section}-${i}`}
             />
           </div>
