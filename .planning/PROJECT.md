@@ -14,21 +14,38 @@ Users upload CV files (PDF/DOC), receive comprehensive analysis including comple
 
 ### Validated
 
-(None yet — ship to validate)
+**Validated in Phase 1 (Foundation & Document Pipeline):**
+- [x] File upload: PDF/DOC parsing with OCR fallback
+- [x] Public access (no authentication required)
+- [x] Cloudflare R2 storage with 24-hour retention
+
+**Validated in Phase 2 (Basic Analysis Engine):**
+- [x] Multi-dimensional scoring: completeness, impact, clarity, keyword relevance
+- [x] NLP techniques: skill extraction, entity recognition
+- [x] Missing content alerts: skills, experiences, achievements
+- [x] Format improvements: structure, layout, section balance
+
+**Validated in Phase 3 (AI Intelligence Layer):**
+- [x] LLM-based semantic analysis with OpenAI gpt-4o-mini
+- [x] Improvement suggestions: action verbs, metrics, formatting
+- [x] RAG with vector database (pgvector) for knowledge retrieval
+- [x] Cost-controlled LLM integration (token tracking, Redis caching)
+
+**Validated in Phase 4 (Streaming & Comparison):**
+- [x] Real-time streaming analysis progress (SSE)
+- [x] Role comparison: match CV against job descriptions
 
 ### Active
 
-- [ ] Multi-dimensional scoring: completeness, impact, clarity, keyword relevance
-- [ ] Improvement suggestions: action verbs, metrics, formatting
-- [ ] Missing content alerts: skills, experiences, achievements
-- [ ] Format improvements: structure, layout, section balance
-- [ ] Role comparison: match CV against job descriptions
-- [ ] LLM-based semantic analysis
-- [ ] NLP techniques: skill extraction, entity recognition
-- [ ] RAG with vector database for knowledge retrieval
-- [ ] Real-time streaming analysis progress
-- [ ] File upload: PDF/DOC parsing
-- [ ] Public access (no authentication required)
+(None — all v1 requirements validated)
+
+### Out of Scope
+
+- User accounts and authentication (v1 is public anonymous access)
+- Payment processing (free portfolio project)
+- Mobile app (web-first, mobile responsive)
+- Real-time collaboration features
+- Video CV analysis (text-only for v1)
 
 ### Out of Scope
 
@@ -94,4 +111,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after initialization*
+*Last updated: 2026-04-08 after Phase 3 (AI Intelligence Layer) completion*
