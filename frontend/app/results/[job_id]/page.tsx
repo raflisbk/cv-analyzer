@@ -10,7 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useJobResults } from "@/hooks/use-job-results";
-import type { JobRole } from "@/lib/types";
+import type { JobRole, SuggestionCard } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ExportStickyBar } from "@/components/results/export-sticky-bar";
 import { ResultsError } from "@/components/results/results-error";
@@ -19,6 +19,32 @@ import { ResultsTabs } from "@/components/results/results-tabs";
 import { ScoreRangeBadge } from "@/components/results/score-range-badge";
 import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
 
+function buildSuggestionsClipboardText(
+  cards: SuggestionCard[] | null | undefined
+): string | undefined {
+  if (!cards || cards.length === 0) {
+    return undefined;
+  }
+
+  const hasAnySuggestions = cards.some((card) => card.suggestions.length > 0);
+  if (!hasAnySuggestions) {
+    return undefined;
+  }
+
+  const sections = cards
+    .filter((card) => card.suggestions.length > 0)
+    .map((card) => {
+      const suggestionsText = card.suggestions
+        .map((suggestion, index) => `${index + 1}. ${suggestion.text}`)
+        .join("\n");
+
+      return `${card.section}\n${suggestionsText}`;
+    })
+    .join("\n\n");
+
+  return `AI Improvement Suggestions\n\n${sections}`;
+}
+
 export default function ResultsPage() {
   const params = useParams();
   const router = useRouter();
@@ -26,6 +52,7 @@ export default function ResultsPage() {
 
   const { data, isLoading, isError, error, refetch } = useJobResults(jobId);
   const normalizedResult = data ? normalizeAnalysisResult(data) : null;
+  const suggestionsClipboardText = buildSuggestionsClipboardText(normalizedResult?.suggestions);
 
   // Fetch job roles for Compare tab dropdown per D-C5, COMPARE-02
   const { data: jobRolesData } = useQuery<JobRole[]>({
@@ -155,7 +182,7 @@ export default function ResultsPage() {
         <ExportStickyBar
           jobId={jobId}
           analysisStatus={normalizedResult.status}
-          topSuggestionText={normalizedResult.suggestions?.[0]?.suggestions?.[0]?.text}
+          suggestionsClipboardText={suggestionsClipboardText}
         />
       )}
     </>

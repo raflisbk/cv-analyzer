@@ -14,14 +14,14 @@ import { Button } from "@/components/ui/button";
 interface ExportStickyBarProps {
   jobId: string;
   analysisStatus: string;
-  /** Top suggestion text for clipboard copy per D-C12, EXPORT-02 */
-  topSuggestionText?: string;
+  /** Preformatted suggestions payload for clipboard copy per EXPORT-02 */
+  suggestionsClipboardText?: string;
 }
 
 export function ExportStickyBar({
   jobId,
   analysisStatus,
-  topSuggestionText,
+  suggestionsClipboardText,
 }: ExportStickyBarProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -37,11 +37,11 @@ export function ExportStickyBar({
   }, [analysisStatus]);
 
   async function handleCopySuggestion() {
-    const text = topSuggestionText ?? "No suggestions available";
+    const text = suggestionsClipboardText ?? "No suggestions available";
     try {
       await navigator.clipboard.writeText(text);
       setCopySuccess(true);
-      toast("Suggestion copied to clipboard");
+      toast("Suggestions copied to clipboard");
       // Revert icon after 2000ms per UI-SPEC §8
       setTimeout(() => setCopySuccess(false), 2000);
     } catch {
@@ -108,13 +108,13 @@ export function ExportStickyBar({
             size="sm"
             onClick={handleCopySuggestion}
             className="min-h-[44px]"
-            aria-label="Copy top suggestion to clipboard"
+            aria-label="Copy all suggestions to clipboard"
           >
             {copySuccess
               ? <Check className="h-4 w-4 mr-2" />
               : <Clipboard className="h-4 w-4 mr-2" />
             }
-            Copy Suggestion
+            Copy Suggestions
           </Button>
 
           {/* Download PDF — variant default (primary), size sm per UI-SPEC §7.5 */}
