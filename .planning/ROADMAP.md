@@ -124,7 +124,7 @@ Plans:
 - [x] 04-12-PLAN.md — Gap Closure: Add WeasyPrint to requirements.txt (Wave 1)
 - [x] 04-13-PLAN.md — Gap Closure: Move ExportStickyBar outside main element (Wave 1)
 - [x] 04-14-PLAN.md — Gap Closure: Add original_text to SuggestionItem schema (Wave 1)
-- [ ] 04-15-PLAN.md — Gap Closure: Install WeasyPrint in conda environment (Wave 2)
+- [x] 04-15-PLAN.md — Gap Closure: Install WeasyPrint in conda environment (Wave 2)
 
 **UI hint**: yes
 

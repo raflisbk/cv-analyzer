@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import select
 from weasyprint import HTML
@@ -24,9 +24,8 @@ from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
 router = APIRouter()
 
-# Jinja2 env — FileSystemLoader relative to backend/ working directory
-# Path resolves to backend/app/templates/ regardless of CWD
-_TEMPLATE_DIR = Path(__file__).parent.parent.parent.parent / "app" / "templates"
+# Jinja2 env — resolve deterministically to backend/app/templates regardless of CWD
+_TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates"
 _jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
 
 
@@ -49,23 +48,23 @@ async def export_pdf(
     Note: WeasyPrint.write_pdf() is synchronous (CPU-bound); for production scaling
     use run_in_executor. For portfolio purposes direct call is acceptable.
     """
+    request_id = str(uuid.uuid4())
+    timestamp = datetime.now(UTC).isoformat()
+
     try:
         stmt = select(Job).where(Job.id == job_id)
         result = await db.execute(stmt)
         job = result.scalar_one_or_none()
 
         if not job:
-            # Return JSON error (not PDF) when job not found
-            return WrappedResponse(  # type: ignore[return-value]
+            error_response = WrappedResponse(
                 error=ErrorDetail(
                     code="JOB_NOT_FOUND",
                     message=f"Job {job_id} not found.",
                 ),
-                meta=ResponseMeta(
-                    request_id=str(uuid.uuid4()),
-                    timestamp=datetime.now(UTC).isoformat(),
-                ),
+                meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+            return JSONResponse(status_code=404, content=error_response.model_dump())
 
         # Build template context from job JSONB columns
         template_context = {
@@ -82,11 +81,22 @@ async def export_pdf(
             "comparison_status": job.comparison_status,
         }
 
-        template = _jinja_env.get_template("cv_analysis_report.html")
-        html_content = template.render(**template_context)
+        try:
+            template = _jinja_env.get_template("cv_analysis_report.html")
+            html_content = template.render(**template_context)
 
-        # WeasyPrint renders HTML → PDF bytes in memory
-        pdf_bytes = HTML(string=html_content).write_pdf()
+            # WeasyPrint renders HTML → PDF bytes in memory
+            pdf_bytes = HTML(string=html_content).write_pdf()
+        except Exception:
+            logger.error(mask_pii(f"PDF export render failed for job {job_id}"))
+            error_response = WrappedResponse(
+                error=ErrorDetail(
+                    code="PDF_EXPORT_FAILED",
+                    message="PDF generation failed. Please try again later.",
+                ),
+                meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+            )
+            return JSONResponse(status_code=500, content=error_response.model_dump())
 
         logger.info(
             "PDF export generated",
@@ -101,15 +111,13 @@ async def export_pdf(
             },
         )
 
-    except Exception as e:
-        logger.error(mask_pii(f"PDF export failed for job {job_id}: {e}"))
-        # Return streaming error response — no raw exception in user-facing content per D-C15/W-4
-        error_html = "<html><body><p>Export failed. Please try again.</p></body></html>"
-        error_pdf = HTML(string=error_html).write_pdf()
-        return StreamingResponse(
-            io.BytesIO(error_pdf),
-            media_type="application/pdf",
-            headers={
-                "Content-Disposition": "attachment; filename=cv-analysis-error.pdf"
-            },
+    except Exception:
+        logger.error(mask_pii(f"PDF export failed for job {job_id}"))
+        error_response = WrappedResponse(
+            error=ErrorDetail(
+                code="EXPORT_FETCH_FAILED",
+                message="Unable to export PDF at this time.",
+            ),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
+        return JSONResponse(status_code=500, content=error_response.model_dump())
