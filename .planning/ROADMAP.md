@@ -106,7 +106,7 @@ Plans:
 4. User can download analysis results as PDF and copy suggestions to clipboard
 5. System handles connection failures gracefully, implements responsive design, and logs errors without exposing sensitive data
 
-**Plans**: 14 plans across 4 waves (0–3)
+**Plans**: 16 plans across 4 waves (0–3)
 
 Plans:
 - [x] 04-00-PLAN.md — Setup: WeasyPrint install, shadcn textarea, 5 test stubs (Wave 0) ✅
@@ -123,6 +123,8 @@ Plans:
 - [x] 04-11-PLAN.md — Gap Closure: Fix export bar animation (Wave 1) ✅
 - [x] 04-12-PLAN.md — Gap Closure: Add WeasyPrint to requirements.txt (Wave 1)
 - [x] 04-13-PLAN.md — Gap Closure: Move ExportStickyBar outside main element (Wave 1)
+- [x] 04-14-PLAN.md — Gap Closure: Add original_text to SuggestionItem schema (Wave 1)
+- [ ] 04-15-PLAN.md — Gap Closure: Install WeasyPrint in conda environment (Wave 2)
 
 **UI hint**: yes
 
@@ -158,7 +160,7 @@ Plans:
 | 1. Foundation & Document Pipeline | 5/5 | ✅ Complete | 2026-04-05 |
 | 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
 | 3. AI Intelligence Layer | 5/5 | ✅ Complete | 2026-04-08 |
-| 4. Streaming & Comparison | 11/14 | 🔄 In Progress (gap closure) | 2026-04-08 |
+| 4. Streaming & Comparison | 13/16 | 🔄 In Progress (gap closure) | 2026-04-08 |
 | 5. Advanced Features | 0/5 | Not started | - |
 
 ## Phase Dependencies
