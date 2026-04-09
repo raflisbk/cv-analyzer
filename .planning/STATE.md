@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
+current_phase: 05
 status: unknown
-last_updated: "2026-04-09T08:53:43.132Z"
+last_updated: "2026-04-09T09:17:24.748Z"
 progress:
   total_phases: 5
   completed_phases: 3
@@ -15,7 +15,7 @@ progress:
 # Project State: CV Analyzer
 
 **Created:** 2026-04-03
-**Current Phase:** 04
+**Current Phase:** 05
 **Current Focus:** Phase 04 — streaming-comparison (gap closure round 2)
 
 ## Project Reference
@@ -39,8 +39,14 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 ## Current Position
 
+**Current Plan:** 18
+**Total Plans in Phase:** 18
+**Status:** Ready to execute
+**Last Activity:** 2026-04-09
+**Progress:** [███████░░░] 74%
+
 Phase: 04 (streaming-comparison (gap closure round 2)) — EXECUTING
-Plan: 2 of 2
+Plan: Not started
 **Phase:** 2 - Basic Analysis Engine
 **All Plans Complete:** 02-01 ✅ | 02-02 ✅ | 02-03 ✅ | 02-04 ✅ | 02-05 ✅ | 02-06 ✅
 **UAT:** 10/10 tests passed ✅
@@ -71,6 +77,8 @@ Plan: 2 of 2
 
 ### Key Decisions
 
+### Decisions Made
+
 | Decision | Rationale | Outcome |
 | -------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
 | FastAPI backend | Python async framework, ideal for AI/ML apps | ✅ Implemented |
@@ -98,6 +106,12 @@ Plan: 2 of 2
 | Phase 04 P14 | 1775723207 | 2 tasks | 3 files |
 | Phase 04 P14 | 480 | 2 tasks | 3 files |
 | Phase 04 P15 | 555 | 2 tasks | 1 files |
+| Phase 04 P16 | 11 min | 3 tasks | 4 files |
+- [Phase 04]: Replaced fallback export error PDF with structured JSON error contract to prevent double-failure render paths.
+- [Phase 04]: Pinned WeasyPrint to 61.2 in both pyproject and requirements to match runtime and eliminate install drift.
+| Phase 04 P17 | 8 min | 3 tasks | 5 files |
+- [Phase 04]: Normalize suggestion keys at results boundary before rendering components
+- [Phase 04]: Copy Suggestions now exports all visible items grouped by section in stable order
 
 ### Architecture Approach
 
@@ -127,7 +141,7 @@ Plan: 2 of 2
 
 ### Session Continuity
 
-**Last Session:** 2026-04-09T08:53:43.126Z
+**Last Session:** 2026-04-09T15:28:38.071Z
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**
