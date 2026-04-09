@@ -92,6 +92,21 @@ export interface SuggestionItem {
   originalText?: string;  // Original CV text for before/after comparison
 }
 
+/**
+ * API-facing suggestion item shape before UI normalization.
+ * Backend may emit `original_text` while frontend components consume `originalText`.
+ */
+export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText"> {
+  originalText?: string;
+  original_text?: string;
+}
+
+/** API-facing suggestion card shape before UI normalization. */
+export interface ApiSuggestionCard {
+  section: string;
+  suggestions: ApiSuggestionItem[];
+}
+
 export interface SuggestionCard {
   section: string; // e.g. "Experience", "Skills", "Summary"
   suggestions: SuggestionItem[];

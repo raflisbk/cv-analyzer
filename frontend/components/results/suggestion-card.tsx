@@ -128,9 +128,13 @@ export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
         {card.suggestions.map((item, i) => (
           <div key={i}>
             <SuggestionItemRow item={item} />
-            {/* Before/after toggle per D-C19, UX-02 */}
+            {/*
+              Before/after toggle per D-C19, UX-02.
+              Regression guard: this component intentionally reads normalized
+              camelCase `originalText` only.
+            */}
             <SuggestionBeforeAfter
-              beforeText={item.originalText}
+              beforeText={item.originalText?.trim() ? item.originalText : undefined}
               afterText={item.text}
               id={`${card.section}-${i}`}
             />

@@ -17,6 +17,7 @@ import { ResultsError } from "@/components/results/results-error";
 import { ResultsSkeleton } from "@/components/results/results-skeleton";
 import { ResultsTabs } from "@/components/results/results-tabs";
 import { ScoreRangeBadge } from "@/components/results/score-range-badge";
+import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
 
 export default function ResultsPage() {
   const params = useParams();
@@ -24,6 +25,7 @@ export default function ResultsPage() {
   const jobId = params.job_id as string;
 
   const { data, isLoading, isError, error, refetch } = useJobResults(jobId);
+  const normalizedResult = data ? normalizeAnalysisResult(data) : null;
 
   // Fetch job roles for Compare tab dropdown per D-C5, COMPARE-02
   const { data: jobRolesData } = useQuery<JobRole[]>({
@@ -59,7 +61,7 @@ export default function ResultsPage() {
   }
 
   // Failed analysis
-  if (data?.status === "failed") {
+  if (normalizedResult?.status === "failed") {
     return (
       <main className="min-h-screen bg-background py-12 px-4">
         <ResultsError type="failed" />
@@ -67,8 +69,8 @@ export default function ResultsPage() {
     );
   }
 
-  const isProcessing = !data || data.status !== "complete";
-  const isComplete = data?.status === "complete";
+  const isProcessing = !normalizedResult || normalizedResult.status !== "complete";
+  const isComplete = normalizedResult?.status === "complete";
 
   return (
     <>
@@ -109,34 +111,34 @@ export default function ResultsPage() {
             /* Complete state per UI-SPEC §7 C */
             <div className="space-y-8">
               {/* Overall score hero per UI-SPEC §7 C */}
-              {data.scores && (
+              {normalizedResult.scores && (
                 <div className="flex flex-col items-center py-8 gap-2">
                   <span
                     className="text-5xl font-bold"
                     style={{
                       color:
-                        data.scores.overall >= 80
+                        normalizedResult.scores.overall >= 80
                           ? "#16a34a"
-                          : data.scores.overall >= 60
+                          : normalizedResult.scores.overall >= 60
                             ? "#d97706"
                             : "#dc2626",
                     }}
                   >
-                    {data.scores.overall}
+                    {normalizedResult.scores.overall}
                   </span>
                   <p className="text-sm text-muted-foreground mt-1">
                     Overall Score
                   </p>
-                  <ScoreRangeBadge score={data.scores.overall} />
+                  <ScoreRangeBadge score={normalizedResult.scores.overall} />
                 </div>
               )}
 
               {/* Tabs: Overview | Scores | Skills | Grammar | Compare per D-20, Phase 4 */}
-              <ResultsTabs
-                result={data}
-                jobRoles={jobRolesData ?? []}
-                onCompareComplete={() => { void refetch(); }}
-              />
+                <ResultsTabs
+                  result={normalizedResult}
+                  jobRoles={jobRolesData ?? []}
+                  onCompareComplete={() => { void refetch(); }}
+                />
 
               {/* Analyze Another CV button per UI-SPEC §5 */}
               <div className="flex justify-center pt-4">
@@ -149,11 +151,11 @@ export default function ResultsPage() {
         </div>
       </main>
       {/* ExportStickyBar — slides up when analysis complete per UI-SPEC §7.5, D-C12 */}
-      {data && (
+      {normalizedResult && (
         <ExportStickyBar
           jobId={jobId}
-          analysisStatus={data.status}
-          topSuggestionText={data.suggestions?.[0]?.suggestions?.[0]?.text}
+          analysisStatus={normalizedResult.status}
+          topSuggestionText={normalizedResult.suggestions?.[0]?.suggestions?.[0]?.text}
         />
       )}
     </>
