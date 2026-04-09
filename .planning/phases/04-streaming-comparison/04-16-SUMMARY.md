@@ -69,7 +69,7 @@ Each task was committed atomically:
 2. **Task 2: Unify WeasyPrint version pin** - `bcd9011` (chore)
 3. **Task 3: Add export regression checks** - `4c8c63c` (test)
 
-**Plan metadata:** `TBD` (will be created as final docs commit for this plan)
+**Plan metadata:** `af2b2cb` (docs: complete plan)
 
 ## Files Created/Modified
 - `backend/app/api/v1/endpoints/export.py` - deterministic template path and guarded JSON error contract
