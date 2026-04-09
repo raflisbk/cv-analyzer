@@ -128,6 +128,7 @@ async def get_job_results(
                                 priority=item.get("priority", "quick_win"),
                                 text=item.get("text", ""),
                                 type=item.get("type", "action_verb"),
+                                original_text=item.get("original_text"),
                             )
                             for item in card.get("suggestions", [])
                         ],
