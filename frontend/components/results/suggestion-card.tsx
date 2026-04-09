@@ -62,6 +62,21 @@ interface SuggestionBeforeAfterProps {
   id: string;
 }
 
+function getNormalizedBeforeText(item: SuggestionItem): string | undefined {
+  const unsafeItem = item as unknown as Record<string, unknown>;
+  if (
+    process.env.NODE_ENV !== "production" &&
+    unsafeItem.original_text &&
+    !item.originalText
+  ) {
+    console.warn(
+      "Suggestion item includes original_text but missing normalized originalText"
+    );
+  }
+
+  return item.originalText?.trim() ? item.originalText : undefined;
+}
+
 function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAfterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const contentId = `suggestion-before-${id}`;
@@ -134,7 +149,7 @@ export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
               camelCase `originalText` only.
             */}
             <SuggestionBeforeAfter
-              beforeText={item.originalText?.trim() ? item.originalText : undefined}
+              beforeText={getNormalizedBeforeText(item)}
               afterText={item.text}
               id={`${card.section}-${i}`}
             />

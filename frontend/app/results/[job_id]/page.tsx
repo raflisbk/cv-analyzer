@@ -31,8 +31,9 @@ function buildSuggestionsClipboardText(
     return undefined;
   }
 
-  const sections = cards
-    .filter((card) => card.suggestions.length > 0)
+  // Regression guard: always build clipboard text from the full rendered suggestions list.
+  const cardsWithSuggestions = cards.filter((card) => card.suggestions.length > 0);
+  const sections = cardsWithSuggestions
     .map((card) => {
       const suggestionsText = card.suggestions
         .map((suggestion, index) => `${index + 1}. ${suggestion.text}`)
@@ -41,6 +42,20 @@ function buildSuggestionsClipboardText(
       return `${card.section}\n${suggestionsText}`;
     })
     .join("\n\n");
+
+  if (process.env.NODE_ENV !== "production") {
+    const renderedCount = cardsWithSuggestions.reduce(
+      (sum, card) => sum + card.suggestions.length,
+      0
+    );
+    const copiedCount = sections
+      .split("\n")
+      .filter((line) => /^\d+\.\s/.test(line))
+      .length;
+    if (copiedCount !== renderedCount) {
+      console.warn("Copy payload suggestion count mismatch detected");
+    }
+  }
 
   return `AI Improvement Suggestions\n\n${sections}`;
 }
