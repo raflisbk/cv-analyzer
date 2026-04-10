@@ -4,7 +4,7 @@ import { useEffect, useRef, ReactNode } from "react";
 interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
-  delay?: number; // ms delay before animation starts
+  delay?: number; // ms delay before transition starts
 }
 
 export default function ScrollReveal({
@@ -21,8 +21,8 @@ export default function ScrollReveal({
       ([entry]) => {
         if (entry.isIntersecting) {
           setTimeout(() => {
-            el.classList.add("animate-in", "fade-in-0", "slide-in-from-bottom-4");
-            el.style.animationFillMode = "both";
+            el.classList.remove("opacity-0", "translate-y-4");
+            el.classList.add("opacity-100", "translate-y-0");
           }, delay);
           observer.unobserve(el);
         }
@@ -36,7 +36,7 @@ export default function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={`opacity-0 duration-700 ${className}`}
+      className={`opacity-0 translate-y-4 transition-all duration-700 ease-out ${className}`}
       style={{ willChange: "opacity, transform" }}
     >
       {children}
