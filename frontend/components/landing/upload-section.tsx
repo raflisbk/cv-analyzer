@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { UploadZone } from "@/components/upload/upload-zone";
@@ -12,7 +12,15 @@ import { useUpload } from "@/hooks/use-upload";
 import { useJobStream } from "@/hooks/use-job-stream";
 import { toast } from "sonner";
 
-export default function UploadSection() {
+interface UploadSectionProps {
+  compact?: boolean;
+  onProcessingChange?: (isProcessing: boolean) => void;
+}
+
+export default function UploadSection({
+  compact = false,
+  onProcessingChange,
+}: UploadSectionProps) {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -20,6 +28,12 @@ export default function UploadSection() {
   const [isNavigating, setIsNavigating] = useState(false);
 
   const uploadMutation = useUpload();
+
+  // Report isProcessing state to parent (needed by UploadOverlay to block close)
+  useEffect(() => {
+    const processing = jobId !== null && completedJobId === null;
+    onProcessingChange?.(processing);
+  }, [jobId, completedJobId, onProcessingChange]);
 
   // Pass onComplete callback to useJobStream per D-19, UI-SPEC §8
   const { progress, isConnected, error: streamError } = useJobStream(jobId, {
@@ -60,9 +74,13 @@ export default function UploadSection() {
   };
 
   // Handle processing failed
+  const sectionClass = compact
+    ? "w-full"
+    : "min-h-screen flex items-center justify-center bg-slate-50 p-4";
+
   if (progress?.stage === "failed") {
     return (
-      <section className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <section className={sectionClass}>
         <div className="text-center space-y-4 max-w-md">
           <div className="text-6xl mb-4 text-red-600">✕</div>
           <h1 className="text-2xl font-semibold text-slate-900">
@@ -80,7 +98,7 @@ export default function UploadSection() {
   // Show "View Results" button after SSE 'complete' per D-19, UI-SPEC §7 A
   if (completedJobId) {
     return (
-      <section className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <section className={sectionClass}>
         <Card className="max-w-[600px] w-full mx-auto">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold text-foreground">
@@ -129,7 +147,7 @@ export default function UploadSection() {
   }
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+    <section className={sectionClass}>
       <div className="w-full max-w-4xl">
         {/* Per D-05: Upload component is hero-centered on landing page */}
         {showUploadZone && (

@@ -37,7 +37,7 @@ export default function FeaturesSection() {
           id="features-heading"
           className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground text-center mb-4"
         >
-          Why CV Analyzer?
+          Why pathkr?
         </h2>
         <p className="text-base text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
           AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility, and keyword relevance.
