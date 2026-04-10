@@ -39,15 +39,26 @@ Users upload CV files (PDF/DOC), receive comprehensive analysis including comple
 
 ### Active
 
-(None — all v1 requirements validated)
+- [ ] **LANDING-01**: Hero section with tagline and "Analyze My CV" CTA button
+- [ ] **LANDING-02**: Features section highlighting AI analyzer capabilities (3–4 key features)
+- [ ] **LANDING-03**: How It Works section with step-by-step visual flow
+- [ ] **LANDING-04**: Upload modal/drawer opens when CTA is clicked
+- [ ] **LANDING-05**: Scroll animations — fade-in and slide-up entrance effects on sections
+- [ ] **LANDING-06**: Minimal typography-first style consistent with existing shadcn/ui + Tailwind (Stripe/Notion feel)
+- [ ] **LANDING-07**: Navbar with logo and optional CTA link
 
-### Out of Scope
+## Current Milestone: v2.0 Seamless Homepage
 
-- User accounts and authentication (v1 is public anonymous access)
-- Payment processing (free portfolio project)
-- Mobile app (web-first, mobile responsive)
-- Real-time collaboration features
-- Video CV analysis (text-only for v1)
+**Goal:** Redesign homepage into a full landing page with strong visual hierarchy and seamless UX.
+
+**Target features:**
+- Hero section: tagline + "Analyze My CV" CTA button
+- Features section: highlight AI analyzer capabilities
+- How It Works: step-by-step visual flow
+- Upload modal/drawer: triggered by CTA click
+- Scroll animations: fade-in and slide-up entrance effects
+- Style: minimal, typography-first, whitespace-heavy (Stripe/Notion reference)
+- Navbar with logo
 
 ### Out of Scope
 
@@ -113,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-08 after Phase 4 (Streaming & Comparison) completion*
+*Last updated: 2026-04-10 — Milestone v2.0 Seamless Homepage started*
