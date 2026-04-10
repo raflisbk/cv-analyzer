@@ -5,6 +5,7 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { UploadModalProvider } from "@/components/providers/upload-modal-provider";
 import { Toaster } from "@/components/ui/sonner";
+import UploadOverlay from "@/components/landing/upload-overlay";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
         <QueryProvider>
           <UploadModalProvider>
             {children}
+            <UploadOverlay />
             <Toaster />
           </UploadModalProvider>
         </QueryProvider>
