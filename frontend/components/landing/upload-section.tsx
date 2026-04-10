@@ -62,7 +62,7 @@ export default function UploadSection() {
   // Handle processing failed
   if (progress?.stage === "failed") {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <section className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
         <div className="text-center space-y-4 max-w-md">
           <div className="text-6xl mb-4 text-red-600">✕</div>
           <h1 className="text-2xl font-semibold text-slate-900">
@@ -73,14 +73,14 @@ export default function UploadSection() {
           </p>
           <Button onClick={handleReset}>Try Again</Button>
         </div>
-      </main>
+      </section>
     );
   }
 
   // Show "View Results" button after SSE 'complete' per D-19, UI-SPEC §7 A
   if (completedJobId) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <section className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
         <Card className="max-w-[600px] w-full mx-auto">
           <CardContent className="p-6 space-y-4">
             <h2 className="text-xl font-semibold text-foreground">
@@ -124,12 +124,12 @@ export default function UploadSection() {
             </Button>
           </CardContent>
         </Card>
-      </main>
+      </section>
     );
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+    <section className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-4xl">
         {/* Per D-05: Upload component is hero-centered on landing page */}
         {showUploadZone && (
@@ -177,6 +177,6 @@ export default function UploadSection() {
           </div>
         )}
       </div>
-    </main>
+    </section>
   );
 }
