@@ -41,13 +41,29 @@
     border: 1px solid #e2e8f0; border-radius: 8px;
     padding: 16px; margin-bottom: 12px;
   }
-  .suggestion-item { margin-bottom: 12px; padding-left: 12px;
-                     border-left: 3px solid #3b82f6; }
+  .suggestion-item { margin-bottom: 14px; padding: 10px 12px;
+                     border-left: 3px solid #3b82f6; background: #f8fafc; border-radius: 4px; }
   .suggestion-section { font-weight: 600; margin-bottom: 4px; }
+  .before-after { margin-top: 8px; }
+  .before-block { background: #fee2e2; border-radius: 4px; padding: 6px 10px;
+                  margin-bottom: 4px; font-size: 12px; }
+  .after-block  { background: #dcfce7; border-radius: 4px; padding: 6px 10px;
+                  font-size: 12px; }
+  .before-label { font-size: 10px; font-weight: 700; color: #dc2626;
+                  text-transform: uppercase; margin-bottom: 2px; }
+  .after-label  { font-size: 10px; font-weight: 700; color: #16a34a;
+                  text-transform: uppercase; margin-bottom: 2px; }
   .ats-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
-  .grammar-item { margin-bottom: 8px; }
-  .grammar-original { color: #ef4444; }
-  .grammar-suggestion { color: #22c55e; }
+  .grammar-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 10px; padding: 8px 10px;
+    border-left: 3px solid #f87171; background: #fff7f7; border-radius: 4px;
+  }
+  .grammar-bullet { color: #ef4444; font-size: 16px; line-height: 1.4; flex-shrink: 0; }
+  .grammar-original { color: #dc2626; font-weight: 600; }
+  .grammar-arrow { color: #94a3b8; margin: 0 4px; }
+  .grammar-suggestion { color: #16a34a; font-weight: 600; }
+  .grammar-rule { color: #94a3b8; font-size: 11px; margin-left: 4px; }
   .match-score-big {
     font-size: 48px; font-weight: 700;
     text-align: center; margin: 16px 0 4px;
@@ -125,17 +141,21 @@
 {% if grammar_issues %}
 <h2>Grammar &amp; Spelling</h2>
 {% for issue in grammar_issues[:20] %}
+{% set text = issue.text if issue.text is defined else issue['text'] %}
+{% set suggestion = issue.suggestion if issue.suggestion is defined else issue['suggestion'] %}
+{% set rule = issue.rule if issue.rule is defined else issue['rule'] %}
 <div class="grammar-item">
-  {% set text = issue.text if issue.text is defined else issue['text'] %}
-  {% set suggestion = issue.suggestion if issue.suggestion is defined else issue['suggestion'] %}
-  {% set rule = issue.rule if issue.rule is defined else issue['rule'] %}
-  <span class="grammar-original">"{{ text }}"</span>
-  &rarr; <span class="grammar-suggestion">{{ suggestion }}</span>
-  <span style="color:#94a3b8;font-size:11px;">({{ rule }})</span>
+  <span class="grammar-bullet">&#8226;</span>
+  <div>
+    <span class="grammar-original">"{{ text }}"</span>
+    <span class="grammar-arrow">&rarr;</span>
+    <span class="grammar-suggestion">{{ suggestion }}</span>
+    <span class="grammar-rule">({{ rule }})</span>
+  </div>
 </div>
 {% endfor %}
 {% if grammar_issues | length > 20 %}
-<p style="color:#64748b;font-size:12px;">... and {{ grammar_issues | length - 20 }} more issues</p>
+<p style="color:#64748b;font-size:12px;margin-top:4px;">... and {{ grammar_issues | length - 20 }} more issues</p>
 {% endif %}
 {% endif %}
 
@@ -150,11 +170,29 @@
   {% for item in card_suggestions %}
   {% set priority = item.priority if item.priority is defined else item['priority'] %}
   {% set item_text = item.text if item.text is defined else item['text'] %}
+  {% set orig = item.original_text if item.original_text is defined else item.get('original_text', None) if item.get is defined else None %}
+  {% set improved = item.after_text if item.after_text is defined else item.get('after_text', None) if item.get is defined else None %}
   <div class="suggestion-item">
     <span class="badge {% if priority == 'high_impact' %}badge-fail{% else %}badge-warn{% endif %}">
       {{ priority | replace('_', ' ') | title }}
     </span>
-    {{ item_text }}
+    <div style="margin-top:4px;">{{ item_text }}</div>
+    {% if orig or improved %}
+    <div class="before-after">
+      {% if orig %}
+      <div class="before-block">
+        <div class="before-label">Before</div>
+        <div>{{ orig }}</div>
+      </div>
+      {% endif %}
+      {% if improved %}
+      <div class="after-block">
+        <div class="after-label">After</div>
+        <div>{{ improved }}</div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
   {% endfor %}
 </div>

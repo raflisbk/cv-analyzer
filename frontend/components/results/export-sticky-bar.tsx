@@ -52,29 +52,27 @@ export function ExportStickyBar({
   async function handleDownloadPdf() {
     toast("Preparing PDF download...");
     try {
-      console.log(`Fetching PDF from: /api/v1/jobs/${jobId}/export/pdf`);
       const response = await fetch(`/api/v1/jobs/${jobId}/export/pdf`);
-
-      console.log(`Response status: ${response.status}`, response);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('PDF generation failed:', errorText);
         throw new Error(`PDF generation failed: ${response.status} ${errorText}`);
       }
 
       const blob = await response.blob();
-      console.log(`PDF blob size: ${blob.size} bytes`);
-
       if (blob.size === 0) {
         throw new Error("Received empty PDF");
       }
 
+      // Prefer server-provided filename from Content-Disposition, fallback to default
+      const disposition = response.headers.get("content-disposition") ?? "";
+      const match = disposition.match(/filename="?([^";]+)"?/);
+      const filename = match?.[1] ?? `cv-analyze-${jobId.slice(0, 8)}.pdf`;
+
       const url = URL.createObjectURL(blob);
-      // Trigger browser download dialog
       const a = document.createElement("a");
       a.href = url;
-      a.download = `cv-analysis-${jobId.slice(0, 8)}.pdf`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -82,8 +80,7 @@ export function ExportStickyBar({
 
       toast.success("PDF downloaded successfully");
     } catch (error) {
-      console.error('PDF download error:', error);
-      toast.error(`PDF download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
   }
 
@@ -107,7 +104,6 @@ export function ExportStickyBar({
             variant="outline"
             size="sm"
             onClick={handleCopySuggestion}
-            className="min-h-[44px]"
             aria-label="Copy all suggestions to clipboard"
           >
             {copySuccess
@@ -122,7 +118,6 @@ export function ExportStickyBar({
             variant="default"
             size="sm"
             onClick={handleDownloadPdf}
-            className="min-h-[44px]"
             aria-label="Download analysis as PDF"
           >
             <Download className="h-4 w-4 mr-2" />

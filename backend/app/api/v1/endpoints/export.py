@@ -109,11 +109,19 @@ async def export_pdf(
             extra={"job_id": job_id, "pdf_bytes": len(pdf_bytes)},
         )
 
+        # Build export filename: strip extension from original CV filename,
+        # sanitize, then append short job ID. e.g. "John_Doe_CV-a1b2c3d4.pdf"
+        original_name = (job.file_metadata or {}).get("filename", "")
+        base_name = Path(original_name).stem  # drop .pdf/.docx
+        # Keep only alphanumerics, spaces, hyphens, underscores; replace spaces → _
+        safe_prefix = "".join(c if c.isalnum() or c in "-_" else "_" for c in base_name).strip("_")
+        export_filename = f"cv-analyze-{safe_prefix}-{str(job.id)[:8]}.pdf" if safe_prefix else f"cv-analyze-{str(job.id)[:8]}.pdf"
+
         return StreamingResponse(
             io.BytesIO(pdf_bytes),
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"attachment; filename=cv-analysis-{str(job.id)[:8]}.pdf"
+                "Content-Disposition": f'attachment; filename="{export_filename}"'
             },
         )
 
