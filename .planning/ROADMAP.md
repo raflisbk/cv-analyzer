@@ -12,6 +12,14 @@
 - [x] **Phase 4: Streaming & Comparison** - Real-time UX, job comparison, and visualizations ✅ **COMPLETE** (2026-04-06)
 - [ ] **Phase 5: Advanced Features** - RAG knowledge base and polish (optional)
 
+## v2.0 — Seamless Homepage
+
+- [x] **Phase 6: Infrastructure & Primitives** - Font wiring, RSC shell, Dialog primitive (zero-risk prerequisites) (completed 2026-04-10)
+- [x] **Phase 7: Static Landing Sections** - Navbar, Features, How It Works server components (completed 2026-04-10)
+- [x] **Phase 8: Upload Modal + Navbar Expansion** - Brand "pathkr", multi-product navbar, full marketing homepage, full-screen upload overlay ✅ **COMPLETE**
+- [ ] **Phase 9: Hero Integration** - HeroWithModal client island + RSC page shell (now covered in Phase 8)
+- [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
+
 ## Phase Details
 
 ### Phase 1: Foundation & Document Pipeline
@@ -155,6 +163,117 @@ Plans:
 
 **Note**: This phase is optional polish if Phases 1-4 are complete and robust. All v1 requirements are covered in Phases 1-4.
 
+---
+
+## v2.0 — Seamless Homepage Phase Details
+
+### Phase 6: Infrastructure & Primitives
+
+**Goal**: Foundation is laid so all landing page components can build without blockers
+
+**Depends on**: Phase 5 (or independently: v1.0 codebase complete)
+
+**Requirements**: INFRA-01, INFRA-02, INFRA-03
+
+**Success Criteria** (what must be TRUE):
+  1. Inter font renders consistently sitewide — any text in new sections uses Inter, not system fallback font
+  2. `app/page.tsx` is a React Server Component — `"use client"` directive removed, Next.js build shows it as RSC with no JS bundle inflation
+  3. `components/ui/dialog.tsx` exists and is importable — `npx shadcn@latest add dialog` completed successfully
+
+**Plans**: 3 plans across 3 waves
+
+Plans:
+- [x] 06-01-PLAN.md — Font wiring (INFRA-01) + Dialog install (INFRA-03) (Wave 1)
+- [x] 06-02-PLAN.md — RSC shell extraction: upload-section.tsx island + page.tsx rewrite (INFRA-02) (Wave 2)
+- [x] 06-03-PLAN.md — ScrollReveal primitive + globals.css reduced-motion overrides + final build verify (Wave 3)
+
+**UI hint**: yes
+
+### Phase 7: Static Landing Sections
+
+**Goal**: Users can see a fully-styled landing page skeleton — sticky navbar, feature cards, and how-it-works steps
+
+**Depends on**: Phase 6 (RSC shell + Inter font wired)
+
+**Requirements**: NAV-01, FEAT-01, FEAT-02, HIWS-01
+
+**Success Criteria** (what must be TRUE):
+  1. A sticky navbar is visible at the top of every scroll position with the app logo and "Analyze My CV" CTA button
+  2. Three feature cards (AI Scoring, Skill Gap Analysis, Job Match Comparison) display with icons and one-sentence descriptions
+  3. Feature cards visually lift with a shadow on hover (`hover:-translate-y-1 hover:shadow-md`)
+  4. A four-step "How It Works" flow (Upload → Analyze → Compare → Export) is visible with step connectors on desktop
+
+**Plans**: 3 plans across 3 waves
+
+Plans:
+- [x] 07-01-PLAN.md — Foundation fixes: globals.css scroll-behavior + upload-section.tsx main→section (Wave 1)
+- [x] 07-02-PLAN.md — Navbar + FeaturesSection RSC components (Wave 2)
+- [x] 07-03-PLAN.md — HowItWorksSection + page.tsx full landing composition (Wave 3)
+
+**UI hint**: yes
+
+### Phase 8: Upload Modal + Navbar Expansion
+
+**Goal**: Brand "pathkr" launches — full product marketing homepage, multi-product navbar, and full-screen upload overlay
+
+**Depends on**: Phase 6 (Dialog primitive available), Phase 7 (landing sections as base)
+
+**Requirements**: MODAL-01, MODAL-02, MODAL-03, NAV-02, HOME-01, HOME-02, HOME-03
+
+**Success Criteria** (what must be TRUE):
+  1. Brand renamed to "pathkr" sitewide (navbar logo, page title, meta description)
+  2. Navbar has 3 product links: CV Builder → /cv-builder, CV Analyzer → upload overlay, Job Finding → /job-finding
+  3. /cv-builder and /job-finding show "Coming Soon" placeholder pages
+  4. Homepage is a full marketing page: Hero + Product Cards + Features + How It Works + Stats
+  5. "Start Analyzing" CTA (hero and navbar) opens a full-screen upload overlay
+  6. Existing upload zone, SSE streaming, and auto-navigation to results work inside the overlay — zero regression
+  7. Overlay close is blocked while upload or analysis is in progress
+
+**Plans**: 5 plans across 3 waves (complete)
+
+Plans:
+- [x] 08-01-PLAN.md — Foundation: Sheet install, UploadModalProvider, brand rename, dialog + upload-section mods (Wave 1) ✅
+- [x] 08-02-PLAN.md — Navbar Overhaul: pathkr logo, 3 product links, Sheet mobile drawer (Wave 2) ✅
+- [x] 08-03-PLAN.md — Upload Overlay: full-screen Dialog with processing lock (Wave 2) ✅
+- [x] 08-04-PLAN.md — Homepage Sections: HeroSection, ProductsSection, ProductCardCTA island, StatsSection (Wave 2) ✅
+- [x] 08-05-PLAN.md — Coming Soon Pages + page.tsx Final Assembly (Wave 3) ✅
+
+**UI hint**: yes
+
+### Phase 9: Hero Integration
+
+**Goal**: Users land on a visually compelling hero section that immediately communicates product value and invites action
+
+**Depends on**: Phase 7 (static sections complete), Phase 8 (upload modal ready)
+
+**Requirements**: HERO-01, HERO-02, HERO-03
+
+**Success Criteria** (what must be TRUE):
+  1. Hero section displays an outcome-first headline with a sub-headline listing all 4 scoring dimensions (clarity, impact, ATS, keywords)
+  2. Clicking the hero "Analyze My CV" CTA opens the upload modal — same modal as the navbar CTA
+  3. The hero keyword renders with a blue-to-indigo gradient text effect and a subtle dot-grid pattern covers the hero background
+
+**Plans**: TBD
+
+**UI hint**: yes
+
+### Phase 10: Animation Polish
+
+**Goal**: The homepage feels polished and accessible — sections animate on scroll, and all motion preferences are respected
+
+**Depends on**: Phase 9 (all sections visible and integrated)
+
+**Requirements**: ANIM-01, ANIM-02, HIWS-02
+
+**Success Criteria** (what must be TRUE):
+  1. Each landing section (navbar excluded) fades in and slides up when it enters the viewport for the first time on scroll
+  2. The score counter in "How It Works" Step 3 counts up from 0 to the target value when that section scrolls into view
+  3. All CSS entrance animations and the score counter animation are completely suppressed when the user's OS reports `prefers-reduced-motion: reduce`
+
+**Plans**: TBD
+
+**UI hint**: yes
+
 ## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
@@ -162,8 +281,13 @@ Plans:
 | 1. Foundation & Document Pipeline | 5/5 | ✅ Complete | 2026-04-05 |
 | 2. Basic Analysis Engine | 6/6 | ✅ Complete | 2026-04-06 |
 | 3. AI Intelligence Layer | 5/5 | ✅ Complete | 2026-04-08 |
-| 4. Streaming & Comparison | 13/18 | 🔄 In Progress (gap closure) | 2026-04-09 |
+| 4. Streaming & Comparison | 18/18 | Complete   | 2026-04-09 |
 | 5. Advanced Features | 0/5 | Not started | - |
+| 6. Infrastructure & Primitives | 3/3 | Complete   | 2026-04-10 |
+| 7. Static Landing Sections | 3/3 | Complete   | 2026-04-10 |
+| 8. Upload Modal + Navbar Expansion | 5/5 | ✅ Complete | 2026-01-27 |
+| 9. Hero Integration | 0/0 | Not started | - |
+| 10. Animation Polish | 0/0 | Not started | - |
 
 ## Phase Dependencies
 
@@ -177,6 +301,18 @@ Phase 3: AI Intelligence (requires basic scoring)
 Phase 4: Streaming & Comparison (requires AI analysis)
     ↓
 Phase 5: Advanced Features (optional polish)
+
+── v2.0 Seamless Homepage ──────────────────────────
+
+Phase 6: Infrastructure & Primitives (font, RSC shell, Dialog)
+    ↓
+Phase 7: Static Landing Sections (navbar, features, how-it-works)
+Phase 8: Upload Modal Migration ──────────────────────────┐
+    (both unblock Phase 9 — can build in parallel)        │
+                                              ↓           ↓
+                                         Phase 9: Hero Integration
+                                              ↓
+                                         Phase 10: Animation Polish
 ```
 
 ## Coverage Summary
@@ -184,6 +320,22 @@ Phase 5: Advanced Features (optional polish)
 **Total v1 requirements:** 47
 **Mapped to phases:** 47 ✓
 **Orphaned requirements:** 0
+
+### v2.0 Coverage Summary
+
+**Total v2.0 requirements:** 16
+**Mapped to phases:** 16 ✓
+**Orphaned requirements:** 0
+
+### Requirement Distribution (v2.0)
+
+| Phase | Requirements | Categories |
+|-------|--------------|------------|
+| 6 | 3 | Infrastructure Fixes (3) |
+| 7 | 4 | Navbar (1) + Features (2) + How It Works partial (1) |
+| 8 | 3 | Upload Modal (3) |
+| 9 | 3 | Hero Section (3) |
+| 10 | 3 | Scroll Animations (2) + How It Works counter (1) |
 
 ### Requirement Distribution
 
@@ -199,5 +351,5 @@ Phase 5: Advanced Features (optional polish)
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-09 (Phase 4 gap closure plans 04-16, 04-17 added)*
-*Next: `/gsd:execute-phase 04 --gaps-only`*
+*Last updated: 2026-04-10 (v2.0 Seamless Homepage phases 6–10 added)*
+*Next: `/gsd-plan-phase 6`*
