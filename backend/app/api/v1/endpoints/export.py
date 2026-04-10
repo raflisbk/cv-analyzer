@@ -4,9 +4,11 @@ GET /jobs/{id}/export/pdf — streams WeasyPrint-rendered PDF of full analysis.
 Uses Jinja2 template: app/templates/cv_analysis_report.html
 """
 
+import asyncio
 import io
 import uuid
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 
 from fastapi import APIRouter, Depends
@@ -85,10 +87,14 @@ async def export_pdf(
             template = _jinja_env.get_template("cv_analysis_report.html")
             html_content = template.render(**template_context)
 
-            # WeasyPrint renders HTML → PDF bytes in memory
-            pdf_bytes = HTML(string=html_content).write_pdf()
+            # WeasyPrint is synchronous/CPU-bound; run in thread executor
+            # to avoid blocking the async event loop.
+            loop = asyncio.get_running_loop()
+            pdf_bytes = await loop.run_in_executor(
+                None, partial(HTML(string=html_content).write_pdf)
+            )
         except Exception:
-            logger.error(mask_pii(f"PDF export render failed for job {job_id}"))
+            logger.exception(mask_pii(f"PDF export render failed for job {job_id}"))
             error_response = WrappedResponse(
                 error=ErrorDetail(
                     code="PDF_EXPORT_FAILED",
@@ -112,7 +118,7 @@ async def export_pdf(
         )
 
     except Exception:
-        logger.error(mask_pii(f"PDF export failed for job {job_id}"))
+        logger.exception(mask_pii(f"PDF export failed for job {job_id}"))
         error_response = WrappedResponse(
             error=ErrorDetail(
                 code="EXPORT_FETCH_FAILED",

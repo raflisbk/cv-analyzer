@@ -35,7 +35,10 @@ dependencies = [
     "pgvector>=0.3.0",
     # Linux/Railway: apt-get install -y libpango-1.0-0 libcairo2 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
     # Windows dev: conda install -n sbk-cv-analyzer -c conda-forge weasyprint
-    "weasyprint==61.2",
+    # weasyprint 60.0 + pydyf 0.8.0 is the last known-compatible pair on PyPI (2025-04).
+    # Newer weasyprint versions require pydyf.PDF(version, identifier) which pydyf ≤0.12.1 doesn't support.
+    "weasyprint==60.0",
+    "pydyf==0.8.0",
 ]
 
 [tool.setuptools]

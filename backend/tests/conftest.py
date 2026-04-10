@@ -3,9 +3,25 @@ Shared pytest fixtures for Phase 2 tests.
 All fixtures use mocks/fakes — no real spaCy model, no real OpenAI calls, no DB.
 """
 
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+
+# ---------------------------------------------------------------------------
+# Stub out optional heavy dependencies that may not be installed in the
+# test runner environment (e.g. base conda env without spacy/easyocr).
+# These stubs must be injected into sys.modules BEFORE any app module is
+# imported, so they go at module scope here in conftest.py.
+# ---------------------------------------------------------------------------
+for _mod in ("spacy", "easyocr", "cv2", "pdf2image"):
+    if _mod not in sys.modules:
+        sys.modules[_mod] = MagicMock()  # type: ignore[assignment]
+
+# spacy.load must return a callable mock that behaves like an nlp object
+if hasattr(sys.modules["spacy"], "load"):
+    sys.modules["spacy"].load = MagicMock(return_value=MagicMock())
 
 
 SAMPLE_CV_TEXT = """
