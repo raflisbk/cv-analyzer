@@ -1,5 +1,4 @@
 import { ChevronRight } from "lucide-react";
-import ScrollReveal from "@/components/landing/scroll-reveal";
 
 export default function HowItWorksSection() {
   return (
@@ -15,8 +14,7 @@ export default function HowItWorksSection() {
           How It Works
         </h2>
 
-        <ScrollReveal delay={100}>
-          <div className="flex flex-col md:flex-row md:items-start gap-8 md:gap-0">
+        <div className="flex flex-col md:flex-row md:items-start gap-8 md:gap-0">
             {/* Step 1 */}
             <div className="flex-1 text-center px-4">
               <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary text-primary font-semibold text-lg flex items-center justify-center mx-auto mb-4">
@@ -88,7 +86,6 @@ export default function HowItWorksSection() {
               </p>
             </div>
           </div>
-        </ScrollReveal>
       </div>
     </section>
   );
