@@ -15,7 +15,7 @@ export default function UploadOverlay() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleClose = () => {
-    if (!isProcessing) closeModal();
+    if (!isProcessing) { closeModal(); }
   };
 
   return (
@@ -30,7 +30,7 @@ export default function UploadOverlay() {
                    duration-200"
         // Block close during processing
         onEscapeKeyDown={(e) => {
-          if (isProcessing) e.preventDefault();
+          if (isProcessing) { e.preventDefault(); }
         }}
         // Always block outside-click (user must use the explicit × button)
         onInteractOutside={(e) => e.preventDefault()}

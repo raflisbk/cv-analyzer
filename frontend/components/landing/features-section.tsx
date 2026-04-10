@@ -40,7 +40,8 @@ export default function FeaturesSection() {
           Why pathkr?
         </h2>
         <p className="text-base text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-          AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility, and keyword relevance.
+          AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility, and keyword
+          relevance.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {features.map(({ Icon, title, description }) => (

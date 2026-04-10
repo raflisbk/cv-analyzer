@@ -31,6 +31,6 @@ export function UploadModalProvider({ children }: { children: ReactNode }) {
 
 export function useUploadModal() {
   const ctx = useContext(UploadModalContext);
-  if (!ctx) throw new Error("useUploadModal must be used within UploadModalProvider");
+  if (!ctx) { throw new Error("useUploadModal must be used within UploadModalProvider"); }
   return ctx;
 }

@@ -33,7 +33,7 @@ export default function CVBuilderPage() {
           Build standout CVs with AI guidance.
         </p>
 
-        {/* Email capture — static, no backend (per CONTEXT.md deferred: Notify Me email backend) */}
+        {/* Email capture — static, no backend */}
         <div className="flex flex-col items-center gap-3 w-full max-w-sm">
           <input
             type="email"
