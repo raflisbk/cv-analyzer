@@ -32,6 +32,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Accessibility: respect prefers-reduced-motion (per UI-SPEC section 9) */
