@@ -20,6 +20,8 @@ from app.schemas.analysis import (
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.workspace import (
     WorkspaceAnalysisContext,
+    WorkspaceContentPatch,
+    WorkspaceContentSaveResult,
     WorkspaceDocumentPayload,
     WorkspaceFileInfo,
     WorkspaceHydration,
@@ -215,6 +217,10 @@ async def get_workspace_hydration(
         elif _is_workspace_ready(job.status, source_text, sections, analysis):
             workspace_status = "ready"
 
+        safe_workspace_draft = (
+            job.workspace_draft if isinstance(job.workspace_draft, dict) else None
+        )
+
         hydration = WorkspaceHydration(
             job_id=str(job.id),
             status=workspace_status,
@@ -222,6 +228,7 @@ async def get_workspace_hydration(
             document=WorkspaceDocumentPayload(
                 source_text=source_text,
                 sections=sections,
+                draft_content=safe_workspace_draft.get("sections") if safe_workspace_draft else None,
             ),
             analysis=analysis,
             navigation=navigation,
@@ -236,5 +243,50 @@ async def get_workspace_hydration(
     except Exception as exc:
         return WrappedResponse(
             error=ErrorDetail(code="WORKSPACE_FETCH_FAILED", message=str(exc)),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+
+@router.patch(
+    "/jobs/{job_id}/workspace/content",
+    response_model=WrappedResponse[WorkspaceContentSaveResult],
+    summary="Save workspace draft content for a job",
+)
+async def patch_workspace_content(
+    job_id: str,
+    body: WorkspaceContentPatch,
+    db: AsyncSession = Depends(get_db),
+) -> WrappedResponse[WorkspaceContentSaveResult]:
+    """Upsert the workspace draft sections (Tiptap JSON) for a job. (D-10, D-11, D-12)"""
+    request_id = str(uuid.uuid4())
+    timestamp = datetime.now(UTC).isoformat()
+
+    try:
+        stmt = select(Job).where(Job.id == job_id)
+        result = await db.execute(stmt)
+        job = result.scalar_one_or_none()
+
+        if not job:
+            return WrappedResponse(
+                error=ErrorDetail(
+                    code="JOB_NOT_FOUND",
+                    message=f"Job {job_id} not found.",
+                ),
+                meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+            )
+
+        # Store draft as JSONB — sections keyed by section type
+        job.workspace_draft = {"sections": body.sections}
+        await db.commit()
+
+        return WrappedResponse(
+            data=WorkspaceContentSaveResult(saved=True, updated_at=timestamp),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+    except Exception as exc:
+        await db.rollback()
+        return WrappedResponse(
+            error=ErrorDetail(code="DRAFT_SAVE_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )

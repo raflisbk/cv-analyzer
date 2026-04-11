@@ -1,6 +1,6 @@
 """Workspace hydration schemas for Phase 11."""
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -27,6 +27,7 @@ class WorkspaceDocumentPayload(BaseModel):
 
     source_text: str | None = None
     sections: list[SectionResult] = Field(default_factory=list)
+    draft_content: dict | None = None  # Phase 12: loaded draft if job has workspace_draft
 
 
 class WorkspaceAnalysisContext(BaseModel):
@@ -56,3 +57,19 @@ class WorkspaceHydration(BaseModel):
     analysis: WorkspaceAnalysisContext
     navigation: WorkspaceNavigation
     error: str | None = None
+
+
+# Phase 12: Draft content patch schemas (D-10, D-11, D-12)
+
+
+class WorkspaceContentPatch(BaseModel):
+    """Draft content PATCH body — sections keyed by section type string."""
+
+    sections: dict[str, Any]  # { sectionType: TiptapJSONContent }
+
+
+class WorkspaceContentSaveResult(BaseModel):
+    """Response after successful workspace draft save."""
+
+    saved: bool
+    updated_at: str

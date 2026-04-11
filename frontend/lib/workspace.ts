@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import type { JSONContent } from "@tiptap/core";
 import type {
   AtsCheck,
   ComparisonResult,
@@ -17,6 +18,7 @@ export interface WorkspaceFileInfo {
 export interface WorkspaceDocumentPayload {
   source_text: string | null;
   sections: SectionResult[];
+  draft_content?: Record<string, JSONContent> | null; // Phase 12: per-section Tiptap JSON draft
 }
 
 export interface WorkspaceAnalysisContext {
