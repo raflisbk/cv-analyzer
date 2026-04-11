@@ -227,7 +227,7 @@ def test_get_workspace_returns_failed_state_with_error_and_navigation(
 
     assert payload["error"] is None
     assert payload["data"]["status"] == "failed"
-    assert payload["data"]["job_error"] == "Document extraction failed."
+    assert payload["data"]["error"] == "Document extraction failed."
     assert payload["data"]["navigation"] == {
         "workspace_url": f"/workspace/{mock_failed_job.id}",
         "results_url": f"/results/{mock_failed_job.id}",

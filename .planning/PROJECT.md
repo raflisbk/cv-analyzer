@@ -39,26 +39,26 @@ Users upload CV files (PDF/DOC), receive comprehensive analysis including comple
 
 ### Active
 
-- [ ] **LANDING-01**: Hero section with tagline and "Analyze My CV" CTA button
-- [ ] **LANDING-02**: Features section highlighting AI analyzer capabilities (3–4 key features)
-- [ ] **LANDING-03**: How It Works section with step-by-step visual flow
-- [ ] **LANDING-04**: Upload modal/drawer opens when CTA is clicked
-- [ ] **LANDING-05**: Scroll animations — fade-in and slide-up entrance effects on sections
-- [ ] **LANDING-06**: Minimal typography-first style consistent with existing shadcn/ui + Tailwind (Stripe/Notion feel)
-- [ ] **LANDING-07**: Navbar with logo and optional CTA link
+- [ ] **WORKSPACE-01**: After upload, user is redirected into a dedicated CV workspace page instead of waiting only on the current results view
+- [ ] **WORKSPACE-02**: Workspace renders the parsed CV as editable content blocks with preserved section structure
+- [ ] **WORKSPACE-03**: User can edit both CV copy and visual layout/formatting directly in the workspace
+- [ ] **WORKSPACE-04**: AI agent can propose and apply inline rewrites per block, section, or targeted action
+- [ ] **WORKSPACE-05**: Analysis scores, ATS signals, job-match context, and action queue remain visible while editing
+- [ ] **WORKSPACE-06**: User can preview and export/download a newly edited CV version without requiring an account
+- [ ] **WORKSPACE-07**: Current results page remains available as a separate view, linked from the workspace
 
-## Current Milestone: v2.0 Seamless Homepage
+## Current Milestone: v3.0 Agentic CV Workspace
 
-**Goal:** Redesign homepage into a full landing page with strong visual hierarchy and seamless UX.
+**Goal:** Transform CV Analyzer from a static results experience into an editable AI workspace where users can review, rewrite, format, preview, and export improved CV versions.
 
 **Target features:**
-- Hero section: tagline + "Analyze My CV" CTA button
-- Features section: highlight AI analyzer capabilities
-- How It Works: step-by-step visual flow
-- Upload modal/drawer: triggered by CTA click
-- Scroll animations: fade-in and slide-up entrance effects
-- Style: minimal, typography-first, whitespace-heavy (Stripe/Notion reference)
-- Navbar with logo
+- Dedicated workspace route after upload completion
+- Parsed CV rendered as editable sections/blocks
+- Inline text editing plus visual layout/formatting controls
+- Agentic editing actions (rewrite, strengthen bullets, ATS-safe cleanup, job tailoring)
+- Persistent analysis cockpit: score cards, ATS signals, job-match context, action queue
+- Live preview + export/download edited CV without user accounts
+- Existing results page preserved as a parallel, read-only analysis destination
 
 ### Out of Scope
 
@@ -67,6 +67,9 @@ Users upload CV files (PDF/DOC), receive comprehensive analysis including comple
 - Mobile app (web-first, mobile responsive)
 - Real-time collaboration features
 - Video CV analysis (text-only for v1)
+- Saved draft history across sessions without authentication
+- Multi-user collaboration or review comments
+- Template marketplace / full CV builder product scope
 
 ## Context
 
@@ -124,4 +127,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 — Milestone v2.0 Seamless Homepage started*
+*Last updated: 2026-04-11 — Milestone v3.0 Agentic CV Workspace started*

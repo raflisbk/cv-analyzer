@@ -225,7 +225,7 @@ async def get_workspace_hydration(
             ),
             analysis=analysis,
             navigation=navigation,
-            job_error=job.error,
+            error=job.error,
         )
 
         return WrappedResponse(

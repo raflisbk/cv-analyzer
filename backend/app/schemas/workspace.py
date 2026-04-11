@@ -55,4 +55,4 @@ class WorkspaceHydration(BaseModel):
     document: WorkspaceDocumentPayload
     analysis: WorkspaceAnalysisContext
     navigation: WorkspaceNavigation
-    job_error: str | None = None
+    error: str | None = None
