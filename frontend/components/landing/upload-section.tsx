@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { UploadZone } from "@/components/upload/upload-zone";
@@ -9,6 +9,7 @@ import { ProcessingStages } from "@/components/upload/processing-stages";
 import { useUpload } from "@/hooks/use-upload";
 import { useJobStream } from "@/hooks/use-job-stream";
 import { useUploadModal } from "@/components/providers/upload-modal-provider";
+import { getWorkspaceRoute } from "@/lib/job-routes";
 import { toast } from "sonner";
 
 interface UploadSectionProps {
@@ -25,6 +26,7 @@ export default function UploadSection({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [completedJobId, setCompletedJobId] = useState<string | null>(null);
+  const hasNavigatedToWorkspaceRef = useRef(false);
 
   const uploadMutation = useUpload();
 
@@ -33,6 +35,16 @@ export default function UploadSection({
     const processing = jobId !== null && completedJobId === null;
     onProcessingChange?.(processing);
   }, [jobId, completedJobId, onProcessingChange]);
+
+  useEffect(() => {
+    if (!completedJobId || hasNavigatedToWorkspaceRef.current) {
+      return;
+    }
+
+    hasNavigatedToWorkspaceRef.current = true;
+    closeModal();
+    router.push(getWorkspaceRoute(completedJobId));
+  }, [closeModal, completedJobId, router]);
 
   // Pass onComplete callback to useJobStream per D-19, UI-SPEC §8
   const { progress, isConnected, error: streamError } = useJobStream(jobId, {
@@ -69,6 +81,7 @@ export default function UploadSection({
     setSelectedFile(null);
     setJobId(null);
     setCompletedJobId(null);
+    hasNavigatedToWorkspaceRef.current = false;
     uploadMutation.reset();
   };
 
@@ -98,7 +111,7 @@ export default function UploadSection({
     );
   }
 
-  // Show "View Results" button after SSE 'complete'
+  // Show transient completion state while workspace navigation opens
   if (completedJobId) {
     return (
       <div className="w-full space-y-5">
@@ -111,7 +124,9 @@ export default function UploadSection({
             <h2 className="font-display font-extrabold text-lg text-[#F5F2D8]">
               Analysis Complete!
             </h2>
-            <p className="text-xs text-[#F5F2D8]/50">Your CV has been scored across all dimensions</p>
+            <p className="text-xs text-[#F5F2D8]/50">
+              Your CV has been scored across all dimensions
+            </p>
           </div>
         </div>
 
@@ -129,16 +144,15 @@ export default function UploadSection({
           ))}
         </div>
 
-        <button
-          onClick={() => {
-            closeModal();
-            router.push(`/results/${completedJobId}`);
-          }}
-          className="w-full rounded-full bg-[#CAFF43] text-[#141414] text-base font-display font-extrabold
-                     py-3.5 hover:bg-[#CAFF43]/85 active:scale-[0.99] transition-all duration-150"
+        <div
+          className="w-full rounded-[1.75rem] border border-[#CAFF43]/20 bg-[#CAFF43]/10 px-5 py-4 text-center"
+          aria-live="polite"
         >
-          View My Results →
-        </button>
+          <p className="text-sm font-bold text-[#CAFF43]">Opening workspace…</p>
+          <p className="mt-1 text-xs text-[#F5F2D8]/60">
+            We&apos;re taking you into the job workspace for this analysis.
+          </p>
+        </div>
       </div>
     );
   }

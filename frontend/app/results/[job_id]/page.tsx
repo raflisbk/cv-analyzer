@@ -18,6 +18,7 @@ import { ResultsSkeleton } from "@/components/results/results-skeleton";
 import { ResultsTabs } from "@/components/results/results-tabs";
 import { ScoreRangeBadge } from "@/components/results/score-range-badge";
 import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
+import { getWorkspaceRoute } from "@/lib/job-routes";
 
 function buildSuggestionsClipboardText(
   cards: SuggestionCard[] | null | undefined
@@ -128,7 +129,7 @@ export default function ResultsPage() {
       <main className={`min-h-screen bg-[#F5F2D8]${isComplete ? " pb-16" : ""}`}>
         <div className="max-w-4xl mx-auto px-4 py-12">
           {/* Page header per UI-SPEC §7 B */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <Link
                 href="/"
@@ -141,17 +142,25 @@ export default function ResultsPage() {
                 CV Analysis Results
               </h1>
             </div>
-            {/* Polling indicator per UI-SPEC §8 */}
-            {isProcessing && (
-              <div
-                className="flex items-center gap-2 text-sm text-[#141414]/50"
-                aria-live="polite"
-                aria-busy="true"
+            <div className="flex flex-col gap-3 md:items-end">
+              <Link
+                href={getWorkspaceRoute(jobId)}
+                className="inline-flex items-center justify-center rounded-full border border-[#141414]/15 bg-white/60 px-4 py-2 text-sm font-bold text-[#141414] transition-colors hover:bg-[#141414] hover:text-[#F5F2D8]"
               >
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Checking for results…
-              </div>
-            )}
+                Open workspace
+              </Link>
+              {/* Polling indicator per UI-SPEC §8 */}
+              {isProcessing && (
+                <div
+                  className="flex items-center gap-2 text-sm text-[#141414]/50"
+                  aria-live="polite"
+                  aria-busy="true"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Checking for results…
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Loading/Processing state per UI-SPEC §7 B */}
