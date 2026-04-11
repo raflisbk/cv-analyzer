@@ -35,8 +35,10 @@ export default function UploadOverlay() {
         onInteractOutside={(e) => e.preventDefault()}
         hideCloseButton
         overlayClassName="hidden"
-        aria-labelledby="upload-overlay-title"
+        aria-describedby={undefined}
       >
+        {/* Accessibility: sr-only title required by Radix */}
+        <DialogTitle className="sr-only">Upload and Analyze Your CV</DialogTitle>
         {/* Processing banner */}
         {isProcessing && (
           <div className="absolute top-0 left-0 right-0 z-10 bg-[#FF8C42]/15 border-b border-[#FF8C42]/30 px-4 py-2 flex items-center justify-center gap-2 text-sm text-[#FF8C42] font-bold">
@@ -77,13 +79,12 @@ export default function UploadOverlay() {
               <AccentPill color="orange" size="sm">Free</AccentPill>
               <AccentPill color="pink" size="sm">Instant</AccentPill>
             </div>
-            <DialogTitle
-              id="upload-overlay-title"
+            <h2
               className="font-display font-extrabold text-3xl text-[#F5F2D8] leading-tight"
             >
               Analyze Your{" "}
               <span className="text-[#CAFF43]">CV</span>
-            </DialogTitle>
+            </h2>
             <p className="text-sm text-[#F5F2D8]/50 mt-2">
               Upload once. Get scored on clarity, keywords, impact & ATS fit in under 60 seconds.
             </p>
