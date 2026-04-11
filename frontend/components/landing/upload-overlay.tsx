@@ -34,6 +34,7 @@ export default function UploadOverlay() {
         onEscapeKeyDown={(e) => { if (isProcessing) { e.preventDefault(); } }}
         onInteractOutside={(e) => e.preventDefault()}
         hideCloseButton
+        overlayClassName="hidden"
         aria-labelledby="upload-overlay-title"
       >
         {/* Processing banner */}
