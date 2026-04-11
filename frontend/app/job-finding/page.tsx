@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/landing/navbar";
-import { PathkrLogo } from "@/components/ui/pathkr-logo";
 
 export const metadata: Metadata = {
-  title: "Job Finding — pathkr",
+  title: "Job Finding — Path Karir",
   description: "Find roles that match your skills.",
 };
 
@@ -65,7 +64,7 @@ export default function JobFindingPage() {
 
         {/* Back link */}
         <Link href="/" className="mt-8 text-sm text-[#141414]/50 hover:text-[#141414] transition-colors inline-flex items-center gap-1.5">
-          ← Back to <PathkrLogo size="sm" variant="light" />
+          ← Back to Path Karir
         </Link>
 
       </main>

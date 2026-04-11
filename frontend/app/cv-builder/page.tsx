@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { ArrowRight, FileText } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/landing/navbar";
-import { PathkrLogo } from "@/components/ui/pathkr-logo";
 
 export const metadata: Metadata = {
-  title: "CV Builder — pathkr",
+  title: "CV Builder — Path Karir",
   description: "Build standout CVs with AI guidance.",
 };
 
@@ -65,7 +64,7 @@ export default function CVBuilderPage() {
 
         {/* Back link */}
         <Link href="/" className="mt-8 text-sm text-[#141414]/50 hover:text-[#141414] transition-colors inline-flex items-center gap-1.5">
-          ← Back to <PathkrLogo size="sm" variant="light" />
+          ← Back to Path Karir
         </Link>
 
       </main>

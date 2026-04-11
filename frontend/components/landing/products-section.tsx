@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { CVBuilderIcon, CVAnalyzerIcon, JobFindingIcon } from "@/components/ui/product-icons";
 import { AccentPill } from "@/components/ui/accent-pill";
-import ProductCardCTA from "@/components/landing/product-card-cta";
 import { PathkrInline } from "@/components/ui/pathkr-logo";
 
 const products = [
@@ -25,7 +24,7 @@ const products = [
     description:
       "Upload your CV for AI-powered scoring across clarity, impact, ATS compatibility, and keyword relevance.",
     status: "active" as const,
-    href: null,
+    href: "/cv-analyzer",
   },
   {
     id: "job-finding",
@@ -88,16 +87,16 @@ export default function ProductsSection() {
 
                 {/* CTA */}
                 <div className="mt-4">
-                  {product.status === "active" ? (
-                    <ProductCardCTA />
-                  ) : (
-                    <Link
-                      href={product.href!}
-                      className="text-sm text-[#F5F2D8]/40 hover:text-[#F5F2D8]/70 transition-colors"
-                    >
-                      Learn more →
-                    </Link>
-                  )}
+                  <Link
+                    href={product.href!}
+                    className={`text-sm font-extrabold transition-colors ${
+                      product.status === "active"
+                        ? "text-[#CAFF43] hover:text-[#CAFF43]/80"
+                        : "text-[#F5F2D8]/40 hover:text-[#F5F2D8]/70"
+                    }`}
+                  >
+                    {product.status === "active" ? "Try Now →" : "Learn more →"}
+                  </Link>
                 </div>
               </div>
             );

@@ -23,7 +23,7 @@ export default function Navbar() {
         className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between"
       >
         {/* Logo */}
-        <Link href="/" aria-label="pathkr home">
+        <Link href="/" aria-label="Path Karir home">
           <PathkrLogo size="md" variant="light" />
         </Link>
 
@@ -35,12 +35,12 @@ export default function Navbar() {
           >
             CV Builder
           </Link>
-          <button
-            onClick={openModal}
+          <Link
+            href="/cv-analyzer"
             className="text-sm font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             CV Analyzer
-          </button>
+          </Link>
           <Link
             href="/job-finding"
             className="text-sm font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
@@ -92,15 +92,14 @@ export default function Navbar() {
                 CV Builder
               </Link>
             </SheetClose>
-            <button
-              onClick={() => {
-                openModal();
-                setMobileOpen(false);
-              }}
-              className="text-base font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 text-left py-3 px-4 rounded-full transition-all"
-            >
-              CV Analyzer
-            </button>
+            <SheetClose asChild>
+              <Link
+                href="/cv-analyzer"
+                className="text-base font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
+              >
+                CV Analyzer
+              </Link>
+            </SheetClose>
             <SheetClose asChild>
               <Link
                 href="/job-finding"
