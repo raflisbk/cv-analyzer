@@ -4,8 +4,8 @@ interface IconProps {
 }
 
 /**
- * AI Scoring — circular gauge/dial with bold needle + AI sparkle.
- * Communicates: automated quality scoring / measurement.
+ * AI Scoring — lightning bolt inside a circle (sticker style).
+ * Bold lime circle + dark bolt = instant energy / AI power read.
  */
 export function AIScoringIcon({ className, size = 24 }: IconProps) {
   return (
@@ -17,38 +17,20 @@ export function AIScoringIcon({ className, size = 24 }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      {/* Outer dial ring (partial arc, 240° — like a speedometer) */}
+      {/* Lime circle — main shape */}
+      <circle cx="12" cy="12" r="10" fill="#CAFF43" stroke="#141414" strokeWidth="2.5" />
+      {/* Lightning bolt — bold dark fill */}
       <path
-        d="M 4.5 19 A 9 9 0 1 1 19.5 19"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeOpacity="0.25"
-      />
-      {/* Active arc (filled portion — high score) */}
-      <path
-        d="M 4.5 19 A 9 9 0 0 1 18.4 8"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      {/* Bold needle pointing upper-right (good score) */}
-      <path d="M12 12 L18 6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      {/* Center pivot dot */}
-      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-      {/* AI sparkle — top left */}
-      <path
-        d="M4 4 L4.6 5.5 L6 4.8 L4.8 6 L6 7.2 L4.6 6.5 L4 8 L3.4 6.5 L2 7.2 L3.2 6 L2 4.8 L3.4 5.5 Z"
-        fill="currentColor"
+        d="M 13.5 3.5 L 8 13 L 12.5 13 L 10.5 20.5 L 17 10.5 L 12 10.5 Z"
+        fill="#141414"
       />
     </svg>
   );
 }
 
 /**
- * Skill Gap Analysis — two bars: current (short + arrow) vs target (tall).
- * A dashed target line shows the gap to close.
- * Communicates: where you are vs where you need to be.
+ * Skill Gap Analysis — three rising bars (sticker style).
+ * Dark short + medium bars + tall lime bar = progress / gap to close.
  */
 export function SkillGapIcon({ className, size = 24 }: IconProps) {
   return (
@@ -60,21 +42,19 @@ export function SkillGapIcon({ className, size = 24 }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      {/* Target line (dashed — the goal) */}
-      <path d="M2 5 L22 5" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 2" strokeLinecap="round" strokeOpacity="0.5" />
-      {/* Current skills bar (short — has a gap to the target line) */}
-      <rect x="4" y="13" width="6" height="9" rx="1.5" fill="currentColor" />
-      {/* Target / required skills bar (reaches the target line) */}
-      <rect x="14" y="5.5" width="6" height="16.5" rx="1.5" fill="currentColor" fillOpacity="0.3" />
-      {/* Upward arrow on the short bar (close the gap!) */}
-      <path d="M7 12.5 L7 7 M5 9 L7 7 L9 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Short bar — dark, 30% opacity */}
+      <rect x="2" y="15" width="5.5" height="7" rx="1.5" fill="#141414" opacity="0.4" stroke="#141414" strokeWidth="2" />
+      {/* Medium bar — dark, 65% opacity */}
+      <rect x="9.25" y="9" width="5.5" height="13" rx="1.5" fill="#141414" opacity="0.65" stroke="#141414" strokeWidth="2" />
+      {/* Tall bar — lime (the goal / achievement) */}
+      <rect x="16.5" y="2" width="5.5" height="20" rx="1.5" fill="#CAFF43" stroke="#141414" strokeWidth="2" />
     </svg>
   );
 }
 
 /**
- * Job Match Comparison — two overlapping document cards + checkmark match badge.
- * Communicates: comparing your CV against a job description to find match %.
+ * Job Match Comparison — shield + checkmark (sticker style).
+ * Lime shield = protection / verified. Bold dark checkmark = match confirmed.
  */
 export function JobMatchIcon({ className, size = 24 }: IconProps) {
   return (
@@ -86,18 +66,22 @@ export function JobMatchIcon({ className, size = 24 }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      {/* Card 1 — your CV (slightly behind, left) */}
-      <rect x="1" y="5" width="13" height="16" rx="2" fill="currentColor" fillOpacity="0.15" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.4" />
-      <rect x="3.5" y="9" width="7" height="1.2" rx="0.6" fill="currentColor" fillOpacity="0.5" />
-      <rect x="3.5" y="12" width="5.5" height="1.2" rx="0.6" fill="currentColor" fillOpacity="0.35" />
-      {/* Card 2 — job description (slightly in front, right) */}
-      <rect x="10" y="3" width="13" height="16" rx="2" fill="currentColor" fillOpacity="0.25" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.6" />
-      <rect x="12.5" y="7" width="7" height="1.2" rx="0.6" fill="currentColor" fillOpacity="0.65" />
-      <rect x="12.5" y="10" width="5" height="1.2" rx="0.6" fill="currentColor" fillOpacity="0.45" />
-      <rect x="12.5" y="13" width="3.5" height="1.2" rx="0.6" fill="currentColor" fillOpacity="0.3" />
-      {/* Match badge — overlapping bottom center */}
-      <circle cx="16" cy="19" r="4.5" fill="currentColor" />
-      <path d="M13.8 19 L15.5 20.8 L18.8 17" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Shield shape — lime fill, dark outline */}
+      <path
+        d="M 12 2 L 21 6 L 21 13 C 21 18 16.5 21.5 12 23 C 7.5 21.5 3 18 3 13 L 3 6 Z"
+        fill="#CAFF43"
+        stroke="#141414"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      {/* Checkmark — bold, dark */}
+      <path
+        d="M 7.5 12.5 L 10.5 15.5 L 17 9"
+        stroke="#141414"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
