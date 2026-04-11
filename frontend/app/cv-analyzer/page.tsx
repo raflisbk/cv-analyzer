@@ -4,7 +4,6 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/landing/navbar";
 import { AccentPill } from "@/components/ui/accent-pill";
 import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/feature-icons";
-import { CVAnalyzerIcon } from "@/components/ui/product-icons";
 import UploadZoneCTA from "@/components/cv-analyzer/upload-zone-cta";
 
 export const metadata: Metadata = {
@@ -64,14 +63,6 @@ export default function CVAnalyzerPage() {
             <div className="absolute top-16 right-24 w-3 h-3 rounded-full bg-[#FF4FCB] opacity-60" aria-hidden="true" />
             <div className="absolute top-6 right-40 w-8 h-8 rounded-full bg-[#FF8C42] opacity-40" aria-hidden="true" />
             <div className="absolute bottom-10 left-8 w-4 h-4 rounded-full bg-[#8B5CF6] opacity-50" aria-hidden="true" />
-
-            {/* Product badge */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="inline-flex bg-[#CAFF43]/15 rounded-full p-2">
-                <CVAnalyzerIcon size={22} className="text-[#CAFF43]" />
-              </div>
-              <AccentPill color="lime" size="md">Active</AccentPill>
-            </div>
 
             {/* Headline */}
             <h1 className="font-display font-extrabold text-[#F5F2D8] leading-[1.1] text-5xl md:text-6xl lg:text-7xl tracking-tight">
