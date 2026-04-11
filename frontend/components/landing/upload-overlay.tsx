@@ -25,8 +25,11 @@ export default function UploadOverlay() {
         className="fixed inset-0 z-50 flex items-center justify-center p-4
                    max-w-none w-screen h-screen rounded-none border-0
                    bg-background/90 backdrop-blur-sm shadow-none
+                   !left-0 !top-0 !translate-x-0 !translate-y-0
                    data-[state=open]:animate-in data-[state=open]:fade-in-0
+                   data-[state=open]:slide-in-from-left-0 data-[state=open]:slide-in-from-top-0
                    data-[state=closed]:animate-out data-[state=closed]:fade-out-0
+                   data-[state=closed]:slide-out-to-left-0 data-[state=closed]:slide-out-to-top-0
                    duration-200"
         // Block close during processing
         onEscapeKeyDown={(e) => {
