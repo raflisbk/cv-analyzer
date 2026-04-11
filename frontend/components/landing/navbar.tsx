@@ -10,6 +10,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { useUploadModal } from "@/components/providers/upload-modal-provider";
+import { PathkrLogo } from "@/components/ui/pathkr-logo";
 
 export default function Navbar() {
   const { openModal } = useUploadModal();
@@ -22,11 +23,8 @@ export default function Navbar() {
         className="max-w-6xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between"
       >
         {/* Logo */}
-        <Link
-          href="/"
-          className="text-2xl font-display font-extrabold tracking-tight text-[#141414]"
-        >
-          path<span className="text-[#CAFF43]">k</span>r
+        <Link href="/" aria-label="pathkr home">
+          <PathkrLogo size="md" variant="light" />
         </Link>
 
         {/* Desktop product links — hidden on mobile */}

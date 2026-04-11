@@ -1,4 +1,5 @@
 import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/feature-icons";
+import { PathkrInline } from "@/components/ui/pathkr-logo";
 
 const features = [
   {
@@ -38,7 +39,7 @@ export default function FeaturesSection() {
           id="features-heading"
           className="font-display font-extrabold text-2xl md:text-3xl text-[#141414] text-center mb-4"
         >
-          Why pathkr?
+          Why <PathkrInline variant="light" />?
         </h2>
         <p className="text-base text-[#141414]/60 text-center mb-12 max-w-2xl mx-auto">
           AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility, and keyword

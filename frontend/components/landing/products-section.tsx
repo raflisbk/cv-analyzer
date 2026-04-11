@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CVBuilderIcon, CVAnalyzerIcon, JobFindingIcon } from "@/components/ui/product-icons";
 import { AccentPill } from "@/components/ui/accent-pill";
 import ProductCardCTA from "@/components/landing/product-card-cta";
+import { PathkrInline } from "@/components/ui/pathkr-logo";
 
 const products = [
   {
@@ -46,7 +47,7 @@ export default function ProductsSection() {
         {/* Section heading */}
         <div className="text-center mb-12">
           <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#F5F2D8] mb-4">
-            What pathkr Offers
+            What <PathkrInline variant="dark" /> Offers
           </h2>
           <p className="text-base text-[#F5F2D8]/60">
             Three tools. One career platform.
