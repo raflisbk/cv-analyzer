@@ -119,7 +119,7 @@ export function SectionBlock({
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function scheduleClose() {
-    closeTimerRef.current = setTimeout(() => setActiveTooltip(null), 200);
+    closeTimerRef.current = setTimeout(() => setActiveTooltip(null), 500);
   }
 
   function cancelClose() {
