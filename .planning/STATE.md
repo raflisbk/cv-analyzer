@@ -120,6 +120,12 @@ Last activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
 - [Phase 04]: Normalize suggestion keys at results boundary before rendering components
 - [Phase 04]: Copy Suggestions now exports all visible items grouped by section in stable order
 
+| Phase 12 P01 | 15 min | 3 tasks | 11 files |
+
+- [Phase 12]: immediatelyRender: false enforced on all useEditor() calls — prevents Next.js 15 SSR hydration mismatch
+- [Phase 12]: StarterKit v3 includes UndoRedo via @tiptap/extensions — @tiptap/extension-history NOT installed
+- [Phase 12]: Removed auto-generated drop_index for knowledge_chunks_embedding_idx from alembic migration — hnsw vector index unrecognized by autogenerate
+
 | Phase 11 P02 | 8 min | 2 tasks | 4 files |
 
 - [Phase 11]: Reused the existing job UUID as the only workspace identifier to preserve anonymous job-scoped access.
@@ -157,7 +163,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-11T12:28:04.144Z
+**Last Session:** 2026-04-11T22:15:00Z
+**Stopped At:** Completed 12-01-PLAN.md — Wave 1 Tiptap install, SectionBlock, CanvasEditor, workspace_draft migration
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**
@@ -188,6 +195,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 - ✅ SSE hooks with auto-reconnect
 - ✅ Animated gauge charts (@visx)
 - ✅ Results page with 4 tabs
+- ✅ Tiptap v3 + SuggestionHighlight Mark (Phase 12 Wave 1)
+- ✅ vitest + @testing-library/react (TDD test infrastructure)
 
 **Infrastructure:**
 
