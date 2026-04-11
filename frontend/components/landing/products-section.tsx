@@ -1,19 +1,14 @@
-import { FileText, BarChart2, Search } from "lucide-react";
 import Link from "next/link";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { FileText, BrainCircuit, Search } from "lucide-react";
+import { AccentPill } from "@/components/ui/accent-pill";
 import ProductCardCTA from "@/components/landing/product-card-cta";
 
 const products = [
   {
     id: "cv-builder",
     icon: FileText,
+    iconContainer: "bg-[#FF8C42]/15 rounded-xl p-3",
+    iconColor: "text-[#FF8C42]",
     title: "CV Builder",
     description:
       "Create a professional CV from scratch with AI guidance and industry-standard templates.",
@@ -22,7 +17,9 @@ const products = [
   },
   {
     id: "cv-analyzer",
-    icon: BarChart2,
+    icon: BrainCircuit,
+    iconContainer: "bg-[#CAFF43]/15 rounded-xl p-3",
+    iconColor: "text-[#CAFF43]",
     title: "CV Analyzer",
     description:
       "Upload your CV for AI-powered scoring across clarity, impact, ATS compatibility, and keyword relevance.",
@@ -32,6 +29,8 @@ const products = [
   {
     id: "job-finding",
     icon: Search,
+    iconContainer: "bg-[#8B5CF6]/15 rounded-xl p-3",
+    iconColor: "text-[#8B5CF6]",
     title: "Job Finding",
     description:
       "Discover roles that match your skills and experience with intelligent job recommendations.",
@@ -42,14 +41,14 @@ const products = [
 
 export default function ProductsSection() {
   return (
-    <section className="bg-muted/30 py-16 md:py-24">
+    <section className="bg-[#141414] py-16 md:py-24">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         {/* Section heading */}
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground mb-4">
+          <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#F5F2D8] mb-4">
             What pathkr Offers
           </h2>
-          <p className="text-base text-muted-foreground">
+          <p className="text-base text-[#F5F2D8]/60">
             Three tools. One career platform.
           </p>
         </div>
@@ -59,55 +58,48 @@ export default function ProductsSection() {
           {products.map((product) => {
             const Icon = product.icon;
             return (
-              <Card
+              <div
                 key={product.id}
-                className="relative overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
+                className="bg-[#1C1C1C] rounded-2xl p-6 border border-[#F5F2D8]/5
+                           transition-transform duration-200 hover:-translate-y-1"
               >
-                <CardHeader>
-                  {/* Icon container — same pattern as FeaturesSection */}
-                  <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3 text-primary">
-                    <Icon className="h-6 w-6" />
-                  </div>
+                {/* Icon container */}
+                <div className={`inline-flex ${product.iconContainer}`}>
+                  <Icon className={`h-6 w-6 ${product.iconColor}`} />
+                </div>
 
-                  {/* Status badge */}
+                {/* Status badge */}
+                <div className="mt-3 mb-2">
                   {product.status === "active" ? (
-                    <Badge
-                      variant="outline"
-                      className="w-fit text-primary border-primary/30 bg-primary/10 mb-2"
-                    >
-                      Active
-                    </Badge>
+                    <AccentPill color="lime" size="md">Active</AccentPill>
                   ) : (
-                    <Badge
-                      variant="secondary"
-                      className="w-fit text-muted-foreground mb-2"
-                    >
+                    <span className="rounded-full px-4 py-1 text-sm bg-[#F5F2D8]/10 text-[#F5F2D8]/50">
                       Coming Soon
-                    </Badge>
+                    </span>
                   )}
+                </div>
 
-                  <CardTitle className="text-xl font-bold text-foreground">
-                    {product.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm text-muted-foreground">
-                    {product.description}
-                  </CardDescription>
-                </CardHeader>
+                <p className="text-base font-extrabold text-[#F5F2D8] mt-3 mb-2">
+                  {product.title}
+                </p>
+                <p className="text-sm text-[#F5F2D8]/60 leading-relaxed">
+                  {product.description}
+                </p>
 
-                <CardContent>
-                  {/* CTA: Active card uses client island; Coming Soon cards use Link */}
+                {/* CTA */}
+                <div className="mt-4">
                   {product.status === "active" ? (
                     <ProductCardCTA />
                   ) : (
                     <Link
                       href={product.href!}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-sm text-[#F5F2D8]/40 hover:text-[#F5F2D8]/70 transition-colors"
                     >
                       Learn more →
                     </Link>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
