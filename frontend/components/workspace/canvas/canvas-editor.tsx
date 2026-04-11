@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import type { JSONContent } from "@tiptap/core";
 import type { WorkspaceHydration } from "@/lib/workspace";
+import { useDraftSave, type SaveState } from "@/hooks/use-draft-save";
 import { SectionBlock, plainTextToTiptapDoc } from "./section-block";
 
 interface CanvasEditorProps {
@@ -24,6 +25,39 @@ function buildInitialSections(
   }));
 }
 
+function UnsavedIndicator({ saveState }: { saveState: SaveState }) {
+  if (saveState === "idle") { return null; }
+
+  return (
+    <div className="flex items-center gap-1.5 text-[10px] text-[#141414]/55">
+      {saveState === "unsaved" && (
+        <>
+          <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[#FF8C42]" />
+          <span>Unsaved changes</span>
+        </>
+      )}
+      {saveState === "saving" && (
+        <>
+          <span className="inline-block h-1.5 w-1.5 animate-spin rounded-full border border-[#141414]/40 border-t-[#141414]" />
+          <span>Unsaved changes</span>
+        </>
+      )}
+      {saveState === "saved" && (
+        <>
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#CAFF43]" />
+          <span className="opacity-70">Saved</span>
+        </>
+      )}
+      {saveState === "error" && (
+        <>
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-destructive" />
+          <span className="text-destructive">Save failed</span>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function CanvasEditor({ data }: CanvasEditorProps) {
   // Resolve sections from sections[] (fallback to source_text if no sections)
   const rawSections =
@@ -34,18 +68,27 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
         : [];
 
   const [sections, setSections] = useState<SectionState[]>(() =>
-    buildInitialSections(rawSections, null)
-    // Wave 2: replace null with data.document.draft_content
+    // D-12: load draft_content if previously saved, else use parsed text
+    buildInitialSections(rawSections, data.document.draft_content ?? null)
   );
+
+  const { saveState, markUnsaved } = useDraftSave(data.job_id);
 
   const handleContentChange = useCallback(
     (sectionType: string, json: JSONContent) => {
-      setSections((prev) =>
-        prev.map((s) => (s.type === sectionType ? { ...s, json } : s))
-      );
-      // Wave 2: call markUnsaved({ sections: updatedMap }) here
+      setSections((prev) => {
+        const updated = prev.map((s) =>
+          s.type === sectionType ? { ...s, json } : s
+        );
+        // Build sections map for PATCH body (D-10, D-11)
+        const sectionsMap = Object.fromEntries(
+          updated.map((s) => [s.type, s.json])
+        );
+        markUnsaved({ sections: sectionsMap });
+        return updated;
+      });
     },
-    []
+    [markUnsaved]
   );
 
   if (rawSections.length === 0) {
@@ -68,7 +111,7 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
             {data.file.filename?.replace(/\.[^.]+$/, "") || "Uploaded CV"}
           </h2>
         </div>
-        {/* Wave 2: UnsavedIndicator inserted here */}
+        <UnsavedIndicator saveState={saveState} />
       </div>
 
       {/* Section blocks — Wave 3 wraps this in CanvasSplitPanel */}
