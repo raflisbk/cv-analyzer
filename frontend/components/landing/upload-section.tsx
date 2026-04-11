@@ -74,20 +74,22 @@ export default function UploadSection({
   // Handle processing failed
   if (progress?.stage === "failed") {
     return (
-      <div className="w-full text-center space-y-4">
-        <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
-          <span className="text-2xl text-red-400">✕</span>
+      <div className="w-full text-center space-y-5">
+        <div className="w-16 h-16 rounded-full bg-[#FF4FCB]/15 border border-[#FF4FCB]/25 flex items-center justify-center mx-auto">
+          <span className="text-2xl">✕</span>
         </div>
-        <h1 className="text-xl font-display font-extrabold text-[#F5F2D8]">
-          Processing Failed
-        </h1>
-        <p className="text-sm text-[#F5F2D8]/50">
-          {progress.message || "An error occurred while processing your CV."}
-        </p>
+        <div>
+          <h1 className="text-xl font-display font-extrabold text-[#F5F2D8] mb-2">
+            Something went wrong
+          </h1>
+          <p className="text-sm text-[#F5F2D8]/50">
+            {progress.message || "An error occurred while processing your CV."}
+          </p>
+        </div>
         <button
           onClick={handleReset}
           className="rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
-                     px-6 py-2.5 hover:bg-[#CAFF43]/85 transition-colors"
+                     px-8 py-3 hover:bg-[#CAFF43]/85 transition-colors"
         >
           Try Again
         </button>
@@ -95,38 +97,48 @@ export default function UploadSection({
     );
   }
 
-  // Show "View Results" button after SSE 'complete' per D-19, UI-SPEC §7 A
+  // Show "View Results" button after SSE 'complete'
   if (completedJobId) {
     return (
       <div className="w-full space-y-5">
-        <h2 className="font-display font-extrabold text-lg text-[#F5F2D8]">
-          Analysis Complete!
-        </h2>
-        <div className="space-y-2.5">
-          {["Uploading", "Extracting text", "Validating quality", "Complete"].map(
-            (stage) => (
-              <div key={stage} className="flex items-center gap-3 text-[#F5F2D8]/40">
-                <CheckCircle2 className="h-4 w-4 text-[#CAFF43] flex-shrink-0" />
-                <span className="text-sm">{stage}</span>
-              </div>
-            )
-          )}
+        {/* Completion header */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-[#CAFF43] flex items-center justify-center flex-shrink-0">
+            <CheckCircle2 className="h-5 w-5 text-[#141414]" />
+          </div>
+          <div>
+            <h2 className="font-display font-extrabold text-lg text-[#F5F2D8]">
+              Analysis Complete!
+            </h2>
+            <p className="text-xs text-[#F5F2D8]/50">Your CV has been scored across all dimensions</p>
+          </div>
         </div>
-        <p className="text-sm text-[#CAFF43] font-bold flex items-center gap-1.5">
-          <CheckCircle2 className="h-4 w-4" />
-          Your CV is ready to view
-        </p>
+
+        {/* Score dimension pills */}
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Clarity", color: "bg-[#CAFF43]/15 text-[#CAFF43]" },
+            { label: "Keywords", color: "bg-[#FF4FCB]/15 text-[#FF4FCB]" },
+            { label: "ATS Fit", color: "bg-[#8B5CF6]/15 text-[#8B5CF6]" },
+            { label: "Impact", color: "bg-[#FF8C42]/15 text-[#FF8C42]" },
+          ].map(({ label, color }) => (
+            <span key={label} className={`rounded-full text-xs font-bold px-3 py-1 ${color}`}>
+              ✦ {label}
+            </span>
+          ))}
+        </div>
+
         <button
           disabled={isNavigating}
           onClick={async () => {
             setIsNavigating(true);
             await router.push(`/results/${completedJobId}`);
           }}
-          className="w-full rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
-                     py-3 hover:bg-[#CAFF43]/85 transition-colors duration-150
+          className="w-full rounded-full bg-[#CAFF43] text-[#141414] text-base font-display font-extrabold
+                     py-3.5 hover:bg-[#CAFF43]/85 active:scale-[0.99] transition-all duration-150
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isNavigating ? "Loading results..." : "View Results"}
+          {isNavigating ? "Loading results…" : "View My Results →"}
         </button>
       </div>
     );
