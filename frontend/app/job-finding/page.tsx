@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import Navbar from "@/components/landing/navbar";
 
 export const metadata: Metadata = {
@@ -14,45 +12,61 @@ export default function JobFindingPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 text-center">
-        {/* Product icon */}
-        <div className="rounded-2xl bg-primary/10 p-4 text-primary mb-6">
-          <Search className="h-12 w-12" />
-        </div>
+      <main className="bg-[#F5F2D8] min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 text-center">
 
-        {/* Status badge */}
-        <Badge variant="secondary" className="mb-4">
-          Coming Soon
-        </Badge>
+        {/* Dark card */}
+        <div className="bg-[#141414] rounded-[2rem] px-10 py-12 max-w-sm w-full mx-auto flex flex-col items-center">
 
-        {/* Heading + tagline */}
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground mb-3">
-          Job Finding
-        </h1>
-        <p className="text-base text-muted-foreground max-w-sm mb-8">
-          Find roles that match your skills.
-        </p>
+          {/* Icon */}
+          <Search className="w-16 h-16 text-[#8B5CF6]" />
 
-        {/* Email capture — static, no backend */}
-        <div className="flex flex-col items-center gap-3 w-full max-w-sm">
+          {/* Coming Soon badge */}
+          <span className="mt-4 rounded-full px-4 py-1 text-xs font-normal bg-[#F5F2D8]/10 text-[#F5F2D8]/50">
+            Coming Soon
+          </span>
+
+          {/* Heading */}
+          <h1 className="font-display font-extrabold text-2xl text-[#F5F2D8] mt-4 mb-2">
+            Job Finding
+          </h1>
+
+          {/* Tagline */}
+          <p className="text-sm text-[#F5F2D8]/60 max-w-xs leading-relaxed">
+            Discover job opportunities matched to your CV and skills.
+          </p>
+
+          {/* Email input */}
           <input
             type="email"
             placeholder="Enter your email for early access"
             aria-label="Email address for early access notification"
-            className="w-full px-4 py-2 border border-border rounded-md text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full px-4 py-3 rounded-xl bg-[#F5F2D8]/10 border border-[#F5F2D8]/10
+                       text-sm text-[#F5F2D8] placeholder:text-[#F5F2D8]/30
+                       focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/50 mt-6"
           />
-          <Button variant="outline" className="w-full">
-            Notify Me
-          </Button>
+
+          {/* Notify Me two-part button */}
+          <div className="flex items-center gap-2 mt-3 w-full">
+            <button className="flex-1 rounded-full bg-[#CAFF43] text-[#141414] text-sm font-extrabold
+                               py-3 px-5 hover:bg-[#CAFF43]/85 transition-colors">
+              Notify Me
+            </button>
+            <button
+              aria-label="Submit email"
+              className="w-12 h-12 rounded-full bg-[#F5F2D8]/10 flex items-center justify-center
+                         flex-shrink-0 hover:bg-[#F5F2D8]/20 transition-colors"
+            >
+              <ArrowRight className="w-4 h-4 text-[#F5F2D8]" />
+            </button>
+          </div>
+
         </div>
 
         {/* Back link */}
-        <Link
-          href="/"
-          className="mt-8 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
+        <Link href="/" className="mt-8 text-sm text-[#141414]/50 hover:text-[#141414] transition-colors">
           ← Back to pathkr
         </Link>
+
       </main>
     </>
   );
