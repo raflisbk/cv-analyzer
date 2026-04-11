@@ -64,7 +64,7 @@ export default function ProductsSection() {
               >
                 {/* Icon container */}
                 <div className={`inline-flex ${product.iconContainer}`}>
-                  <product.Icon className={`h-7 w-7 ${product.iconColor}`} />
+                  <product.Icon size={28} className={product.iconColor} />
                 </div>
 
                 {/* Status badge */}

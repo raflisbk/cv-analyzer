@@ -4,113 +4,89 @@ interface IconProps {
 }
 
 /**
- * CV Builder — pen writing bold strokes on a document.
- * Three text-line strokes + diagonal pen body + filled nib tip.
+ * CV Builder — bold horizontal pencil (brand stamp style).
+ * Full filled shape: eraser cap + body + triangle tip + highlight stripe.
  */
 export function CVBuilderIcon({ className, size = 28 }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 28 28"
       fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
       aria-hidden="true"
       className={className}
     >
-      {/* Three text lines — left-aligned, decreasing length */}
-      <path d="M3 7.5 L14 7.5" strokeWidth="2" />
-      <path d="M3 12 L12 12" strokeWidth="2" />
-      <path d="M3 16.5 L9 16.5" strokeWidth="2" />
-      {/* Pen body — diagonal, overlapping bottom-right */}
-      <path
-        d="M16 3 L21 8 L11.5 17.5 L7 18.5 L8 14 Z"
-        strokeWidth="1.5"
-        fill="currentColor"
-        fillOpacity="0.15"
-      />
-      {/* Pen nib — solid filled triangle */}
-      <path d="M8 14 L7 18.5 L11.5 17.5 Z" fill="currentColor" stroke="none" />
-      {/* Pen cap highlight */}
-      <path d="M17 4.5 L20 7.5" strokeWidth="1" opacity="0.5" />
+      {/* Pencil body */}
+      <rect x="4" y="10" width="16" height="8" rx="1.5" fill="currentColor" />
+      {/* Eraser cap — left end */}
+      <rect x="2" y="11" width="4" height="6" rx="1" fill="currentColor" fillOpacity="0.5" />
+      {/* Eraser divider */}
+      <rect x="5.5" y="10" width="1" height="8" fill="white" fillOpacity="0.35" />
+      {/* Pencil tip — right triangle */}
+      <path d="M20 10 L20 18 L25 14 Z" fill="currentColor" />
+      {/* Body highlight stripe */}
+      <rect x="4" y="13.5" width="16" height="1.5" rx="0.75" fill="white" fillOpacity="0.25" />
     </svg>
   );
 }
 
 /**
- * CV Analyzer — magnifying glass scanning a document.
- * Lens circle + 3 scan lines inside + bold handle + 4-pt diamond sparkle.
+ * CV Analyzer — three rising score bars + 4-pt diamond sparkle.
+ * Bold filled shapes: tallest bar full opacity, others stepped.
  */
 export function CVAnalyzerIcon({ className, size = 28 }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 28 28"
       fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
       aria-hidden="true"
       className={className}
     >
-      {/* Magnifying glass circle */}
-      <circle
-        cx="10.5"
-        cy="10.5"
-        r="7"
-        strokeWidth="1.5"
-        fill="currentColor"
-        fillOpacity="0.08"
-      />
-      {/* 3 scan lines inside lens */}
-      <path d="M7 9.5 L14 9.5" strokeWidth="1.5" />
-      <path d="M7 12 L13 12" strokeWidth="1.5" />
-      <path d="M7 14.5 L11 14.5" strokeWidth="1.5" />
-      {/* Bold handle */}
-      <path d="M16 16 L21 21" strokeWidth="2.5" />
-      {/* 4-point diamond sparkle — top right */}
+      {/* Bar 1 — short */}
+      <rect x="2" y="19" width="6" height="7" rx="1.5" fill="currentColor" fillOpacity="0.45" />
+      {/* Bar 2 — medium */}
+      <rect x="11" y="12" width="6" height="14" rx="1.5" fill="currentColor" fillOpacity="0.7" />
+      {/* Bar 3 — tall (full) */}
+      <rect x="20" y="5" width="6" height="21" rx="1.5" fill="currentColor" />
+      {/* 4-pt diamond sparkle above tallest bar */}
       <path
-        d="M20 2.5 L21 4 L22.5 2.5 L21 4.5 L22.5 6.5 L21 5 L20 6.5 L19 5 L17.5 6.5 L19 4.5 L17.5 2.5 L19 4 Z"
+        d="M23 1 L24.2 3 L26 1.8 L24.2 4 L26 6.2 L24.2 4.8 L23 7 L21.8 4.8 L20 6.2 L21.8 4 L20 1.8 L21.8 3 Z"
         fill="currentColor"
-        stroke="none"
       />
     </svg>
   );
 }
 
 /**
- * Job Finding — location pin with a bright 4-pt star inside.
- * Teardrop shape + filled star = "find your opportunity."
+ * Job Finding — bold location pin with white upward arrow inside.
+ * Filled pin (circle head + teardrop tail) + white negative-space arrow.
  */
 export function JobFindingIcon({ className, size = 28 }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 28 28"
       fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
       aria-hidden="true"
       className={className}
     >
-      {/* Pin teardrop */}
+      {/* Pin head (large filled circle) */}
+      <circle cx="14" cy="11" r="9" fill="currentColor" />
+      {/* Pin tail (filled teardrop drip) */}
+      <path d="M10.5 17.5 L14 26 L17.5 17.5" fill="currentColor" />
+      {/* White upward arrow inside circle (negative space) */}
       <path
-        d="M12 2 C7.5 2 4 5.5 4 10 C4 15.5 12 22 12 22 C12 22 20 15.5 20 10 C20 5.5 16.5 2 12 2 Z"
-        strokeWidth="1.5"
-        fill="currentColor"
-        fillOpacity="0.1"
-      />
-      {/* 4-point star inside — the "opportunity" */}
-      <path
-        d="M12 6 L13.2 9.2 L16.5 9.5 L13.8 11.8 L14.7 15 L12 13.2 L9.3 15 L10.2 11.8 L7.5 9.5 L10.8 9.2 Z"
-        fill="currentColor"
-        stroke="none"
+        d="M14 15.5 L14 7.5 M11 10.5 L14 7.5 L17 10.5"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
 }
+
