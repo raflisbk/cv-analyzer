@@ -1,7 +1,7 @@
 /**
- * Results page for /results/[job_id] per D-20, D-21.
+ * Results page for /results/[job_id] per D-20, D-21, VIS-03.
  * Polls GET /api/v1/jobs/{id}/results until complete/failed.
- * Shows skeleton while processing, error state on failure.
+ * Mathical design system: cream bg, dark score overview card, lime/orange/pink scoreColor.
  */
 
 "use client";
@@ -11,7 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useJobResults } from "@/hooks/use-job-results";
 import type { JobRole, SuggestionCard } from "@/lib/types";
-import { Button } from "@/components/ui/button";
 import { ExportStickyBar } from "@/components/results/export-sticky-bar";
 import { ResultsError } from "@/components/results/results-error";
 import { ResultsSkeleton } from "@/components/results/results-skeleton";
@@ -87,7 +86,7 @@ export default function ResultsPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (error as any)?.code === "RATE_LIMIT_EXCEEDED";
     return (
-      <main className="min-h-screen bg-background py-12 px-4">
+      <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type={isRateLimit ? "rate-limit" : "network"} />
       </main>
     );
@@ -96,7 +95,7 @@ export default function ResultsPage() {
   // Not found
   if (!isLoading && data === undefined) {
     return (
-      <main className="min-h-screen bg-background py-12 px-4">
+      <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type="not-found" />
       </main>
     );
@@ -105,7 +104,7 @@ export default function ResultsPage() {
   // Failed analysis
   if (normalizedResult?.status === "failed") {
     return (
-      <main className="min-h-screen bg-background py-12 px-4">
+      <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type="failed" />
       </main>
     );
@@ -114,19 +113,28 @@ export default function ResultsPage() {
   const isProcessing = !normalizedResult || normalizedResult.status !== "complete";
   const isComplete = normalizedResult?.status === "complete";
 
+  // Mathical score colors: lime (high >=80), orange (medium 60-79), pink (low <60) per VIS-03, D-02
+  const scoreColor = normalizedResult?.scores
+    ? normalizedResult.scores.overall >= 80
+      ? "#CAFF43"   // lime — High
+      : normalizedResult.scores.overall >= 60
+        ? "#FF8C42" // orange — Medium
+        : "#FF4FCB" // pink — Low
+    : "#CAFF43";
+
   return (
     <>
-      <main className={`min-h-screen bg-background${isComplete ? " pb-16" : ""}`}>
+      <main className={`min-h-screen bg-[#F5F2D8]${isComplete ? " pb-16" : ""}`}>
         <div className="max-w-4xl mx-auto px-4 py-12">
           {/* Page header per UI-SPEC §7 B */}
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-xl font-semibold text-foreground">
+            <h1 className="font-display font-extrabold text-xl text-[#141414]">
               CV Analysis Results
             </h1>
             {/* Polling indicator per UI-SPEC §8 */}
             {isProcessing && (
               <div
-                className="flex items-center gap-2 text-sm text-muted-foreground"
+                className="flex items-center gap-2 text-sm text-[#141414]/50"
                 aria-live="polite"
                 aria-busy="true"
               >
@@ -139,11 +147,11 @@ export default function ResultsPage() {
           {/* Loading/Processing state per UI-SPEC §7 B */}
           {isProcessing ? (
             <div className="space-y-4">
-              <div className="text-center space-y-2 mb-8">
-                <h2 className="text-xl font-semibold text-foreground">
+              <div className="bg-[#141414] rounded-[2rem] p-10 text-center space-y-3">
+                <h2 className="font-display font-extrabold text-xl text-[#F5F2D8]">
                   Analyzing your CV…
                 </h2>
-                <p className="text-base text-muted-foreground">
+                <p className="text-sm text-[#F5F2D8]/50">
                   This usually takes 15–30 seconds.
                 </p>
               </div>
@@ -152,25 +160,16 @@ export default function ResultsPage() {
           ) : (
             /* Complete state per UI-SPEC §7 C */
             <div className="space-y-8">
-              {/* Overall score hero per UI-SPEC §7 C */}
+              {/* Score overview dark card per VIS-03, D-03 */}
               {normalizedResult.scores && (
-                <div className="flex flex-col items-center py-8 gap-2">
+                <div className="bg-[#141414] rounded-[2rem] px-8 py-10 flex flex-col items-center gap-2">
                   <span
-                    className="text-5xl font-bold"
-                    style={{
-                      color:
-                        normalizedResult.scores.overall >= 80
-                          ? "#16a34a"
-                          : normalizedResult.scores.overall >= 60
-                            ? "#d97706"
-                            : "#dc2626",
-                    }}
+                    className="font-display font-extrabold text-6xl"
+                    style={{ color: scoreColor }}
                   >
                     {normalizedResult.scores.overall}
                   </span>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Overall Score
-                  </p>
+                  <p className="text-sm text-[#F5F2D8]/50 mt-1">Overall Score</p>
                   <ScoreRangeBadge score={normalizedResult.scores.overall} />
                 </div>
               )}
@@ -184,9 +183,14 @@ export default function ResultsPage() {
 
               {/* Analyze Another CV button per UI-SPEC §5 */}
               <div className="flex justify-center pt-4">
-                <Button variant="outline" onClick={() => router.push("/")}>
+                <button
+                  onClick={() => router.push("/")}
+                  className="rounded-full border-2 border-[#141414] bg-transparent text-[#141414]
+                             px-6 py-3 text-sm font-extrabold
+                             hover:bg-[#141414] hover:text-[#F5F2D8] transition-colors duration-150"
+                >
                   Analyze Another CV
-                </Button>
+                </button>
               </div>
             </div>
           )}
