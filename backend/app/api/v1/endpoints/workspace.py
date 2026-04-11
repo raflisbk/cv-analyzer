@@ -49,13 +49,23 @@ def _build_sections(raw_nlp_result: dict[str, Any] | None) -> list[SectionResult
     if not raw_nlp_result or not raw_nlp_result.get("sections"):
         return []
 
+    # Deduplicate by type — merge text of duplicate section blocks
+    merged: dict[str, str] = {}
+    entities_map: dict[str, list] = {}
+    for section in raw_nlp_result["sections"]:
+        stype = section.get("type", "other")
+        text = section.get("text", "")
+        entities = section.get("entities", [])
+        if stype in merged:
+            merged[stype] = merged[stype] + "\n" + text
+            entities_map[stype].extend(entities)
+        else:
+            merged[stype] = text
+            entities_map[stype] = list(entities)
+
     return [
-        SectionResult(
-            type=section.get("type", "other"),
-            text=section.get("text", ""),
-            entities=section.get("entities", []),
-        )
-        for section in raw_nlp_result["sections"]
+        SectionResult(type=stype, text=text, entities=entities_map[stype])
+        for stype, text in merged.items()
     ]
 
 

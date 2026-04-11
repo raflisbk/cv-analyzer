@@ -23,9 +23,16 @@ function buildInitialSections(
   sections: WorkspaceHydration["document"]["sections"],
   draftContent?: Record<string, JSONContent> | null
 ): SectionState[] {
-  return sections.map((section) => ({
-    type: section.type,
-    json: draftContent?.[section.type] ?? plainTextToTiptapDoc(section.text),
+  // Deduplicate by type — merge text of duplicate sections (NLP may emit multiple blocks per type)
+  const merged = new Map<string, string>();
+  for (const section of sections) {
+    const existing = merged.get(section.type);
+    merged.set(section.type, existing ? `${existing}\n${section.text}` : section.text);
+  }
+
+  return Array.from(merged.entries()).map(([type, text]) => ({
+    type,
+    json: draftContent?.[type] ?? plainTextToTiptapDoc(text),
     spacing: "normal" as SpacingValue,
   }));
 }
