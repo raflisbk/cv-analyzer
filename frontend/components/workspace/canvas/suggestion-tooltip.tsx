@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 interface SuggestionTooltipProps {
   editor: Editor;
   suggestionId: string;
-  suggestionText: string; // The recommendation text shown in tooltip
-  replacementText: string; // afterText || text — used for Accept action
-  anchorRect: DOMRect; // getBoundingClientRect() of the <mark> element
-  onClose: () => void; // called after Accept or Dismiss
+  suggestionText: string;
+  replacementText: string;
+  anchorRect: DOMRect;
+  onClose: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export function SuggestionTooltip({
@@ -21,6 +23,8 @@ export function SuggestionTooltip({
   replacementText,
   anchorRect,
   onClose,
+  onMouseEnter,
+  onMouseLeave,
 }: SuggestionTooltipProps) {
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -80,6 +84,8 @@ export function SuggestionTooltip({
       ref={tooltipRef}
       role="dialog"
       aria-label="AI suggestion"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className="suggestion-tooltip-content pointer-events-auto fixed z-50 max-w-[280px] -translate-x-1/2 -translate-y-full rounded-[0.75rem] border border-border bg-white p-3 shadow-lg"
       style={{ top, left }}
     >

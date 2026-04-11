@@ -116,6 +116,18 @@ export function SectionBlock({
   const lastContentRef = useRef<string>("");
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const [activeTooltip, setActiveTooltip] = useState<ActiveTooltip | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function scheduleClose() {
+    closeTimerRef.current = setTimeout(() => setActiveTooltip(null), 200);
+  }
+
+  function cancelClose() {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }
 
   const editor = useEditor({
     immediatelyRender: false, // CRITICAL: prevents Next.js 15 SSR throw
@@ -172,8 +184,8 @@ export function SectionBlock({
 
     function handleMouseOut(e: MouseEvent) {
       const relTarget = e.relatedTarget as Element | null;
-      if (relTarget?.closest(".suggestion-tooltip-content")) { return; } // mouse moved into tooltip
-      setActiveTooltip(null);
+      if (relTarget?.closest(".suggestion-tooltip-content")) { return; }
+      scheduleClose();
     }
 
     container.addEventListener("mouseover", handleMouseOver);
@@ -273,6 +285,8 @@ export function SectionBlock({
               }
               anchorRect={activeTooltip.anchorRect}
               onClose={() => setActiveTooltip(null)}
+              onMouseEnter={cancelClose}
+              onMouseLeave={() => setActiveTooltip(null)}
             />
           )}
         </div>
