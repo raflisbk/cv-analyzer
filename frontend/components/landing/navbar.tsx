@@ -30,22 +30,22 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop product links — hidden on mobile */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-1">
           <Link
             href="/cv-builder"
-            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] transition-colors duration-150"
+            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             CV Builder
           </Link>
           <button
             onClick={openModal}
-            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] transition-colors duration-150"
+            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             CV Analyzer
           </button>
           <Link
             href="/job-finding"
-            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] transition-colors duration-150"
+            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             Job Finding
           </Link>
@@ -89,7 +89,7 @@ export default function Navbar() {
             <SheetClose asChild>
               <Link
                 href="/cv-builder"
-                className="text-base font-normal text-[#141414]/60 hover:text-[#141414] transition-colors py-3 px-2 rounded-md"
+                className="text-base font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
               >
                 CV Builder
               </Link>
@@ -99,14 +99,14 @@ export default function Navbar() {
                 openModal();
                 setMobileOpen(false);
               }}
-              className="text-base font-normal text-[#141414]/60 hover:text-[#141414] text-left py-3 px-2 rounded-md transition-colors"
+              className="text-base font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 text-left py-3 px-4 rounded-full transition-all"
             >
               CV Analyzer
             </button>
             <SheetClose asChild>
               <Link
                 href="/job-finding"
-                className="text-base font-normal text-[#141414]/60 hover:text-[#141414] transition-colors py-3 px-2 rounded-md"
+                className="text-base font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
               >
                 Job Finding
               </Link>
