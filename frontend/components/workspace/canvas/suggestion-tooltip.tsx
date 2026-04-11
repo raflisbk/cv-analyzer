@@ -70,7 +70,9 @@ export function SuggestionTooltip({
   }
 
   // Position above the mark, centered horizontally
-  const top = anchorRect.top + window.scrollY - 8; // 8px gap above mark
+  // getBoundingClientRect() is viewport-relative; fixed elements are also viewport-relative
+  // — do NOT add window.scrollY here
+  const top = anchorRect.top - 8; // 8px gap above mark
   const left = anchorRect.left + anchorRect.width / 2;
 
   return createPortal(
