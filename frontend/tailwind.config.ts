@@ -10,6 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
       },
       // 8-point grid spacing (already default in Tailwind)
@@ -58,6 +59,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2rem": "2rem",
       },
     },
   },
