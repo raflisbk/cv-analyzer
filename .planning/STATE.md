@@ -126,6 +126,12 @@ Last activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
 - [Phase 12]: StarterKit v3 includes UndoRedo via @tiptap/extensions — @tiptap/extension-history NOT installed
 - [Phase 12]: Removed auto-generated drop_index for knowledge_chunks_embedding_idx from alembic migration — hnsw vector index unrecognized by autogenerate
 
+| Phase 12 P02 | 30 min | 3 tasks | 8 files |
+
+- [Phase 12]: Portal + anchorRect pattern for SuggestionTooltip — ProseMirror marks are DOM nodes, not React components; Radix TooltipTrigger asChild cannot wrap them
+- [Phase 12]: Event delegation mouseover on [data-suggestion-id] — only reliable pattern for ProseMirror-rendered DOM elements
+- [Phase 12]: setSections functional updater used in handleContentChange to capture latest state for markUnsaved — avoids stale closure
+
 | Phase 11 P02 | 8 min | 2 tasks | 4 files |
 
 - [Phase 11]: Reused the existing job UUID as the only workspace identifier to preserve anonymous job-scoped access.
@@ -163,8 +169,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-11T22:15:00Z
-**Stopped At:** Completed 12-01-PLAN.md — Wave 1 Tiptap install, SectionBlock, CanvasEditor, workspace_draft migration
+**Last Session:** 2026-04-11T22:35:00Z
+**Stopped At:** Completed 12-02-PLAN.md — Wave 2 interactive canvas layer (toolbar, stabilo marks, tooltip, draft save)
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**
