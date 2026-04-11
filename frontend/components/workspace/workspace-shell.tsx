@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 
 import type { WorkspaceHydration } from "@/lib/workspace";
+import { CanvasEditor } from "@/components/workspace/canvas/canvas-editor";
 
 function getSuggestionCount(data: WorkspaceHydration): number {
   return (
@@ -79,18 +80,6 @@ export function WorkspaceShell({ data }: { data: WorkspaceHydration }) {
   const suggestionCount = getSuggestionCount(data);
   const sectionCount = getSectionCount(data);
   const gapLines = getGapLines(data);
-  const sourceBlocks =
-    data.document.sections.length > 0
-      ? data.document.sections
-      : data.document.source_text
-        ? [
-            {
-              type: "document",
-              text: data.document.source_text,
-              entities: [],
-            },
-          ]
-        : [];
 
   return (
     <main className="min-h-screen bg-[#F5F2D8] px-4 py-6 md:px-8 md:py-8">
@@ -228,121 +217,7 @@ export function WorkspaceShell({ data }: { data: WorkspaceHydration }) {
             </section>
           </aside>
 
-          <section className="p-4">
-            <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[#141414]/45">
-                  Working surface
-                </p>
-                <h2 className="font-display text-2xl font-extrabold text-[#141414]">
-                  Resume editor with synchronized review feed
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {["Review", "Edit", "Diff", "Export"].map((mode, index) => (
-                  <span
-                    key={mode}
-                    className={`rounded-full px-4 py-2 text-xs font-bold ${
-                      index === 1
-                        ? "bg-[#141414] text-[#F5F2D8]"
-                        : "bg-[#141414]/6 text-[#141414]/65"
-                    }`}
-                  >
-                    {mode}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-              <section className="rounded-[1.75rem] border border-[#141414]/10 bg-white p-6">
-                <div className="mb-5 flex flex-wrap gap-2">
-                  {[
-                    "Apply ATS fixes",
-                    "Tailor to JD",
-                    "Strengthen bullets",
-                    "Generate cover note",
-                  ].map((label) => (
-                    <span
-                      key={label}
-                      className="rounded-2xl border border-[#141414]/10 bg-[#141414]/[0.04] px-3.5 py-2 text-xs font-bold text-[#141414]/75"
-                    >
-                      {label}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="border-b border-[#141414]/10 pb-5">
-                  <h3 className="font-display text-3xl font-extrabold tracking-tight text-[#141414]">
-                    {data.file.filename?.replace(/\.[^.]+$/, "") || "Uploaded CV"}
-                  </h3>
-                  <p className="mt-2 text-sm text-[#141414]/55">
-                    Read-only Phase 11 surface seeded from parsed CV content for this job.
-                  </p>
-                </div>
-
-                <div className="mt-5 space-y-3">
-                  {sourceBlocks.length ? (
-                    sourceBlocks.map((section, index) => {
-                      const isRecommended = index === 1;
-                      const isFlagged = index === 0;
-
-                      return (
-                        <article
-                          key={`${section.type}-${index}`}
-                          className={`relative rounded-[1rem] border p-4 text-sm leading-6 ${
-                            isRecommended
-                              ? "border-[#CAFF43]/25 bg-[#CAFF43]/16"
-                              : isFlagged
-                                ? "border-[#FF4FCB]/22 bg-[#FF4FCB]/8"
-                                : "border-transparent bg-[#141414]/[0.04]"
-                          }`}
-                        >
-                          <span className="absolute right-3 top-3 rounded-full border border-[#141414]/10 bg-white px-2 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#141414]/70">
-                            {isRecommended
-                              ? "recommended"
-                              : isFlagged
-                                ? section.type
-                                : "source"}
-                          </span>
-                          <p className="pr-24 text-[#141414]/82">{section.text}</p>
-                        </article>
-                      );
-                    })
-                  ) : (
-                    <div className="rounded-[1rem] border border-[#141414]/10 bg-[#141414]/[0.04] p-5 text-sm text-[#141414]/65">
-                      Workspace hydration is connected, but the parsed CV
-                      blocks are still preparing.
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              <aside className="space-y-3">
-                {data.analysis.suggestions?.length ? (
-                  data.analysis.suggestions.slice(0, 3).map((card) => (
-                    <section
-                      key={card.section}
-                      className="rounded-[1.15rem] border border-[#141414]/10 bg-white/85 p-4"
-                    >
-                      <h3 className="font-display text-sm font-extrabold text-[#141414]">
-                        {card.section}
-                      </h3>
-                      <p className="mt-2 text-sm leading-6 text-[#141414]/68">
-                        {card.suggestions[0]?.text ??
-                          "No suggestion details available yet."}
-                      </p>
-                    </section>
-                  ))
-                ) : (
-                  <section className="rounded-[1.15rem] border border-[#141414]/10 bg-white/85 p-4 text-sm leading-6 text-[#141414]/68">
-                    Suggestions from the analysis result will populate this
-                    side review panel when present.
-                  </section>
-                )}
-              </aside>
-            </div>
-          </section>
+          <CanvasEditor data={data} />
 
           <aside className="space-y-4 border-t border-[#141414]/10 bg-white/25 p-4 lg:border-l lg:border-t-0">
             <section className="rounded-[1.5rem] border border-[#141414]/10 bg-white/85 p-5">

@@ -66,3 +66,6 @@ class Job(Base, TimestampMixin):
         ForeignKey("job_roles.id"),
         nullable=True,
     )
+
+    # Phase 12: workspace draft per-section Tiptap JSON (D-10, D-11, D-12)
+    workspace_draft = Column(JSONB, nullable=True)
