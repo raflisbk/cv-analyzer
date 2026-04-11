@@ -1,16 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: Agentic CV Workspace
+milestone: v2.0
+milestone_name: — Seamless Homepage
 current_phase: 12
-status: planning
-last_updated: "2026-04-11T12:37:27Z"
+status: completed
+stopped_at: Completed 12-03-PLAN.md (Wave 3 - Split-panel preview + reorder + spacing)
+last_updated: "2026-04-11T15:43:38.157Z"
 last_activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
 progress:
-  total_phases: 4
-  completed_phases: 1
-  total_plans: 13
-  completed_plans: 3
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State: CV Analyzer (pathkr)
@@ -143,6 +144,11 @@ Last activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
 - [Phase 11]: Centralize workspace/results URL creation in helper functions keyed to the original job_id.
 - [Phase 11]: Trigger workspace navigation from a completion effect instead of render-time routing.
 
+| Phase 12 P03 | 35 | 3 tasks | 5 files |
+
+- [Phase 12]: CVPreview uses StarterKit-only extensions (no SuggestionHighlight) to guarantee mark-free clean CV output
+- [Phase 12]: Spacing stored in local SectionState only — not persisted to backend draft_content (out of scope Phase 12)
+
 ### Architecture Approach
 
 **Major Components:**
@@ -169,8 +175,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-11T22:35:00Z
-**Stopped At:** Completed 12-02-PLAN.md — Wave 2 interactive canvas layer (toolbar, stabilo marks, tooltip, draft save)
+**Last Session:** 2026-04-11T15:43:38.134Z
+**Stopped At:** Completed 12-03-PLAN.md (Wave 3 - Split-panel preview + reorder + spacing)
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**

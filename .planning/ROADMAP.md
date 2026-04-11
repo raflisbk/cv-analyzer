@@ -20,7 +20,7 @@
 - [ ] **Phase 9: Visual Design System** - Full Mathical-style redesign: Bricolage Grotesque font, cream palette, dark hero cards, word-pill headlines (all pages)
 - [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
 - [x] **Phase 11: Workspace Foundation & Routing** - Redirect completed uploads into a dedicated editor workspace while preserving results page access ✅ **COMPLETE** (2026-04-11)
-- [ ] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls
+- [x] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls (completed 2026-04-11)
 - [ ] **Phase 13: Agentic Review Cockpit** - Combine analysis panels, action queue, and AI-assisted inline editing in one workspace
 - [ ] **Phase 14: Preview, Export & Variants** - Preview edited CV, export polished versions, and support tailored output variants
 
@@ -329,9 +329,9 @@ Plans:
 **Plans**: 3 plans across 3 waves
 
 Plans:
-- [ ] 12-01-PLAN.md — Editable document model + block renderer + section mapping (Wave 1)
-- [ ] 12-02-PLAN.md — Inline editing interactions + local editor state + preview sync (Wave 2)
-- [ ] 12-03-PLAN.md — Layout/format controls + safe structure operations + polish (Wave 3)
+- [x] 12-01-PLAN.md — Editable document model + block renderer + section mapping (Wave 1)
+- [x] 12-02-PLAN.md — Inline editing interactions + local editor state + preview sync (Wave 2)
+- [x] 12-03-PLAN.md — Layout/format controls + safe structure operations + polish (Wave 3)
 
 **UI hint**: yes
 
@@ -398,7 +398,7 @@ Plans:
 | 9. Hero Integration | 0/0 | Not started | - |
 | 10. Animation Polish | 0/0 | Not started | - |
 | 11. Workspace Foundation & Routing | 2/3 | In Progress|  |
-| 12. Editable Canvas & Layout Controls | 0/3 | Not started | - |
+| 12. Editable Canvas & Layout Controls | 3/3 | Complete   | 2026-04-11 |
 | 13. Agentic Review Cockpit | 0/4 | Not started | - |
 | 14. Preview, Export & Variants | 0/3 | Not started | - |
 

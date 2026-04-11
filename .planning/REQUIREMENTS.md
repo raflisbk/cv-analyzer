@@ -321,9 +321,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 - [ ] **CANVAS-01**: Parsed CV is rendered into editable blocks grouped by section (summary, experience, education, skills, etc.)
 - [ ] **CANVAS-02**: User can click into blocks and edit text inline
-- [ ] **CANVAS-03**: User can reorder or restructure supported content blocks/sections safely
-- [ ] **CANVAS-04**: User can adjust layout/formatting controls (spacing, emphasis, section presentation, bullet formatting)
-- [ ] **CANVAS-05**: Workspace maintains a live preview surface representing the edited CV version
+- [x] **CANVAS-03**: User can reorder or restructure supported content blocks/sections safely
+- [x] **CANVAS-04**: User can adjust layout/formatting controls (spacing, emphasis, section presentation, bullet formatting)
+- [x] **CANVAS-05**: Workspace maintains a live preview surface representing the edited CV version
 
 ### Agentic Editing
 
@@ -346,7 +346,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ### Reliability & Safety
 
-- [ ] **SAFE-01**: Safe formatting actions do not break CV readability or section integrity
+- [x] **SAFE-01**: Safe formatting actions do not break CV readability or section integrity
 - [ ] **SAFE-02**: If AI editing fails, manual editing and existing results page remain usable
 - [x] **SAFE-03**: Edited content remains tied to the originating job/CV without requiring permanent user accounts
 
@@ -367,10 +367,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------------|--------|
 | CANVAS-01 | Render parsed CV into editable sections/blocks | Pending |
 | CANVAS-02 | Inline text editing | Pending |
-| CANVAS-03 | Safe block/section restructuring | Pending |
-| CANVAS-04 | Layout / formatting controls | Pending |
-| CANVAS-05 | Live CV preview surface | Pending |
-| SAFE-01 | Safe formatting preserves readable CV structure | Pending |
+| CANVAS-03 | Safe block/section restructuring | Complete |
+| CANVAS-04 | Layout / formatting controls | Complete |
+| CANVAS-05 | Live CV preview surface | Complete |
+| SAFE-01 | Safe formatting preserves readable CV structure | Complete |
 
 ### Phase 13: Agentic Review Cockpit
 
