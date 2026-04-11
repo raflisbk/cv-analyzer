@@ -4,8 +4,8 @@ interface IconProps {
 }
 
 /**
- * AI Scoring — lightning bolt inside a circle (sticker style).
- * Bold lime circle + dark bolt = instant energy / AI power read.
+ * AI Scoring — star/sparkle in a rounded square (sticker style).
+ * Bold lime rounded-square bg, dark 4-point star = scoring achievement.
  */
 export function AIScoringIcon({ className, size = 24 }: IconProps) {
   return (
@@ -17,11 +17,13 @@ export function AIScoringIcon({ className, size = 24 }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      {/* Lime circle — main shape */}
-      <circle cx="12" cy="12" r="10" fill="#CAFF43" stroke="#141414" strokeWidth="2.5" />
-      {/* Lightning bolt — bold dark fill */}
+      {/* Drop shadow */}
+      <rect x="2.5" y="2.5" width="20" height="20" rx="6" fill="#141414" opacity="0.18" />
+      {/* Lime rounded square */}
+      <rect x="1" y="1" width="20" height="20" rx="6" fill="#CAFF43" stroke="#141414" strokeWidth="2.2" />
+      {/* 4-point star = scoring / AI spark */}
       <path
-        d="M 13.5 3.5 L 8 13 L 12.5 13 L 10.5 20.5 L 17 10.5 L 12 10.5 Z"
+        d="M11 4 L12.2 9.8 L18 11 L12.2 12.2 L11 18 L9.8 12.2 L4 11 L9.8 9.8 Z"
         fill="#141414"
       />
     </svg>
@@ -29,8 +31,8 @@ export function AIScoringIcon({ className, size = 24 }: IconProps) {
 }
 
 /**
- * Skill Gap Analysis — three rising bars (sticker style).
- * Dark short + medium bars + tall lime bar = progress / gap to close.
+ * Skill Gap Analysis — upward arrow with gap bars (sticker style).
+ * Pink rounded-square bg, dark progress bars with gap = level-up read.
  */
 export function SkillGapIcon({ className, size = 24 }: IconProps) {
   return (
@@ -42,19 +44,29 @@ export function SkillGapIcon({ className, size = 24 }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      {/* Short bar — dark, 30% opacity */}
-      <rect x="2" y="15" width="5.5" height="7" rx="1.5" fill="#141414" opacity="0.4" stroke="#141414" strokeWidth="2" />
-      {/* Medium bar — dark, 65% opacity */}
-      <rect x="9.25" y="9" width="5.5" height="13" rx="1.5" fill="#141414" opacity="0.65" stroke="#141414" strokeWidth="2" />
-      {/* Tall bar — lime (the goal / achievement) */}
-      <rect x="16.5" y="2" width="5.5" height="20" rx="1.5" fill="#CAFF43" stroke="#141414" strokeWidth="2" />
+      {/* Drop shadow */}
+      <rect x="2.5" y="2.5" width="20" height="20" rx="6" fill="#141414" opacity="0.18" />
+      {/* Pink rounded square */}
+      <rect x="1" y="1" width="20" height="20" rx="6" fill="#FF4FCB" stroke="#141414" strokeWidth="2.2" />
+      {/* Bar 1 — short, cream */}
+      <rect x="4.5" y="14" width="3.5" height="5" rx="1" fill="#F5F2D8" opacity="0.7" />
+      {/* Bar 2 — medium, cream */}
+      <rect x="10.3" y="10" width="3.5" height="9" rx="1" fill="#F5F2D8" opacity="0.85" />
+      {/* Bar 3 — tall, bright white (the goal) */}
+      <rect x="16" y="5.5" width="3.5" height="13.5" rx="1" fill="#F5F2D8" />
+      {/* Upward arrow on top of tall bar */}
+      <path
+        d="M17.75 5 L19.3 7.5 L16.2 7.5 Z"
+        fill="#141414"
+        opacity="0.6"
+      />
     </svg>
   );
 }
 
 /**
- * Job Match Comparison — shield + checkmark (sticker style).
- * Lime shield = protection / verified. Bold dark checkmark = match confirmed.
+ * Job Match Comparison — two linked circles (sticker style).
+ * Orange rounded-square bg, Venn-diagram overlap = match/comparison.
  */
 export function JobMatchIcon({ className, size = 24 }: IconProps) {
   return (
@@ -66,22 +78,29 @@ export function JobMatchIcon({ className, size = 24 }: IconProps) {
       aria-hidden="true"
       className={className}
     >
-      {/* Shield shape — lime fill, dark outline */}
+      {/* Drop shadow */}
+      <rect x="2.5" y="2.5" width="20" height="20" rx="6" fill="#141414" opacity="0.18" />
+      {/* Orange rounded square */}
+      <rect x="1" y="1" width="20" height="20" rx="6" fill="#FF8C42" stroke="#141414" strokeWidth="2.2" />
+      {/* Left circle */}
+      <circle cx="8.5" cy="11" r="4.5" fill="#F5F2D8" opacity="0.7" />
+      {/* Right circle */}
+      <circle cx="13.5" cy="11" r="4.5" fill="#F5F2D8" opacity="0.7" />
+      {/* Overlap highlight */}
       <path
-        d="M 12 2 L 21 6 L 21 13 C 21 18 16.5 21.5 12 23 C 7.5 21.5 3 18 3 13 L 3 6 Z"
-        fill="#CAFF43"
-        stroke="#141414"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
+        d="M11 7.5 A4.5 4.5 0 0 1 11 14.5 A4.5 4.5 0 0 1 11 7.5 Z"
+        fill="#F5F2D8"
+        opacity="0.6"
       />
-      {/* Checkmark — bold, dark */}
+      {/* Check in overlap */}
       <path
-        d="M 7.5 12.5 L 10.5 15.5 L 17 9"
+        d="M9.8 11 L11 12.2 L13.2 9.8"
         stroke="#141414"
-        strokeWidth="2.5"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
   );
 }
+

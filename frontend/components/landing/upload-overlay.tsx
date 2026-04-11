@@ -24,7 +24,7 @@ export default function UploadOverlay() {
       <DialogContent
         className="fixed inset-0 z-50 flex items-center justify-center p-4
                    max-w-none w-screen h-screen rounded-none border-0
-                   bg-[#141414]/90 backdrop-blur-md shadow-none
+                   bg-[#F5F2D8]/90 backdrop-blur-sm shadow-none
                    !left-0 !top-0 !translate-x-0 !translate-y-0
                    data-[state=open]:animate-in data-[state=open]:fade-in-0
                    data-[state=open]:slide-in-from-left-0 data-[state=open]:slide-in-from-top-0
@@ -51,8 +51,8 @@ export default function UploadOverlay() {
           disabled={isProcessing}
           className="absolute top-5 right-5 z-10 rounded-full w-10 h-10
                      flex items-center justify-center
-                     bg-[#F5F2D8]/8 text-[#F5F2D8]/60 hover:bg-[#F5F2D8]/15 hover:text-[#F5F2D8]
-                     focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/50
+                     bg-[#141414]/10 text-[#141414]/60 hover:bg-[#141414]/20 hover:text-[#141414]
+                     focus:outline-none focus:ring-2 focus:ring-[#141414]/30
                      transition-colors
                      disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
