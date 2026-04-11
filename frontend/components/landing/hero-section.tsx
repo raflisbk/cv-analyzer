@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileText, Search } from "lucide-react";
+import { toast } from "sonner";
 import { AccentPill } from "@/components/ui/accent-pill";
 import { PathkrInline } from "@/components/ui/pathkr-logo";
 
 export default function HeroSection() {
+  function showComingSoon(feature: string) {
+    toast("Coming Soon", {
+      description: `${feature} is under development. Drop your email on the product page to get notified!`,
+    });
+  }
+
   return (
     <section className="bg-[#F5F2D8] px-4 md:px-8 py-6 md:py-8">
       <div className="bg-[#141414] rounded-[2rem] max-w-6xl mx-auto px-8 md:px-16 py-16 md:py-24 overflow-hidden relative">
@@ -42,23 +49,63 @@ export default function HeroSection() {
           Free. Instant. Built for your career.
         </p>
 
-        {/* Two-part CTA */}
-        <div className="flex items-center gap-3 mt-10">
-          <Link
-            href="/cv-analyzer"
-            className="rounded-full bg-[#F5F2D8] text-[#141414] font-extrabold text-base
-                       px-7 py-3 hover:bg-white transition-colors duration-150"
-          >
-            Analyze My CV
-          </Link>
-          <Link
-            href="/cv-analyzer"
-            aria-label="Start CV analysis"
-            className="w-14 h-14 rounded-full bg-[#CAFF43] flex items-center justify-center
-                       hover:bg-[#CAFF43]/85 transition-colors duration-150 flex-shrink-0"
-          >
-            <ArrowRight className="w-5 h-5 text-[#141414]" />
-          </Link>
+        {/* Product CTAs */}
+        <div className="flex flex-col gap-3 mt-10">
+
+          {/* CV Analyzer — active */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/cv-analyzer"
+              className="rounded-full bg-[#F5F2D8] text-[#141414] font-extrabold text-base
+                         px-7 py-3 hover:bg-white transition-colors duration-150 flex-shrink-0"
+            >
+              Analyze My CV
+            </Link>
+            <Link
+              href="/cv-analyzer"
+              aria-label="Start CV analysis"
+              className="w-12 h-12 rounded-full bg-[#CAFF43] flex items-center justify-center
+                         hover:bg-[#CAFF43]/85 transition-colors duration-150 flex-shrink-0"
+            >
+              <ArrowRight className="w-4 h-4 text-[#141414]" />
+            </Link>
+            <span className="text-xs text-[#CAFF43] font-display font-extrabold hidden sm:inline">
+              Active ✓
+            </span>
+          </div>
+
+          {/* CV Builder — coming soon */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => showComingSoon("CV Builder")}
+              className="rounded-full border border-[#F5F2D8]/20 text-[#F5F2D8]/50 font-extrabold
+                         text-base px-7 py-3 hover:border-[#FF8C42]/60 hover:text-[#FF8C42]
+                         transition-all duration-150 flex items-center gap-2 flex-shrink-0"
+            >
+              <FileText className="w-4 h-4" />
+              Build My CV
+            </button>
+            <span className="text-xs text-[#F5F2D8]/30 font-display hidden sm:inline">
+              Coming soon
+            </span>
+          </div>
+
+          {/* Job Finding — coming soon */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => showComingSoon("Job Finding")}
+              className="rounded-full border border-[#F5F2D8]/20 text-[#F5F2D8]/50 font-extrabold
+                         text-base px-7 py-3 hover:border-[#8B5CF6]/60 hover:text-[#8B5CF6]
+                         transition-all duration-150 flex items-center gap-2 flex-shrink-0"
+            >
+              <Search className="w-4 h-4" />
+              Find My Job
+            </button>
+            <span className="text-xs text-[#F5F2D8]/30 font-display hidden sm:inline">
+              Coming soon
+            </span>
+          </div>
+
         </div>
 
       </div>
