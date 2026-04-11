@@ -8,6 +8,7 @@ import { DocumentPreview } from "@/components/upload/document-preview";
 import { ProcessingStages } from "@/components/upload/processing-stages";
 import { useUpload } from "@/hooks/use-upload";
 import { useJobStream } from "@/hooks/use-job-stream";
+import { useUploadModal } from "@/components/providers/upload-modal-provider";
 import { toast } from "sonner";
 
 interface UploadSectionProps {
@@ -20,10 +21,10 @@ export default function UploadSection({
   onProcessingChange,
 }: UploadSectionProps) {
   const router = useRouter();
+  const { closeModal } = useUploadModal();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [completedJobId, setCompletedJobId] = useState<string | null>(null);
-  const [isNavigating, setIsNavigating] = useState(false);
 
   const uploadMutation = useUpload();
 
@@ -129,16 +130,14 @@ export default function UploadSection({
         </div>
 
         <button
-          disabled={isNavigating}
-          onClick={async () => {
-            setIsNavigating(true);
-            await router.push(`/results/${completedJobId}`);
+          onClick={() => {
+            closeModal();
+            router.push(`/results/${completedJobId}`);
           }}
           className="w-full rounded-full bg-[#CAFF43] text-[#141414] text-base font-display font-extrabold
-                     py-3.5 hover:bg-[#CAFF43]/85 active:scale-[0.99] transition-all duration-150
-                     disabled:opacity-50 disabled:cursor-not-allowed"
+                     py-3.5 hover:bg-[#CAFF43]/85 active:scale-[0.99] transition-all duration-150"
         >
-          {isNavigating ? "Loading results…" : "View My Results →"}
+          View My Results →
         </button>
       </div>
     );
