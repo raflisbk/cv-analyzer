@@ -33,32 +33,32 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
   return (
     // overflow-x-auto for mobile tab scrolling per UI-SPEC §11
     <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="overflow-x-auto flex w-full">
+      <TabsList className="overflow-x-auto flex w-full bg-[#F5F2D8]">
         {/* min-h-[44px] for touch target per UI-SPEC §2 */}
         <TabsTrigger
           value="overview"
-          className="min-h-[44px] flex items-center gap-2"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
         >
           <LayoutDashboard className="h-4 w-4" />
           Overview
         </TabsTrigger>
         <TabsTrigger
           value="scores"
-          className="min-h-[44px] flex items-center gap-2"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
         >
           <BarChart3 className="h-4 w-4" />
           Scores
         </TabsTrigger>
         <TabsTrigger
           value="skills"
-          className="min-h-[44px] flex items-center gap-2"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
         >
           <Sparkles className="h-4 w-4" />
           Skills
         </TabsTrigger>
         <TabsTrigger
           value="grammar"
-          className="min-h-[44px] flex items-center gap-2"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
         >
           <SpellCheck className="h-4 w-4" />
           Grammar
@@ -66,7 +66,7 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
         {/* Tab 5: Compare — Phase 4 per D-C17 */}
         <TabsTrigger
           value="compare"
-          className="min-h-[44px] flex items-center gap-2"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
         >
           <ArrowLeftRight className="h-4 w-4" />
           Compare
@@ -74,18 +74,20 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
       </TabsList>
 
       {/* Overview tab — ATS Checklist + AI Suggestions per UI-SPEC §7 C1 + Phase 3 */}
-      <TabsContent value="overview" className="p-6 bg-secondary rounded-b-lg">
+      <TabsContent value="overview" className="p-6 bg-white rounded-b-lg">
         <h2 className="text-xl font-semibold mb-4">ATS Compatibility Check</h2>
         <AtsChecklist checks={result.ats_checks} />
-        {/* Phase 3: AI suggestions below ATS checklist (D-05) */}
+        {/* Phase 3: AI suggestions below ATS checklist (D-05).
+            Show skeleton while job is processing (any non-terminal status);
+            only show null/"unavailable" when status=complete and LLM genuinely failed. */}
         <SuggestionCards
           cards={result.suggestions}
-          isLoading={result.status === "generating"}
+          isLoading={result.status !== "complete" && result.status !== "failed"}
         />
       </TabsContent>
 
       {/* Scores tab — 4 gauge charts per UI-SPEC §7 C2 */}
-      <TabsContent value="scores" className="p-6 bg-secondary rounded-b-lg">
+      <TabsContent value="scores" className="p-6 bg-white rounded-b-lg">
         <h2 className="text-xl font-semibold mb-4">Score Breakdown</h2>
         {result.scores ? (
           <ScoreDashboard scores={result.scores} />
@@ -97,19 +99,19 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
       </TabsContent>
 
       {/* Skills tab — badge cloud per UI-SPEC §7 C3 */}
-      <TabsContent value="skills" className="p-6 bg-secondary rounded-b-lg">
+      <TabsContent value="skills" className="p-6 bg-white rounded-b-lg">
         <h2 className="text-xl font-semibold mb-4">Extracted Skills</h2>
         <SkillsList skills={result.skills} />
       </TabsContent>
 
       {/* Grammar tab — issues list per UI-SPEC §7 C4 */}
-      <TabsContent value="grammar" className="p-6 bg-secondary rounded-b-lg">
+      <TabsContent value="grammar" className="p-6 bg-white rounded-b-lg">
         <h2 className="text-xl font-semibold mb-4">Grammar &amp; Spelling</h2>
         <GrammarIssuesList issues={result.grammar_issues} />
       </TabsContent>
 
       {/* Compare tab — Phase 4 per D-C17 */}
-      <TabsContent value="compare" className="p-6 bg-secondary rounded-b-lg">
+      <TabsContent value="compare" className="p-6 bg-white rounded-b-lg">
         <CompareTab
           jobId={result.job_id}
           jobRoles={jobRoles}

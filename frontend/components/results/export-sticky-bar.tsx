@@ -87,9 +87,9 @@ export function ExportStickyBar({
   // Always render the wrapper div to enable CSS transitions
   // Element is hidden below viewport (translate-y-full) when not complete
   return (
-    /* h-12=48px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
+    /* h-14=56px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
     <div
-      className={`fixed bottom-0 left-0 right-0 h-12 z-50 bg-background border-t border-border
+      className={`fixed bottom-0 left-0 right-0 h-14 z-50 bg-[#141414] border-t border-[#F5F2D8]/10
         px-4 flex items-center justify-end gap-2
         transition-all duration-300 ease-out
         ${analysisStatus === "complete" && isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
@@ -99,12 +99,11 @@ export function ExportStickyBar({
       {/* Only render content when analysis is complete */}
       {analysisStatus === "complete" && (
         <>
-          {/* Copy Suggestion — variant outline, size sm per UI-SPEC §7.5 */}
+          {/* Copy Suggestion — Mathical dark surface button per UI-SPEC §7.5 */}
           <Button
-            variant="outline"
-            size="sm"
             onClick={handleCopySuggestion}
             aria-label="Copy all suggestions to clipboard"
+            className="bg-[#F5F2D8]/10 text-[#F5F2D8] rounded-full hover:bg-[#F5F2D8]/20 border-0 h-9 px-4 text-sm"
           >
             {copySuccess
               ? <Check className="h-4 w-4 mr-2" />
@@ -113,12 +112,11 @@ export function ExportStickyBar({
             Copy Suggestions
           </Button>
 
-          {/* Download PDF — variant default (primary), size sm per UI-SPEC §7.5 */}
+          {/* Download PDF — lime accent button per UI-SPEC §7.5 */}
           <Button
-            variant="default"
-            size="sm"
             onClick={handleDownloadPdf}
             aria-label="Download analysis as PDF"
+            className="bg-[#CAFF43] text-[#141414] rounded-full hover:bg-[#CAFF43]/85 border-0 h-9 px-4 text-sm font-extrabold"
           >
             <Download className="h-4 w-4 mr-2" />
             Download PDF
