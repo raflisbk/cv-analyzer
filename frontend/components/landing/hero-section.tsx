@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, FileText, Search } from "lucide-react";
 import { toast } from "sonner";
 import { AccentPill } from "@/components/ui/accent-pill";
 import { PathkrInline } from "@/components/ui/pathkr-logo";
@@ -50,61 +49,36 @@ export default function HeroSection() {
         </p>
 
         {/* Product CTAs */}
-        <div className="flex flex-col gap-3 mt-10">
+        <div className="flex flex-wrap items-center gap-3 mt-10">
 
           {/* CV Analyzer — active */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/cv-analyzer"
-              className="rounded-full bg-[#F5F2D8] text-[#141414] font-extrabold text-base
-                         px-7 py-3 hover:bg-white transition-colors duration-150 flex-shrink-0"
-            >
-              Analyze My CV
-            </Link>
-            <Link
-              href="/cv-analyzer"
-              aria-label="Start CV analysis"
-              className="w-12 h-12 rounded-full bg-[#CAFF43] flex items-center justify-center
-                         hover:bg-[#CAFF43]/85 transition-colors duration-150 flex-shrink-0"
-            >
-              <ArrowRight className="w-4 h-4 text-[#141414]" />
-            </Link>
-            <span className="text-xs text-[#CAFF43] font-display font-extrabold hidden sm:inline">
-              Active ✓
-            </span>
-          </div>
+          <Link
+            href="/cv-analyzer"
+            className="rounded-full bg-[#F5F2D8] text-[#141414] font-extrabold text-base
+                       px-7 py-3 hover:bg-white transition-colors duration-150"
+          >
+            Analyze My CV
+          </Link>
 
           {/* CV Builder — coming soon */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => showComingSoon("CV Builder")}
-              className="rounded-full border border-[#F5F2D8]/20 text-[#F5F2D8]/50 font-extrabold
-                         text-base px-7 py-3 hover:border-[#FF8C42]/60 hover:text-[#FF8C42]
-                         transition-all duration-150 flex items-center gap-2 flex-shrink-0"
-            >
-              <FileText className="w-4 h-4" />
-              Build My CV
-            </button>
-            <span className="text-xs text-[#F5F2D8]/30 font-display hidden sm:inline">
-              Coming soon
-            </span>
-          </div>
+          <button
+            onClick={() => showComingSoon("CV Builder")}
+            className="rounded-full border border-[#F5F2D8]/20 text-[#F5F2D8]/50 font-extrabold
+                       text-base px-7 py-3 hover:border-[#FF8C42]/60 hover:text-[#FF8C42]
+                       transition-all duration-150"
+          >
+            Build My CV
+          </button>
 
           {/* Job Finding — coming soon */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => showComingSoon("Job Finding")}
-              className="rounded-full border border-[#F5F2D8]/20 text-[#F5F2D8]/50 font-extrabold
-                         text-base px-7 py-3 hover:border-[#8B5CF6]/60 hover:text-[#8B5CF6]
-                         transition-all duration-150 flex items-center gap-2 flex-shrink-0"
-            >
-              <Search className="w-4 h-4" />
-              Find My Job
-            </button>
-            <span className="text-xs text-[#F5F2D8]/30 font-display hidden sm:inline">
-              Coming soon
-            </span>
-          </div>
+          <button
+            onClick={() => showComingSoon("Job Finding")}
+            className="rounded-full border border-[#F5F2D8]/20 text-[#F5F2D8]/50 font-extrabold
+                       text-base px-7 py-3 hover:border-[#8B5CF6]/60 hover:text-[#8B5CF6]
+                       transition-all duration-150"
+          >
+            Find My Job
+          </button>
 
         </div>
 
