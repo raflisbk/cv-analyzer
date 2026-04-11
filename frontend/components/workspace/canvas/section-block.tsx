@@ -182,7 +182,7 @@ export function SectionBlock({
       container.removeEventListener("mouseover", handleMouseOver);
       container.removeEventListener("mouseout", handleMouseOut);
     };
-  }, [suggestions]);
+  }, [suggestions, editor]);
 
   // null during SSR hydration — show skeleton per UI-SPEC
   if (!editor) {
