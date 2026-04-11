@@ -6,11 +6,14 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { JSONContent, Editor } from "@tiptap/core";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SuggestionHighlight } from "@/lib/tiptap/suggestion-highlight";
 import { EditorToolbar } from "./editor-toolbar";
 import { SuggestionTooltip } from "./suggestion-tooltip";
 import type { SuggestionItem } from "@/lib/types";
+
+type SpacingValue = "compact" | "normal" | "spacious";
 
 interface SectionBlockProps {
   sectionType: string;
@@ -18,7 +21,18 @@ interface SectionBlockProps {
   draftContent?: JSONContent | null;
   onContentChange: (sectionType: string, json: JSONContent) => void;
   suggestions?: SuggestionItem[];
+  index: number;
+  totalSections: number;
+  spacing: SpacingValue;
+  onReorder: (index: number, direction: "up" | "down") => void;
+  onSpacingChange: (sectionType: string, spacing: SpacingValue) => void;
 }
+
+const SPACING_PADDING: Record<SpacingValue, string> = {
+  compact: "py-1",
+  normal: "py-3",
+  spacious: "py-6",
+};
 
 /** Convert plain text (with newlines) to a Tiptap-compatible doc JSONContent */
 export function plainTextToTiptapDoc(text: string): JSONContent {
@@ -93,6 +107,11 @@ export function SectionBlock({
   draftContent,
   onContentChange,
   suggestions,
+  index,
+  totalSections,
+  spacing,
+  onReorder,
+  onSpacingChange,
 }: SectionBlockProps) {
   const lastContentRef = useRef<string>("");
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -184,18 +203,60 @@ export function SectionBlock({
           : "border-border bg-white/80"
       }`}
     >
-      {/* Section header row — Wave 3 adds reorder buttons + spacing toggle */}
+      {/* Section header row — reorder buttons + spacing toggle */}
       <header className="flex items-center gap-2 border-b border-border px-4 py-2">
         <span className="rounded-full bg-[#141414] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-[#F5F2D8]">
           {sectionType}
         </span>
+
+        <div className="ml-auto flex items-center gap-1">
+          {/* Spacing selector */}
+          <select
+            aria-label="Section spacing"
+            value={spacing}
+            onChange={(e) =>
+              onSpacingChange(sectionType, e.target.value as SpacingValue)
+            }
+            className="rounded-md border border-border bg-transparent px-1.5 py-0.5 text-[10px] text-[#141414]/60 focus:outline-none focus:ring-1 focus:ring-[#CAFF43]"
+          >
+            <option value="compact">Compact</option>
+            <option value="normal">Normal</option>
+            <option value="spacious">Spacious</option>
+          </select>
+
+          {/* Move up */}
+          <button
+            type="button"
+            aria-label="Move section up"
+            disabled={index === 0}
+            onClick={() => onReorder(index, "up")}
+            className={`flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-[#141414]/8 ${
+              index === 0 ? "cursor-not-allowed opacity-30" : ""
+            }`}
+          >
+            <ChevronUp className="h-4 w-4" />
+          </button>
+
+          {/* Move down */}
+          <button
+            type="button"
+            aria-label="Move section down"
+            disabled={index === totalSections - 1}
+            onClick={() => onReorder(index, "down")}
+            className={`flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-[#141414]/8 ${
+              index === totalSections - 1 ? "cursor-not-allowed opacity-30" : ""
+            }`}
+          >
+            <ChevronDown className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
       {/* Formatting toolbar — visible on focus, hidden when unfocused */}
       <EditorToolbar editor={editor} isFocused={isFocused} />
 
-      {/* Tiptap content area — 14px Inter, 1.6 line-height per UI-SPEC */}
-      <div className="px-4 py-3">
+      {/* Tiptap content area — spacing controlled by prop */}
+      <div className={`px-4 ${SPACING_PADDING[spacing]}`}>
         {/* Wrap EditorContent with ref for event delegation */}
         <div ref={editorContainerRef} className="relative">
           <EditorContent

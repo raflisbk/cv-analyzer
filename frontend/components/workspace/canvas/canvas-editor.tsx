@@ -5,14 +5,18 @@ import type { JSONContent } from "@tiptap/core";
 import type { WorkspaceHydration } from "@/lib/workspace";
 import { useDraftSave, type SaveState } from "@/hooks/use-draft-save";
 import { SectionBlock, plainTextToTiptapDoc } from "./section-block";
+import { CanvasSplitPanel } from "./canvas-split-panel";
 
 interface CanvasEditorProps {
   data: WorkspaceHydration;
 }
 
+type SpacingValue = "compact" | "normal" | "spacious";
+
 interface SectionState {
   type: string;
   json: JSONContent;
+  spacing: SpacingValue;
 }
 
 function buildInitialSections(
@@ -22,6 +26,7 @@ function buildInitialSections(
   return sections.map((section) => ({
     type: section.type,
     json: draftContent?.[section.type] ?? plainTextToTiptapDoc(section.text),
+    spacing: "normal" as SpacingValue,
   }));
 }
 
@@ -91,6 +96,28 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
     [markUnsaved]
   );
 
+  const handleReorder = useCallback(
+    (index: number, direction: "up" | "down") => {
+      setSections((prev) => {
+        const swapIndex = direction === "up" ? index - 1 : index + 1;
+        if (swapIndex < 0 || swapIndex >= prev.length) { return prev; }
+        const updated = [...prev];
+        [updated[index], updated[swapIndex]] = [updated[swapIndex], updated[index]];
+        return updated;
+      });
+    },
+    []
+  );
+
+  const handleSpacingChange = useCallback(
+    (sectionType: string, spacing: SpacingValue) => {
+      setSections((prev) =>
+        prev.map((s) => (s.type === sectionType ? { ...s, spacing } : s))
+      );
+    },
+    []
+  );
+
   if (rawSections.length === 0) {
     return (
       <div className="rounded-[1rem] border border-border bg-white/60 p-6 text-sm text-[#141414]/65">
@@ -114,9 +141,11 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
         <UnsavedIndicator saveState={saveState} />
       </div>
 
-      {/* Section blocks — Wave 3 wraps this in CanvasSplitPanel */}
-      <div className="space-y-4">
-        {sections.map((section) => (
+      {/* Split panel — editor left, live preview right */}
+      <CanvasSplitPanel
+        sections={sections}
+        fileName={data.file.filename ?? ""}
+        editorSlot={sections.map((section, i) => (
           <SectionBlock
             key={section.type}
             sectionType={section.type}
@@ -133,9 +162,14 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
                 )
                 ?.suggestions ?? []
             }
+            index={i}
+            totalSections={sections.length}
+            spacing={section.spacing}
+            onReorder={handleReorder}
+            onSpacingChange={handleSpacingChange}
           />
         ))}
-      </div>
+      />
     </section>
   );
 }
