@@ -61,18 +61,18 @@ export function AtsChecklist({ checks }: AtsChecklistProps) {
 
   return (
     <div className="space-y-4">
-      {/* Summary strip */}
+      {/* Summary strip — solid fill for readability on cream background */}
       <div className="flex gap-3 flex-wrap">
-        <span className="rounded-full bg-[#CAFF43]/10 text-[#CAFF43] text-xs font-bold px-3 py-1">
+        <span className="rounded-full bg-[#CAFF43] text-[#141414] text-xs font-extrabold px-3 py-1">
           ✓ {passed} passed
         </span>
         {warned > 0 && (
-          <span className="rounded-full bg-[#FF8C42]/10 text-[#FF8C42] text-xs font-bold px-3 py-1">
+          <span className="rounded-full bg-[#FF8C42] text-white text-xs font-extrabold px-3 py-1">
             ⚠ {warned} to review
           </span>
         )}
         {failed > 0 && (
-          <span className="rounded-full bg-[#FF4FCB]/10 text-[#FF4FCB] text-xs font-bold px-3 py-1">
+          <span className="rounded-full bg-[#FF4FCB] text-white text-xs font-extrabold px-3 py-1">
             ✕ {failed} to fix
           </span>
         )}

@@ -6,11 +6,12 @@ interface SkillsListProps {
   skills: string[];
 }
 
+// Solid fill pills — readable on both cream and dark backgrounds
 const PILL_STYLES = [
-  "bg-[#CAFF43]/10 text-[#CAFF43] border border-[#CAFF43]/20",
-  "bg-[#FF4FCB]/10 text-[#FF4FCB] border border-[#FF4FCB]/20",
-  "bg-[#FF8C42]/10 text-[#FF8C42] border border-[#FF8C42]/20",
-  "bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#8B5CF6]/20",
+  "bg-[#CAFF43] text-[#141414]",
+  "bg-[#FF4FCB] text-white",
+  "bg-[#FF8C42] text-white",
+  "bg-[#8B5CF6] text-white",
 ];
 
 export function SkillsList({ skills }: SkillsListProps) {
