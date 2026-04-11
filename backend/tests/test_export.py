@@ -135,6 +135,8 @@ def test_export_returns_pdf_bytes_with_correct_headers(app, client):
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert "attachment" in response.headers["content-disposition"]
+    # Filename must include prefix, original CV base name, and short job ID
+    assert "cv-analyze" in response.headers["content-disposition"]
     assert str(job.id)[:8] in response.headers["content-disposition"]
 
 

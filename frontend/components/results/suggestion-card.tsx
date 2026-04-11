@@ -103,10 +103,11 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
         id={contentId}
         role="region"
         aria-labelledby={triggerId}
-        className={`overflow-hidden transition-all duration-200 ${
-          isOpen ? "max-h-96 mt-4" : "max-h-0"
+        className={`grid transition-all duration-300 ease-in-out ${
+          isOpen ? "grid-rows-[1fr] mt-4" : "grid-rows-[0fr]"
         }`}
       >
+        <div className="overflow-hidden">
         <div className="space-y-2">
           {beforeText && afterText ? (
             <>
@@ -129,6 +130,7 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
               <p className="text-sm text-[#F5F2D8]/30">No original text available for comparison.</p>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

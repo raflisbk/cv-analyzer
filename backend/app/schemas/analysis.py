@@ -52,6 +52,7 @@ class SuggestionItem(BaseModel):
     text: str
     type: Literal["action_verb", "impact_metric", "missing_section"]
     original_text: str | None = None
+    after_text: str | None = None  # Concrete rewritten example applying this suggestion
 
 
 class SuggestionCard(BaseModel):

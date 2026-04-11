@@ -32,13 +32,17 @@ def test_score_cv_returns_dict_with_all_keys() -> None:
 
 
 def test_score_cv_all_values_are_int_0_to_100() -> None:
-    """All score values are integers in range [0, 100] per SCORE-01"""
+    """All numeric score values are integers in range [0, 100] per SCORE-01"""
+    _NON_NUMERIC_KEYS = {"scoring_method"}
+
     with patch(
         "app.services.scoring.embeddings.get_embedding", return_value=_FAKE_EMBEDDING
     ):
         result = score_cv("Sample CV text")
 
     for key, value in result.items():
+        if key in _NON_NUMERIC_KEYS:
+            continue
         assert isinstance(value, int), f"{key} should be int, got {type(value)}"
         assert 0 <= value <= 100, f"{key}={value} out of [0, 100] range"
 

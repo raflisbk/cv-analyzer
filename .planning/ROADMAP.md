@@ -17,7 +17,7 @@
 - [x] **Phase 6: Infrastructure & Primitives** - Font wiring, RSC shell, Dialog primitive (zero-risk prerequisites) (completed 2026-04-10)
 - [x] **Phase 7: Static Landing Sections** - Navbar, Features, How It Works server components (completed 2026-04-10)
 - [x] **Phase 8: Upload Modal + Navbar Expansion** - Brand "pathkr", multi-product navbar, full marketing homepage, full-screen upload overlay ✅ **COMPLETE**
-- [ ] **Phase 9: Hero Integration** - HeroWithModal client island + RSC page shell (now covered in Phase 8)
+- [ ] **Phase 9: Visual Design System** - Full Mathical-style redesign: Bricolage Grotesque font, cream palette, dark hero cards, word-pill headlines (all pages)
 - [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
 
 ## Phase Details
@@ -240,20 +240,28 @@ Plans:
 
 **UI hint**: yes
 
-### Phase 9: Hero Integration
+### Phase 9: Visual Design System
 
-**Goal**: Users land on a visually compelling hero section that immediately communicates product value and invites action
+**Goal**: All pages of pathkr are visually redesigned to match the Mathical aesthetic — Bricolage Grotesque display font, cream background, dark hero cards, word-pill headline treatment, vivid accent colors (lime, pink, orange, purple)
 
-**Depends on**: Phase 7 (static sections complete), Phase 8 (upload modal ready)
+**Depends on**: Phase 8 (upload modal + navbar complete)
 
-**Requirements**: HERO-01, HERO-02, HERO-03
+**Requirements**: HERO-01, HERO-02, HERO-03, VIS-01, VIS-02, VIS-03
 
 **Success Criteria** (what must be TRUE):
-  1. Hero section displays an outcome-first headline with a sub-headline listing all 4 scoring dimensions (clarity, impact, ATS, keywords)
-  2. Clicking the hero "Analyze My CV" CTA opens the upload modal — same modal as the navbar CTA
-  3. The hero keyword renders with a blue-to-indigo gradient text effect and a subtle dot-grid pattern covers the hero background
+  1. Page background is cream (#F5F2D8), dark hero card (#141414) on homepage
+  2. Bricolage Grotesque ExtraBold loads and is applied to all display headlines
+  3. Hero headline uses word-pill treatment with colored pills (lime, pink, orange, purple) interleaved with headline words
+  4. Accent colors (lime, pink, orange, purple) are used consistently across all sections
+  5. Coming Soon pages and Results page use the new design system
+  6. All existing upload/analysis functionality continues to work correctly
 
-**Plans**: TBD
+**Plans**: 3 plans across 3 waves
+
+Plans:
+- [ ] 09-01-PLAN.md — Design System Foundation: globals.css tokens + tailwind config + Bricolage Grotesque font + AccentPill component (Wave 1)
+- [ ] 09-02-PLAN.md — Landing Page Redesign: navbar + HeroSection full rebuild + Products/Features/HIWS/Stats sections + coming-soon pages (Wave 2)
+- [ ] 09-03-PLAN.md — Results Page Redesign: results page restyle + critical bg-secondary fix in ResultsTabs + ExportStickyBar/ResultsError/ScoreRangeBadge/ResultsSkeleton (Wave 3)
 
 **UI hint**: yes
 

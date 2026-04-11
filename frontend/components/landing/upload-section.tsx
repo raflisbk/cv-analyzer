@@ -169,14 +169,14 @@ export default function UploadSection({
       )}
 
       {jobId && !isConnected && !streamError && (
-        <div className="mt-4 text-center text-sm text-amber-400/70">
+        <div className="mt-4 text-center text-sm text-[#FF8C42]/70">
           Reconnecting to server...
         </div>
       )}
 
       {streamError && (
         <div className="mt-4 text-center space-y-2">
-          <p className="text-sm text-red-400">Connection lost. Please try again.</p>
+          <p className="text-sm text-[#FF4FCB]">Connection lost. Please try again.</p>
           <button
             onClick={handleReset}
             className="text-sm text-[#CAFF43] hover:underline"

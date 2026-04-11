@@ -90,15 +90,18 @@ export interface SuggestionItem {
   text: string;
   type: SuggestionType;
   originalText?: string;  // Original CV text for before/after comparison
+  afterText?: string;     // Rewritten example implementing the suggestion
 }
 
 /**
  * API-facing suggestion item shape before UI normalization.
- * Backend may emit `original_text` while frontend components consume `originalText`.
+ * Backend may emit `original_text`/`after_text` while frontend components consume camelCase.
  */
-export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText"> {
+export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText" | "afterText"> {
   originalText?: string;
   original_text?: string;
+  afterText?: string;
+  after_text?: string;
 }
 
 /** API-facing suggestion card shape before UI normalization. */

@@ -8,7 +8,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useJobResults } from "@/hooks/use-job-results";
 import type { JobRole, SuggestionCard } from "@/lib/types";
 import { ExportStickyBar } from "@/components/results/export-sticky-bar";
@@ -128,9 +129,18 @@ export default function ResultsPage() {
         <div className="max-w-4xl mx-auto px-4 py-12">
           {/* Page header per UI-SPEC §7 B */}
           <div className="flex items-center justify-between mb-8">
-            <h1 className="font-display font-extrabold text-xl text-[#141414]">
-              CV Analysis Results
-            </h1>
+            <div>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#141414]/50 hover:text-[#141414] transition-colors mb-6 group"
+              >
+                <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
+                Back to home
+              </Link>
+              <h1 className="font-display font-extrabold text-2xl md:text-3xl text-[#141414]">
+                CV Analysis Results
+              </h1>
+            </div>
             {/* Polling indicator per UI-SPEC §8 */}
             {isProcessing && (
               <div
@@ -147,7 +157,12 @@ export default function ResultsPage() {
           {/* Loading/Processing state per UI-SPEC §7 B */}
           {isProcessing ? (
             <div className="space-y-4">
-              <div className="bg-[#141414] rounded-[2rem] p-10 text-center space-y-3">
+              <div className="bg-[#141414] rounded-[2rem] p-10 text-center space-y-4 border border-[#CAFF43]/10 animate-pulse">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-2 h-2 bg-[#CAFF43] rounded-full animate-ping" />
+                  <div className="w-2 h-2 bg-[#FF8C42] rounded-full animate-ping [animation-delay:0.2s]" />
+                  <div className="w-2 h-2 bg-[#FF4FCB] rounded-full animate-ping [animation-delay:0.4s]" />
+                </div>
                 <h2 className="font-display font-extrabold text-xl text-[#F5F2D8]">
                   Analyzing your CV…
                 </h2>

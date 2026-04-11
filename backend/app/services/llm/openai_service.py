@@ -32,7 +32,8 @@ Respond with ONLY valid JSON matching this exact schema:
           "priority": "<high_impact|quick_win>",
           "text": "<specific actionable suggestion>",
           "type": "<action_verb|impact_metric|missing_section>",
-          "original_text": "<EXACT text from the CV being improved, copy verbatim>"
+          "original_text": "<EXACT text from the CV being improved, copy verbatim>",
+          "after_text": "<rewritten version of original_text that implements this suggestion — a concrete improved example the user can use directly>"
         }}
       ]
     }}
@@ -46,7 +47,8 @@ Rules:
 - "impact_metric" = add quantifiable results (e.g., increased sales by 30%)
 - "missing_section" = add absent but valuable section
 - For each suggestion, you MUST provide "original_text": the EXACT text from the user's CV that this suggestion is improving (copy it verbatim)
-- "original_text" enables before/after comparison to show users what to change
+- For each suggestion, you MUST provide "after_text": a concrete rewritten version of "original_text" that directly implements the suggestion (e.g., if suggestion is to add metrics, rewrite that sentence with plausible metrics)
+- "original_text" + "after_text" enables a before/after comparison so users see exactly what to change
 - Generate 2-4 suggestions per section, focusing on sections with most room for improvement
 - Be specific: reference actual content from the CV text
 """

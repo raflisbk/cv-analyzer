@@ -205,5 +205,103 @@ Which phases cover which requirements. Updated during roadmap creation.
 - Unmapped: 0 ✓
 
 ---
+
+## v2.0 Requirements — Seamless Homepage
+
+**Defined:** 2026-04-10
+**Milestone goal:** Redesign homepage into a full landing page with strong visual hierarchy and seamless UX.
+
+### Infrastructure Fixes
+
+- [ ] **INFRA-01**: User benefits from Inter font correctly applied sitewide (wire to Tailwind `fontFamily.sans`)
+- [ ] **INFRA-02**: Page root is a React Server Component shell (remove `"use client"` from `app/page.tsx`)
+- [ ] **INFRA-03**: shadcn Dialog primitive is available for use (`npx shadcn@latest add dialog`)
+
+### Navbar
+
+- [ ] **NAV-01**: User sees a sticky navbar with app logo and "Analyze My CV" CTA button
+
+### Hero Section
+
+- [ ] **HERO-01**: User sees a hero section with strong tagline and sub-headline listing the 4 scoring dimensions
+- [ ] **HERO-02**: User can click hero CTA to open the upload modal
+- [ ] **HERO-03**: Hero has gradient text on keyword and a dot-grid background pattern
+
+### Features Section
+
+- [ ] **FEAT-01**: User sees 3 feature cards: AI Scoring, Skill Gap Analysis, Job Match Comparison
+- [ ] **FEAT-02**: Feature cards animate on hover with a lift effect
+
+### How It Works Section
+
+- [ ] **HIWS-01**: User sees a 4-step visual flow: Upload → Analyze → Compare → Export
+- [ ] **HIWS-02**: Step 3 shows an animated score counter that counts up when the section enters the viewport
+
+### Upload Modal
+
+- [ ] **MODAL-01**: User can open the upload modal from any CTA button (navbar or hero)
+- [ ] **MODAL-02**: Existing upload zone, SSE streaming, and navigation to results page work correctly inside the modal
+- [ ] **MODAL-03**: User cannot close the modal while upload or analysis is in progress
+
+### Brand & Navigation (v2.0)
+
+- [ ] **NAV-02**: Multi-product navbar with 3 product links (CV Analyzer → overlay, CV Builder → /cv-builder, Job Finding → /job-finding) and hamburger mobile menu
+- [ ] **HOME-01**: Full marketing homepage with Hero, Product Cards, Features, How It Works, and Stats sections
+- [ ] **HOME-02**: Homepage and navbar "Start Analyzing" / "Get Started" CTAs open the upload overlay
+- [ ] **HOME-03**: /cv-builder and /job-finding render "Coming Soon" placeholder pages with email capture
+
+### Scroll Animations
+
+- [ ] **ANIM-01**: All landing sections fade-in and slide-up when they enter the viewport
+- [ ] **ANIM-02**: Animations are skipped when user has `prefers-reduced-motion` enabled
+
+## Traceability v2.0
+
+### Phase 6: Infrastructure & Primitives
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| INFRA-01 | Inter font wired to Tailwind fontFamily.sans | Pending |
+| INFRA-02 | Remove "use client" from page root — RSC shell | Pending |
+| INFRA-03 | Install shadcn Dialog primitive | Pending |
+
+### Phase 7: Static Landing Sections
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| NAV-01 | Sticky navbar with logo and CTA | Pending |
+| FEAT-01 | 3 AI feature cards | Pending |
+| FEAT-02 | Hover lift on feature cards | Pending |
+| HIWS-01 | 4-step How It Works flow | Pending |
+
+### Phase 8: Upload Modal + Navbar Expansion
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| MODAL-01 | Upload modal opens from any CTA | Pending |
+| MODAL-02 | Full upload + SSE + navigation in modal | Pending |
+| MODAL-03 | Modal close blocked during processing | Pending |
+| NAV-02 | Multi-product navbar with 3 product links + mobile hamburger | Pending |
+| HOME-01 | Full marketing homepage (Hero + Products + Features + HIWS + Stats) | Pending |
+| HOME-02 | CTA buttons open upload overlay | Pending |
+| HOME-03 | /cv-builder and /job-finding Coming Soon pages | Pending |
+
+### Phase 9: Hero Integration
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| HERO-01 | Hero section with tagline and scoring dimensions sub-headline | Pending |
+| HERO-02 | Hero CTA opens upload modal | Pending |
+| HERO-03 | Gradient text + dot-grid background | Pending |
+
+### Phase 10: Animation Polish
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| ANIM-01 | Scroll fade-in/slide-up on all sections | Pending |
+| ANIM-02 | prefers-reduced-motion respected | Pending |
+| HIWS-02 | Animated score counter on scroll | Pending |
+
+---
 *Requirements defined: 2026-04-03*
-*Last updated: 2026-04-03 after roadmap creation*
+*Last updated: 2026-04-10 — v2.0 Seamless Homepage requirements mapped to phases 6–10 (16 requirements, 16/16 coverage)*

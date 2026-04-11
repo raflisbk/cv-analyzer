@@ -6,7 +6,7 @@ Pydantic models enforce JSON output schema per LLM-04, D-03.
 
 from typing import Literal, Protocol
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class SuggestionItemOutput(BaseModel):
@@ -16,6 +16,23 @@ class SuggestionItemOutput(BaseModel):
     text: str
     type: Literal["action_verb", "impact_metric", "missing_section"]
     original_text: str | None = None
+    after_text: str | None = None
+
+    @field_validator("priority", mode="before")
+    @classmethod
+    def normalize_priority(cls, v: object) -> str:
+        """Coerce unknown priority values to 'quick_win' instead of failing."""
+        if v in ("high_impact", "quick_win"):
+            return str(v)
+        return "quick_win"
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def normalize_type(cls, v: object) -> str:
+        """Coerce unknown type values to 'action_verb' instead of failing."""
+        if v in ("action_verb", "impact_metric", "missing_section"):
+            return str(v)
+        return "action_verb"
 
 
 class SuggestionCardOutput(BaseModel):

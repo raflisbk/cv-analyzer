@@ -10,6 +10,7 @@ function normalizeSuggestionItem(item: ApiSuggestionItem): SuggestionItem {
   return {
     ...item,
     originalText: item.originalText ?? item.original_text,
+    afterText: item.afterText ?? item.after_text,
   };
 }
 

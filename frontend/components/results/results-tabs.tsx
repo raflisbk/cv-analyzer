@@ -33,7 +33,7 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
   return (
     // overflow-x-auto for mobile tab scrolling per UI-SPEC §11
     <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="overflow-x-auto flex w-full bg-[#F5F2D8]">
+      <TabsList className="overflow-x-auto flex w-full bg-[#F5F2D8] border-b border-[#141414]/10 mb-2">
         {/* min-h-[44px] for touch target per UI-SPEC §2 */}
         <TabsTrigger
           value="overview"
@@ -74,7 +74,7 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
       </TabsList>
 
       {/* Overview tab — ATS Checklist + AI Suggestions per UI-SPEC §7 C1 + Phase 3 */}
-      <TabsContent value="overview" className="pt-6 space-y-6">
+      <TabsContent value="overview" className="pt-6 space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">ATS Compatibility Check</h2>
         <AtsChecklist checks={result.ats_checks} />
         {/* Phase 3: AI suggestions below ATS checklist (D-05).
@@ -87,7 +87,7 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
       </TabsContent>
 
       {/* Scores tab — 4 gauge charts per UI-SPEC §7 C2 */}
-      <TabsContent value="scores" className="pt-6 space-y-4">
+      <TabsContent value="scores" className="pt-6 space-y-4 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">Score Breakdown</h2>
         {result.scores ? (
           <ScoreDashboard scores={result.scores} />
@@ -99,19 +99,19 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
       </TabsContent>
 
       {/* Skills tab — badge cloud per UI-SPEC §7 C3 */}
-      <TabsContent value="skills" className="pt-6 space-y-4">
+      <TabsContent value="skills" className="pt-6 space-y-4 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">Extracted Skills</h2>
         <SkillsList skills={result.skills} />
       </TabsContent>
 
       {/* Grammar tab — issues list per UI-SPEC §7 C4 */}
-      <TabsContent value="grammar" className="pt-6 space-y-4">
+      <TabsContent value="grammar" className="pt-6 space-y-4 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">Grammar &amp; Spelling</h2>
         <GrammarIssuesList issues={result.grammar_issues} />
       </TabsContent>
 
       {/* Compare tab — Phase 4 per D-C17 */}
-      <TabsContent value="compare" className="pt-6">
+      <TabsContent value="compare" className="pt-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <CompareTab
           jobId={result.job_id}
           jobRoles={jobRoles}

@@ -68,7 +68,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
             >
               {/* Accent label pill */}
               <span
-                className="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full"
+                className="text-xs font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full"
                 style={{ color: accentColor, backgroundColor: `${accentColor}18` }}
               >
                 {label}
@@ -79,7 +79,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
                 size={140}
                 accentColor={accentColor}
               />
-              <p className="text-[11px] text-[#F5F2D8]/40 text-center">{description}</p>
+              <p className="text-xs text-[#F5F2D8]/40 text-center">{description}</p>
             </div>
           );
         })}

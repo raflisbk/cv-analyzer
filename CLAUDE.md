@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Mandatory Rules
+
+1. **Backend Rule #1: Always activate Conda first**
+    - Run `conda activate sbk-cv-analyzer` before any backend operation.
+    - This includes server start, migrations, Celery workers, tests, linting, formatting, and package installation.
+
 ## Project
 
 **CV Analyzer** — A portfolio project demonstrating AI Engineer mastery through a production-ready CV/resume analyzer with multi-dimensional scoring, LLM-powered suggestions, and job role comparison.

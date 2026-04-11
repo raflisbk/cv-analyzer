@@ -129,6 +129,7 @@ async def get_job_results(
                                 text=item.get("text", ""),
                                 type=item.get("type", "action_verb"),
                                 original_text=item.get("original_text"),
+                                after_text=item.get("after_text"),
                             )
                             for item in card.get("suggestions", [])
                         ],
