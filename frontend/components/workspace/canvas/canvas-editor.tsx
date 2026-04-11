@@ -67,7 +67,7 @@ function UnsavedIndicator({ saveState }: { saveState: SaveState }) {
       {saveState === "saving" && (
         <>
           <span className="inline-block h-1.5 w-1.5 animate-spin rounded-full border border-[#141414]/40 border-t-[#141414]" />
-          <span>Unsaved changes</span>
+          <span>Saving…</span>
         </>
       )}
       {saveState === "saved" && (
@@ -152,22 +152,20 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
   return (
     <section className="p-4">
       {/* Editor pane header */}
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-[#141414]/45">
-            Editor
-          </p>
-          <h2 className="font-display text-2xl font-extrabold text-[#141414]">
-            {data.file.filename?.replace(/\.[^.]+$/, "") || "Uploaded CV"}
-          </h2>
-        </div>
-        <UnsavedIndicator saveState={saveState} />
+      <div className="mb-4">
+        <p className="text-xs uppercase tracking-[0.18em] text-[#141414]/45">
+          Editor
+        </p>
+        <h2 className="font-display text-2xl font-extrabold text-[#141414]">
+          {data.file.filename?.replace(/\.[^.]+$/, "") || "Uploaded CV"}
+        </h2>
       </div>
 
       {/* Split panel — editor left, live preview right */}
       <CanvasSplitPanel
         sections={sections}
         fileName={data.file.filename ?? ""}
+        saveState={saveState}
         editorSlot={sections.map((section, i) => (
           <SectionBlock
             key={section.type}
