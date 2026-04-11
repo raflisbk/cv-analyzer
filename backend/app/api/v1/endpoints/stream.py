@@ -8,14 +8,13 @@ import asyncio
 import json
 
 import redis.asyncio as redis
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.db.session import get_db
+from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus
 
 
@@ -26,7 +25,7 @@ TERMINAL_STAGES = {JobStatus.COMPLETE, JobStatus.FAILED}
 
 
 @router.get("/stream/{job_id}")
-async def stream_job_progress(job_id: str, db: AsyncSession = Depends(get_db)):
+async def stream_job_progress(job_id: str):
     """
     Stream real-time job progress via Server-Sent Events
 
@@ -36,6 +35,10 @@ async def stream_job_progress(job_id: str, db: AsyncSession = Depends(get_db)):
     3. If job already terminal: receive terminal event immediately, then stream closes
     4. Otherwise receive progress updates as job processes
     5. Connection closes when job completes or fails
+
+    Note: DB session is created and closed inside the generator — NOT via Depends(get_db).
+    Using Depends with StreamingResponse causes the session to outlive the request and
+    leaks connections on every reconnect, exhausting the pool.
     """
 
     async def event_generator():
@@ -48,9 +51,13 @@ async def stream_job_progress(job_id: str, db: AsyncSession = Depends(get_db)):
             yield f"data: {json.dumps({'type': 'connected', 'job_id': job_id})}\n\n"
             logger.info("SSE client connected", extra={"job_id": job_id})
 
-            # Check if job is already in terminal state — handles reconnect after completion
-            result = await db.execute(select(Job).where(Job.id == job_id))
-            job = result.scalar_one_or_none()
+            # Use a scoped session here — open, query, close immediately.
+            # This prevents connection leaks: the session is returned to the pool
+            # before entering the long-lived pubsub listen loop.
+            async with async_session_maker() as db:
+                result = await db.execute(select(Job).where(Job.id == job_id))
+                job = result.scalar_one_or_none()
+
             if job and job.status in TERMINAL_STAGES:
                 stage = job.status.value
                 terminal_event = json.dumps(
