@@ -1,25 +1,25 @@
-import { BrainCircuit, BarChart3, Briefcase } from "lucide-react";
+import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/feature-icons";
 
 const features = [
   {
-    Icon: BrainCircuit,
-    iconContainer: "bg-[#CAFF43]/20 rounded-xl p-3",
+    Icon: AIScoringIcon,
+    iconContainer: "bg-[#CAFF43]/20 rounded-full p-3",
     iconColor: "text-[#141414]",
     title: "AI Scoring",
     description:
       "Get a multi-dimensional score across clarity, impact, completeness, and ATS compatibility.",
   },
   {
-    Icon: BarChart3,
-    iconContainer: "bg-[#FF4FCB]/20 rounded-xl p-3",
+    Icon: SkillGapIcon,
+    iconContainer: "bg-[#FF4FCB]/20 rounded-full p-3",
     iconColor: "text-[#141414]",
     title: "Skill Gap Analysis",
     description:
       "Identify the exact skills missing for your target role and close the gap with targeted suggestions.",
   },
   {
-    Icon: Briefcase,
-    iconContainer: "bg-[#FF8C42]/20 rounded-xl p-3",
+    Icon: JobMatchIcon,
+    iconContainer: "bg-[#FF8C42]/20 rounded-full p-3",
     iconColor: "text-[#141414]",
     title: "Job Match Comparison",
     description:
@@ -52,7 +52,7 @@ export default function FeaturesSection() {
                          transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
             >
               <div className={`inline-flex ${iconContainer}`}>
-                <Icon className={`w-6 h-6 ${iconColor}`} />
+                <Icon size={24} className={iconColor} />
               </div>
               <p className="text-base font-extrabold text-[#141414] mt-3 mb-2">{title}</p>
               <p className="text-sm text-[#141414]/60 leading-relaxed">{description}</p>

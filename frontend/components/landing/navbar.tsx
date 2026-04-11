@@ -33,19 +33,19 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-1">
           <Link
             href="/cv-builder"
-            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
+            className="text-sm font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             CV Builder
           </Link>
           <button
             onClick={openModal}
-            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
+            className="text-sm font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             CV Analyzer
           </button>
           <Link
             href="/job-finding"
-            className="text-sm font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
+            className="text-sm font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all duration-150 px-4 py-2 rounded-full"
           >
             Job Finding
           </Link>
@@ -55,7 +55,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={openModal}
-            className="rounded-full bg-[#141414] text-[#F5F2D8] text-sm font-extrabold px-5 py-2
+            className="rounded-full bg-[#141414] text-[#F5F2D8] text-sm font-display font-extrabold px-5 py-2
                        hover:bg-[#141414]/85 transition-colors duration-150"
           >
             Get Started
@@ -89,7 +89,7 @@ export default function Navbar() {
             <SheetClose asChild>
               <Link
                 href="/cv-builder"
-                className="text-base font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
+                className="text-base font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
               >
                 CV Builder
               </Link>
@@ -99,14 +99,14 @@ export default function Navbar() {
                 openModal();
                 setMobileOpen(false);
               }}
-              className="text-base font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 text-left py-3 px-4 rounded-full transition-all"
+              className="text-base font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 text-left py-3 px-4 rounded-full transition-all"
             >
               CV Analyzer
             </button>
             <SheetClose asChild>
               <Link
                 href="/job-finding"
-                className="text-base font-normal text-[#141414]/60 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
+                className="text-base font-display font-extrabold text-[#141414]/50 hover:text-[#141414] hover:bg-[#141414]/8 transition-all py-3 px-4 rounded-full"
               >
                 Job Finding
               </Link>
@@ -116,7 +116,7 @@ export default function Navbar() {
             <div className="mt-auto pt-6 border-t border-[#141414]/10">
               <div className="flex items-center gap-2">
                 <button
-                  className="flex-1 rounded-full bg-[#141414] text-[#F5F2D8] text-sm font-extrabold
+                  className="flex-1 rounded-full bg-[#141414] text-[#F5F2D8] text-sm font-display font-extrabold
                              py-3 px-5 hover:bg-[#141414]/85 transition-colors duration-150"
                   onClick={() => {
                     openModal();
