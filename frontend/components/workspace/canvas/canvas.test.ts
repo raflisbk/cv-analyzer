@@ -6,7 +6,7 @@
  * Tests for React components use basic render checks (Tiptap requires browser APIs so we test
  * what is testable in jsdom).
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { plainTextToTiptapDoc } from "./section-block";
 
 // ---------------------------------------------------------------------------
