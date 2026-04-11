@@ -1,40 +1,65 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AccentPill } from "@/components/ui/accent-pill";
 import { useUploadModal } from "@/components/providers/upload-modal-provider";
 
 export default function HeroSection() {
   const { openModal } = useUploadModal();
 
   return (
-    <section
-      className="bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.08),transparent)]
-                 flex flex-col items-center text-center px-4 py-24 md:py-32"
-    >
-      {/* Headline — max-w-3xl keeps long text from spanning too wide */}
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-          Your Career, On the{" "}
-          <span className="text-primary">Right Path</span>
+    <section className="bg-[#F5F2D8] px-4 md:px-8 py-6 md:py-8">
+      <div className="bg-[#141414] rounded-[2rem] max-w-6xl mx-auto px-8 md:px-16 py-16 md:py-24 overflow-hidden relative">
+
+        {/* Decorative circles — aria-hidden */}
+        <div className="absolute top-8 right-12 w-5 h-5 rounded-full bg-[#CAFF43] opacity-80" aria-hidden="true" />
+        <div className="absolute top-16 right-24 w-3 h-3 rounded-full bg-[#FF4FCB] opacity-60" aria-hidden="true" />
+        <div className="absolute top-6 right-40 w-8 h-8 rounded-full bg-[#FF8C42] opacity-40" aria-hidden="true" />
+        <div className="absolute bottom-10 left-8 w-4 h-4 rounded-full bg-[#8B5CF6] opacity-50" aria-hidden="true" />
+        <div className="absolute bottom-6 left-20 w-6 h-6 rounded-full bg-white opacity-20" aria-hidden="true" />
+
+        {/* Word-pill headline */}
+        <h1 className="font-display font-extrabold text-[#F5F2D8] leading-[1.0] text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight">
+          Your CV{" "}
+          <span aria-hidden="true" className="text-[#FF4FCB] text-4xl md:text-5xl leading-none select-none">✿</span>
+          {" "}
+          <AccentPill color="lime" size="sm">deserves</AccentPill>
+          <br />
+          <AccentPill color="pink" size="sm">better</AccentPill>
+          {" "}results{" "}
+          <AccentPill color="orange" size="sm">now</AccentPill>
         </h1>
+
+        {/* Sub-headline */}
+        <p className="font-sans text-base md:text-lg text-[#F5F2D8]/70 mt-6 max-w-lg leading-relaxed">
+          AI-powered CV scoring. Skill gap detection. Job match comparison.
+        </p>
+
+        {/* Descriptor */}
+        <p className="font-sans text-sm text-[#F5F2D8]/50 mt-2">
+          Free. Instant. Built for humans.
+        </p>
+
+        {/* Two-part CTA */}
+        <div className="flex items-center gap-3 mt-10">
+          <button
+            onClick={openModal}
+            className="rounded-full bg-[#F5F2D8] text-[#141414] font-extrabold text-base
+                       px-7 py-3 hover:bg-white transition-colors duration-150"
+          >
+            Analyze My CV
+          </button>
+          <button
+            onClick={openModal}
+            aria-label="Start CV analysis"
+            className="w-14 h-14 rounded-full bg-[#CAFF43] flex items-center justify-center
+                       hover:bg-[#CAFF43]/85 transition-colors duration-150 flex-shrink-0"
+          >
+            <ArrowRight className="w-5 h-5 text-[#141414]" />
+          </button>
+        </div>
+
       </div>
-
-      {/* Sub-headline */}
-      <p className="mt-6 text-base text-muted-foreground max-w-xl mx-auto">
-        AI-powered CV analysis, skill gap detection, and job matching — all in
-        one place.
-      </p>
-
-      {/* CTA */}
-      <Button
-        size="lg"
-        className="mt-8 rounded-full"
-        onClick={openModal}
-      >
-        Start Analyzing
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Button>
     </section>
   );
 }
