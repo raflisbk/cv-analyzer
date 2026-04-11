@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { FileText, BrainCircuit, Search } from "lucide-react";
+import { PenLine, Sparkles, Compass } from "lucide-react";
 import { AccentPill } from "@/components/ui/accent-pill";
 import ProductCardCTA from "@/components/landing/product-card-cta";
 
 const products = [
   {
     id: "cv-builder",
-    icon: FileText,
-    iconContainer: "bg-[#FF8C42]/15 rounded-xl p-3",
+    icon: PenLine,
+    iconContainer: "bg-[#FF8C42]/15 rounded-full p-4",
     iconColor: "text-[#FF8C42]",
     title: "CV Builder",
     description:
@@ -17,8 +17,8 @@ const products = [
   },
   {
     id: "cv-analyzer",
-    icon: BrainCircuit,
-    iconContainer: "bg-[#CAFF43]/15 rounded-xl p-3",
+    icon: Sparkles,
+    iconContainer: "bg-[#CAFF43]/15 rounded-full p-4",
     iconColor: "text-[#CAFF43]",
     title: "CV Analyzer",
     description:
@@ -28,8 +28,8 @@ const products = [
   },
   {
     id: "job-finding",
-    icon: Search,
-    iconContainer: "bg-[#8B5CF6]/15 rounded-xl p-3",
+    icon: Compass,
+    iconContainer: "bg-[#8B5CF6]/15 rounded-full p-4",
     iconColor: "text-[#8B5CF6]",
     title: "Job Finding",
     description:

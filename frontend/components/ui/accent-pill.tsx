@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface AccentPillProps {
   color: "lime" | "pink" | "orange" | "purple" | "white" | "dark";
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "hero";
   children: React.ReactNode;
   className?: string;
 }
@@ -17,8 +17,9 @@ const colorMap: Record<AccentPillProps["color"], string> = {
 };
 
 const sizeMap: Record<NonNullable<AccentPillProps["size"]>, string> = {
-  sm: "rounded-full px-4 py-1 text-sm font-extrabold",
-  md: "rounded-full px-6 py-2 text-base font-extrabold",
+  sm:   "rounded-full px-4 py-1 text-sm font-extrabold tracking-wide",
+  md:   "rounded-full px-6 py-2 text-base font-extrabold tracking-wide",
+  hero: "rounded-2xl px-[0.4em] py-[0.08em] text-[0.82em] font-extrabold tracking-wider",
 };
 
 export function AccentPill({ color, size = "sm", children, className }: AccentPillProps) {

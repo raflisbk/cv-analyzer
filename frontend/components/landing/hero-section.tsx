@@ -19,15 +19,15 @@ export default function HeroSection() {
         <div className="absolute bottom-6 left-20 w-6 h-6 rounded-full bg-white opacity-20" aria-hidden="true" />
 
         {/* Word-pill headline */}
-        <h1 className="font-display font-extrabold text-[#F5F2D8] leading-[1.0] text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight">
+        <h1 className="font-display font-extrabold text-[#F5F2D8] leading-[1.2] text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight">
           Your CV{" "}
           <span aria-hidden="true" className="text-[#FF4FCB] text-4xl md:text-5xl leading-none select-none">✿</span>
           {" "}
-          <AccentPill color="lime" size="sm">deserves</AccentPill>
+          <AccentPill color="lime" size="hero">deserves</AccentPill>
           <br />
-          <AccentPill color="pink" size="sm">better</AccentPill>
+          <AccentPill color="pink" size="hero">better</AccentPill>
           {" "}results{" "}
-          <AccentPill color="orange" size="sm">now</AccentPill>
+          <AccentPill color="orange" size="hero">now</AccentPill>
         </h1>
 
         {/* Sub-headline */}
