@@ -6,8 +6,6 @@ import { CheckCircle2 } from "lucide-react";
 import { UploadZone } from "@/components/upload/upload-zone";
 import { DocumentPreview } from "@/components/upload/document-preview";
 import { ProcessingStages } from "@/components/upload/processing-stages";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useUpload } from "@/hooks/use-upload";
 import { useJobStream } from "@/hooks/use-job-stream";
 import { toast } from "sonner";
@@ -18,7 +16,7 @@ interface UploadSectionProps {
 }
 
 export default function UploadSection({
-  compact = false,
+  compact: _compact = false,
   onProcessingChange,
 }: UploadSectionProps) {
   const router = useRouter();
@@ -74,127 +72,108 @@ export default function UploadSection({
   };
 
   // Handle processing failed
-  const sectionClass = compact
-    ? "w-full"
-    : "min-h-screen flex items-center justify-center bg-slate-50 p-4";
-
   if (progress?.stage === "failed") {
     return (
-      <section className={sectionClass}>
-        <div className="text-center space-y-4 max-w-md">
-          <div className="text-6xl mb-4 text-red-600">✕</div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            Processing Failed
-          </h1>
-          <p className="text-base text-slate-600">
-            {progress.message || "An error occurred while processing your CV."}
-          </p>
-          <Button onClick={handleReset}>Try Again</Button>
+      <div className="w-full text-center space-y-4">
+        <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
+          <span className="text-2xl text-red-400">✕</span>
         </div>
-      </section>
+        <h1 className="text-xl font-display font-extrabold text-[#F5F2D8]">
+          Processing Failed
+        </h1>
+        <p className="text-sm text-[#F5F2D8]/50">
+          {progress.message || "An error occurred while processing your CV."}
+        </p>
+        <button
+          onClick={handleReset}
+          className="rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
+                     px-6 py-2.5 hover:bg-[#CAFF43]/85 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
     );
   }
 
   // Show "View Results" button after SSE 'complete' per D-19, UI-SPEC §7 A
   if (completedJobId) {
     return (
-      <section className={sectionClass}>
-        <Card className="max-w-[600px] w-full mx-auto">
-          <CardContent className="p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-foreground">
-              Analysis Complete!
-            </h2>
-            {/* All stages complete */}
-            <div className="space-y-2">
-              {["Uploading", "Extracting text", "Validating quality", "Complete"].map(
-                (stage) => (
-                  <div
-                    key={stage}
-                    className="flex items-center gap-2 text-sm text-slate-600"
-                  >
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    {stage}
-                  </div>
-                )
-              )}
-            </div>
-            {/* Analysis complete message per UI-SPEC §7 A */}
-            <p className="text-sm text-green-700 font-semibold flex items-center gap-1">
-              <CheckCircle2 className="h-4 w-4" />
-              Your CV is ready to view
-            </p>
-            {/* "View Results" button per D-19, UI-SPEC §7 A */}
-            <Button
-              className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300"
-              disabled={isNavigating}
-              onClick={async () => {
-                setIsNavigating(true);
-                await router.push(`/results/${completedJobId}`);
-              }}
-            >
-              {isNavigating ? (
-                <>
-                  <span className="animate-pulse">Loading results...</span>
-                </>
-              ) : (
-                "View Results"
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      </section>
+      <div className="w-full space-y-5">
+        <h2 className="font-display font-extrabold text-lg text-[#F5F2D8]">
+          Analysis Complete!
+        </h2>
+        <div className="space-y-2.5">
+          {["Uploading", "Extracting text", "Validating quality", "Complete"].map(
+            (stage) => (
+              <div key={stage} className="flex items-center gap-3 text-[#F5F2D8]/40">
+                <CheckCircle2 className="h-4 w-4 text-[#CAFF43] flex-shrink-0" />
+                <span className="text-sm">{stage}</span>
+              </div>
+            )
+          )}
+        </div>
+        <p className="text-sm text-[#CAFF43] font-bold flex items-center gap-1.5">
+          <CheckCircle2 className="h-4 w-4" />
+          Your CV is ready to view
+        </p>
+        <button
+          disabled={isNavigating}
+          onClick={async () => {
+            setIsNavigating(true);
+            await router.push(`/results/${completedJobId}`);
+          }}
+          className="w-full rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
+                     py-3 hover:bg-[#CAFF43]/85 transition-colors duration-150
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isNavigating ? "Loading results..." : "View Results"}
+        </button>
+      </div>
     );
   }
 
   return (
-    <section className={sectionClass}>
-      <div className="w-full max-w-4xl">
-        {/* Per D-05: Upload component is hero-centered on landing page */}
-        {showUploadZone && (
-          <UploadZone
-            onFileSelected={handleFileSelected}
-            disabled={isUploading}
-          />
-        )}
+    <div className="w-full">
+      {showUploadZone && (
+        <UploadZone
+          onFileSelected={handleFileSelected}
+          disabled={isUploading}
+        />
+      )}
 
-        {/* Per UI-SPEC section 7 step 2: Show preview after file selection */}
-        {showPreview && selectedFile && (
-          <DocumentPreview
-            file={selectedFile}
-            onAnalyze={handleAnalyze}
-            isAnalyzing={isUploading}
-          />
-        )}
+      {showPreview && selectedFile && (
+        <DocumentPreview
+          file={selectedFile}
+          onAnalyze={handleAnalyze}
+          isAnalyzing={isUploading}
+        />
+      )}
 
-        {/* Per UI-SPEC section 7 step 4: Show progress during processing */}
-        {isProcessing && (
-          <ProcessingStages
-            currentStage={progress?.stage ?? "uploading"}
-            percentage={progress?.percentage ?? 0}
-            message={progress?.message ?? "Starting analysis..."}
-          />
-        )}
+      {isProcessing && (
+        <ProcessingStages
+          currentStage={progress?.stage ?? "uploading"}
+          percentage={progress?.percentage ?? 0}
+          message={progress?.message ?? "Starting analysis..."}
+        />
+      )}
 
-        {/* Show reconnection indicator per D-15 */}
-        {jobId && !isConnected && !streamError && (
-          <div className="mt-4 text-center text-sm text-amber-600">
-            Reconnecting to server...
-          </div>
-        )}
+      {jobId && !isConnected && !streamError && (
+        <div className="mt-4 text-center text-sm text-amber-400/70">
+          Reconnecting to server...
+        </div>
+      )}
 
-        {/* Show SSE error if reconnection failed */}
-        {streamError && (
-          <div className="mt-4 text-center space-y-2">
-            <p className="text-sm text-red-600">Connection lost. Please try again.</p>
-            <button
-              onClick={handleReset}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Start over
-            </button>
-          </div>
-        )}
-      </div>
-    </section>
+      {streamError && (
+        <div className="mt-4 text-center space-y-2">
+          <p className="text-sm text-red-400">Connection lost. Please try again.</p>
+          <button
+            onClick={handleReset}
+            className="text-sm text-[#CAFF43] hover:underline"
+          >
+            Start over
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

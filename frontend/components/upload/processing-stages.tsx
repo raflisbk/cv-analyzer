@@ -1,7 +1,5 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
-import { Card } from "@/components/ui/card";
 import { CheckCircle2, Loader2, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,16 +42,21 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
   const currentStageIndex = stages.findIndex((s) => s.id === uiStage);
 
   return (
-    <Card className="max-w-[600px] mx-auto p-6">
-      <h2 className="text-lg font-semibold text-slate-900 mb-4">
+    <div className="w-full space-y-5">
+      <h2 className="font-display font-extrabold text-lg text-[#F5F2D8]">
         Analyzing Your CV
       </h2>
 
-      {/* Progress bar per UI-SPEC */}
-      <Progress value={percentage} className="mb-6" />
+      {/* Progress bar */}
+      <div className="w-full h-2 rounded-full bg-[#F5F2D8]/10 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-[#CAFF43] transition-all duration-500"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
 
-      {/* Stage list per UI-SPEC section 5 */}
-      <div className="space-y-3">
+      {/* Stage list */}
+      <div className="space-y-2.5">
         {stages.map((stage, index) => {
           const isActive = stage.id === uiStage;
           const isComplete =
@@ -66,24 +69,25 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
               key={stage.id}
               className={cn(
                 "flex items-center gap-3",
-                isActive && !isComplete && "font-semibold text-slate-900",
-                isComplete && "text-slate-400",
-                isPending && "text-slate-400"
+                isActive && !isComplete && "text-[#F5F2D8]",
+                isComplete && "text-[#F5F2D8]/40",
+                isPending && "text-[#F5F2D8]/25"
               )}
             >
-              {/* Icon per UI-SPEC */}
               {isComplete ? (
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                <CheckCircle2 className="w-4 h-4 text-[#CAFF43] flex-shrink-0" />
               ) : isActive ? (
-                <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+                <Loader2 className="w-4 h-4 text-[#CAFF43] animate-spin flex-shrink-0" />
               ) : (
-                <Circle className="w-5 h-5 text-slate-300" />
+                <Circle className="w-4 h-4 flex-shrink-0" />
               )}
 
-              <span className="text-base">{stage.label}</span>
+              <span className={cn("text-sm", isActive && !isComplete && "font-extrabold")}>
+                {stage.label}
+              </span>
 
               {isActive && !isComplete && (
-                <span className="ml-auto text-sm text-blue-600">
+                <span className="ml-auto text-xs font-bold text-[#CAFF43]">
                   {percentage}%
                 </span>
               )}
@@ -92,9 +96,8 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
         })}
       </div>
 
-      {/* Current message per D-13, D-34 */}
-      <p className="mt-4 text-sm text-slate-600">{message}</p>
-    </Card>
+      <p className="text-xs text-[#F5F2D8]/40">{message}</p>
+    </div>
   );
 }
 

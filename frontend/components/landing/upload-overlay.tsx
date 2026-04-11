@@ -24,7 +24,7 @@ export default function UploadOverlay() {
         // Override default centered-modal styles → full-screen
         className="fixed inset-0 z-50 flex items-center justify-center p-4
                    max-w-none w-screen h-screen rounded-none border-0
-                   bg-background/90 backdrop-blur-sm shadow-none
+                   bg-[#141414]/85 backdrop-blur-sm shadow-none
                    !left-0 !top-0 !translate-x-0 !translate-y-0
                    data-[state=open]:animate-in data-[state=open]:fade-in-0
                    data-[state=open]:slide-in-from-left-0 data-[state=open]:slide-in-from-top-0
@@ -55,24 +55,25 @@ export default function UploadOverlay() {
           aria-label="Close upload overlay"
           onClick={handleClose}
           disabled={isProcessing}
-          className="absolute top-4 right-4 z-10 rounded-sm p-1
-                     text-muted-foreground hover:text-foreground
-                     focus:outline-none focus:ring-2 focus:ring-ring
+          className="absolute top-4 right-4 z-10 rounded-full w-9 h-9
+                     flex items-center justify-center
+                     text-[#F5F2D8]/50 hover:text-[#F5F2D8] hover:bg-[#F5F2D8]/10
+                     focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/50
                      transition-colors
-                     disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+                     disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
         >
-          <X className="h-6 w-6" />
+          <X className="h-5 w-5" />
         </button>
 
         {/* Upload panel — centered card */}
-        <div className="relative bg-background rounded-xl shadow-2xl border border-border p-8 md:p-12 w-full max-w-2xl">
+        <div className="relative bg-[#1C1C1C] rounded-2xl border border-[#F5F2D8]/10 p-8 md:p-10 w-full max-w-2xl">
           <DialogTitle
             id="upload-overlay-title"
-            className="text-2xl font-bold text-foreground mb-2"
+            className="font-display font-extrabold text-2xl text-[#F5F2D8] mb-1"
           >
             Analyze Your CV
           </DialogTitle>
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="text-sm text-[#F5F2D8]/50 mb-6">
             Drop your CV below. We&apos;ll score it in under 60 seconds.
           </p>
           {/*
