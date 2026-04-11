@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { PenLine, Sparkles, Compass } from "lucide-react";
+import { CVBuilderIcon, CVAnalyzerIcon, JobFindingIcon } from "@/components/ui/product-icons";
 import { AccentPill } from "@/components/ui/accent-pill";
 import ProductCardCTA from "@/components/landing/product-card-cta";
 
 const products = [
   {
     id: "cv-builder",
-    icon: PenLine,
+    Icon: CVBuilderIcon,
     iconContainer: "bg-[#FF8C42]/15 rounded-full p-4",
     iconColor: "text-[#FF8C42]",
     title: "CV Builder",
@@ -17,7 +17,7 @@ const products = [
   },
   {
     id: "cv-analyzer",
-    icon: Sparkles,
+    Icon: CVAnalyzerIcon,
     iconContainer: "bg-[#CAFF43]/15 rounded-full p-4",
     iconColor: "text-[#CAFF43]",
     title: "CV Analyzer",
@@ -28,7 +28,7 @@ const products = [
   },
   {
     id: "job-finding",
-    icon: Compass,
+    Icon: JobFindingIcon,
     iconContainer: "bg-[#8B5CF6]/15 rounded-full p-4",
     iconColor: "text-[#8B5CF6]",
     title: "Job Finding",
@@ -56,7 +56,6 @@ export default function ProductsSection() {
         {/* Product card grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {products.map((product) => {
-            const Icon = product.icon;
             return (
               <div
                 key={product.id}
@@ -65,7 +64,7 @@ export default function ProductsSection() {
               >
                 {/* Icon container */}
                 <div className={`inline-flex ${product.iconContainer}`}>
-                  <Icon className={`h-6 w-6 ${product.iconColor}`} />
+                  <product.Icon className={`h-7 w-7 ${product.iconColor}`} />
                 </div>
 
                 {/* Status badge */}
