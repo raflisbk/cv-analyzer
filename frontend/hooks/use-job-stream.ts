@@ -39,26 +39,29 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
   /** Fallback: poll REST endpoint every 4s to detect completion when SSE drops */
   const startFallbackPoll = useCallback(
     (id: string, onComplete: (jobId: string) => void) => {
-      if (pollIntervalRef.current || completedRef.current) return;
+      if (completedRef.current) return;
 
-      pollIntervalRef.current = setInterval(() => {
-        void (async () => {
-          if (completedRef.current) { stopPolling(); return; }
-          try {
-            const res = await fetch(`${apiUrl}/jobs/${id}/results`);
-            if (!res.ok) return;
-            const json = (await res.json()) as { data?: { status?: string } };
-            const status = json.data?.status;
-            if (status === "complete" || status === "failed") {
-              completedRef.current = true;
-              stopPolling();
-              if (status === "complete") onComplete(id);
-              // Synthesise a progress update so the UI reflects final state
-              setProgress({ stage: status, percentage: 100, message: status === "complete" ? "Analysis complete!" : "Analysis failed." });
-            }
-          } catch { /* ignore network errors during fallback poll */ }
-        })();
-      }, 4000);
+      const checkStatus = async () => {
+        if (completedRef.current) { stopPolling(); return; }
+        try {
+          const res = await fetch(`${apiUrl}/jobs/${id}/results`);
+          if (!res.ok) return;
+          const json = (await res.json()) as { data?: { status?: string } };
+          const status = json.data?.status;
+          if (status === "complete" || status === "failed") {
+            completedRef.current = true;
+            stopPolling();
+            if (status === "complete") { onComplete(id); }
+            setProgress({ stage: status, percentage: 100, message: status === "complete" ? "Analysis complete!" : "Analysis failed." });
+          }
+        } catch { /* ignore network errors during fallback poll */ }
+      };
+
+      // Immediate check, then repeat every 4s
+      void checkStatus();
+      if (!pollIntervalRef.current) {
+        pollIntervalRef.current = setInterval(() => { void checkStatus(); }, 4000);
+      }
     },
     [apiUrl, stopPolling]
   );
@@ -80,7 +83,8 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       (data: SSEMessage) => {
         if (data.type === "connected") {
           setIsConnected(true);
-          stopPolling(); // SSE is live — no need for fallback poll
+          // Don't stop the fallback poll here — job may have completed while SSE was down.
+          // Both SSE and fallback poll are guarded by completedRef so double-fire is safe.
         } else if (data.stage && data.percentage !== undefined && data.message) {
           setProgress({
             stage: data.stage,
@@ -91,6 +95,10 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
             completedRef.current = true;
             stopPolling();
             options.onComplete(jobId);
+          }
+          if (data.stage === "failed") {
+            completedRef.current = true;
+            stopPolling();
           }
         }
       },
