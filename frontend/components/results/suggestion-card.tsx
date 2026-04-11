@@ -9,7 +9,6 @@ import { useState } from "react";
 import { AlertCircle, ChevronDown, ChevronUp, TrendingUp, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import type {
   SuggestionCard,
   SuggestionItem,
@@ -19,24 +18,24 @@ import type {
 
 function getPriorityBadgeClasses(priority: SuggestionPriority): string {
   if (priority === "high_impact") {
-    return "bg-amber-50 text-amber-700 border-amber-200 shrink-0";
+    return "bg-[#FF8C42]/10 text-[#FF8C42] border-[#FF8C42]/20 shrink-0";
   }
-  return "bg-sky-50 text-sky-700 border-sky-200 shrink-0";
+  return "bg-[#CAFF43]/10 text-[#CAFF43] border-[#CAFF43]/20 shrink-0";
 }
 
 function getTypeIcon(type: SuggestionType) {
   if (type === "action_verb") {
     return (
-      <Zap className="h-4 w-4 text-violet-500 mt-0.5 shrink-0" aria-hidden="true" />
+      <Zap className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#8B5CF6" }} aria-hidden="true" />
     );
   }
   if (type === "impact_metric") {
     return (
-      <TrendingUp className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" aria-hidden="true" />
+      <TrendingUp className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#FF8C42" }} aria-hidden="true" />
     );
   }
   return (
-    <AlertCircle className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" aria-hidden="true" />
+    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#FF4FCB" }} aria-hidden="true" />
   );
 }
 
@@ -48,7 +47,7 @@ function SuggestionItemRow({ item }: SuggestionItemRowProps) {
   return (
     <div className="flex items-start gap-2">
       {getTypeIcon(item.type)}
-      <p className="text-sm text-foreground flex-1 leading-relaxed">{item.text}</p>
+      <p className="text-sm text-[#F5F2D8] flex-1 leading-relaxed">{item.text}</p>
       <Badge variant="outline" className={getPriorityBadgeClasses(item.priority)}>
         {item.priority === "high_impact" ? "High Impact" : "Quick Win"}
       </Badge>
@@ -58,7 +57,7 @@ function SuggestionItemRow({ item }: SuggestionItemRowProps) {
 
 interface SuggestionBeforeAfterProps {
   beforeText?: string;
-  afterText: string;
+  afterText?: string;
   id: string;
 }
 
@@ -83,12 +82,12 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
   const triggerId = `suggestion-before-trigger-${id}`;
 
   return (
-    <div className="mt-4 pt-4 border-t border-border">
+    <div className="mt-4 pt-4 border-t border-white/8">
       <Button
         id={triggerId}
         variant="ghost"
         size="sm"
-        className="text-sm font-medium h-auto p-0 hover:bg-transparent"
+        className="text-sm font-medium h-auto p-0 hover:bg-transparent text-[#F5F2D8]/50 hover:text-[#F5F2D8]"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-controls={contentId}
@@ -109,20 +108,25 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
         }`}
       >
         <div className="space-y-2">
-          {beforeText ? (
+          {beforeText && afterText ? (
             <>
-              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm font-semibold text-red-700 mb-1">Before:</p>
-                <p className="text-sm text-red-900">{beforeText}</p>
+              <div className="p-3 bg-[#FF4FCB]/8 border border-[#FF4FCB]/20 rounded-xl">
+                <p className="text-xs font-bold text-[#FF4FCB] mb-1 uppercase tracking-wider">Before:</p>
+                <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
               </div>
-              <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                <p className="text-sm font-semibold text-green-700 mb-1">After:</p>
-                <p className="text-sm text-green-900">{afterText}</p>
+              <div className="p-3 bg-[#CAFF43]/8 border border-[#CAFF43]/20 rounded-xl">
+                <p className="text-xs font-bold text-[#CAFF43] mb-1 uppercase tracking-wider">After:</p>
+                <p className="text-sm text-[#F5F2D8]/70">{afterText}</p>
               </div>
             </>
+          ) : beforeText ? (
+            <div className="p-3 bg-[#FF4FCB]/8 border border-[#FF4FCB]/20 rounded-xl">
+              <p className="text-xs font-bold text-[#FF4FCB] mb-1 uppercase tracking-wider">Original text:</p>
+              <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
+            </div>
           ) : (
-            <div className="p-3 bg-muted rounded-md">
-              <p className="text-sm text-muted-foreground">No original text available for comparison.</p>
+            <div className="p-3 bg-white/5 rounded-xl">
+              <p className="text-sm text-[#F5F2D8]/30">No original text available for comparison.</p>
             </div>
           )}
         </div>
@@ -137,9 +141,9 @@ interface SuggestionCardItemProps {
 
 export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
   return (
-    <Card className="p-4">
-      <h3 className="text-base font-semibold text-foreground mb-3">{card.section}</h3>
-      <div className="space-y-3">
+    <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-5">
+      <h3 className="text-sm font-extrabold text-[#F5F2D8]/60 uppercase tracking-wider mb-4">{card.section}</h3>
+      <div className="space-y-4">
         {card.suggestions.map((item, i) => (
           <div key={i}>
             <SuggestionItemRow item={item} />
@@ -150,12 +154,12 @@ export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
             */}
             <SuggestionBeforeAfter
               beforeText={getNormalizedBeforeText(item)}
-              afterText={item.text}
+              afterText={item.afterText}
               id={`${card.section}-${i}`}
             />
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }

@@ -1,74 +1,54 @@
 /**
- * Grammar and spelling issues list per UI-SPEC §7 C4, NLP-02, D-12
+ * Grammar issues list — Mathical dark cards.
  */
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import type { GrammarIssue } from "@/lib/types";
 
 interface GrammarIssuesListProps {
   issues: GrammarIssue[];
 }
 
-function getRuleClasses(rule: string): string {
-  if (rule.includes("SPELLING")) { return "text-red-700 border-red-200"; }
-  if (rule.includes("GRAMMAR")) { return "text-amber-700 border-amber-200"; }
-  return "text-slate-600 border-slate-200";
+function getRuleStyle(rule: string): { pillBg: string; pillText: string } {
+  if (rule.includes("SPELLING")) { return { pillBg: "bg-[#FF4FCB]/10", pillText: "text-[#FF4FCB]" }; }
+  if (rule.includes("GRAMMAR"))  { return { pillBg: "bg-[#FF8C42]/10", pillText: "text-[#FF8C42]" }; }
+  return { pillBg: "bg-[#8B5CF6]/10", pillText: "text-[#8B5CF6]" };
 }
 
 export function GrammarIssuesList({ issues }: GrammarIssuesListProps) {
-  const countLabel =
-    issues.length === 0
-      ? "No issues found"
-      : issues.length === 1
-        ? "1 issue found"
-        : `${issues.length} issues found`;
-
   if (issues.length === 0) {
     return (
-      <div className="text-center py-8 space-y-2">
-        <p className="text-base font-semibold text-foreground">
-          No issues found
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Your CV text passed all grammar and spelling checks.
-        </p>
+      <div className="text-center py-10 space-y-2">
+        <p className="font-display font-extrabold text-base text-[#F5F2D8]">No issues found ✓</p>
+        <p className="text-sm text-[#F5F2D8]/40">Your CV text passed all grammar and spelling checks.</p>
       </div>
     );
   }
 
+  const countLabel = issues.length === 1 ? "1 issue found" : `${issues.length} issues found`;
+
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">{countLabel}</p>
-      {issues.map((issue, index) => (
-        <Card key={index}>
-          <CardContent className="p-4 space-y-2">
-            {/* Rule badge per UI-SPEC §7 C4 */}
-            <Badge
-              variant="outline"
-              className={`text-sm font-semibold uppercase tracking-wide ${getRuleClasses(issue.rule)}`}
-            >
+    <div className="space-y-3">
+      <p className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">{countLabel}</p>
+      {issues.map((issue, index) => {
+        const { pillBg, pillText } = getRuleStyle(issue.rule);
+        return (
+          <div key={index} className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-5 space-y-2">
+            <span className={`inline-block rounded-full text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 ${pillBg} ${pillText}`}>
               {issue.rule}
-            </Badge>
-            {/* Issue text and suggestion */}
-            <p className="text-base text-foreground">
-              <span className="text-red-600">&ldquo;{issue.text}&rdquo;</span>
+            </span>
+            <p className="text-sm text-[#F5F2D8] leading-relaxed">
+              <span className="text-[#FF4FCB] font-semibold">&ldquo;{issue.text}&rdquo;</span>
               {issue.suggestion && (
                 <>
-                  {" "}→{" "}
-                  <span className="text-green-700 font-medium">
-                    Suggestion: &ldquo;{issue.suggestion}&rdquo;
-                  </span>
+                  {" → "}
+                  <span className="text-[#CAFF43] font-semibold">&ldquo;{issue.suggestion}&rdquo;</span>
                 </>
               )}
             </p>
-            {/* Offset hint per UI-SPEC §5 */}
-            <p className="text-sm text-muted-foreground">
-              Near character {issue.offset}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
+            <p className="text-xs text-[#F5F2D8]/30">Near character {issue.offset}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }

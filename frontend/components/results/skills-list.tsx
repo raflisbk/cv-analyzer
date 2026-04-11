@@ -1,44 +1,43 @@
 /**
- * Skills badge cloud per UI-SPEC §7 C3, NLP-04
+ * Skills badge cloud — Mathical cycling accent colors.
  */
-
-import { Badge } from "@/components/ui/badge";
 
 interface SkillsListProps {
   skills: string[];
 }
 
-export function SkillsList({ skills }: SkillsListProps) {
-  const countLabel =
-    skills.length === 0
-      ? "No skills detected"
-      : skills.length === 1
-        ? "1 skill extracted"
-        : `${skills.length} skills extracted`;
+const PILL_STYLES = [
+  "bg-[#CAFF43]/10 text-[#CAFF43] border border-[#CAFF43]/20",
+  "bg-[#FF4FCB]/10 text-[#FF4FCB] border border-[#FF4FCB]/20",
+  "bg-[#FF8C42]/10 text-[#FF8C42] border border-[#FF8C42]/20",
+  "bg-[#8B5CF6]/10 text-[#8B5CF6] border border-[#8B5CF6]/20",
+];
 
+export function SkillsList({ skills }: SkillsListProps) {
   if (skills.length === 0) {
     return (
-      <div className="text-center py-8 space-y-2">
-        <p className="text-base font-semibold text-foreground">
-          No skills detected
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Try uploading a CV with a dedicated Skills section listing technologies
-          and tools.
+      <div className="text-center py-10 space-y-2">
+        <p className="font-display font-extrabold text-base text-[#F5F2D8]">No skills detected</p>
+        <p className="text-sm text-[#F5F2D8]/40">
+          Try uploading a CV with a dedicated Skills section listing technologies and tools.
         </p>
       </div>
     );
   }
 
+  const countLabel = skills.length === 1 ? "1 skill extracted" : `${skills.length} skills extracted`;
+
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">{countLabel}</p>
-      {/* Badge cloud per UI-SPEC §7 C3 */}
+      <p className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">{countLabel}</p>
       <div className="flex flex-wrap gap-2">
-        {skills.map((skill) => (
-          <Badge key={skill} variant="secondary">
+        {skills.map((skill, i) => (
+          <span
+            key={skill}
+            className={`rounded-full text-xs font-bold px-3 py-1.5 ${PILL_STYLES[i % PILL_STYLES.length]}`}
+          >
             {skill}
-          </Badge>
+          </span>
         ))}
       </div>
     </div>

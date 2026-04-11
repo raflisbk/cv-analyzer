@@ -1,6 +1,6 @@
 /**
- * Single Visx radial gauge chart per D-22, SCORE-06.
- * Uses Arc from @visx/shape (NOT @visx/arc which does not exist).
+ * Single radial gauge chart — Mathical design system.
+ * Lime/orange/pink fill per score range, cream track on dark bg, Bricolage numerals.
  */
 
 "use client";
@@ -10,76 +10,58 @@ import { Arc } from "@visx/shape";
 import { Group } from "@visx/group";
 
 interface GaugeChartProps {
-  value: number; // 0-100
+  value: number;        // 0-100
   label: string;
-  size?: number; // SVG width/height, default 160 per UI-SPEC §7 C2
+  size?: number;
+  accentColor?: string; // override — used when card already sets the color
 }
 
-// Score range arc colors per UI-SPEC §4
-const ARC_COLORS = {
-  good: "#16a34a", // green-600 (80-100)
-  average: "#d97706", // amber-600 (60-79)
-  poor: "#dc2626", // red-600   (0-59)
-  track: "#e2e8f0", // slate-200 (unfilled track)
-} as const;
-
-function getArcColor(value: number): string {
-  if (value >= 80) { return ARC_COLORS.good; }
-  if (value >= 60) { return ARC_COLORS.average; }
-  return ARC_COLORS.poor;
+function getArcColor(value: number, accentColor?: string): string {
+  if (accentColor) { return accentColor; }
+  if (value >= 80) { return "#CAFF43"; }  // lime
+  if (value >= 60) { return "#FF8C42"; }  // orange
+  return "#FF4FCB";                        // pink
 }
 
-export function GaugeChart({ value, label, size = 160 }: GaugeChartProps) {
+export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChartProps) {
   const [animatedValue, setAnimatedValue] = useState(0);
 
   const cx = size / 2;
-  const cy = size / 2;
-  const r = (size / 2) * 0.7;
-  const strokeWidth = 14;
-  const startAngle = -Math.PI * 0.75;
-  const endAngle = Math.PI * 0.75;
+  const cy = size / 2 + size * 0.05;
+  const r = (size / 2) * 0.68;
+  const strokeWidth = size * 0.088;
+  const startAngle = -Math.PI * 0.8;
+  const endAngle   =  Math.PI * 0.8;
 
-  // Animate arc on mount per UI-SPEC §8 (gauge chart animation)
   useEffect(() => {
-    // Respect prefers-reduced-motion per UI-SPEC §9
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (prefersReduced) {
-      setAnimatedValue(value);
-      return;
-    }    const start = performance.now();
-    const duration = 800;
-    const raf = (timestamp: number) => {
-      const elapsed = timestamp - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) { setAnimatedValue(value); return; }
+    const start = performance.now();
+    const duration = 900;
+    const raf = (ts: number) => {
+      const t = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
       setAnimatedValue(Math.round(eased * value));
-      if (progress < 1) { requestAnimationFrame(raf); }
+      if (t < 1) { requestAnimationFrame(raf); }
     };
     requestAnimationFrame(raf);
   }, [value]);
 
-  const valueAngle =
-    startAngle + (animatedValue / 100) * (endAngle - startAngle);
-  const arcColor = getArcColor(value);
+  const arcColor   = getArcColor(value, accentColor);
+  const valueAngle = startAngle + (animatedValue / 100) * (endAngle - startAngle);
 
   return (
-    <svg
-      width={size}
-      height={size}
-      aria-label={`${label} score: ${value} out of 100`}
-    >
+    <svg width={size} height={size} aria-label={`${label} score: ${value} out of 100`}>
       <Group top={cy} left={cx}>
-        {/* Track arc — full unfilled background */}
+        {/* Track — cream/15 on dark */}
         <Arc
           innerRadius={r - strokeWidth}
           outerRadius={r}
           startAngle={startAngle}
           endAngle={endAngle}
-          fill={ARC_COLORS.track}
+          fill="rgba(245,242,216,0.12)"
         />
-        {/* Value arc — animated fill */}
+        {/* Filled value arc */}
         <Arc
           innerRadius={r - strokeWidth}
           outerRadius={r}
@@ -87,15 +69,42 @@ export function GaugeChart({ value, label, size = 160 }: GaugeChartProps) {
           endAngle={valueAngle}
           fill={arcColor}
         />
-        {/* Score number in center per UI-SPEC §7 C2 */}
+        {/* Glow dot at arc tip */}
+        {animatedValue > 1 && (() => {
+          const tipAngle = valueAngle - Math.PI / 2;
+          const tipR = r - strokeWidth / 2;
+          return (
+            <circle
+              cx={Math.cos(tipAngle) * tipR}
+              cy={Math.sin(tipAngle) * tipR}
+              r={strokeWidth / 2 + 1}
+              fill={arcColor}
+              opacity={0.7}
+            />
+          );
+        })()}
+        {/* Score number */}
         <text
           textAnchor="middle"
-          dy="0.35em"
-          fontSize={28}
-          fontWeight={600}
+          dy="-0.1em"
+          fontSize={size * 0.22}
+          fontWeight={800}
+          fontFamily="'Bricolage Grotesque', sans-serif"
           fill={arcColor}
+          letterSpacing="-1"
         >
           {animatedValue}
+        </text>
+        {/* /100 sub-label */}
+        <text
+          textAnchor="middle"
+          dy={size * 0.14}
+          fontSize={size * 0.08}
+          fontWeight={600}
+          fontFamily="'Bricolage Grotesque', sans-serif"
+          fill="rgba(245,242,216,0.35)"
+        >
+          /100
         </text>
       </Group>
     </svg>

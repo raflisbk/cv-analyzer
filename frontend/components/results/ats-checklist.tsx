@@ -1,84 +1,107 @@
 /**
- * ATS compatibility checklist per UI-SPEC §7 C1, NLP-03, D-13, D-14
+ * ATS compatibility checklist — Mathical design system.
  */
 
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import type { AtsCheck } from "@/lib/types";
 
 interface AtsChecklistProps {
   checks: AtsCheck[];
 }
 
-function getStatusIcon(status: AtsCheck["status"]) {
+function getStatusStyle(status: AtsCheck["status"]) {
   if (status === "pass") {
-    return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+    return {
+      icon: <CheckCircle2 className="h-4 w-4 flex-shrink-0" style={{ color: "#CAFF43" }} />,
+      pillBg: "bg-[#CAFF43]/10",
+      pillText: "text-[#CAFF43]",
+      label: "Pass",
+      border: "border-[#CAFF43]/15",
+    };
   }
   if (status === "warn") {
-    return <AlertTriangle className="h-4 w-4 text-amber-600" />;
+    return {
+      icon: <AlertTriangle className="h-4 w-4 flex-shrink-0" style={{ color: "#FF8C42" }} />,
+      pillBg: "bg-[#FF8C42]/10",
+      pillText: "text-[#FF8C42]",
+      label: "Review",
+      border: "border-[#FF8C42]/15",
+    };
   }
-  return <XCircle className="h-4 w-4 text-red-600" />;
+  return {
+    icon: <XCircle className="h-4 w-4 flex-shrink-0" style={{ color: "#FF4FCB" }} />,
+    pillBg: "bg-[#FF4FCB]/10",
+    pillText: "text-[#FF4FCB]",
+    label: "Fix",
+    border: "border-[#FF4FCB]/15",
+  };
 }
 
-function getStatusBadgeClasses(status: AtsCheck["status"]): string {
-  if (status === "pass") { return "bg-green-50 text-green-700 border-green-200"; }
-  if (status === "warn") { return "bg-amber-50 text-amber-700 border-amber-200"; }
-  return "bg-red-50 text-red-700 border-red-200";
-}
+type AtsCountSummary = { passed: number; warned: number; failed: number };
 
-function getStatusLabel(status: AtsCheck["status"]): string {
-  if (status === "pass") { return "Pass"; }
-  if (status === "warn") { return "Review"; }
-  return "Fix Required";
-}
-
-function getAtsCountSummary(checks: AtsCheck[]): string {
-  const passed = checks.filter((c) => c.status === "pass").length;
-  const warned = checks.filter((c) => c.status === "warn").length;
-  const failed = checks.filter((c) => c.status === "fail").length;
-  return `${passed} passed · ${warned} to review · ${failed} to fix`;
+function getAtsCountSummary(checks: AtsCheck[]): AtsCountSummary {
+  return {
+    passed: checks.filter((c) => c.status === "pass").length,
+    warned: checks.filter((c) => c.status === "warn").length,
+    failed: checks.filter((c) => c.status === "fail").length,
+  };
 }
 
 export function AtsChecklist({ checks }: AtsChecklistProps) {
   if (checks.length === 0) {
     return (
-      <div className="text-center py-8 space-y-2">
-        <p className="text-base font-semibold text-foreground">
-          ATS checks unavailable
-        </p>
-        <p className="text-sm text-muted-foreground">
-          ATS analysis could not be completed for this CV.
-        </p>
+      <div className="text-center py-10 space-y-2">
+        <p className="font-display font-extrabold text-base text-[#F5F2D8]">ATS checks unavailable</p>
+        <p className="text-sm text-[#F5F2D8]/40">ATS analysis could not be completed for this CV.</p>
       </div>
     );
   }
 
+  const { passed, warned, failed } = getAtsCountSummary(checks);
+
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">{getAtsCountSummary(checks)}</p>
-      <div className="divide-y divide-slate-100">
-        {checks.map((check, index) => (
-          <div
-            key={index}
-            className="flex items-start justify-between gap-4 py-4"
-          >
-            <div className="flex items-start gap-3 flex-1 min-w-0">
-              {getStatusIcon(check.status)}
-              <div className="space-y-1 min-w-0">
-                <p className="text-base text-foreground">{check.check}</p>
-                {check.detail && check.status !== "pass" && (
-                  <p className="text-sm text-muted-foreground">{check.detail}</p>
-                )}
-              </div>
-            </div>
-            <Badge
-              variant="outline"
-              className={`shrink-0 ${getStatusBadgeClasses(check.status)}`}
+      {/* Summary strip */}
+      <div className="flex gap-3 flex-wrap">
+        <span className="rounded-full bg-[#CAFF43]/10 text-[#CAFF43] text-xs font-bold px-3 py-1">
+          ✓ {passed} passed
+        </span>
+        {warned > 0 && (
+          <span className="rounded-full bg-[#FF8C42]/10 text-[#FF8C42] text-xs font-bold px-3 py-1">
+            ⚠ {warned} to review
+          </span>
+        )}
+        {failed > 0 && (
+          <span className="rounded-full bg-[#FF4FCB]/10 text-[#FF4FCB] text-xs font-bold px-3 py-1">
+            ✕ {failed} to fix
+          </span>
+        )}
+      </div>
+
+      {/* Check rows */}
+      <div className="space-y-2">
+        {checks.map((check, index) => {
+          const style = getStatusStyle(check.status);
+          return (
+            <div
+              key={index}
+              className={`flex items-start justify-between gap-4 rounded-xl bg-[#1C1C1C] border ${style.border} px-4 py-3`}
             >
-              {getStatusLabel(check.status)}
-            </Badge>
-          </div>
-        ))}
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                {style.icon}
+                <div className="space-y-0.5 min-w-0">
+                  <p className="text-sm text-[#F5F2D8]">{check.check}</p>
+                  {check.detail && check.status !== "pass" && (
+                    <p className="text-xs text-[#F5F2D8]/40">{check.detail}</p>
+                  )}
+                </div>
+              </div>
+              <span className={`shrink-0 rounded-full text-[10px] font-extrabold px-2.5 py-0.5 ${style.pillBg} ${style.pillText}`}>
+                {style.label}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

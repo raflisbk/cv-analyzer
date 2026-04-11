@@ -127,9 +127,9 @@ export function SuggestionCards({ cards, isLoading }: SuggestionCardsProps) {
   return (
     <section aria-label="AI Improvement Suggestions" className="mt-8 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-foreground">AI Improvement Suggestions</h2>
-        <p className="text-sm text-muted-foreground">
-          {totalSuggestions} {suggestionText} across {totalSections} {sectionText}
+        <h2 className="font-display font-extrabold text-lg text-[#141414]">AI Improvement Suggestions</h2>
+        <p className="text-xs font-bold text-[#141414]/40 uppercase tracking-wider">
+          {totalSuggestions} {suggestionText} · {totalSections} {sectionText}
         </p>
       </div>
       <div className="space-y-4">
