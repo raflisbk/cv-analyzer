@@ -305,3 +305,90 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 *Requirements defined: 2026-04-03*
 *Last updated: 2026-04-10 — v2.0 Seamless Homepage requirements mapped to phases 6–10 (16 requirements, 16/16 coverage)*
+
+## v3.0 Requirements — Agentic CV Workspace
+
+**Defined:** 2026-04-11
+**Milestone goal:** Turn CV Analyzer into an editable, agent-assisted workspace with inline content editing, layout control, live analysis context, and exportable improved CV output.
+
+### Workspace Routing & Lifecycle
+
+- [x] **WS-01**: After upload/analysis, user is redirected to a dedicated workspace route for that job/CV
+- [x] **WS-02**: Workspace shows loading/progressive hydration while CV content and analysis data are being prepared
+- [x] **WS-03**: Existing results page remains available as a separate route/view for the same job
+
+### Editable CV Canvas
+
+- [ ] **CANVAS-01**: Parsed CV is rendered into editable blocks grouped by section (summary, experience, education, skills, etc.)
+- [ ] **CANVAS-02**: User can click into blocks and edit text inline
+- [ ] **CANVAS-03**: User can reorder or restructure supported content blocks/sections safely
+- [ ] **CANVAS-04**: User can adjust layout/formatting controls (spacing, emphasis, section presentation, bullet formatting)
+- [ ] **CANVAS-05**: Workspace maintains a live preview surface representing the edited CV version
+
+### Agentic Editing
+
+- [ ] **AGENT-01**: User can trigger targeted AI actions such as rewrite summary, strengthen bullets, tailor to JD, and ATS-safe normalization
+- [ ] **AGENT-02**: AI suggestions are attached to relevant blocks/sections, not only shown as global tips
+- [ ] **AGENT-03**: User can accept, reject, or regenerate AI drafts before applying them
+- [ ] **AGENT-04**: Workspace exposes an action queue / command center showing pending, ready, or applied edits
+
+### Analysis Cockpit Integration
+
+- [ ] **COCKPIT-01**: Key scores (overall, ATS, role match, open edits) remain visible in the workspace
+- [ ] **COCKPIT-02**: Analysis side panels show skill gaps, ATS risks, and comparison context while editing
+- [ ] **COCKPIT-03**: Workspace can surface why a change is recommended and what metric/goal it improves
+
+### Export & Output
+
+- [ ] **OUTPUT-01**: User can preview the edited CV as a polished final document
+- [ ] **OUTPUT-02**: User can export/download the edited CV version without authentication
+- [ ] **OUTPUT-03**: User can generate at least one tailored export variant while keeping the original analysis job context
+
+### Reliability & Safety
+
+- [ ] **SAFE-01**: Safe formatting actions do not break CV readability or section integrity
+- [ ] **SAFE-02**: If AI editing fails, manual editing and existing results page remain usable
+- [x] **SAFE-03**: Edited content remains tied to the originating job/CV without requiring permanent user accounts
+
+## Traceability v3.0
+
+### Phase 11: Workspace Foundation & Routing
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| WS-01 | Redirect completed uploads into workspace route | Complete |
+| WS-02 | Loading / hydration state for workspace | Complete |
+| WS-03 | Results page preserved as separate route | Complete |
+| SAFE-03 | Edited content tied to originating job/CV context | Complete |
+
+### Phase 12: Editable Canvas & Layout Controls
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| CANVAS-01 | Render parsed CV into editable sections/blocks | Pending |
+| CANVAS-02 | Inline text editing | Pending |
+| CANVAS-03 | Safe block/section restructuring | Pending |
+| CANVAS-04 | Layout / formatting controls | Pending |
+| CANVAS-05 | Live CV preview surface | Pending |
+| SAFE-01 | Safe formatting preserves readable CV structure | Pending |
+
+### Phase 13: Agentic Review Cockpit
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| AGENT-01 | Targeted AI editing actions | Pending |
+| AGENT-02 | Suggestions attached to relevant blocks | Pending |
+| AGENT-03 | Accept / reject / regenerate drafts | Pending |
+| AGENT-04 | Action queue / command center | Pending |
+| COCKPIT-01 | Persistent score cards in workspace | Pending |
+| COCKPIT-02 | Side panels for gaps / ATS / compare context | Pending |
+| COCKPIT-03 | Explain why each edit is recommended | Pending |
+
+### Phase 14: Preview, Export & Variants
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| OUTPUT-01 | Polished preview of edited CV | Pending |
+| OUTPUT-02 | Export/download edited CV | Pending |
+| OUTPUT-03 | Tailored export variant generation | Pending |
+| SAFE-02 | Graceful fallback if AI editing fails | Pending |

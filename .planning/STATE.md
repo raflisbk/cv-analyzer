@@ -1,23 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: — Seamless Homepage
-current_phase: 8
-status: complete
-last_updated: "2026-04-11T00:00:00.000Z"
-last_activity: 2026-04-11 -- Phase 8 execution complete (pathkr brand, navbar, upload overlay, homepage)
+milestone: v3.0
+milestone_name: Agentic CV Workspace
+current_phase: 11
+status: executing
+last_updated: "2026-04-11T12:27:34Z"
+last_activity: 2026-04-11 -- completed Phase 11 Plan 01 workspace foundation routing
 progress:
-  total_phases: 5
-  completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
+  total_phases: 4
+  completed_phases: 0
+  total_plans: 13
+  completed_plans: 2
 ---
 
 # Project State: CV Analyzer (pathkr)
 
 **Created:** 2026-04-03
-**Current Milestone:** v2.0 — Seamless Homepage
-**Current Phase:** 7
+**Current Milestone:** v3.0 — Agentic CV Workspace
+**Current Phase:** 11
 
 ## Project Reference
 
@@ -40,35 +40,42 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 ## Current Position
 
-Phase: 7 (static-landing-sections) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 7
-Last activity: 2026-04-10 -- Phase 7 execution started
-**Phase:** 2 - Basic Analysis Engine
-**All Plans Complete:** 02-01 ✅ | 02-02 ✅ | 02-03 ✅ | 02-04 ✅ | 02-05 ✅ | 02-06 ✅
-**UAT:** 10/10 tests passed ✅
+Phase: 11 (workspace-foundation-routing) — PLANS 01-02 COMPLETE
+Status: Workspace route foundation and hydration backend delivered; Phase 11 remains in progress
+Last activity: 2026-04-11 -- completed Phase 11 Plan 01 workspace foundation routing
 
-**Progress Bar:** ▰▰▰▰▰▰▰▰▰▰ 100% (6/6 plans complete in Phase 2)
+**Why this milestone now:**
 
-**Phase 2 Achievements:**
+- Homepage / brand milestone reached a stable stopping point
+- Current CV Analyzer ends in a strong but static results page
+- Next leap in portfolio value is an end-to-end editing workspace that showcases agentic UX, document modeling, inline editing, and export generation
 
-- ✅ Section detection: header, summary, experience, education, skills, certifications
-- ✅ Skill extraction: curated whitelist (~150 tech skills), n-gram sliding window, no ESCO noise
-- ✅ CV scoring: rule-based fallback (action verbs, quantified achievements, section coverage)
-- ✅ Grammar checking: LanguageTool integration with graceful Java degradation
-- ✅ ATS checks: formatting validation, section presence, keyword detection
-- ✅ Results page: 4 tabs (Overview, Scores, Skills, Grammar) with animated gauge charts
-- ✅ Real-time SSE stages: uploading → extracting → analyzing → complete
-- ✅ Rate limiting: slowapi IP-based, 5 uploads/hour
-- ✅ Windows fixes: Celery --pool=solo, SelectorEventLoop, react-dropzone 15
+**Milestone thesis:**
+
+- Turn CV Analyzer into a **career intelligence workspace**
+- Keep current results page as a separate analytical destination
+- Add a new editor route where users can:
+  - view the CV itself,
+  - edit copy inline,
+  - adjust layout/formatting,
+  - run AI actions on blocks/sections,
+  - preview and export the improved CV without an account
+
+**Planned phases:**
+
+- **Phase 11** — Workspace Foundation & Routing
+- **Phase 12** — Editable Canvas & Layout Controls
+- **Phase 13** — Agentic Review Cockpit
+- **Phase 14** — Preview, Export & Variants
 
 ## Performance Metrics
 
-**Quality Metrics:**
+**Planning Metrics:**
 
-- Requirements validated: 17/17 Phase 2 requirements
-- All 10 UAT tests passed: 2026-04-06
-- Known limitations: scoring is rule-based (Phase 3 will add LLM/embedding scoring)
+- Milestone requirements defined: 21
+- Milestone requirements mapped: 21/21
+- Planned phases: 4
+- Planned execution starting phase: 11
 
 ## Accumulated Context
 
@@ -113,6 +120,17 @@ Last activity: 2026-04-10 -- Phase 7 execution started
 - [Phase 04]: Normalize suggestion keys at results boundary before rendering components
 - [Phase 04]: Copy Suggestions now exports all visible items grouped by section in stable order
 
+| Phase 11 P02 | 8 min | 2 tasks | 4 files |
+
+- [Phase 11]: Reused the existing job UUID as the only workspace identifier to preserve anonymous job-scoped access.
+- [Phase 11]: Mapped workspace ready only when persisted document and analysis context are both present; otherwise hydration remains preparing.
+
+| Phase 11 P01 | 400 | 2 tasks | 5 files |
+
+- [Phase 11]: Keep /results/[job_id] intact and introduce /workspace/[job_id] as the new upload destination.
+- [Phase 11]: Centralize workspace/results URL creation in helper functions keyed to the original job_id.
+- [Phase 11]: Trigger workspace navigation from a completion effect instead of render-time routing.
+
 ### Architecture Approach
 
 **Major Components:**
@@ -129,26 +147,24 @@ Last activity: 2026-04-10 -- Phase 7 execution started
 
 **Immediate:**
 
-- Plan and execute Phase 03 (AI Intelligence Layer)
-  - LLM integration (Claude/OpenAI) for semantic scoring
-  - Structured output with validation
-  - Cost controls (token tracking, rate limits, caching)
-  - RAG with pgvector for best practices retrieval
+- Execute the remaining Phase 11 frontend workspace composition plan
+- Verify upload completion lands on `/workspace/[job_id]` in manual testing
+- Preserve `/results/[job_id]` as the separate analysis destination while Phase 12 adds editing
 
 ### Blockers
 
-- OpenAI/Claude API key needed for Phase 3 LLM integration
+None identified for milestone definition. Detailed implementation risks to assess during Phase 11 planning.
 
 ### Session Continuity
 
-**Last Session:** 2026-04-09T15:28:38.071Z
+**Last Session:** 2026-04-11T12:28:04.144Z
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**
 
-1. Run `/gsd-discuss-phase 3` to gather Phase 3 context
-2. Run `/gsd-plan-phase 3` to create execution plans
-3. Run `/gsd-execute-phase 3` to implement AI Intelligence Layer
+1. Execute the remaining Phase 11 plan(s), including frontend workspace consumption of the hydration endpoint
+2. Verify upload completion and workspace routing against a real job in manual testing
+3. Preserve results-page access while Phase 12 introduces editable canvas behavior
 
 ## Technical Stack
 
@@ -186,7 +202,7 @@ Last activity: 2026-04-10 -- Phase 7 execution started
 
 ---
 
-*State updated: 2026-04-06 — Phase 2 complete*
+*State updated: 2026-04-11 — v3.0 Agentic CV Workspace defined and ready for planning*
 
 ## Project Reference
 

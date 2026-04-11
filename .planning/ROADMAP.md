@@ -19,6 +19,10 @@
 - [x] **Phase 8: Upload Modal + Navbar Expansion** - Brand "pathkr", multi-product navbar, full marketing homepage, full-screen upload overlay ✅ **COMPLETE**
 - [ ] **Phase 9: Visual Design System** - Full Mathical-style redesign: Bricolage Grotesque font, cream palette, dark hero cards, word-pill headlines (all pages)
 - [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
+- [ ] **Phase 11: Workspace Foundation & Routing** - Redirect completed uploads into a dedicated editor workspace while preserving results page access
+- [ ] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls
+- [ ] **Phase 13: Agentic Review Cockpit** - Combine analysis panels, action queue, and AI-assisted inline editing in one workspace
+- [ ] **Phase 14: Preview, Export & Variants** - Preview edited CV, export polished versions, and support tailored output variants
 
 ## Phase Details
 
@@ -282,6 +286,103 @@ Plans:
 
 **UI hint**: yes
 
+## v3.0 — Agentic CV Workspace Phase Details
+
+### Phase 11: Workspace Foundation & Routing
+
+**Goal**: Upload flow lands users inside a dedicated editor workspace that loads their CV and analysis context without removing the current results page.
+
+**Depends on**: Phase 4 (analysis + results data), Phase 8/9 (current branded frontend shell)
+
+**Requirements**: WS-01, WS-02, WS-03, SAFE-03
+
+**Success Criteria** (what must be TRUE):
+  1. After upload completes, frontend redirects to a new workspace route for the job/CV
+  2. Workspace shows a purposeful loading state while edited document data is prepared
+  3. User can still access the existing results page as a separate destination for the same job
+  4. Workspace state is tied to the originating job/CV context without requiring authentication
+
+**Plans**: 3 plans across 2 waves
+
+Plans:
+- [x] 11-01-PLAN.md — Route + navigation foundation: workspace page shell, upload redirect, results/workspace linking (Wave 1)
+- [x] 11-02-PLAN.md — Backend/editor DTO foundation: editable document schema + hydration/loading contract (Wave 1)
+- [ ] 11-03-PLAN.md — Workspace loading UX + shell composition + integration verification (Wave 2)
+
+**UI hint**: yes
+
+### Phase 12: Editable Canvas & Layout Controls
+
+**Goal**: The parsed CV becomes a live editing surface with section-aware text editing and safe formatting controls.
+
+**Depends on**: Phase 11 (workspace route and data contract)
+
+**Requirements**: CANVAS-01, CANVAS-02, CANVAS-03, CANVAS-04, CANVAS-05, SAFE-01
+
+**Success Criteria** (what must be TRUE):
+  1. CV content renders as editable sections/blocks rather than static result cards only
+  2. User can edit text inline and see changes reflected in the preview surface
+  3. Supported content blocks/sections can be safely reordered or restructured
+  4. Layout/formatting controls adjust presentation without breaking CV readability
+  5. Workspace maintains a coherent preview of the edited CV version
+
+**Plans**: 3 plans across 3 waves
+
+Plans:
+- [ ] 12-01-PLAN.md — Editable document model + block renderer + section mapping (Wave 1)
+- [ ] 12-02-PLAN.md — Inline editing interactions + local editor state + preview sync (Wave 2)
+- [ ] 12-03-PLAN.md — Layout/format controls + safe structure operations + polish (Wave 3)
+
+**UI hint**: yes
+
+### Phase 13: Agentic Review Cockpit
+
+**Goal**: Editing is assisted by an AI cockpit that keeps scores, gaps, rationale, and action execution visible beside the document.
+
+**Depends on**: Phase 11 (workspace shell), Phase 12 (editable canvas), Phase 3/4 (AI analysis + comparison data)
+
+**Requirements**: AGENT-01, AGENT-02, AGENT-03, AGENT-04, COCKPIT-01, COCKPIT-02, COCKPIT-03
+
+**Success Criteria** (what must be TRUE):
+  1. User can run targeted AI editing actions from the workspace
+  2. Suggested edits are anchored to specific sections/blocks, not detached from the document
+  3. User can accept, reject, or regenerate drafts before changes are applied
+  4. Scores, ATS context, job-match insights, and an action queue remain visible during editing
+  5. Workspace explains why major edits are recommended and which metric they improve
+
+**Plans**: 4 plans across 3 waves
+
+Plans:
+- [ ] 13-01-PLAN.md — Cockpit layout: score cards, side panels, action queue, results linkage (Wave 1)
+- [ ] 13-02-PLAN.md — Targeted AI edit actions + backend/frontend command plumbing (Wave 2)
+- [ ] 13-03-PLAN.md — Anchored suggestion cards + accept/reject/regenerate flows (Wave 2)
+- [ ] 13-04-PLAN.md — Agent rationale surfaces + compare-context integration + UX polish (Wave 3)
+
+**UI hint**: yes
+
+### Phase 14: Preview, Export & Variants
+
+**Goal**: Users can finalize the edited CV, preview the polished output, and export tailored versions without needing an account.
+
+**Depends on**: Phase 12 (editable canvas), Phase 13 (agentic editing), Phase 4 (existing export baseline)
+
+**Requirements**: OUTPUT-01, OUTPUT-02, OUTPUT-03, SAFE-02
+
+**Success Criteria** (what must be TRUE):
+  1. User can switch from editing into a polished final-preview state
+  2. Edited CV can be exported/downloaded as a new output document
+  3. At least one tailored export variant can be generated from the same workspace context
+  4. If AI editing or variant generation fails, manual editing and baseline export flows still work
+
+**Plans**: 3 plans across 2 waves
+
+Plans:
+- [ ] 14-01-PLAN.md — Final preview mode + edited-document styling contract (Wave 1)
+- [ ] 14-02-PLAN.md — Export pipeline for edited CV output + fallback handling (Wave 1)
+- [ ] 14-03-PLAN.md — Tailored variant generation + workspace/export QA closure (Wave 2)
+
+**UI hint**: yes
+
 ## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
@@ -296,6 +397,10 @@ Plans:
 | 8. Upload Modal + Navbar Expansion | 5/5 | ✅ Complete | 2026-01-27 |
 | 9. Hero Integration | 0/0 | Not started | - |
 | 10. Animation Polish | 0/0 | Not started | - |
+| 11. Workspace Foundation & Routing | 2/3 | In Progress|  |
+| 12. Editable Canvas & Layout Controls | 0/3 | Not started | - |
+| 13. Agentic Review Cockpit | 0/4 | Not started | - |
+| 14. Preview, Export & Variants | 0/3 | Not started | - |
 
 ## Phase Dependencies
 
@@ -318,9 +423,19 @@ Phase 7: Static Landing Sections (navbar, features, how-it-works)
 Phase 8: Upload Modal Migration ──────────────────────────┐
     (both unblock Phase 9 — can build in parallel)        │
                                               ↓           ↓
-                                         Phase 9: Hero Integration
-                                              ↓
-                                         Phase 10: Animation Polish
+                                          Phase 9: Hero Integration
+                                               ↓
+                                          Phase 10: Animation Polish
+
+── v3.0 Agentic CV Workspace ───────────────────
+
+Phase 11: Workspace Foundation & Routing
+    ↓
+Phase 12: Editable Canvas & Layout Controls
+    ↓
+Phase 13: Agentic Review Cockpit
+    ↓
+Phase 14: Preview, Export & Variants
 ```
 
 ## Coverage Summary
@@ -345,6 +460,19 @@ Phase 8: Upload Modal Migration ────────────────
 | 9 | 3 | Hero Section (3) |
 | 10 | 3 | Scroll Animations (2) + How It Works counter (1) |
 
+### v3.0 Coverage Summary
+
+**Total v3.0 requirements:** 21
+**Mapped to phases:** 21 ✓
+**Orphaned requirements:** 0
+
+| Phase | Requirements | Categories |
+|-------|--------------|------------|
+| 11 | 4 | Workspace Routing & Lifecycle (3) + Reliability (1) |
+| 12 | 6 | Editable CV Canvas (5) + Safety (1) |
+| 13 | 7 | Agentic Editing (4) + Analysis Cockpit (3) |
+| 14 | 4 | Export & Output (3) + Reliability (1) |
+
 ### Requirement Distribution
 
 | Phase | Requirements | Categories |
@@ -359,5 +487,5 @@ Phase 8: Upload Modal Migration ────────────────
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-10 (v2.0 Seamless Homepage phases 6–10 added)*
-*Next: `/gsd-plan-phase 6`*
+*Last updated: 2026-04-11 (v3.0 Agentic CV Workspace phases 11–14 added)*
+*Next: `/gsd-plan-phase 11`*
