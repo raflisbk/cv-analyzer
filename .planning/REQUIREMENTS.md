@@ -403,7 +403,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 ### PDF Viewer
 
 - [ ] **PDF-01**: PDF rendered via react-pdf v10 with text layer enabled (`renderTextLayer: true`) for text selection support
-- [ ] **PDF-02**: Backend provides `GET /jobs/{id}/file` presigned URL endpoint so frontend can load the PDF binary
+- [x] **PDF-02**: Backend provides `GET /jobs/{id}/file` presigned URL endpoint so frontend can load the PDF binary
 - [ ] **PDF-03**: Workspace defaults to optimized PDF view; original uploaded PDF preserved as immutable source
 - [ ] **PDF-04**: Diff toggle switches single-view between original uploaded PDF and optimized PDF (not side-by-side)
 
@@ -436,7 +436,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 - [ ] **CRDT-01**: Workspace document state managed via Yjs `Y.Doc` with `y-indexeddb` browser persistence (Phase 1 — single user)
 - [ ] **CRDT-02**: Backend exposes `pycrdt-websocket` WebSocket endpoint mounted at `/yjs` in FastAPI (Phase 2 — multi-user ready, activated in later phase)
-- [ ] **CRDT-03**: Parsed CV content stored as structured editable mirror (`cv_document` JSONB column on jobs table); mapped from existing NLP output
+- [x] **CRDT-03**: Parsed CV content stored as structured editable mirror (`cv_document` JSONB column on jobs table); mapped from existing NLP output
 
 ### Export
 
@@ -455,12 +455,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Description | Status |
 |-------------|-------------|--------|
 | PDF-01 | react-pdf v10 with text layer | Pending |
-| PDF-02 | GET /jobs/{id}/file endpoint | Pending |
+| PDF-02 | GET /jobs/{id}/file endpoint | Complete |
 | PDF-03 | Defaults to optimized view | Pending |
 | LAYOUT-01 | 3-panel workspace layout shell | Pending |
 | LAYOUT-02 | /workspace-v2/[job_id] parallel route | Complete |
 | CRDT-01 | Yjs Y.Doc + y-indexeddb | Pending |
-| CRDT-03 | cv_document JSONB column | Pending |
+| CRDT-03 | cv_document JSONB column | Complete |
 
 ### Phase 14: Annotation System + Diff Toggle
 
