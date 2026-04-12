@@ -407,7 +407,13 @@ Plans:
 - Diff toggle: `useState<'original' | 'optimized'>` swaps `<Document file={...}>` between original and optimized presigned URLs
 - `StickyFooter` component: Apply, Diff toggle, Save Optimized PDF (stub), Save Report (stub); fixed to viewport bottom
 
-**Plans**: TBD
+**Plans**: 4 plans across 3 waves
+
+Plans:
+- [ ] 14-01-PLAN.md — Backend anchor computation + WorkspaceHydration schema extension (Wave 1)
+- [ ] 14-02-PLAN.md — react-pdf canvas migration + TypeScript anchor types + Zustand activeSuggestionId (Wave 1)
+- [ ] 14-03-PLAN.md — customTextRenderer highlights + AnnotationOverlay + useAnnotationHover + left panel scroll-to-active (Wave 2)
+- [ ] 14-04-PLAN.md — Apply All footer wiring + Yjs suggestionStatuses persistence + diff toggle banner polish (Wave 3)
 
 **UI hint**: yes
 
