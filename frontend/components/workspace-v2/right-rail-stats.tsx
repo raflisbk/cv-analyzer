@@ -29,9 +29,10 @@ function AccordionSection({ tabId, title, subtitle, children }: AccordionSection
   const { activeDetailTab, setActiveDetailTab } = useWorkspaceV2Store();
   const [localOpen, setLocalOpen] = useState(false);
 
-  // When left panel activates this tab, auto-expand
+  // Bidirectional sync: open when left panel activates, close when reset to null
   useEffect(() => {
     if (activeDetailTab === tabId) { setLocalOpen(true); }
+    else if (activeDetailTab === null) { setLocalOpen(false); }
   }, [activeDetailTab, tabId]);
 
   const isOpen = activeDetailTab === tabId ? true : localOpen;
