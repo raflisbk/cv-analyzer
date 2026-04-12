@@ -80,11 +80,20 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
         // ── Compact mode — vertical tab list (210px wide) ───────────────
         <>
           <div className="border-b border-[--ws-border] px-4 py-3 flex-none">
-            <p className="font-display text-[12px] font-extrabold text-[--ws-ink]">
-              <AccentPill color="dark" size="sm">Analysis</AccentPill>
-              {" "}
-              <AccentPill color="lime" size="sm">Details</AccentPill>
-            </p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span
+                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold tracking-wide font-display"
+                style={{ background: "#141414", color: "#F5F2D8" }}
+              >
+                Analysis
+              </span>
+              <span
+                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold tracking-wide font-display"
+                style={{ background: "#CAFF43", color: "#141414" }}
+              >
+                Details
+              </span>
+            </div>
           </div>
 
           <nav className="flex-1 overflow-y-auto py-1" aria-label="Analysis tabs">
