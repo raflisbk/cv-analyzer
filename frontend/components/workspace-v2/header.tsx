@@ -57,18 +57,6 @@ export function WorkspaceV2Header({
 
       {/* Right — status pills + back */}
       <div className="flex flex-none items-center gap-2 flex-wrap justify-end">
-        <span
-          className="rounded-full px-3 py-2 text-[11px] font-black border"
-          style={{ background: "rgba(202,255,67,0.24)", borderColor: "rgba(202,255,67,0.3)" }}
-        >
-          CV analysis only
-        </span>
-        <span
-          className="rounded-full px-3 py-2 text-[11px] font-black border"
-          style={{ background: "rgba(246,122,223,0.14)", borderColor: "rgba(246,122,223,0.2)" }}
-        >
-          Detail tabs
-        </span>
         {jobStatus === "ready" && (
           <span
             className="rounded-full px-3 py-2 text-[11px] font-black text-[#F5F2D8] border border-[rgba(255,255,255,0.08)]"

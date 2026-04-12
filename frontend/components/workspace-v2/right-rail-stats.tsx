@@ -107,7 +107,8 @@ export function RightRailStats({ className }: RightRailStatsProps) {
       {/* Panel title */}
       <div className="flex-none border-b border-[--ws-border] px-4 py-3">
         <h2 className="font-display text-[15px] font-extrabold text-[--ws-ink]">
-          {"Summary "}
+          <AccentPill color="dark" size="sm">Summary</AccentPill>
+          {" "}
           <AccentPill color="orange" size="sm">Rail</AccentPill>
         </h2>
         <p className="mt-0.5 text-[11px] text-[--ws-ink-ghost]">
@@ -214,8 +215,7 @@ export function RightRailStats({ className }: RightRailStatsProps) {
           <div className="flex items-center justify-between border-b border-[--ws-border] px-4 py-3">
             <div>
               <h3 className="font-display text-[13px] font-extrabold text-[--ws-ink]">
-                {"Live "}
-                <AccentPill color="purple" size="sm">Chat</AccentPill>
+                Live Chat
               </h3>
               <p className="mt-0.5 text-[10px] text-[--ws-ink-ghost]">
                 Contextual copilot for your CV

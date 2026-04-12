@@ -81,7 +81,8 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
         <>
           <div className="border-b border-[--ws-border] px-4 py-3 flex-none">
             <p className="font-display text-[12px] font-extrabold text-[--ws-ink]">
-              Analysis{" "}
+              <AccentPill color="dark" size="sm">Analysis</AccentPill>
+              {" "}
               <AccentPill color="lime" size="sm">Details</AccentPill>
             </p>
           </div>

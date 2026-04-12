@@ -37,13 +37,45 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   return (
     <div className="relative flex-1 overflow-y-auto bg-[--ws-bg]">
 
-      {/* Ambient decorative dots in the cream scroll area — aria-hidden */}
+      {/* Layered background decoration — arcs + blurred orbs + cross-hatch */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        {/* Large frosted arc behind viewer */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            width: 640, height: 640,
+            borderRadius: "50%",
+            border: "1.5px solid rgba(17,17,17,0.055)",
+          }}
+        />
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            width: 440, height: 440,
+            borderRadius: "50%",
+            border: "1px solid rgba(17,17,17,0.04)",
+          }}
+        />
+        {/* Blurred colour orbs */}
         <div className="absolute top-8 right-10 h-4 w-4 rounded-full bg-[#CAFF43] opacity-50" />
         <div className="absolute top-16 right-24 h-2.5 w-2.5 rounded-full bg-[#FF4FCB] opacity-38" />
         <div className="absolute top-5 right-44 h-7 w-7 rounded-full bg-[#FF8C42] opacity-22" />
         <div className="absolute bottom-20 left-5 h-3.5 w-3.5 rounded-full bg-[#8B5CF6] opacity-30" />
         <div className="absolute top-1/3 right-6 h-2 w-2 rounded-full bg-[#CAFF43] opacity-28" />
+        <div
+          className="absolute bottom-32 right-1/4"
+          style={{
+            width: 120, height: 120, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(202,255,67,0.12) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute top-24 left-1/4"
+          style={{
+            width: 90, height: 90, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(246,122,223,0.10) 0%, transparent 70%)",
+          }}
+        />
       </div>
 
       {/* Document area */}
@@ -60,11 +92,17 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
           {/* Filename + view mode */}
           <div className="min-w-0 flex-1 pr-4">
             <p className="font-display text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#F5F2D8]/35">
-              pathkr / cv analysis
+              path karir / cv analysis
             </p>
             <p className="font-display mt-0.5 truncate text-[13px] font-bold text-[#F5F2D8]">
-              {filename}
-              <span className="ml-2 text-[#CAFF43]">— {modeLabel}</span>
+              <span
+                className="rounded-full px-[0.45em] py-[0.08em] mr-1.5"
+                style={{ background: "rgba(255,255,255,0.10)", color: "#F5F2D8" }}
+              >
+                Document
+              </span>
+              <span style={{ color: "#CAFF43" }}>{modeLabel}</span>
+              <span className="ml-2 text-[#F5F2D8]/35 text-[11px] font-normal truncate">{filename}</span>
             </p>
           </div>
 

@@ -82,6 +82,57 @@ export function WorkspaceV2Shell({
         }}
       />
 
+      {/* Frosted glass floating panels — depth layer */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        {/* Large frosted orb — top left */}
+        <div
+          style={{
+            position: "absolute", top: "-80px", left: "-60px",
+            width: 400, height: 400, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(202,255,67,0.09) 0%, transparent 68%)",
+            filter: "blur(32px)",
+          }}
+        />
+        {/* Medium orb — bottom right */}
+        <div
+          style={{
+            position: "absolute", bottom: "-60px", right: "-40px",
+            width: 320, height: 320, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(246,122,223,0.08) 0%, transparent 68%)",
+            filter: "blur(28px)",
+          }}
+        />
+        {/* Thin glass card — floats in the center-right quadrant */}
+        <div
+          style={{
+            position: "absolute", top: "30%", right: "22%",
+            width: 180, height: 260, borderRadius: 24,
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.14)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            transform: "rotate(6deg)",
+          }}
+        />
+        {/* Small accent ring — center-left */}
+        <div
+          style={{
+            position: "absolute", top: "55%", left: "15%",
+            width: 96, height: 96, borderRadius: "50%",
+            border: "1.5px solid rgba(202,255,67,0.22)",
+          }}
+        />
+        {/* Lime smear glow — center */}
+        <div
+          style={{
+            position: "absolute", top: "40%", left: "45%",
+            width: 260, height: 120, borderRadius: "50%",
+            background: "rgba(202,255,67,0.055)",
+            filter: "blur(40px)",
+          }}
+        />
+      </div>
+
       {/* Header — masthead style, height auto */}
       <WorkspaceV2Header
         filename={hydration?.file.filename ?? null}
