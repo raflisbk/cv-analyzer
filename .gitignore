@@ -370,6 +370,11 @@ CLAUDE.local.md
 # Skills
 skills-lock.json
 
+# Local mockup and editor artifacts
+mockup/
+.windsurf/
+.windusrf/
+
 # ============================================================================
 # Exceptions (Files to INCLUDE)
 # ============================================================================
