@@ -11,6 +11,7 @@ from app.schemas.analysis import (
     SectionResult,
     SuggestionCard,
 )
+from app.schemas.anchors import SuggestionAnchorRecord
 
 
 class WorkspaceFileInfo(BaseModel):
@@ -27,7 +28,9 @@ class WorkspaceDocumentPayload(BaseModel):
 
     source_text: str | None = None
     sections: list[SectionResult] = Field(default_factory=list)
-    draft_content: dict | None = None  # Phase 12: loaded draft if job has workspace_draft
+    draft_content: dict | None = (
+        None  # Phase 12: loaded draft if job has workspace_draft
+    )
 
 
 class WorkspaceAnalysisContext(BaseModel):
@@ -56,6 +59,7 @@ class WorkspaceHydration(BaseModel):
     document: WorkspaceDocumentPayload
     analysis: WorkspaceAnalysisContext
     navigation: WorkspaceNavigation
+    suggestion_anchors: list[SuggestionAnchorRecord] = Field(default_factory=list)
     error: str | None = None
 
 

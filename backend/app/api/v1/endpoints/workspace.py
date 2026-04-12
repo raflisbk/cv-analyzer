@@ -17,6 +17,7 @@ from app.schemas.analysis import (
     SuggestionCard,
     SuggestionItem,
 )
+from app.schemas.anchors import SuggestionAnchorRecord
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.workspace import (
     WorkspaceAnalysisContext,
@@ -155,6 +156,23 @@ def _is_workspace_ready(
     return has_document and has_analysis
 
 
+def _build_suggestion_anchors(
+    raw_anchors: list[dict] | None,
+) -> list[SuggestionAnchorRecord]:
+    """Parse JSONB suggestion_anchors into typed SuggestionAnchorRecord list.
+    Returns [] when column is null (e.g., existing jobs pre-Phase 14).
+    """
+    if not raw_anchors:
+        return []
+    result = []
+    for item in raw_anchors:
+        try:
+            result.append(SuggestionAnchorRecord.model_validate(item))
+        except Exception:
+            continue  # Skip malformed entries — graceful degradation
+    return result
+
+
 @router.get(
     "/jobs/{job_id}/workspace",
     response_model=WrappedResponse[WorkspaceHydration],
@@ -193,9 +211,7 @@ async def get_workspace_hydration(
             job.suggestions if isinstance(job.suggestions, list) else None
         )
         safe_comparison_result = (
-            job.comparison_result
-            if isinstance(job.comparison_result, dict)
-            else None
+            job.comparison_result if isinstance(job.comparison_result, dict) else None
         )
         safe_comparison_status = (
             job.comparison_status if isinstance(job.comparison_status, str) else None
@@ -233,6 +249,10 @@ async def get_workspace_hydration(
             job.workspace_draft if isinstance(job.workspace_draft, dict) else None
         )
 
+        safe_suggestion_anchors = (
+            job.suggestion_anchors if isinstance(job.suggestion_anchors, list) else None
+        )
+
         hydration = WorkspaceHydration(
             job_id=str(job.id),
             status=workspace_status,
@@ -240,10 +260,15 @@ async def get_workspace_hydration(
             document=WorkspaceDocumentPayload(
                 source_text=source_text,
                 sections=sections,
-                draft_content=safe_workspace_draft.get("sections") if safe_workspace_draft else None,
+                draft_content=(
+                    safe_workspace_draft.get("sections")
+                    if safe_workspace_draft
+                    else None
+                ),
             ),
             analysis=analysis,
             navigation=navigation,
+            suggestion_anchors=_build_suggestion_anchors(safe_suggestion_anchors),
             error=job.error,
         )
 
@@ -307,7 +332,7 @@ async def get_job_file_url(
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_URL_FETCH_FAILED",
-                message=f"Gagal mendapatkan URL file: {str(exc)}",
+                message=f"Gagal mendapatkan URL file: {exc!s}",
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -315,7 +340,7 @@ async def get_job_file_url(
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_URL_FETCH_FAILED",
-                message=f"Gagal mendapatkan URL file: {str(exc)}",
+                message=f"Gagal mendapatkan URL file: {exc!s}",
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )

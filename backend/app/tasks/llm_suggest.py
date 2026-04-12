@@ -18,6 +18,7 @@ from sqlalchemy import select
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus
+from app.services.anchor_service import compute_suggestion_anchors
 from app.services.llm.openai_service import OpenAILLMService
 from app.services.llm.protocol import SuggestionsOutput  # noqa: TC001
 from app.services.rag.embeddings import get_rag_embedding
@@ -72,6 +73,14 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
     cache_key = f"llm_suggestions:{job_id}"
     cache_ttl = 86400  # 24 hours per D-14
 
+    async def _get_file_id() -> str:
+        """Returns job.file_id from DB."""
+        async with async_session_maker() as session:
+            stmt = select(Job).where(Job.id == job_id)
+            result = await session.execute(stmt)
+            job = result.scalar_one_or_none()
+            return job.file_id if job else ""
+
     async def _get_job_data() -> tuple[str | None, list[dict] | None]:
         """Returns (cv_text, sections_list) from DB."""
         async with async_session_maker() as session:
@@ -97,8 +106,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
     async def _save_results(
         suggestions_json: list | None,
         tokens_used: int,
+        file_id: str = "",
     ) -> None:
-        """Save suggestions + token count to DB, set COMPLETE status."""
+        """Save suggestions + token count + anchors to DB, set COMPLETE status."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -106,6 +116,11 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             if job:
                 job.suggestions = suggestions_json  # None = LLM failed (D-17)
                 job.llm_tokens_used = tokens_used
+                # Compute and save anchors when suggestions available (ANNOT-04, D-02)
+                if suggestions_json and file_id:
+                    job.suggestion_anchors = compute_suggestion_anchors(
+                        file_id, suggestions_json
+                    )
                 job.status = JobStatus.COMPLETE  # THIS task sets COMPLETE
                 await session.commit()
 
@@ -115,9 +130,15 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
     if cached:
         logger.info("LLM suggestions cache hit", extra={"job_id": job_id})
         cached_suggestions = json.loads(cached)
-        asyncio.run(_save_results(cached_suggestions, tokens_used=0))
+        job_file_id: str = asyncio.run(_get_file_id())
+        asyncio.run(
+            _save_results(cached_suggestions, tokens_used=0, file_id=job_file_id)
+        )
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
         return {"status": "complete", "job_id": job_id, "from_cache": True}
+
+    # ─── Retrieve file_id for anchor computation (ANNOT-04) ─────────────────
+    job_file_id = asyncio.run(_get_file_id())
 
     try:
         # ─── Set GENERATING status in DB ─────────────────────────────────────
@@ -182,7 +203,11 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         redis_client.setex(cache_key, cache_ttl, json.dumps(suggestions_list))
 
         # ─── Save to DB + set COMPLETE ────────────────────────────────────────
-        asyncio.run(_save_results(suggestions_list, tokens_used=total_tokens))
+        asyncio.run(
+            _save_results(
+                suggestions_list, tokens_used=total_tokens, file_id=job_file_id
+            )
+        )
 
         # ─── Emit final 'complete' SSE stage ─────────────────────────────────
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
