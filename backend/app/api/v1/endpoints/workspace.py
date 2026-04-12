@@ -24,9 +24,11 @@ from app.schemas.workspace import (
     WorkspaceContentSaveResult,
     WorkspaceDocumentPayload,
     WorkspaceFileInfo,
+    WorkspaceFileUrl,
     WorkspaceHydration,
     WorkspaceNavigation,
 )
+from app.services.storage import StorageError, storage_service
 
 
 router = APIRouter()
@@ -253,6 +255,68 @@ async def get_workspace_hydration(
     except Exception as exc:
         return WrappedResponse(
             error=ErrorDetail(code="WORKSPACE_FETCH_FAILED", message=str(exc)),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+
+@router.get(
+    "/jobs/{job_id}/file",
+    response_model=WrappedResponse[WorkspaceFileUrl],
+    summary="Dapatkan presigned URL untuk file CV yang diupload",
+)
+async def get_job_file_url(
+    job_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> WrappedResponse[WorkspaceFileUrl]:
+    """Return short-lived presigned R2 URL untuk PDF CV asli. (PDF-02)"""
+    request_id = str(uuid.uuid4())
+    timestamp = datetime.now(UTC).isoformat()
+
+    try:
+        stmt = select(Job).where(Job.id == job_id)
+        result = await db.execute(stmt)
+        job = result.scalar_one_or_none()
+
+        if not job:
+            return WrappedResponse(
+                error=ErrorDetail(
+                    code="JOB_NOT_FOUND",
+                    message=f"Job {job_id} tidak ditemukan.",
+                ),
+                meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+            )
+
+        if not job.file_id:
+            return WrappedResponse(
+                error=ErrorDetail(
+                    code="FILE_NOT_FOUND",
+                    message="File CV tidak tersedia untuk job ini.",
+                ),
+                meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+            )
+
+        # Generate presigned URL valid 1 jam
+        file_url = storage_service.generate_presigned_url(job.file_id, expiration=3600)
+
+        return WrappedResponse(
+            data=WorkspaceFileUrl(file_url=file_url, expires_in=3600),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+    except StorageError as exc:
+        return WrappedResponse(
+            error=ErrorDetail(
+                code="FILE_URL_FETCH_FAILED",
+                message=f"Gagal mendapatkan URL file: {str(exc)}",
+            ),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+    except Exception as exc:
+        return WrappedResponse(
+            error=ErrorDetail(
+                code="FILE_URL_FETCH_FAILED",
+                message=f"Gagal mendapatkan URL file: {str(exc)}",
+            ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 

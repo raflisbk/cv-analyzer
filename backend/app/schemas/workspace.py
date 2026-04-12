@@ -73,3 +73,11 @@ class WorkspaceContentSaveResult(BaseModel):
 
     saved: bool
     updated_at: str
+
+
+# Phase 13: File presigned URL schema
+class WorkspaceFileUrl(BaseModel):
+    """Presigned R2 URL untuk akses langsung ke PDF CV yang diupload."""
+
+    file_url: str
+    expires_in: int = 3600  # detik
