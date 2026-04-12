@@ -21,8 +21,16 @@
 - [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
 - [x] **Phase 11: Workspace Foundation & Routing** - Redirect completed uploads into a dedicated editor workspace while preserving results page access ✅ **COMPLETE** (2026-04-11)
 - [x] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls (completed 2026-04-11)
-- [ ] **Phase 13: Agentic Review Cockpit** - Combine analysis panels, action queue, and AI-assisted inline editing in one workspace
-- [ ] **Phase 14: Preview, Export & Variants** - Preview edited CV, export polished versions, and support tailored output variants
+- [ ] **Phase 13: Agentic Review Cockpit** - ~~Combine analysis panels, action queue, and AI-assisted inline editing in one workspace~~ **CANCELLED**
+- [ ] **Phase 14: Preview, Export & Variants** - ~~Preview edited CV, export polished versions, and support tailored output variants~~ **CANCELLED**
+
+## v4.0 — PDF-First Analysis Workspace
+
+- [ ] **Phase 13: PDF-First Workspace Shell** `v4.0` - `/workspace-v2` parallel route, 3-panel layout, react-pdf v10 viewer, file endpoint, DB schema additions, and annotation coordinate spike
+- [ ] **Phase 14: Annotation Overlay & Diff Toggle** `v4.0` - Stabilo highlights on PDF via customTextRenderer, 1.5s hover popover, left panel sync, diff toggle, and sticky footer shell
+- [ ] **Phase 15: Inline AI Edit & Analysis Panel Wiring** `v4.0` - Wire existing analysis components into left panel; text selection → "Edit with AI" popover with backend rewrite endpoint
+- [ ] **Phase 16: Live Chat & CRDT Foundation** `v4.0` - Contextual chat copilot with ReadableStream streaming, pycrdt-websocket WebSocket endpoint, and cv_document JSONB hydration pipeline
+- [ ] **Phase 17: Export v4, Migration Cutover & Preservation** `v4.0` - WeasyPrint optimized PDF export, save report, upload flow redirect to /workspace-v2, job match verified and documented
 
 ## Phase Details
 
@@ -169,7 +177,7 @@ Plans:
 
 ---
 
-## v2.0 — Seamless Homepage Phase Details
+### v2.0 — Seamless Homepage Phase Details
 
 ### Phase 6: Infrastructure & Primitives
 
@@ -286,7 +294,7 @@ Plans:
 
 **UI hint**: yes
 
-## v3.0 — Agentic CV Workspace Phase Details
+### v3.0 — Agentic CV Workspace Phase Details
 
 ### Phase 11: Workspace Foundation & Routing
 
@@ -335,55 +343,157 @@ Plans:
 
 **UI hint**: yes
 
-### Phase 13: Agentic Review Cockpit
+> **Phases 13 & 14 (v3.0 Agentic Review Cockpit / Preview Export)** — CANCELLED and replaced by v4.0 PDF-First Workspace phases below.
 
-**Goal**: Editing is assisted by an AI cockpit that keeps scores, gaps, rationale, and action execution visible beside the document.
+---
 
-**Depends on**: Phase 11 (workspace shell), Phase 12 (editable canvas), Phase 3/4 (AI analysis + comparison data)
+### Phase 13: PDF-First Workspace Shell
 
-**Requirements**: AGENT-01, AGENT-02, AGENT-03, AGENT-04, COCKPIT-01, COCKPIT-02, COCKPIT-03
+**Goal**: The `/workspace-v2` shell exists as a safe parallel route — PDF renders in the center panel, layout skeleton is in place, DB schema is extended, and the annotation coordinate approach is validated before any annotation overlay work begins.
+
+**Depends on**: Phase 12 (Editable Canvas & Layout Controls)
+
+**Requirements**: PDF-01, PDF-02, PDF-03, LAYOUT-01, LAYOUT-02, CRDT-01, CRDT-03
 
 **Success Criteria** (what must be TRUE):
-  1. User can run targeted AI editing actions from the workspace
-  2. Suggested edits are anchored to specific sections/blocks, not detached from the document
-  3. User can accept, reject, or regenerate drafts before changes are applied
-  4. Scores, ATS context, job-match insights, and an action queue remain visible during editing
-  5. Workspace explains why major edits are recommended and which metric they improve
+  1. Navigating to `/workspace-v2/{job_id}` renders the 3-panel shell (left detail, center PDF, right rail) — original `/workspace/{job_id}` is completely unaffected
+  2. Uploaded CV PDF renders in the center panel via react-pdf v10 with text layer enabled; PDF width adapts to the panel via ResizeObserver
+  3. `GET /jobs/{id}/file` returns a presigned URL; the PDF viewer loads the file without CORS errors
+  4. Alembic migration adds `cv_document JSONB`, `suggestion_anchors JSONB`, and `yjs_snapshot BYTEA` columns without touching existing columns
+  5. Annotation coordinate spike is documented — a proof-of-concept mapping at least one suggestion anchor to a highlighted text rect on the PDF canvas
 
-**Plans**: 4 plans across 3 waves
+**Waves:** ~3
+
+**Deliverables:**
+- Extract `plainTextToTiptapDoc`, `buildInitialSections`, `normalizeSuggestion` to `lib/workspace-utils.ts` before any canvas changes
+- New `app/workspace-v2/[job_id]/page.tsx` + `WorkspaceV2Shell` 3-panel layout (`grid-cols-[290px_minmax(0,1fr)_340px]`); mobile uses `hidden lg:block` stubs
+- `pdf-viewer-inner.tsx` (react-pdf `<Document>` + `<Page>`) wrapped in `dynamic(() => ..., { ssr: false })`; `ResizeObserver` drives `width` prop
+- Backend `GET /jobs/{id}/file` presigned URL endpoint in `workspace.py` or new `files.py`; Alembic migration for three new columns
+- Install `react-pdf`, `yjs`, `y-indexeddb`, `zustand`, `@floating-ui/react`; run annotation coordinate spike and document findings
+
+**Plans**: 6 plans across 3 waves
 
 Plans:
-- [ ] 13-01-PLAN.md — Cockpit layout: score cards, side panels, action queue, results linkage (Wave 1)
-- [ ] 13-02-PLAN.md — Targeted AI edit actions + backend/frontend command plumbing (Wave 2)
-- [ ] 13-03-PLAN.md — Anchored suggestion cards + accept/reject/regenerate flows (Wave 2)
-- [ ] 13-04-PLAN.md — Agent rationale surfaces + compare-context integration + UX polish (Wave 3)
+- [ ] 13-01-PLAN.md — Utility extraction (workspace-utils.ts) + package installs (Wave 1)
+- [ ] 13-02-PLAN.md — Backend: Alembic migration + Job model + WorkspaceFileUrl schema + GET /jobs/{id}/file endpoint (Wave 1)
+- [ ] 13-03-PLAN.md — Frontend shell route + CSS vars + Zustand store + WorkspaceV2Shell + WorkspaceV2Header (Wave 2)
+- [ ] 13-04-PLAN.md — PDF viewer stack: PdfViewerInner + PdfViewer + PdfViewerPanel + Skeleton + Error (Wave 2)
+- [ ] 13-05-PLAN.md — Panels + wire-up: LeftDetailPanel + Toggle + RightRailStats + WorkspaceSkeleton + getJobFileUrl (Wave 3)
+- [ ] 13-06-PLAN.md — Annotation spike: findTextRect + useWorkspaceDoc + spike findings doc (Wave 3)
 
 **UI hint**: yes
 
-### Phase 14: Preview, Export & Variants
+### Phase 14: Annotation Overlay & Diff Toggle
 
-**Goal**: Users can finalize the edited CV, preview the polished output, and export tailored versions without needing an account.
+**Goal**: AI suggestions are visible as stabilo highlights on the PDF — hovering any highlight for 1.5 seconds shows an Apply/Dismiss popover, syncs the left panel, and the diff toggle lets users compare original vs optimized PDF in one click.
 
-**Depends on**: Phase 12 (editable canvas), Phase 13 (agentic editing), Phase 4 (existing export baseline)
+**Depends on**: Phase 13 (PDF-First Workspace Shell)
 
-**Requirements**: OUTPUT-01, OUTPUT-02, OUTPUT-03, SAFE-02
+**Requirements**: ANNOT-01, ANNOT-02, ANNOT-03, ANNOT-04, PDF-04, LAYOUT-03
 
 **Success Criteria** (what must be TRUE):
-  1. User can switch from editing into a polished final-preview state
-  2. Edited CV can be exported/downloaded as a new output document
-  3. At least one tailored export variant can be generated from the same workspace context
-  4. If AI editing or variant generation fails, manual editing and baseline export flows still work
+  1. Each AI suggestion with a stored anchor renders a colored stabilo highlight on the correct page and text region via `customTextRenderer`
+  2. Hovering a highlight for ~1.5 s shows an Apply/Dismiss popover (Floating UI); hover ends before 1.5 s cancels the timer cleanly
+  3. Hovering any annotation scrolls and highlights the matching suggestion card in the left panel (Zustand `activeSuggestionId`)
+  4. Diff toggle button switches the PDF viewer between the original uploaded PDF and the optimized PDF in a single click (no side-by-side)
+  5. Sticky footer is always visible at the bottom: Apply, Diff toggle, Save Optimized PDF, Save Report (last two are placeholder buttons at this stage)
 
-**Plans**: 3 plans across 2 waves
+**Waves:** ~3
 
-Plans:
-- [ ] 14-01-PLAN.md — Final preview mode + edited-document styling contract (Wave 1)
-- [ ] 14-02-PLAN.md — Export pipeline for edited CV output + fallback handling (Wave 1)
-- [ ] 14-03-PLAN.md — Tailored variant generation + workspace/export QA closure (Wave 2)
+**Deliverables:**
+- `customTextRenderer` function mapping `suggestion_anchors` JSONB to per-page colored highlight spans
+- `useAnnotationHover` hook: `useRef + setTimeout` pattern for 1.5 s delay; Floating UI popover with Apply/Dismiss
+- Zustand store with `activeSuggestionId`; left detail panel scrolls to and highlights matching card on store update
+- Diff toggle: `useState<'original' | 'optimized'>` swaps `<Document file={...}>` between original and optimized presigned URLs
+- `StickyFooter` component: Apply, Diff toggle, Save Optimized PDF (stub), Save Report (stub); fixed to viewport bottom
+
+**Plans**: TBD
 
 **UI hint**: yes
 
-## Progress Table
+### Phase 15: Inline AI Edit & Analysis Panel Wiring
+
+**Goal**: The left panel shows the full analysis context (scores, suggestions, grammar, skills gap) using existing components, and users can select any text in the PDF to trigger an "Edit with AI" prompt that previews and applies a rewrite to the optimized document.
+
+**Depends on**: Phase 14 (Annotation Overlay & Diff Toggle)
+
+**Requirements**: INLINE-01, INLINE-02, INLINE-03
+
+**Success Criteria** (what must be TRUE):
+  1. Left panel tabs display `ScoreDashboard`, `AtsChecklist`, `SuggestionCards`, `GrammarIssuesList`, and `SkillsGapDisplay` using the existing components via pure props — no duplicate logic
+  2. Selecting text in the PDF viewer causes an "Edit with AI" popover to appear near the selection end
+  3. User can type a prompt in the popover, see a preview of the AI rewrite, and apply it — the optimized document state updates
+  4. Backend `POST /jobs/{id}/inline-edit` returns a rewritten text given selected text + prompt + CV context; errors return graceful fallback
+  5. Yjs `Y.Doc` initialises with `y-indexeddb` browser persistence; `initialized.current` ref guard prevents React Strict Mode double-mount
+
+**Waves:** ~3
+
+**Deliverables:**
+- Left detail panel `<Tabs>` wiring `ScoreDashboard`, `AtsChecklist`, `SuggestionCards`, `GrammarIssuesList`, `SkillsGapDisplay` (drop-in from `frontend/components/results/`)
+- Text-selection detection on PDF page (`onMouseUp` / `selectionchange`); floating "Edit with AI" popover (Floating UI) at selection end
+- Prompt → preview → apply flow: call backend, display diff preview in popover, commit to `cv_document` on confirm
+- Backend `POST /api/v1/jobs/{id}/inline-edit`: selected text + prompt + system context → Claude/OpenAI → rewritten text
+- Yjs `Y.Doc` + `y-indexeddb` provider with SSR guard (`typeof window !== 'undefined'`) and Strict Mode ref guard
+
+**Plans**: TBD
+
+**UI hint**: yes
+
+### Phase 16: Live Chat & CRDT Foundation
+
+**Goal**: The right rail is a live CV optimization copilot — chat streams responses using the full analysis context as its system prompt, the CRDT WebSocket endpoint is live for future multi-user editing, and the cv_document JSONB column is populated by the existing Celery pipeline.
+
+**Depends on**: Phase 15 (Inline AI Edit & Analysis Panel Wiring)
+
+**Requirements**: CHAT-01, CHAT-02, CHAT-03, CRDT-02
+
+**Success Criteria** (what must be TRUE):
+  1. Right rail shows a chat panel; user can send a message and receive a streaming response while the PDF and panels remain usable
+  2. Chat responses stream token-by-token via `fetch + ReadableStream` (POST-based, not EventSource); partial tokens render as they arrive
+  3. Chat system prompt is injected with current CV scores, active suggestions, grammar issues, and edit state — responses are context-aware, not generic
+  4. `GET ws://…/yjs/{job_id}` WebSocket endpoint is reachable and responds to a Yjs sync handshake (single-user for now, multi-user ready)
+  5. After CV analysis completes, `cv_document` JSONB column on the job record is populated with structured section data mapped from NLP output
+
+**Waves:** ~3
+
+**Deliverables:**
+- `ChatPanel` component in right rail: message list, input, send button; streaming via `fetch` + `ReadableStream` reader loop
+- Backend `POST /api/v1/jobs/{id}/chat` streaming endpoint: builds system context from job analysis, streams Claude/OpenAI response via SSE or chunked transfer
+- System context builder: serialises `cv_score`, `suggestions`, `grammar_issues`, `skills_gap`, and active `cv_document` state into LLM system message
+- `pycrdt-websocket` WebSocket router mounted at `/yjs` in FastAPI `main.py`; room scoped to `job_id`
+- `cv_builder` Celery task: reads `NLPResult.sections` + `suggestions` → writes structured `cv_document` JSONB to `Job` model after analysis completes
+
+**Plans**: TBD
+
+**UI hint**: yes
+
+### Phase 17: Export v4, Migration Cutover & Job Match Preservation
+
+**Goal**: Users can export the optimized CV as a polished PDF and a full analysis report; the upload flow now lands in `/workspace-v2`; all job match features are verified unchanged and the `jd_role_id` linkage is documented.
+
+**Depends on**: Phase 16 (Live Chat & CRDT Foundation)
+
+**Requirements**: EXPV4-01, EXPV4-02, LAYOUT-02, JOBMATCH-01, JOBMATCH-02
+
+**Success Criteria** (what must be TRUE):
+  1. Clicking "Save Optimized PDF" generates and downloads a formatted PDF built from the current `cv_document` JSONB via WeasyPrint + Jinja2 template
+  2. Clicking "Save Report" downloads an analysis report PDF (extends existing `export.py`; no regression on v1 export)
+  3. Completing a new CV upload redirects to `/workspace-v2/{job_id}` instead of `/workspace/{job_id}`; visiting the old URL redirects transparently
+  4. `POST /jobs/{id}/compare`, SSE streaming, comparison result display, and all job match data are fully functional — zero regression
+  5. `job.jd_role_id → JobRole` relationship is documented in code comments as the "job finding" feature anchor; `canvas/` directory retired after redirect verification
+
+**Waves:** ~2
+
+**Deliverables:**
+- `POST /api/v1/jobs/{id}/export/optimized` endpoint: renders `cv_document` JSONB → Jinja2 HTML template → WeasyPrint PDF → streaming download
+- Save Report: extend `export.py` with v4.0 context (scores, suggestions, inline edits applied); reuse existing WeasyPrint pipeline
+- Migration cutover: update `job-routes.ts` `getWorkspaceRoute()` + `workspace.py` `WorkspaceNavigation.workspace_url` to `/workspace-v2/{id}`; add `redirect()` in `app/workspace/[job_id]/page.tsx`
+- Job match regression test pass: `compare.py`, `compare_cv_task`, `JobRole` model, `comparison_result` schema all confirmed unchanged
+- Code comments on `job.jd_role_id → JobRole` FK; `canvas/` directory deletion after cutover smoke test passes
+
+**Plans**: TBD
+
+**UI hint**: yes
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -399,8 +509,13 @@ Plans:
 | 10. Animation Polish | 0/0 | Not started | - |
 | 11. Workspace Foundation & Routing | 2/3 | In Progress|  |
 | 12. Editable Canvas & Layout Controls | 3/3 | Complete   | 2026-04-11 |
-| 13. Agentic Review Cockpit | 0/4 | Not started | - |
-| 14. Preview, Export & Variants | 0/3 | Not started | - |
+| 13. Agentic Review Cockpit | 0/4 | ~~Not started~~ CANCELLED | - |
+| 14. Preview, Export & Variants | 0/3 | ~~Not started~~ CANCELLED | - |
+| 13. PDF-First Workspace Shell (v4.0) | 0/TBD | Not started | - |
+| 14. Annotation Overlay & Diff Toggle (v4.0) | 0/TBD | Not started | - |
+| 15. Inline AI Edit & Analysis Panel Wiring (v4.0) | 0/TBD | Not started | - |
+| 16. Live Chat & CRDT Foundation (v4.0) | 0/TBD | Not started | - |
+| 17. Export v4, Migration Cutover & Preservation (v4.0) | 0/TBD | Not started | - |
 
 ## Phase Dependencies
 
@@ -433,9 +548,28 @@ Phase 11: Workspace Foundation & Routing
     ↓
 Phase 12: Editable Canvas & Layout Controls
     ↓
-Phase 13: Agentic Review Cockpit
+Phase 13: Agentic Review Cockpit [CANCELLED]
     ↓
-Phase 14: Preview, Export & Variants
+Phase 14: Preview, Export & Variants [CANCELLED]
+
+── v4.0 PDF-First Analysis Workspace ──────────────────────
+
+Phase 12: Editable Canvas & Layout Controls
+    ↓
+Phase 13: PDF-First Workspace Shell (v4.0)
+  — utility extraction, /workspace-v2 parallel route, react-pdf, file endpoint, DB schema
+    ↓
+Phase 14: Annotation Overlay & Diff Toggle (v4.0)
+  — stabilo highlights, 1.5s hover popover, Zustand panel sync, diff toggle, sticky footer
+    ↓
+Phase 15: Inline AI Edit & Analysis Panel Wiring (v4.0)
+  — left panel tabs wired, text selection popover, backend inline-edit endpoint, Yjs init
+    ↓
+Phase 16: Live Chat & CRDT Foundation (v4.0)
+  — streaming chat copilot, pycrdt-websocket /yjs endpoint, cv_document Celery task
+    ↓
+Phase 17: Export v4, Migration Cutover & Preservation (v4.0)
+  — WeasyPrint PDF, save report, upload redirect to /workspace-v2, job match verified
 ```
 
 ## Coverage Summary
@@ -470,8 +604,24 @@ Phase 14: Preview, Export & Variants
 |-------|--------------|------------|
 | 11 | 4 | Workspace Routing & Lifecycle (3) + Reliability (1) |
 | 12 | 6 | Editable CV Canvas (5) + Safety (1) |
-| 13 | 7 | Agentic Editing (4) + Analysis Cockpit (3) |
-| 14 | 4 | Export & Output (3) + Reliability (1) |
+| 13 | 7 | Agentic Editing (4) + Analysis Cockpit (3) — **CANCELLED** |
+| 14 | 4 | Export & Output (3) + Reliability (1) — **CANCELLED** |
+
+### v4.0 Coverage Summary
+
+**Total v4.0 requirements:** 22
+**Mapped to phases:** 22 ✓
+**Orphaned requirements:** 0
+
+| Phase | Requirements | Categories |
+|-------|--------------|------------|
+| 13 (v4.0) | 7 | PDF Viewer (3) + Layout (2) + CRDT (2) |
+| 14 (v4.0) | 6 | Annotations (4) + PDF Diff (1) + Layout Footer (1) |
+| 15 (v4.0) | 3 | Inline AI Edit (3) |
+| 16 (v4.0) | 4 | Live Chat (3) + CRDT WebSocket (1) |
+| 17 (v4.0) | 5 | Export (2) + Layout Cutover (1) + Job Match (2) |
+
+> **Note on LAYOUT-02:** Requirement covers both route creation (Phase 13) and upload flow cutover (Phase 17). Assigned to Phase 13 as primary deliverable; Phase 17 completes migration activation.
 
 ### Requirement Distribution
 
@@ -487,5 +637,5 @@ Phase 14: Preview, Export & Variants
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-11 (v3.0 Agentic CV Workspace phases 11–14 added)*
-*Next: `/gsd-plan-phase 11`*
+*Last updated: 2026-04-11 (v4.0 PDF-First Analysis Workspace phases 13–17 added; old phases 13–14 marked CANCELLED)*
+*Next: `/gsd-plan-phase 13`*
