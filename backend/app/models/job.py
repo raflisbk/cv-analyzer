@@ -1,7 +1,8 @@
 import enum
 import uuid
 
-from sqlalchemy import JSON, Column, Enum, ForeignKey, Integer, String, Text
+import sqlalchemy as sa
+from sqlalchemy import JSON, Column, Enum, ForeignKey, Integer, LargeBinary, String, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.db.base import Base
@@ -69,3 +70,8 @@ class Job(Base, TimestampMixin):
 
     # Phase 12: workspace draft per-section Tiptap JSON (D-10, D-11, D-12)
     workspace_draft = Column(JSONB, nullable=True)
+
+    # Phase 13: PDF-first workspace columns
+    cv_document = Column(JSONB, nullable=True)           # structured document model (CRDT-03)
+    suggestion_anchors = Column(JSONB, nullable=True)    # PDF coordinate anchors
+    yjs_snapshot = Column(sa.LargeBinary, nullable=True) # binary Yjs snapshot
