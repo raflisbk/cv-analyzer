@@ -1,6 +1,7 @@
 /**
  * Zustand store untuk workspace-v2.
- * Phase 13: state minimal — leftPanelOpen, pdfUrl, viewMode, hydration context.
+ * Phase 13: grid-based layout state — activeDetailTab drives left panel expansion.
+ * null = PDF-first mode (left compact), string = detail tab active (PDF hidden).
  * Jangan gunakan persist middleware — Yjs menangani persistence.
  */
 "use client";
@@ -12,8 +13,8 @@ interface WorkspaceV2State {
   pdfUrl: string | null;
   viewMode: "optimized" | "original"; // PDF-03: default optimized
 
-  // Layout state
-  leftPanelOpen: boolean; // CONTEXT.md: collapsed by default = false
+  // Layout state — null = PDF-first, string = detail focus on that tab
+  activeDetailTab: string | null;
 
   // Job context
   jobId: string;
@@ -22,21 +23,21 @@ interface WorkspaceV2State {
   // Actions
   setPdfUrl: (url: string | null) => void;
   setViewMode: (mode: "optimized" | "original") => void;
-  toggleLeftPanel: () => void;
+  setActiveDetailTab: (tab: string | null) => void;
   setJobId: (jobId: string) => void;
   setHydration: (hydration: WorkspaceHydration) => void;
 }
 
 export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   pdfUrl: null,
-  viewMode: "optimized",   // PDF-03: workspace defaults ke optimized PDF view
-  leftPanelOpen: false,    // CONTEXT.md D-01: collapsed by default
+  viewMode: "optimized",      // PDF-03: workspace defaults ke optimized PDF view
+  activeDetailTab: null,      // default PDF-first mode
   jobId: "",
   hydration: null,
 
   setPdfUrl: (url) => set({ pdfUrl: url }),
   setViewMode: (mode) => set({ viewMode: mode }),
-  toggleLeftPanel: () => set((state) => ({ leftPanelOpen: !state.leftPanelOpen })),
+  setActiveDetailTab: (tab) => set({ activeDetailTab: tab }),
   setJobId: (jobId) => set({ jobId }),
   setHydration: (hydration) => set({ hydration }),
 }));

@@ -1,10 +1,9 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useCallback, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { WorkspaceV2Header } from "./header";
 import { LeftDetailPanel } from "./left-detail-panel";
-import { LeftPanelToggle } from "./left-panel-toggle";
 import { PdfViewerPanel } from "./pdf-viewer-panel";
 import { RightRailStats } from "./right-rail-stats";
 import type { WorkspaceHydration } from "@/lib/workspace";
@@ -20,15 +19,42 @@ export function WorkspaceV2Shell({
   hydration,
   initialPdfUrl,
 }: WorkspaceV2ShellProps) {
-  const { leftPanelOpen, pdfUrl, setJobId, setHydration, setPdfUrl } =
+  const { activeDetailTab, pdfUrl, setJobId, setHydration, setPdfUrl } =
     useWorkspaceV2Store();
 
-  // Inisialisasi store dengan job context
+  const isDetailFocus = activeDetailTab !== null;
+
+  // Fetch pdfUrl client-side so it's visible in DevTools and not dependent on SSR
+  const fetchPdfUrl = useCallback(async () => {
+    if (pdfUrl) { return; }
+    try {
+      const res = await fetch(`/api/v1/jobs/${jobId}/file`);
+      if (!res.ok) { return; }
+      const json = await res.json();
+      const url = json?.data?.file_url;
+      if (url) { setPdfUrl(url); }
+    } catch {
+      // silently fail — PDF viewer shows error state
+    }
+  }, [jobId, pdfUrl, setPdfUrl]);
+
   useEffect(() => {
     setJobId(jobId);
-    if (hydration) setHydration(hydration);
-    if (initialPdfUrl) setPdfUrl(initialPdfUrl);
-  }, [jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl]);
+    if (hydration) { setHydration(hydration); }
+    if (initialPdfUrl) {
+      setPdfUrl(initialPdfUrl);
+    } else {
+      fetchPdfUrl();
+    }
+  }, [jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl, fetchPdfUrl]);
+
+  // Grid columns: narrow left strip by default, left expands + PDF collapses in detail-focus
+  const gridStyle: CSSProperties = {
+    gridTemplateColumns: isDetailFocus
+      ? "minmax(480px, 1.08fr) 0px 300px"
+      : "210px minmax(0, 1.18fr) 320px",
+    transition: "grid-template-columns 250ms ease-in-out",
+  };
 
   return (
     <div
@@ -43,44 +69,30 @@ export function WorkspaceV2Shell({
         className="h-12 flex-none border-b border-[--ws-border-strong]"
       />
 
-      {/* Body — 3-panel grid on desktop, single column on mobile */}
+      {/* Body — 3-panel grid; mobile falls back to single column */}
       <div
-        className={cn(
-          "flex-1 overflow-hidden",
-          // Grid transitions on left panel open/close
-          leftPanelOpen
-            ? "grid lg:grid-cols-[290px_minmax(0,1fr)_340px]"
-            : "grid lg:grid-cols-[0px_minmax(0,1fr)_340px]",
-          "transition-[grid-template-columns] duration-200 ease-in-out"
-        )}
+        className="flex-1 overflow-hidden grid"
+        style={gridStyle}
       >
-        {/* Left detail panel — hidden mobile, collapsed by default */}
-        <aside
-          className={cn(
-            "hidden lg:flex flex-col overflow-hidden",
-            leftPanelOpen
-              ? "w-[290px] opacity-100"
-              : "w-0 overflow-hidden opacity-0 pointer-events-none",
-            "transition-[width,opacity] duration-200 ease-in-out"
-          )}
-          aria-hidden={!leftPanelOpen}
-        >
+        {/* Left detail panel — always visible on desktop (compact strip by default) */}
+        <aside className="hidden lg:flex flex-col overflow-hidden border-r border-[--ws-border]">
           <LeftDetailPanel className="h-full" />
         </aside>
 
-        {/* Center PDF panel — full width on mobile */}
-        <main className="relative flex flex-col overflow-hidden">
-          {/* Toggle button — absolute, left edge of center panel */}
-          <div className="absolute left-0 top-1/2 z-10 -translate-y-1/2 hidden lg:block">
-            <LeftPanelToggle />
-          </div>
-
-          {/* PDF viewer — fills remaining space */}
+        {/* Center PDF panel — hidden when detail-focus is active */}
+        <main
+          className={cn(
+            "relative flex flex-col overflow-hidden",
+            "transition-opacity duration-250 ease-in-out",
+            isDetailFocus && "opacity-0 pointer-events-none"
+          )}
+          aria-hidden={isDetailFocus}
+        >
           <PdfViewerPanel pdfUrl={pdfUrl} />
         </main>
 
-        {/* Right rail — hidden on mobile */}
-        <aside className="hidden lg:flex flex-col">
+        {/* Right rail */}
+        <aside className="hidden lg:flex flex-col border-l border-[--ws-border]">
           <RightRailStats className="h-full" />
         </aside>
       </div>

@@ -17,7 +17,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) { return; }
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
       setContainerWidth(Math.floor(width));
