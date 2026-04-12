@@ -46,7 +46,7 @@ export function CanvasSplitPanel({ editorSlot, sections, fileName, saveState }: 
 }
 
 function SaveIndicator({ saveState }: { saveState: SaveState }) {
-  if (saveState === "idle") return null;
+  if (saveState === "idle") { return null; }
   return (
     <div className="flex items-center gap-1.5 text-[10px] text-[#141414]/55">
       {saveState === "unsaved" && (

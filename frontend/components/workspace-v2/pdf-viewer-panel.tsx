@@ -1,13 +1,14 @@
 "use client";
 /**
  * PdfViewerPanel — Mathical-style outer container for the PDF viewer.
- * Cream outer bg + decorative colored dots matching landing page hero section.
- * Premium paper card presentation with editorial document header.
+ * Dark hero-card banner (matching landing page hero card: #141414 + accent dots + cream text)
+ * sits above the cream paper card. Page navigation and view mode live in the banner.
+ * Ambient decorative dots float in the cream scroll area background.
  */
 import { useRef, useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PdfViewer } from "./pdf-viewer";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
-import { AccentPill } from "@/components/ui/accent-pill";
 
 interface PdfViewerPanelProps {
   pdfUrl: string | null;
@@ -17,7 +18,11 @@ interface PdfViewerPanelProps {
 export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const { hydration, viewMode } = useWorkspaceV2Store();
+  const filename = hydration?.file.filename ?? "document.pdf";
+  const modeLabel = viewMode === "optimized" ? "Optimized" : "Original";
 
   useEffect(() => {
     if (!containerRef.current) { return; }
@@ -29,72 +34,81 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
     return () => observer.disconnect();
   }, []);
 
-  const filename = hydration?.file.filename ?? "document.pdf";
-
   return (
-    // Cream outer — matches landing page body background
     <div className="relative flex-1 overflow-y-auto bg-[--ws-bg]">
 
-      {/* Decorative ambient dots — same pattern as hero section (aria-hidden) */}
+      {/* Ambient decorative dots in the cream scroll area — aria-hidden */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-8 right-10 h-4 w-4 rounded-full bg-[#CAFF43] opacity-55" />
-        <div className="absolute top-16 right-24 h-2.5 w-2.5 rounded-full bg-[#FF4FCB] opacity-40" />
-        <div className="absolute top-5 right-44 h-7 w-7 rounded-full bg-[#FF8C42] opacity-25" />
-        <div className="absolute bottom-20 left-5 h-3.5 w-3.5 rounded-full bg-[#8B5CF6] opacity-35" />
-        <div className="absolute bottom-10 left-16 h-5 w-5 rounded-full bg-[#141414] opacity-08" />
-        <div className="absolute top-1/3 right-6 h-2 w-2 rounded-full bg-[#CAFF43] opacity-30" />
+        <div className="absolute top-8 right-10 h-4 w-4 rounded-full bg-[#CAFF43] opacity-50" />
+        <div className="absolute top-16 right-24 h-2.5 w-2.5 rounded-full bg-[#FF4FCB] opacity-38" />
+        <div className="absolute top-5 right-44 h-7 w-7 rounded-full bg-[#FF8C42] opacity-22" />
+        <div className="absolute bottom-20 left-5 h-3.5 w-3.5 rounded-full bg-[#8B5CF6] opacity-30" />
+        <div className="absolute top-1/3 right-6 h-2 w-2 rounded-full bg-[#CAFF43] opacity-28" />
       </div>
 
       {/* Document area */}
       <div className="relative mx-auto max-w-[820px] px-6 py-8">
 
-        {/* Editorial document header — label above the paper */}
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="font-display text-[11px] font-extrabold uppercase tracking-[0.14em] text-[rgba(17,17,17,0.4)]">
-              CV
-            </span>
-            <AccentPill color="pink" size="sm">Preview</AccentPill>
-            <span className="h-1 w-1 rounded-full bg-[rgba(17,17,17,0.25)]" />
-            <span className="truncate text-[11px] font-medium text-[rgba(17,17,17,0.45)] max-w-[220px]">
+        {/* ── Dark hero-card banner — same visual language as landing page hero ── */}
+        <div className="relative overflow-hidden rounded-t-2xl bg-[#141414] px-5 py-3.5 flex items-center justify-between">
+          {/* Decorative dots inside banner */}
+          <div aria-hidden="true" className="absolute right-5 top-2 h-3 w-3 rounded-full bg-[#CAFF43] opacity-72" />
+          <div aria-hidden="true" className="absolute right-12 top-5 h-1.5 w-1.5 rounded-full bg-[#FF4FCB] opacity-55" />
+          <div aria-hidden="true" className="absolute right-20 top-1 h-5 w-5 rounded-full bg-[#FF8C42] opacity-32" />
+          <div aria-hidden="true" className="absolute bottom-1 right-4 h-1.5 w-1.5 rounded-full bg-[#8B5CF6] opacity-42" />
+
+          {/* Filename + view mode */}
+          <div className="min-w-0 flex-1 pr-4">
+            <p className="font-display text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#F5F2D8]/35">
+              pathkr / cv analysis
+            </p>
+            <p className="font-display mt-0.5 truncate text-[13px] font-bold text-[#F5F2D8]">
               {filename}
-            </span>
+              <span className="ml-2 text-[#CAFF43]">— {modeLabel}</span>
+            </p>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span
-              className={
-                viewMode === "optimized"
-                  ? "rounded-full bg-[#CAFF43] px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-[#141414]"
-                  : "rounded-full border border-[rgba(17,17,17,0.14)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[rgba(17,17,17,0.5)]"
-              }
+
+          {/* Page navigation */}
+          <div className="flex flex-none items-center gap-1">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+              aria-label="Previous page"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              {viewMode === "optimized" ? "Optimized" : "Original"}
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <span className="min-w-[1.6rem] text-center text-[11px] font-bold text-[#F5F2D8]/55">
+              {currentPage}
             </span>
+            <button
+              onClick={() => setCurrentPage((p) => p + 1)}
+              disabled={!pdfUrl}
+              aria-label="Next page"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
 
-        {/* Paper card — cream, rounded, editorial shadow */}
+        {/* ── Cream paper card — flush below banner ── */}
         <div
           ref={containerRef}
-          className="overflow-hidden rounded-3xl border border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_60px_rgba(17,17,17,0.12),0_2px_8px_rgba(17,17,17,0.06)]"
+          className="overflow-hidden rounded-b-2xl border-b border-x border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_48px_rgba(17,17,17,0.10),0_2px_6px_rgba(17,17,17,0.05)]"
           aria-label="PDF Document"
         >
           <PdfViewer
             url={pdfUrl}
             containerWidth={containerWidth}
+            currentPage={currentPage}
             onPageLoadSuccess={onPageLoadSuccess}
           />
         </div>
 
-        {/* Loading state */}
-        {!pdfUrl && (
-          <div className="mt-6 text-center">
-            <p className="text-sm font-medium text-[rgba(17,17,17,0.4)]">
-              Loading document…
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
 }
+
+

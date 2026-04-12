@@ -406,3 +406,8 @@ skills-lock.json
 
 # Frontend
 !frontend/public/.gitkeep
+
+# Local mockup artifacts
+mockup/
+.windsurf/
+.windusrf/

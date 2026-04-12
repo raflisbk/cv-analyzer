@@ -59,7 +59,10 @@ export function WorkspaceV2Shell({
   return (
     <div
       data-workspace-v2
-      className="flex h-screen flex-col overflow-hidden bg-[--ws-bg] text-[--ws-ink]"
+      className="flex h-screen flex-col overflow-hidden text-[--ws-ink]"
+      style={{
+        background: "radial-gradient(circle at top left, rgba(202,255,67,0.15) 0%, transparent 22%), radial-gradient(circle at top right, rgba(246,122,223,0.09) 0%, transparent 22%), radial-gradient(circle at bottom left, rgba(255,140,66,0.07) 0%, transparent 18%), #F5F2D8",
+      }}
     >
       {/* Header — h-12 fixed */}
       <WorkspaceV2Header

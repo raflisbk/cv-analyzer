@@ -26,7 +26,7 @@
 
 ## v4.0 — PDF-First Analysis Workspace
 
-- [ ] **Phase 13: PDF-First Workspace Shell** `v4.0` - `/workspace-v2` parallel route, 3-panel layout, react-pdf v10 viewer, file endpoint, DB schema additions, and annotation coordinate spike
+- [x] **Phase 13: PDF-First Workspace Shell** `v4.0` - `/workspace-v2` parallel route, 3-panel layout, react-pdf v10 viewer, file endpoint, DB schema additions, and annotation coordinate spike (completed 2026-04-12)
 - [ ] **Phase 14: Annotation Overlay & Diff Toggle** `v4.0` - Stabilo highlights on PDF via customTextRenderer, 1.5s hover popover, left panel sync, diff toggle, and sticky footer shell
 - [ ] **Phase 15: Inline AI Edit & Analysis Panel Wiring** `v4.0` - Wire existing analysis components into left panel; text selection → "Edit with AI" popover with backend rewrite endpoint
 - [ ] **Phase 16: Live Chat & CRDT Foundation** `v4.0` - Contextual chat copilot with ReadableStream streaming, pycrdt-websocket WebSocket endpoint, and cv_document JSONB hydration pipeline

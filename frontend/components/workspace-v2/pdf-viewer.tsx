@@ -1,6 +1,6 @@
 /**
- * PdfViewer — SSR-safe wrapper untuk PdfViewerInner.
- * Menggunakan Next.js dynamic() dengan ssr: false supaya react-pdf tidak crash di server.
+ * PdfViewer — SSR-safe wrapper for PdfViewerInner.
+ * Uses Next.js dynamic() with ssr: false so react-pdf doesn't crash on the server.
  * (LAYOUT-02, PDF-01)
  */
 import dynamic from "next/dynamic";
@@ -17,18 +17,19 @@ const PdfViewerInner = dynamic(
 interface PdfViewerProps {
   url: string | null;
   containerWidth: number;
+  currentPage?: number;
   onPageLoadSuccess?: (page: unknown) => void;
 }
 
-export function PdfViewer({ url, containerWidth, onPageLoadSuccess }: PdfViewerProps) {
+export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSuccess }: PdfViewerProps) {
   if (!url) {
     return (
       <div
-        className="flex min-h-[1080px] max-w-[860px] mx-auto items-center justify-center rounded-2xl bg-[#FFFDF4] shadow-[0_8px_48px_rgba(0,0,0,0.65)]"
+        className="flex min-h-[1080px] items-center justify-center"
         role="alert"
       >
-        <p className="text-sm text-[rgba(17,17,17,0.55)] text-center max-w-[280px]">
-          PDF tidak tersedia. File mungkin belum diproses.
+        <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
+          PDF unavailable. The file may still be processing.
         </p>
       </div>
     );
@@ -42,6 +43,7 @@ export function PdfViewer({ url, containerWidth, onPageLoadSuccess }: PdfViewerP
     <PdfViewerInner
       url={url}
       containerWidth={containerWidth}
+      currentPage={currentPage}
       onPageLoadSuccess={onPageLoadSuccess}
     />
   );

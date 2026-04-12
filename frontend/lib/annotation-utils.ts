@@ -58,7 +58,7 @@ export async function findTextRect(
 
     for (const item of textContent.items) {
       // Filter hanya TextItem (bukan TextMarkedContent)
-      if (!("str" in item) || !item.str) continue;
+      if (!("str" in item) || !item.str) { continue; }
 
       const textItem = item as {
         str: string;

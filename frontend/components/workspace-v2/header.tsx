@@ -43,7 +43,7 @@ export function WorkspaceV2Header({
         className="min-w-0 flex-1 truncate text-sm font-semibold text-[--ws-ink] font-display"
         style={{ maxWidth: "360px" }}
       >
-        {filename ?? "Dokumen"}
+        {filename ?? "Document"}
       </p>
 
       {/* Job status pill — hanya tampil jika status ready (completed) */}
