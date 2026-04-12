@@ -404,12 +404,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 - [x] **PDF-01**: PDF rendered via react-pdf v10 with text layer enabled (`renderTextLayer: true`) for text selection support
 - [x] **PDF-02**: Backend provides `GET /jobs/{id}/file` presigned URL endpoint so frontend can load the PDF binary
-- [ ] **PDF-03**: Workspace defaults to optimized PDF view; original uploaded PDF preserved as immutable source
+- [x] **PDF-03**: Workspace defaults to optimized PDF view; original uploaded PDF preserved as immutable source
 - [ ] **PDF-04**: Diff toggle switches single-view between original uploaded PDF and optimized PDF (not side-by-side)
 
 ### 3-Panel Workspace Layout
 
-- [ ] **LAYOUT-01**: Workspace uses 3-panel layout: left detail panel (analysis tabs), center PDF viewer, right summary rail + chat
+- [x] **LAYOUT-01**: Workspace uses 3-panel layout: left detail panel (analysis tabs), center PDF viewer, right summary rail + chat
 - [x] **LAYOUT-02**: New workspace implemented as parallel route `/workspace-v2/[job_id]` during migration; upload flow updated to redirect here at cutover
 - [ ] **LAYOUT-03**: Sticky action footer always visible (compact, right-aligned): Apply, Diff, Save optimized PDF, Save report
 
@@ -456,8 +456,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------------|--------|
 | PDF-01 | react-pdf v10 with text layer | Complete |
 | PDF-02 | GET /jobs/{id}/file endpoint | Complete |
-| PDF-03 | Defaults to optimized view | Pending |
-| LAYOUT-01 | 3-panel workspace layout shell | Pending |
+| PDF-03 | Defaults to optimized view | Complete |
+| LAYOUT-01 | 3-panel workspace layout shell | Complete |
 | LAYOUT-02 | /workspace-v2/[job_id] parallel route | Complete |
 | CRDT-01 | Yjs Y.Doc + y-indexeddb | Complete |
 | CRDT-03 | cv_document JSONB column | Complete |
