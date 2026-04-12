@@ -21,7 +21,7 @@
 - [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
 - [x] **Phase 11: Workspace Foundation & Routing** - Redirect completed uploads into a dedicated editor workspace while preserving results page access ✅ **COMPLETE** (2026-04-11)
 - [x] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls (completed 2026-04-11)
-- [ ] **Phase 13: Agentic Review Cockpit** - ~~Combine analysis panels, action queue, and AI-assisted inline editing in one workspace~~ **CANCELLED**
+- [x] **Phase 13: Agentic Review Cockpit** - ~~Combine analysis panels, action queue, and AI-assisted inline editing in one workspace~~ **CANCELLED** (completed 2026-04-12)
 - [ ] **Phase 14: Preview, Export & Variants** - ~~Preview edited CV, export polished versions, and support tailored output variants~~ **CANCELLED**
 
 ## v4.0 — PDF-First Analysis Workspace
@@ -378,7 +378,7 @@ Plans:
 - [x] 13-02-PLAN.md — Backend: Alembic migration + Job model + WorkspaceFileUrl schema + GET /jobs/{id}/file endpoint (Wave 1)
 - [x] 13-03-PLAN.md — Frontend shell route + CSS vars + Zustand store + WorkspaceV2Shell + WorkspaceV2Header (Wave 2)
 - [x] 13-04-PLAN.md — PDF viewer stack: PdfViewerInner + PdfViewer + PdfViewerPanel + Skeleton + Error (Wave 2)
-- [ ] 13-05-PLAN.md — Panels + wire-up: LeftDetailPanel + Toggle + RightRailStats + WorkspaceSkeleton + getJobFileUrl (Wave 3)
+- [x] 13-05-PLAN.md — Panels + wire-up: LeftDetailPanel + Toggle + RightRailStats + WorkspaceSkeleton + getJobFileUrl (Wave 3)
 - [x] 13-06-PLAN.md — Annotation spike: findTextRect + useWorkspaceDoc + spike findings doc (Wave 3)
 
 **UI hint**: yes
@@ -509,7 +509,7 @@ Plans:
 | 10. Animation Polish | 0/0 | Not started | - |
 | 11. Workspace Foundation & Routing | 2/3 | In Progress|  |
 | 12. Editable Canvas & Layout Controls | 3/3 | Complete   | 2026-04-11 |
-| 13. Agentic Review Cockpit | 5/6 | In Progress|  |
+| 13. Agentic Review Cockpit | 6/6 | Complete   | 2026-04-12 |
 | 14. Preview, Export & Variants | 0/3 | ~~Not started~~ CANCELLED | - |
 | 13. PDF-First Workspace Shell (v4.0) | 0/TBD | Not started | - |
 | 14. Annotation Overlay & Diff Toggle (v4.0) | 0/TBD | Not started | - |
