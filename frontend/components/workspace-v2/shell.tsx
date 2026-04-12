@@ -3,21 +3,32 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { WorkspaceV2Header } from "./header";
+import { LeftDetailPanel } from "./left-detail-panel";
+import { LeftPanelToggle } from "./left-panel-toggle";
+import { PdfViewerPanel } from "./pdf-viewer-panel";
+import { RightRailStats } from "./right-rail-stats";
 import type { WorkspaceHydration } from "@/lib/workspace";
 
 interface WorkspaceV2ShellProps {
   jobId: string;
   hydration: WorkspaceHydration | null;
+  initialPdfUrl?: string | null;
 }
 
-export function WorkspaceV2Shell({ jobId, hydration }: WorkspaceV2ShellProps) {
-  const { leftPanelOpen, setJobId, setHydration } = useWorkspaceV2Store();
+export function WorkspaceV2Shell({
+  jobId,
+  hydration,
+  initialPdfUrl,
+}: WorkspaceV2ShellProps) {
+  const { leftPanelOpen, pdfUrl, setJobId, setHydration, setPdfUrl } =
+    useWorkspaceV2Store();
 
   // Inisialisasi store dengan job context
   useEffect(() => {
     setJobId(jobId);
     if (hydration) setHydration(hydration);
-  }, [jobId, hydration, setJobId, setHydration]);
+    if (initialPdfUrl) setPdfUrl(initialPdfUrl);
+  }, [jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl]);
 
   return (
     <div
@@ -36,47 +47,44 @@ export function WorkspaceV2Shell({ jobId, hydration }: WorkspaceV2ShellProps) {
       <div
         className={cn(
           "flex-1 overflow-hidden",
-          "grid lg:grid-cols-[290px_minmax(0,1fr)_340px]",
-          // Transition grid template ketika left panel toggle
+          // Grid transitions on left panel open/close
           leftPanelOpen
-            ? "lg:grid-cols-[290px_minmax(0,1fr)_340px]"
-            : "lg:grid-cols-[0px_minmax(0,1fr)_340px]",
+            ? "grid lg:grid-cols-[290px_minmax(0,1fr)_340px]"
+            : "grid lg:grid-cols-[0px_minmax(0,1fr)_340px]",
           "transition-[grid-template-columns] duration-200 ease-in-out"
         )}
       >
-        {/* Left panel — hidden di mobile, collapsed by default */}
-        {/* Placeholder — akan diisi LeftDetailPanel di Plan 05 */}
+        {/* Left detail panel — hidden mobile, collapsed by default */}
         <aside
           className={cn(
             "hidden lg:flex flex-col overflow-hidden",
-            "bg-[--ws-surface] border-r border-[--ws-border]",
-            leftPanelOpen ? "w-[290px]" : "w-0 overflow-hidden opacity-0 pointer-events-none",
+            leftPanelOpen
+              ? "w-[290px] opacity-100"
+              : "w-0 overflow-hidden opacity-0 pointer-events-none",
             "transition-[width,opacity] duration-200 ease-in-out"
           )}
           aria-hidden={!leftPanelOpen}
         >
-          {/* LeftDetailPanel — Plan 05 */}
+          <LeftDetailPanel className="h-full" />
         </aside>
 
-        {/* Center PDF panel */}
-        {/* Placeholder — akan diisi PdfViewerPanel di Plan 05 */}
-        <main className="relative flex flex-col overflow-hidden bg-[--ws-bg]">
-          {/* PdfViewerPanel + LeftPanelToggle — Plan 05 */}
-          <div className="flex flex-1 items-center justify-center">
-            <p className="text-sm text-[--ws-ink-ghost]">
-              PDF viewer sedang disiapkan...
-            </p>
+        {/* Center PDF panel — full width on mobile */}
+        <main className="relative flex flex-col overflow-hidden">
+          {/* Toggle button — absolute, left edge of center panel */}
+          <div className="absolute left-0 top-1/2 z-10 -translate-y-1/2 hidden lg:block">
+            <LeftPanelToggle />
           </div>
+
+          {/* PDF viewer — fills remaining space */}
+          <PdfViewerPanel pdfUrl={pdfUrl} />
         </main>
 
-        {/* Right rail — hidden di mobile */}
-        {/* Placeholder — akan diisi RightRailStats di Plan 05 */}
-        <aside
-          className="hidden lg:flex flex-col bg-[--ws-surface] border-l border-[--ws-border] w-[340px] overflow-y-auto"
-        >
-          {/* RightRailStats — Plan 05 */}
+        {/* Right rail — hidden on mobile */}
+        <aside className="hidden lg:flex flex-col">
+          <RightRailStats className="h-full" />
         </aside>
       </div>
     </div>
   );
 }
+

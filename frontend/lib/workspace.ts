@@ -49,3 +49,13 @@ export async function getWorkspaceHydration(
 ): Promise<WorkspaceHydration> {
   return apiFetch<WorkspaceHydration>(`/jobs/${jobId}/workspace`);
 }
+
+// Phase 13: file presigned URL fetch (PDF-02)
+export interface WorkspaceFileUrl {
+  file_url: string;
+  expires_in: number;
+}
+
+export async function getJobFileUrl(jobId: string): Promise<WorkspaceFileUrl> {
+  return apiFetch<WorkspaceFileUrl>(`/jobs/${jobId}/file`);
+}

@@ -1,4 +1,4 @@
-import { getWorkspaceHydration } from "@/lib/workspace";
+import { getWorkspaceHydration, getJobFileUrl } from "@/lib/workspace";
 import { WorkspaceV2Shell } from "@/components/workspace-v2/shell";
 
 interface WorkspaceV2PageProps {
@@ -8,9 +8,20 @@ interface WorkspaceV2PageProps {
 export default async function WorkspaceV2Page({ params }: WorkspaceV2PageProps) {
   const { job_id } = await params;
 
-  // Fetch hydration data — sama seperti workspace v1
-  // getJobFileUrl akan di-fetch di Plan 05 setelah file URL endpoint ada
-  const hydration = await getWorkspaceHydration(job_id).catch(() => null);
+  // Fetch hydration dan file URL secara paralel (PDF-03: defaults to optimized view)
+  const [hydration, fileUrlResult] = await Promise.allSettled([
+    getWorkspaceHydration(job_id),
+    getJobFileUrl(job_id),
+  ]);
 
-  return <WorkspaceV2Shell jobId={job_id} hydration={hydration} />;
+  const hydratedData = hydration.status === "fulfilled" ? hydration.value : null;
+  const pdfUrl = fileUrlResult.status === "fulfilled" ? fileUrlResult.value.file_url : null;
+
+  return (
+    <WorkspaceV2Shell
+      jobId={job_id}
+      hydration={hydratedData}
+      initialPdfUrl={pdfUrl}
+    />
+  );
 }
