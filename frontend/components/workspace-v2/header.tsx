@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PathkrLogo } from "@/components/ui/pathkr-logo";
 
 interface WorkspaceV2HeaderProps {
   filename: string | null;
@@ -27,31 +28,21 @@ export function WorkspaceV2Header({
         className
       )}
     >
-      {/* Left — brand mark + title */}
+      {/* Left — logo + title */}
       <div className="flex items-start gap-3 min-w-0">
-        {/* Brand mark */}
-        <div
-          className="flex-none grid place-items-center rounded-xl font-black text-[13px] tracking-wider"
-          style={{
-            width: 40, height: 40,
-            background: "#111111",
-            color: "#F5F2D8",
-            letterSpacing: "0.04em",
-          }}
-          aria-label="Pathkr"
-        >
-          PK
-        </div>
+        {/* Path Karir logo — reuses the same component as landing page */}
+        <PathkrLogo size="md" variant="light" className="flex-none pt-0.5" />
+
+        {/* Divider */}
+        <div className="mt-1.5 h-4 w-px bg-[rgba(17,17,17,0.12)] flex-none" aria-hidden="true" />
 
         {/* Title block */}
         <div className="min-w-0 pt-0.5">
-          <p
-            className="text-[10px] font-black uppercase tracking-[0.14em] text-[rgba(17,17,17,0.42)] mb-1"
-          >
-            pathkr / cv analysis workspace
+          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[rgba(17,17,17,0.42)] mb-0.5">
+            cv analysis workspace
           </p>
           <h1
-            className="font-display text-[clamp(14px,2vw,20px)] font-black leading-[0.97] tracking-[-0.04em] text-[#111111] max-w-[520px] truncate"
+            className="font-display text-[clamp(13px,1.6vw,18px)] font-black leading-[0.97] tracking-[-0.04em] text-[#111111] max-w-[480px] truncate"
           >
             {displayName}{" "}
             <span
@@ -64,7 +55,7 @@ export function WorkspaceV2Header({
         </div>
       </div>
 
-      {/* Right — pills + back */}
+      {/* Right — status pills + back */}
       <div className="flex flex-none items-center gap-2 flex-wrap justify-end">
         <span
           className="rounded-full px-3 py-2 text-[11px] font-black border"
@@ -80,8 +71,8 @@ export function WorkspaceV2Header({
         </span>
         {jobStatus === "ready" && (
           <span
-            className="rounded-full px-3 py-2 text-[11px] font-black text-[#F5F2D8] border-[rgba(255,255,255,0.08)]"
-            style={{ background: "#111111", borderColor: "rgba(255,255,255,0.08)" }}
+            className="rounded-full px-3 py-2 text-[11px] font-black text-[#F5F2D8] border border-[rgba(255,255,255,0.08)]"
+            style={{ background: "#111111" }}
           >
             Done
           </span>

@@ -7,7 +7,6 @@ import { LeftDetailPanel } from "./left-detail-panel";
 import { PdfViewerPanel } from "./pdf-viewer-panel";
 import { RightRailStats } from "./right-rail-stats";
 import type { WorkspaceHydration } from "@/lib/workspace";
-
 interface WorkspaceV2ShellProps {
   jobId: string;
   hydration: WorkspaceHydration | null;
@@ -119,88 +118,84 @@ export function WorkspaceV2Shell({
         </aside>
       </div>
 
-      {/* Sticky action footer — dark capsule, bottom-right, matches mockup */}
+      {/* Action footer — in-flow light bar, right-aligned, never overlaps rails */}
       <footer
-        className="pointer-events-none fixed bottom-4 right-4 z-50 flex justify-end"
+        className="relative z-10 flex-none flex justify-end items-center gap-1.5 px-4 py-2"
+        style={{
+          background: "rgba(255,255,255,0.72)",
+          backdropFilter: "blur(12px)",
+          borderTop: "1px solid rgba(17,17,17,0.07)",
+        }}
         aria-label="Workspace actions"
       >
-        <div
-          className="pointer-events-auto flex items-center gap-1.5 rounded-full p-2"
+        {/* Apply */}
+        <button
+          type="button"
+          className="flex items-center rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
           style={{
-            background: "rgba(20,20,20,0.88)",
-            backdropFilter: "blur(18px)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow: "0 12px 28px rgba(17,17,17,0.16)",
+            background: "rgba(202,255,67,0.28)",
+            border: "1px solid rgba(202,255,67,0.4)",
+            color: "#2a4200",
           }}
         >
-          {/* Apply */}
-          <button
-            type="button"
-            className="flex items-center rounded-full px-3 py-2 text-[11px] font-black tracking-wide transition-opacity hover:opacity-80"
-            style={{
-              background: "rgba(202,255,67,0.12)",
-              border: "1px solid rgba(202,255,67,0.18)",
-              color: "rgba(224,255,142,0.98)",
-            }}
-          >
-            Apply
-          </button>
+          Apply
+        </button>
 
-          {/* Diff toggle */}
-          <button
-            type="button"
-            onClick={() => setViewMode(isDiffActive ? "optimized" : "original")}
-            className="flex items-center gap-2 rounded-full px-3 py-2 text-[11px] font-black tracking-wide transition-opacity hover:opacity-80"
+        {/* Diff toggle */}
+        <button
+          type="button"
+          onClick={() => setViewMode(isDiffActive ? "optimized" : "original")}
+          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
+          style={{
+            background: isDiffActive ? "rgba(246,122,223,0.2)" : "rgba(17,17,17,0.05)",
+            border: isDiffActive
+              ? "1px solid rgba(246,122,223,0.36)"
+              : "1px solid rgba(17,17,17,0.10)",
+            color: isDiffActive ? "#6b0050" : "#111111",
+          }}
+          aria-pressed={isDiffActive}
+        >
+          <span>Diff</span>
+          <span
+            className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider"
             style={{
-              background: isDiffActive ? "rgba(246,122,223,0.16)" : "rgba(255,255,255,0.04)",
-              border: isDiffActive
-                ? "1px solid rgba(246,122,223,0.24)"
-                : "1px solid rgba(246,122,223,0.14)",
-              color: isDiffActive ? "rgba(255,243,251,0.98)" : "rgba(255,222,247,0.92)",
+              background: isDiffActive ? "rgba(246,122,223,0.12)" : "rgba(17,17,17,0.05)",
+              border: "1px solid rgba(17,17,17,0.08)",
+              color: "#111111",
+              opacity: 0.72,
+              minWidth: 52,
+              textAlign: "center",
             }}
-            aria-pressed={isDiffActive}
           >
-            <span>Diff</span>
-            <span
-              className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: "rgba(245,242,216,0.84)",
-                minWidth: 52,
-                textAlign: "center",
-              }}
-            >
-              {isDiffActive ? "Original" : "Optimized"}
-            </span>
-          </button>
+            {isDiffActive ? "Original" : "Optimized"}
+          </span>
+        </button>
 
-          {/* Save optimized PDF */}
-          <button
-            type="button"
-            className="flex items-center whitespace-nowrap rounded-full px-3 py-2 text-[11px] font-black tracking-wide transition-opacity hover:opacity-80"
-            style={{
-              background: "rgba(255,140,66,0.09)",
-              border: "1px solid rgba(255,140,66,0.16)",
-              color: "rgba(255,204,168,0.96)",
-            }}
-          >
-            Save PDF
-          </button>
+        {/* Save optimized PDF */}
+        <button
+          type="button"
+          className="flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
+          style={{
+            background: "rgba(255,140,66,0.14)",
+            border: "1px solid rgba(255,140,66,0.28)",
+            color: "#6b2d00",
+          }}
+        >
+          Save PDF
+        </button>
 
-          {/* Save report */}
-          <button
-            type="button"
-            className="flex items-center whitespace-nowrap rounded-full px-3 py-2 text-[11px] font-black tracking-wide transition-opacity hover:opacity-80"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              color: "rgba(245,242,216,0.82)",
-            }}
-          >
-            Save Report
-          </button>
-        </div>
+        {/* Save report */}
+        <button
+          type="button"
+          className="flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
+          style={{
+            background: "rgba(17,17,17,0.06)",
+            border: "1px solid rgba(17,17,17,0.12)",
+            color: "#111111",
+          }}
+        >
+          Save Report
+        </button>
       </footer>
     </div>
   );
