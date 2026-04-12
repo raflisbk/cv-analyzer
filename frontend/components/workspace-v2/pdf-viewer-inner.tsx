@@ -3,6 +3,7 @@
  * PdfViewerInner — iframe-based PDF viewer.
  * Uses native browser PDF rendering to avoid pdfjs-dist Webpack bundling issues.
  * Supports page navigation via URL fragment (#page=N).
+ * Light-theme toolbar to match workspace cream palette.
  * Phase 13: basic viewer. Annotation overlays added in Phase 14.
  */
 import { useState, useCallback } from "react";
@@ -20,55 +21,37 @@ export default function PdfViewerInner({
   containerWidth,
 }: PdfViewerInnerProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
 
-  // Attempt to read total pages from iframe PDF (best-effort, may not work in all browsers)
   const handleIframeLoad = useCallback(
-    (e: React.SyntheticEvent<HTMLIFrameElement>) => {
-      try {
-        const doc = (e.target as HTMLIFrameElement).contentDocument;
-        if (doc) {
-          // Some browsers expose page count via pdf.js embedded viewer
-          // Falls back to unknown — navigation still works via #page= fragment
-          setTotalPages(0);
-        }
-      } catch {
-        // Cross-origin iframes block contentDocument access — expected for R2 URLs
-      }
+    (_e: React.SyntheticEvent<HTMLIFrameElement>) => {
+      // Cross-origin R2 iframes block contentDocument — page count unavailable
     },
     []
   );
 
   const iframeSrc = currentPage > 1 ? `${url}#page=${currentPage}` : url;
-
   const height = Math.round(containerWidth * 1.414); // A4 ratio
 
   return (
     <div className="flex flex-col">
-      {/* Compact page navigation toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[rgba(17,17,17,0.04)]">
-        <span className="text-xs font-bold text-[rgba(17,17,17,0.6)]">
-          {totalPages > 0
-            ? `Halaman ${currentPage} / ${totalPages}`
-            : `Halaman ${currentPage}`}
+      {/* Document toolbar — light theme, inside paper card */}
+      <div className="flex items-center justify-between border-b border-[rgba(17,17,17,0.06)] px-4 py-2 bg-[rgba(17,17,17,0.02)]">
+        <span className="text-xs font-semibold text-[rgba(17,17,17,0.45)]">
+          Page {currentPage}
         </span>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage <= 1}
-            aria-label="Sebelumnya"
-            className="flex h-7 w-7 items-center justify-center rounded text-xs text-[rgba(17,17,17,0.6)] hover:bg-[rgba(17,17,17,0.06)] disabled:opacity-30"
+            aria-label="Previous page"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-xs text-[rgba(17,17,17,0.5)] hover:bg-[rgba(17,17,17,0.06)] disabled:opacity-30 transition-colors"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={() =>
-              setCurrentPage((p) =>
-                totalPages > 0 ? Math.min(totalPages, p + 1) : p + 1
-              )
-            }
-            aria-label="Berikutnya"
-            className="flex h-7 w-7 items-center justify-center rounded text-xs text-[rgba(17,17,17,0.6)] hover:bg-[rgba(17,17,17,0.06)] disabled:opacity-30"
+            onClick={() => setCurrentPage((p) => p + 1)}
+            aria-label="Next page"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-xs text-[rgba(17,17,17,0.5)] hover:bg-[rgba(17,17,17,0.06)] disabled:opacity-30 transition-colors"
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
@@ -80,7 +63,7 @@ export default function PdfViewerInner({
         key={iframeSrc}
         src={iframeSrc}
         onLoad={handleIframeLoad}
-        title="CV Preview"
+        title="CV Document Preview"
         width={containerWidth}
         height={height}
         className="border-0 block"

@@ -74,32 +74,33 @@
 /* ============================================================
    WORKSPACE-V2 THEME TOKENS (Phase 13)
    Scoped ke [data-workspace-v2] — tidak override landing page tokens
+   Cream/light palette — matches landing page visual language
    ============================================================ */
 [data-workspace-v2] {
-  /* Shell surfaces */
-  --ws-bg:             #111111;   /* 60% dominant — outer shell, header bg */
-  --ws-surface:        #1A1A1A;   /* 30% secondary — left panel, right rail bg */
-  --ws-surface-hover:  #222222;   /* interactive surface hover state */
-  --ws-surface-active: #282828;   /* pressed/selected surface */
+  /* Shell surfaces — cream light, matching landing page */
+  --ws-bg:             #F5F2D8;   /* cream outer shell — same as landing page body */
+  --ws-surface:        rgba(255, 255, 255, 0.82);  /* glass panel */
+  --ws-surface-hover:  rgba(255, 255, 255, 0.96);
+  --ws-surface-active: rgba(17, 17, 17, 0.05);
 
-  /* Borders */
-  --ws-border:         rgba(255, 255, 255, 0.07);  /* default panel borders */
-  --ws-border-accent:  rgba(202, 255, 67, 0.14);   /* lime-tinted accent border */
-  --ws-border-strong:  rgba(255, 255, 255, 0.13);  /* header bottom, focus rings */
+  /* Borders — dark-on-light (matches mockup --line) */
+  --ws-border:         rgba(17, 17, 17, 0.08);
+  --ws-border-accent:  rgba(202, 255, 67, 0.38);
+  --ws-border-strong:  rgba(17, 17, 17, 0.14);
 
   /* PDF Paper */
   --ws-paper:          #FFFDF4;
-  --ws-paper-shadow:   0 8px 48px rgba(0, 0, 0, 0.65);
+  --ws-paper-shadow:   0 8px 48px rgba(17, 17, 17, 0.10);
 
-  /* Typography on dark */
-  --ws-ink:            #F5F2D8;   /* primary text */
-  --ws-ink-secondary:  rgba(245, 242, 216, 0.65);
-  --ws-ink-ghost:      rgba(245, 242, 216, 0.35);
+  /* Typography — dark on cream */
+  --ws-ink:            #111111;
+  --ws-ink-secondary:  rgba(17, 17, 17, 0.65);
+  --ws-ink-ghost:      rgba(17, 17, 17, 0.42);
 
   /* Accent */
   --ws-accent:         #CAFF43;
   --ws-accent-fg:      #111111;
-  --ws-accent-muted:   rgba(202, 255, 67, 0.12);
+  --ws-accent-muted:   rgba(202, 255, 67, 0.28);
 
   /* Destructive */
   --ws-destructive:    hsl(0 84.2% 60.2%);

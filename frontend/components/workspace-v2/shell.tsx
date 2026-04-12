@@ -91,8 +91,8 @@ export function WorkspaceV2Shell({
           <PdfViewerPanel pdfUrl={pdfUrl} />
         </main>
 
-        {/* Right rail */}
-        <aside className="hidden lg:flex flex-col border-l border-[--ws-border]">
+        {/* Right rail — overflow-hidden + min-h-0 ensures inner scroll works */}
+        <aside className="hidden lg:flex flex-col border-l border-[--ws-border] overflow-hidden min-h-0">
           <RightRailStats className="h-full" />
         </aside>
       </div>

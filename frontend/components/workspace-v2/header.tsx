@@ -29,10 +29,10 @@ export function WorkspaceV2Header({
       <button
         onClick={() => router.push(`/results/${jobId}`)}
         className="flex h-8 items-center gap-1 px-2 text-sm font-normal text-[--ws-ink-secondary] transition-colors duration-150 hover:text-[--ws-ink]"
-        aria-label="Kembali ke halaman hasil"
+        aria-label="Back to results"
       >
         <ChevronLeft className="h-4 w-4" />
-        <span>Kembali</span>
+        <span>Back</span>
       </button>
 
       {/* Divider */}
@@ -49,10 +49,10 @@ export function WorkspaceV2Header({
       {/* Job status pill — hanya tampil jika status ready (completed) */}
       {jobStatus === "ready" && (
         <span
-          className="flex-none rounded-full bg-[--ws-accent-muted] px-2 py-0.5 text-xs font-bold text-[--ws-accent]"
-          aria-label="Status: Selesai"
+          className="flex-none rounded-full bg-[--ws-accent-muted] px-2 py-0.5 text-xs font-bold text-[--ws-ink]"
+          aria-label="Status: Done"
         >
-          Selesai
+          Done
         </span>
       )}
     </header>
