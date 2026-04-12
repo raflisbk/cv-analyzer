@@ -304,7 +304,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-03*
-*Last updated: 2026-04-10 — v2.0 Seamless Homepage requirements mapped to phases 6–10 (16 requirements, 16/16 coverage)*
+*Last updated: 2026-04-11 — v4.0 PDF-First Analysis Workspace: 22 requirements defined, 5 phases (13–17)*
 
 ## v3.0 Requirements — Agentic CV Workspace
 
@@ -392,3 +392,110 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OUTPUT-02 | Export/download edited CV | Pending |
 | OUTPUT-03 | Tailored export variant generation | Pending |
 | SAFE-02 | Graceful fallback if AI editing fails | Pending |
+
+---
+
+## v4.0 Requirements — PDF-First Analysis Workspace
+
+**Defined:** 2026-04-11
+**Milestone goal:** Rebuild the CV Analyzer workspace into a PDF-first, 3-panel experience with actionable AI suggestions (stabilo anchors), inline AI editing, live contextual chat, and a real-time CRDT foundation ready for collaborative editing.
+
+### PDF Viewer
+
+- [ ] **PDF-01**: PDF rendered via react-pdf v10 with text layer enabled (`renderTextLayer: true`) for text selection support
+- [ ] **PDF-02**: Backend provides `GET /jobs/{id}/file` presigned URL endpoint so frontend can load the PDF binary
+- [ ] **PDF-03**: Workspace defaults to optimized PDF view; original uploaded PDF preserved as immutable source
+- [ ] **PDF-04**: Diff toggle switches single-view between original uploaded PDF and optimized PDF (not side-by-side)
+
+### 3-Panel Workspace Layout
+
+- [ ] **LAYOUT-01**: Workspace uses 3-panel layout: left detail panel (analysis tabs), center PDF viewer, right summary rail + chat
+- [x] **LAYOUT-02**: New workspace implemented as parallel route `/workspace-v2/[job_id]` during migration; upload flow updated to redirect here at cutover
+- [ ] **LAYOUT-03**: Sticky action footer always visible (compact, right-aligned): Apply, Diff, Save optimized PDF, Save report
+
+### Annotation System
+
+- [ ] **ANNOT-01**: AI suggestions rendered as stabilo (colored highlight) overlays on optimized PDF pages via `customTextRenderer`
+- [ ] **ANNOT-02**: Hovering a suggestion annotation for ~1.5s shows an Apply/Dismiss popover (useRef + setTimeout pattern)
+- [ ] **ANNOT-03**: Hover on suggestion annotation syncs left detail panel to scroll to and highlight the matching suggestion card
+- [ ] **ANNOT-04**: Suggestion anchors (section, text fragment, offset) stored as JSONB in PostgreSQL (`suggestion_anchors` column on jobs table)
+
+### Inline AI Edit
+
+- [ ] **INLINE-01**: User can select text in the PDF viewer → "Edit with AI" popover appears at selection end
+- [ ] **INLINE-02**: Popover accepts a text prompt → preview rewrite → user can apply to optimized document
+- [ ] **INLINE-03**: Backend endpoint handles inline AI rewrite requests (prompt + context → rewritten text)
+
+### Live Contextual Chat
+
+- [ ] **CHAT-01**: Right rail includes a live chat panel acting as a contextual CV optimization copilot
+- [ ] **CHAT-02**: Chat responses stream via `fetch + ReadableStream` (POST-based, not EventSource)
+- [ ] **CHAT-03**: Chat receives system context injected from: CV scores, active suggestions, grammar issues, and current edit state
+
+### CRDT & Real-time Foundation
+
+- [ ] **CRDT-01**: Workspace document state managed via Yjs `Y.Doc` with `y-indexeddb` browser persistence (Phase 1 — single user)
+- [ ] **CRDT-02**: Backend exposes `pycrdt-websocket` WebSocket endpoint mounted at `/yjs` in FastAPI (Phase 2 — multi-user ready, activated in later phase)
+- [ ] **CRDT-03**: Parsed CV content stored as structured editable mirror (`cv_document` JSONB column on jobs table); mapped from existing NLP output
+
+### Export
+
+- [ ] **EXPV4-01**: "Save optimized PDF" generates a downloadable PDF from the current `cv_document` state via WeasyPrint + Jinja2 template
+- [ ] **EXPV4-02**: "Save report" generates a downloadable analysis report PDF (extends existing `export.py` endpoint)
+
+### Job Match Preservation
+
+- [ ] **JOBMATCH-01**: `compare.py` endpoint, job match task, and all job match data models remain unchanged and fully functional in v4.0
+- [ ] **JOBMATCH-02**: `job.jd_role_id → JobRole` linkage documented and preserved as the anchor for future "job finding" feature
+
+## Traceability v4.0
+
+### Phase 13: PDF Workspace Foundation
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| PDF-01 | react-pdf v10 with text layer | Pending |
+| PDF-02 | GET /jobs/{id}/file endpoint | Pending |
+| PDF-03 | Defaults to optimized view | Pending |
+| LAYOUT-01 | 3-panel workspace layout shell | Pending |
+| LAYOUT-02 | /workspace-v2/[job_id] parallel route | Complete |
+| CRDT-01 | Yjs Y.Doc + y-indexeddb | Pending |
+| CRDT-03 | cv_document JSONB column | Pending |
+
+### Phase 14: Annotation System + Diff Toggle
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| ANNOT-01 | Stabilo overlays via customTextRenderer | Pending |
+| ANNOT-02 | 1.5s hover → Apply/Dismiss popover | Pending |
+| ANNOT-03 | Hover syncs left panel | Pending |
+| ANNOT-04 | suggestion_anchors JSONB column | Pending |
+| PDF-04 | Diff toggle (original ↔ optimized) | Pending |
+| LAYOUT-03 | Sticky action footer | Pending |
+
+### Phase 15: Left Panel + Inline AI Edit
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| INLINE-01 | Text selection → Edit with AI popover | Pending |
+| INLINE-02 | Prompt → preview → apply rewrite | Pending |
+| INLINE-03 | Backend inline AI rewrite endpoint | Pending |
+
+### Phase 16: Live Chat + CRDT Backend
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| CHAT-01 | Live chat panel in right rail | Pending |
+| CHAT-02 | Chat streaming via fetch + ReadableStream | Pending |
+| CHAT-03 | System context injection for chat | Pending |
+| CRDT-02 | pycrdt-websocket WebSocket endpoint | Pending |
+
+### Phase 17: Export + Migration Cutover
+
+| Requirement | Description | Status |
+|-------------|-------------|--------|
+| EXPV4-01 | Save optimized PDF (WeasyPrint) | Pending |
+| EXPV4-02 | Save report (extends existing) | Pending |
+| LAYOUT-02 | Upload flow redirected to /workspace-v2 | Complete |
+| JOBMATCH-01 | compare.py unchanged, fully functional | Pending |
+| JOBMATCH-02 | job.jd_role_id linkage preserved | Pending |

@@ -2,23 +2,24 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Seamless Homepage
-current_phase: 12
-status: completed
-stopped_at: Completed 12-03-PLAN.md (Wave 3 - Split-panel preview + reorder + spacing)
-last_updated: "2026-04-11T15:43:38.157Z"
-last_activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
+current_phase: 13
+status: executing
+stopped_at: Completed 13-01-PLAN.md (Utility extraction + package install)
+last_updated: "2026-04-12T03:53:11.685Z"
+last_activity: 2026-04-12
 progress:
-  total_phases: 5
+  total_phases: 1
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 6
+  completed_plans: 1
+  percent: 17
 ---
 
 # Project State: CV Analyzer (pathkr)
 
 **Created:** 2026-04-03
 **Current Milestone:** v3.0 — Agentic CV Workspace
-**Current Phase:** 12
+**Current Phase:** 13
 
 ## Project Reference
 
@@ -41,9 +42,12 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 ## Current Position
 
-Phase: 12 (editable-canvas-layout-controls) — READY FOR PLANNING
-Status: Phase 11 is complete with workspace routing, hydration, and cockpit shell delivered
-Last activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
+**Milestone v4.0 — PDF-First Analysis Workspace**
+
+Phase: 13 (pdf-first-workspace-shell) — EXECUTING
+Plan: 2 of 6
+Status: Ready to execute
+Last activity: 2026-04-12
 
 **Why this milestone now:**
 
@@ -149,6 +153,11 @@ Last activity: 2026-04-11 -- completed Phase 11 workspace foundation & routing
 - [Phase 12]: CVPreview uses StarterKit-only extensions (no SuggestionHighlight) to guarantee mark-free clean CV output
 - [Phase 12]: Spacing stored in local SectionState only — not persisted to backend draft_content (out of scope Phase 12)
 
+| Phase 13 P01 | 12 minutes | 2 tasks | 5 files |
+
+- [Phase 13]: Re-export plainTextToTiptapDoc dari section-block.tsx untuk menjaga backward compatibility
+- [Phase 13]: Import + re-export pattern di section-block.tsx karena fungsi dipakai secara internal
+
 ### Architecture Approach
 
 **Major Components:**
@@ -175,8 +184,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-11T15:43:38.134Z
-**Stopped At:** Completed 12-03-PLAN.md (Wave 3 - Split-panel preview + reorder + spacing)
+**Last Session:** 2026-04-12T03:53:11.675Z
+**Stopped At:** Completed 13-01-PLAN.md (Utility extraction + package install)
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**

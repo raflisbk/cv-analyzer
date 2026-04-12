@@ -374,7 +374,7 @@ Plans:
 **Plans**: 6 plans across 3 waves
 
 Plans:
-- [ ] 13-01-PLAN.md — Utility extraction (workspace-utils.ts) + package installs (Wave 1)
+- [x] 13-01-PLAN.md — Utility extraction (workspace-utils.ts) + package installs (Wave 1)
 - [ ] 13-02-PLAN.md — Backend: Alembic migration + Job model + WorkspaceFileUrl schema + GET /jobs/{id}/file endpoint (Wave 1)
 - [ ] 13-03-PLAN.md — Frontend shell route + CSS vars + Zustand store + WorkspaceV2Shell + WorkspaceV2Header (Wave 2)
 - [ ] 13-04-PLAN.md — PDF viewer stack: PdfViewerInner + PdfViewer + PdfViewerPanel + Skeleton + Error (Wave 2)
@@ -509,7 +509,7 @@ Plans:
 | 10. Animation Polish | 0/0 | Not started | - |
 | 11. Workspace Foundation & Routing | 2/3 | In Progress|  |
 | 12. Editable Canvas & Layout Controls | 3/3 | Complete   | 2026-04-11 |
-| 13. Agentic Review Cockpit | 0/4 | ~~Not started~~ CANCELLED | - |
+| 13. Agentic Review Cockpit | 1/6 | In Progress|  |
 | 14. Preview, Export & Variants | 0/3 | ~~Not started~~ CANCELLED | - |
 | 13. PDF-First Workspace Shell (v4.0) | 0/TBD | Not started | - |
 | 14. Annotation Overlay & Diff Toggle (v4.0) | 0/TBD | Not started | - |
