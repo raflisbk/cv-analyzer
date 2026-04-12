@@ -8,6 +8,8 @@
  * SSR safety: y-indexeddb uses browser-only `indexedDB` global.
  * useEffect tidak pernah berjalan di server — aman.
  * Tidak boleh diimport di Server Components.
+ *
+ * Phase 14: adds statusMapRef for suggestion_statuses Y.Map (CRDT-02).
  */
 "use client";
 import { useEffect, useRef } from "react";
@@ -17,21 +19,23 @@ import { IndexeddbPersistence } from "y-indexeddb";
 interface UseWorkspaceDocResult {
   docRef: React.MutableRefObject<Y.Doc | null>;
   persistenceRef: React.MutableRefObject<IndexeddbPersistence | null>;
+  statusMapRef: React.MutableRefObject<Y.Map<string> | null>;
 }
 
 /**
  * Hook untuk menginisialisasi Yjs Y.Doc dengan IndexedDB persistence.
  *
  * @param jobId - Job UUID untuk scope IndexedDB key
- * @returns refs ke Y.Doc dan IndexeddbPersistence instances
+ * @returns refs ke Y.Doc, IndexeddbPersistence, dan Y.Map suggestion_statuses
  *
  * @example
  * // Dalam "use client" component:
- * const { docRef } = useWorkspaceDoc(jobId);
+ * const { docRef, statusMapRef } = useWorkspaceDoc(jobId);
  */
 export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
   const docRef = useRef<Y.Doc | null>(null);
   const persistenceRef = useRef<IndexeddbPersistence | null>(null);
+  const statusMapRef = useRef<Y.Map<string> | null>(null);
 
   useEffect(() => {
     if (!jobId) return;
@@ -39,6 +43,10 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     // Buat Y.Doc baru untuk job ini
     const doc = new Y.Doc();
     docRef.current = doc;
+
+    // Shared map untuk suggestion statuses, keyed by suggestion_id
+    const statusMap = doc.getMap<string>("suggestion_statuses");
+    statusMapRef.current = statusMap;
 
     // Persist ke IndexedDB di bawah key yang scoped ke job
     // Format: "workspace-v2-{jobId}" untuk isolasi per job
@@ -55,8 +63,9 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
       doc.destroy();
       docRef.current = null;
       persistenceRef.current = null;
+      statusMapRef.current = null;
     };
   }, [jobId]);
 
-  return { docRef, persistenceRef };
+  return { docRef, persistenceRef, statusMapRef };
 }

@@ -2,6 +2,7 @@
 import { useEffect, useCallback, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
+import { useWorkspaceDoc } from "@/hooks/use-workspace-doc";
 import { WorkspaceV2Header } from "./header";
 import { LeftDetailPanel } from "./left-detail-panel";
 import { PdfViewerPanel } from "./pdf-viewer-panel";
@@ -18,11 +19,32 @@ export function WorkspaceV2Shell({
   hydration,
   initialPdfUrl,
 }: WorkspaceV2ShellProps) {
-  const { activeDetailTab, pdfUrl, viewMode, setViewMode, setJobId, setHydration, setPdfUrl } =
+  const { activeDetailTab, pdfUrl, viewMode, setViewMode, setJobId, setHydration, setPdfUrl,
+    suggestionStatuses, applyAllSuggestions, hydration: storeHydration } =
     useWorkspaceV2Store();
+
+  const { statusMapRef } = useWorkspaceDoc(jobId);
 
   const isDetailFocus = activeDetailTab !== null;
   const isDiffActive = viewMode === "original";
+
+  const allPending = (storeHydration?.suggestion_anchors ?? []).filter(
+    (a) => !suggestionStatuses[a.suggestion_id] || suggestionStatuses[a.suggestion_id] === "pending"
+  ).length;
+
+  const handleApplyAll = useCallback(() => {
+    applyAllSuggestions();
+    const anchors = storeHydration?.suggestion_anchors ?? [];
+    const statusMap = statusMapRef.current;
+    if (statusMap) {
+      anchors.forEach((anchor) => {
+        const current = statusMap.get(anchor.suggestion_id);
+        if (!current || current === "pending") {
+          statusMap.set(anchor.suggestion_id, "applied");
+        }
+      });
+    }
+  }, [applyAllSuggestions, storeHydration, statusMapRef]);
 
   // Fetch pdfUrl client-side so it's visible in DevTools and not dependent on SSR
   const fetchPdfUrl = useCallback(async () => {
@@ -182,14 +204,24 @@ export function WorkspaceV2Shell({
         {/* Apply */}
         <button
           type="button"
-          className="flex items-center rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
+          onClick={handleApplyAll}
+          disabled={allPending === 0}
+          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
             background: "rgba(202,255,67,0.28)",
             border: "1px solid rgba(202,255,67,0.4)",
             color: "#2a4200",
           }}
         >
-          Apply
+          <span>Apply</span>
+          {allPending > 0 && (
+            <span
+              className="rounded-full px-1.5 py-0.5 text-[9px] font-black"
+              style={{ background: "rgba(202,255,67,0.55)", color: "#1a2900" }}
+            >
+              {allPending}
+            </span>
+          )}
         </button>
 
         {/* Diff toggle */}

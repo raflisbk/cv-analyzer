@@ -9,6 +9,8 @@
 import { create } from "zustand";
 import type { WorkspaceHydration } from "@/lib/workspace";
 
+export type SuggestionStatus = "pending" | "applied" | "dismissed";
+
 interface WorkspaceV2State {
   // PDF state
   pdfUrl: string | null;
@@ -20,6 +22,9 @@ interface WorkspaceV2State {
   // Phase 14: tracks which suggestion annotation is active/highlighted
   activeSuggestionId: string | null;
 
+  // Phase 14: per-suggestion apply/dismiss status
+  suggestionStatuses: Record<string, SuggestionStatus>;
+
   // Job context
   jobId: string;
   hydration: WorkspaceHydration | null;
@@ -29,6 +34,8 @@ interface WorkspaceV2State {
   setViewMode: (mode: "optimized" | "original") => void;
   setActiveDetailTab: (tab: string | null) => void;
   setActiveSuggestionId: (id: string | null) => void;
+  setSuggestionStatus: (id: string, status: SuggestionStatus) => void;
+  applyAllSuggestions: () => void;
   setJobId: (jobId: string) => void;
   setHydration: (hydration: WorkspaceHydration) => void;
 }
@@ -38,6 +45,7 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   viewMode: "optimized",      // PDF-03: workspace defaults to optimized PDF view
   activeDetailTab: null,      // default PDF-first mode
   activeSuggestionId: null,   // Phase 14: no active suggestion by default
+  suggestionStatuses: {},     // Phase 14: all suggestions start as pending
   jobId: "",
   hydration: null,
 
@@ -45,6 +53,24 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   setViewMode: (mode) => set({ viewMode: mode }),
   setActiveDetailTab: (tab) => set({ activeDetailTab: tab }),
   setActiveSuggestionId: (id) => set({ activeSuggestionId: id }),
+  setSuggestionStatus: (id, status) =>
+    set((state) => ({
+      suggestionStatuses: { ...state.suggestionStatuses, [id]: status },
+    })),
+  applyAllSuggestions: () =>
+    set((state) => {
+      const anchors = state.hydration?.suggestion_anchors ?? [];
+      const updates: Record<string, SuggestionStatus> = {};
+      for (const anchor of anchors) {
+        const current = state.suggestionStatuses[anchor.suggestion_id];
+        if (!current || current === "pending") {
+          updates[anchor.suggestion_id] = "applied";
+        }
+      }
+      return {
+        suggestionStatuses: { ...state.suggestionStatuses, ...updates },
+      };
+    }),
   setJobId: (jobId) => set({ jobId }),
   setHydration: (hydration) => set({ hydration }),
 }));

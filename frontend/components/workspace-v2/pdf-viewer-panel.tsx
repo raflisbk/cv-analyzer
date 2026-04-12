@@ -22,7 +22,10 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
 
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";
-  const modeLabel = viewMode === "optimized" ? "Optimized" : "Original";
+  const modeLabel = viewMode === "optimized" ? "Optimized" : "Original Uploaded";
+  const modeNote = viewMode === "original"
+    ? "Optimized PDF available after edits applied"
+    : null;
 
   useEffect(() => {
     if (!containerRef.current) { return; }
@@ -104,6 +107,11 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
               <span style={{ color: "#CAFF43" }}>{modeLabel}</span>
               <span className="ml-2 text-[#F5F2D8]/35 text-[11px] font-normal truncate">{filename}</span>
             </p>
+            {modeNote && (
+              <p className="mt-0.5 text-[9px] text-[#F5F2D8]/30 truncate font-normal">
+                {modeNote}
+              </p>
+            )}
           </div>
 
           {/* Page navigation */}

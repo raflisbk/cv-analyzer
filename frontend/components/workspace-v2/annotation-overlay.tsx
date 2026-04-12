@@ -42,6 +42,13 @@ interface AnnotationHitAreaProps {
 
 function AnnotationHitArea({ anchor, scale, onApply, onDismiss }: AnnotationHitAreaProps) {
   const setActiveSuggestionId = useWorkspaceV2Store((s) => s.setActiveSuggestionId);
+  const { setSuggestionStatus, suggestionStatuses } = useWorkspaceV2Store(
+    (s) => ({ setSuggestionStatus: s.setSuggestionStatus, suggestionStatuses: s.suggestionStatuses })
+  );
+  const status = suggestionStatuses[anchor.suggestion_id];
+  const isApplied = status === "applied";
+  const isDismissed = status === "dismissed";
+
   const { isOpen, refs, floatingStyles, getReferenceProps, getFloatingProps } =
     useAnnotationHover({ placement: "top" });
 
@@ -69,7 +76,10 @@ function AnnotationHitArea({ anchor, scale, onApply, onDismiss }: AnnotationHitA
           width: cssRect.width,
           height: cssRect.height,
           zIndex: 3,
-          cursor: "pointer",
+          cursor: isApplied || isDismissed ? "default" : "pointer",
+          opacity: isApplied ? 0.15 : isDismissed ? 0.1 : 1.0,
+          transition: "opacity 200ms ease",
+          pointerEvents: isApplied || isDismissed ? "none" : "auto",
         }}
         aria-label={`Suggestion: ${anchor.text_anchor.slice(0, 60)}`}
       />
@@ -107,7 +117,10 @@ function AnnotationHitArea({ anchor, scale, onApply, onDismiss }: AnnotationHitA
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => onApply?.(anchor.suggestion_id)}
+                onClick={() => {
+                  setSuggestionStatus(anchor.suggestion_id, "applied");
+                  onApply?.(anchor.suggestion_id);
+                }}
                 className="flex-1 rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors"
                 style={{
                   background: "rgba(202,255,67,0.28)",
@@ -119,7 +132,10 @@ function AnnotationHitArea({ anchor, scale, onApply, onDismiss }: AnnotationHitA
               </button>
               <button
                 type="button"
-                onClick={() => onDismiss?.(anchor.suggestion_id)}
+                onClick={() => {
+                  setSuggestionStatus(anchor.suggestion_id, "dismissed");
+                  onDismiss?.(anchor.suggestion_id);
+                }}
                 className="flex-1 rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors"
                 style={{
                   background: "rgba(17,17,17,0.10)",
