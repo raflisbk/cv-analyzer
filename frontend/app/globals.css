@@ -70,3 +70,37 @@
     transform: none !important;
   }
 }
+
+/* ============================================================
+   WORKSPACE-V2 THEME TOKENS (Phase 13)
+   Scoped ke [data-workspace-v2] — tidak override landing page tokens
+   ============================================================ */
+[data-workspace-v2] {
+  /* Shell surfaces */
+  --ws-bg:             #111111;   /* 60% dominant — outer shell, header bg */
+  --ws-surface:        #1A1A1A;   /* 30% secondary — left panel, right rail bg */
+  --ws-surface-hover:  #222222;   /* interactive surface hover state */
+  --ws-surface-active: #282828;   /* pressed/selected surface */
+
+  /* Borders */
+  --ws-border:         rgba(255, 255, 255, 0.07);  /* default panel borders */
+  --ws-border-accent:  rgba(202, 255, 67, 0.14);   /* lime-tinted accent border */
+  --ws-border-strong:  rgba(255, 255, 255, 0.13);  /* header bottom, focus rings */
+
+  /* PDF Paper */
+  --ws-paper:          #FFFDF4;
+  --ws-paper-shadow:   0 8px 48px rgba(0, 0, 0, 0.65);
+
+  /* Typography on dark */
+  --ws-ink:            #F5F2D8;   /* primary text */
+  --ws-ink-secondary:  rgba(245, 242, 216, 0.65);
+  --ws-ink-ghost:      rgba(245, 242, 216, 0.35);
+
+  /* Accent */
+  --ws-accent:         #CAFF43;
+  --ws-accent-fg:      #111111;
+  --ws-accent-muted:   rgba(202, 255, 67, 0.12);
+
+  /* Destructive */
+  --ws-destructive:    hsl(0 84.2% 60.2%);
+}
