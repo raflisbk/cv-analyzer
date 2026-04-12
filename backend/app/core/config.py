@@ -33,6 +33,15 @@ class Settings(BaseSettings):
 
     # OpenAI API (Phase 2: embedding scoring per D-07, D-10)
     CV_ANALYZER_OPENAI_API_KEY: str = ""
+
+    # Z AI API (fallback provider for LLM only)
+    CV_ANALYZER_ZAI_API_KEY: str = ""
+    CV_ANALYZER_ZAI_BASE_URL: str = "https://api.z.ai/api/paas/v4/"
+    CV_ANALYZER_ZAI_LLM_MODEL: str = "glm-4.5-flash"
+
+    # Hugging Face Inference API (fallback provider for embeddings)
+    CV_ANALYZER_HF_API_KEY: str = ""
+
     # Analysis pipeline rate limit per D-15
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 

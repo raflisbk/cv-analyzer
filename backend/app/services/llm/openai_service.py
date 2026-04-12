@@ -1,7 +1,7 @@
 """
-OpenAI ChatCompletion LLM service per D-01, D-02, D-03, LLM-05.
+OpenAI ChatCompletion LLM service with provider fallback support.
 Uses gpt-4o-mini with JSON mode + Pydantic validation.
-Retries 3x with exponential backoff (same pattern as embeddings.py).
+Integrates with ProviderManager for automatic fallback to Z AI after 3 failures.
 """
 
 import json
@@ -12,6 +12,10 @@ from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
+from app.services.llm.provider_manager import (
+    ProviderType,
+    get_provider_manager,
+)
 from app.services.scoring.embeddings import get_openai_client
 
 
@@ -72,18 +76,18 @@ def _build_system_prompt(rag_context: str) -> str:
 
 def _build_user_prompt(cv_text: str, sections: list[dict]) -> str:
     return _USER_PROMPT_TEMPLATE.format(
-        cv_text=cv_text[:6000],  # Cap CV text to ~1500 tokens
+        cv_text=cv_text[:6000],
         sections_json=json.dumps(sections, indent=2),
     )
 
 
 class OpenAILLMService:
-    """LLMService implementation using gpt-4o-mini with JSON mode per D-01, D-02, D-03."""
+    """LLMService implementation using gpt-4o-mini with provider fallback support."""
 
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
-        reraise=True,  # Re-raise after all retries exhausted per D-17
+        reraise=True,
     )
     def generate_suggestions(
         self,
@@ -93,55 +97,90 @@ class OpenAILLMService:
     ) -> dict:
         """
         Call gpt-4o-mini with JSON mode to generate structured CV suggestions.
-        Returns dict with 'raw_json', 'prompt_tokens', 'completion_tokens'.
-        Validated output available via SuggestionsOutput.model_validate(json.loads(raw_json)).
-        Raises after 3 retries if OpenAI API unavailable (caller handles per D-17).
+
+        Integrates with ProviderManager for automatic fallback to Z AI after failures.
+
+        Args:
+            cv_text: Full extracted CV text
+            sections: List of detected sections from nlp_result
+            rag_context: Concatenated RAG chunks relevant to this CV
+
+        Returns:
+            Dict with 'raw_json', 'prompt_tokens', 'completion_tokens'
+
+        Raises:
+            Exception: Re-raised after all retries exhausted
         """
+        provider_manager = get_provider_manager()
         settings = get_settings()
         client = get_openai_client()
 
         system_prompt = _build_system_prompt(rag_context)
         user_prompt = _build_user_prompt(cv_text, sections)
 
-        response = client.chat.completions.create(
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=settings.CV_ANALYZER_LLM_MAX_TOKENS,
-        )
+        try:
+            response = client.chat.completions.create(
+                model=settings.CV_ANALYZER_LLM_MODEL,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                max_tokens=settings.CV_ANALYZER_LLM_MAX_TOKENS,
+            )
 
-        raw_json = response.choices[0].message.content
-        usage = response.usage
+            raw_json = response.choices[0].message.content
+            usage = response.usage
 
-        # Increment Prometheus counters per D-16
-        llm_tokens_counter.labels(
-            provider="openai",
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            type="prompt",
-        ).inc(usage.prompt_tokens)
-        llm_tokens_counter.labels(
-            provider="openai",
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            type="completion",
-        ).inc(usage.completion_tokens)
+            # Increment Prometheus counters
+            llm_tokens_counter.labels(
+                provider="openai",
+                model=settings.CV_ANALYZER_LLM_MODEL,
+                type="prompt",
+            ).inc(usage.prompt_tokens)
+            llm_tokens_counter.labels(
+                provider="openai",
+                model=settings.CV_ANALYZER_LLM_MODEL,
+                type="completion",
+            ).inc(usage.completion_tokens)
 
-        logger.info(
-            "LLM suggestions generated",
-            extra={
-                "model": settings.CV_ANALYZER_LLM_MODEL,
+            # Record success with provider manager
+            provider_manager.record_success(ProviderType.OPENAI)
+
+            logger.info(
+                "OpenAI LLM suggestions generated",
+                extra={
+                    "model": settings.CV_ANALYZER_LLM_MODEL,
+                    "prompt_tokens": usage.prompt_tokens,
+                    "completion_tokens": usage.completion_tokens,
+                },
+            )
+
+            return {
+                "raw_json": raw_json,
                 "prompt_tokens": usage.prompt_tokens,
                 "completion_tokens": usage.completion_tokens,
-            },
-        )
+            }
 
-        return {
-            "raw_json": raw_json,
-            "prompt_tokens": usage.prompt_tokens,
-            "completion_tokens": usage.completion_tokens,
-        }
+        except Exception as e:
+            # Record failure with provider manager
+            provider_manager.record_failure(ProviderType.OPENAI, e)
+
+            # Check if we should fallback to Z AI
+            current_provider = provider_manager.get_current_provider()
+            if current_provider == ProviderType.ZAI:
+                logger.warning(
+                    "OpenAI failed, falling back to Z AI",
+                    extra={"error": str(e)},
+                )
+                # Import here to avoid circular dependency
+                from app.services.llm.zai_service import ZAILLMService
+
+                zai_service = ZAILLMService()
+                return zai_service.generate_suggestions(cv_text, sections, rag_context)
+
+            # Re-raise if fallback not triggered
+            raise
 
     @retry(
         stop=stop_after_attempt(3),
@@ -150,16 +189,24 @@ class OpenAILLMService:
     )
     def compare_cv(self, cv_text: str, jd_text: str) -> dict:
         """
-        Compare CV against job description via gpt-4o-mini JSON mode per D-C6.
+        Compare CV against job description via gpt-4o-mini JSON mode.
 
-        Returns dict with keys: comparison (dict), prompt_tokens (int), completion_tokens (int).
-        Uses same 3x tenacity retry as generate_suggestions().
-        Raises after 3 retries if OpenAI API unavailable (caller handles per D-C8).
+        Integrates with ProviderManager for automatic fallback to Z AI after failures.
+
+        Args:
+            cv_text: Candidate CV text
+            jd_text: Job description text
+
+        Returns:
+            Dict with keys: comparison (dict), prompt_tokens (int), completion_tokens (int)
+
+        Raises:
+            Exception: Re-raised after all retries exhausted
         """
+        provider_manager = get_provider_manager()
         settings = get_settings()
         client = get_openai_client()
 
-        # Truncate inputs to stay within token limits
         cv_truncated = cv_text[:4000]
         jd_truncated = jd_text[:2000]
 
@@ -186,53 +233,83 @@ class OpenAILLMService:
             "Return the JSON comparison."
         )
 
-        response = client.chat.completions.create(
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=settings.CV_ANALYZER_LLM_MAX_TOKENS,
-        )
+        try:
+            response = client.chat.completions.create(
+                model=settings.CV_ANALYZER_LLM_MODEL,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                max_tokens=settings.CV_ANALYZER_LLM_MAX_TOKENS,
+            )
 
-        raw_json = response.choices[0].message.content
-        usage = response.usage
-        comparison_data = json.loads(raw_json)
+            raw_json = response.choices[0].message.content
+            usage = response.usage
+            comparison_data = json.loads(raw_json)
 
-        # Increment Prometheus counters per D-16
-        llm_tokens_counter.labels(
-            provider="openai",
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            type="prompt",
-        ).inc(usage.prompt_tokens)
-        llm_tokens_counter.labels(
-            provider="openai",
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            type="completion",
-        ).inc(usage.completion_tokens)
+            # Increment Prometheus counters
+            llm_tokens_counter.labels(
+                provider="openai",
+                model=settings.CV_ANALYZER_LLM_MODEL,
+                type="prompt",
+            ).inc(usage.prompt_tokens)
+            llm_tokens_counter.labels(
+                provider="openai",
+                model=settings.CV_ANALYZER_LLM_MODEL,
+                type="completion",
+            ).inc(usage.completion_tokens)
 
-        logger.info(
-            "CV comparison generated",
-            extra={
-                "model": settings.CV_ANALYZER_LLM_MODEL,
+            # Record success with provider manager
+            provider_manager.record_success(ProviderType.OPENAI)
+
+            logger.info(
+                "OpenAI CV comparison generated",
+                extra={
+                    "model": settings.CV_ANALYZER_LLM_MODEL,
+                    "prompt_tokens": usage.prompt_tokens,
+                    "completion_tokens": usage.completion_tokens,
+                },
+            )
+
+            return {
+                "comparison": comparison_data,
                 "prompt_tokens": usage.prompt_tokens,
                 "completion_tokens": usage.completion_tokens,
-            },
-        )
+            }
 
-        return {
-            "comparison": comparison_data,
-            "prompt_tokens": usage.prompt_tokens,
-            "completion_tokens": usage.completion_tokens,
-        }
+        except Exception as e:
+            # Record failure with provider manager
+            provider_manager.record_failure(ProviderType.OPENAI, e)
+
+            # Check if we should fallback to Z AI
+            current_provider = provider_manager.get_current_provider()
+            if current_provider == ProviderType.ZAI:
+                logger.warning(
+                    "OpenAI failed, falling back to Z AI",
+                    extra={"error": str(e)},
+                )
+                # Import here to avoid circular dependency
+                from app.services.llm.zai_service import ZAILLMService
+
+                zai_service = ZAILLMService()
+                return zai_service.compare_cv(cv_text, jd_text)
+
+            # Re-raise if fallback not triggered
+            raise
 
     def validate_output(self, raw_json: str) -> SuggestionsOutput:
         """
-        Validate LLM JSON output against SuggestionsOutput Pydantic model per LLM-04.
-        Raises ValidationError if JSON doesn't match schema.
-        """
-        import json as _json  # noqa: PLC0415
+        Validate LLM JSON output against SuggestionsOutput Pydantic model.
 
-        data = _json.loads(raw_json)
+        Args:
+            raw_json: JSON string from LLM response
+
+        Returns:
+            Validated SuggestionsOutput instance
+
+        Raises:
+            ValidationError: If JSON doesn't match schema
+        """
+        data = json.loads(raw_json)
         return SuggestionsOutput.model_validate(data)
