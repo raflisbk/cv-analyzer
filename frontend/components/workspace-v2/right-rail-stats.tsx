@@ -1,11 +1,12 @@
 "use client";
 /**
  * RightRailStats — right summary rail for workspace-v2.
- * Accordion sections are SYNCED with left panel via activeDetailTab.
- * Purely store-driven: no local open state — guarantees bidirectional sync.
- * Clicking accordion header or left panel both call setActiveDetailTab(tabId).
+ * ONE-WAY SYNC: left panel → right rail (not the reverse).
+ * - Left panel sets activeDetailTab → right rail accordion auto-expands.
+ * - Right rail accordion toggle → local open state only, does NOT open left panel.
+ * - "View details →" button explicitly opens left panel via setActiveDetailTab.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Send } from "lucide-react";
 import { AccentPill } from "@/components/ui/accent-pill";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -17,7 +18,7 @@ interface RightRailStatsProps {
 
 type TabId = "overview" | "scores" | "suggestions" | "grammar" | "skills";
 
-// ── Accordion section — purely store-driven (bidirectional) ───────────────────
+// ── Accordion section — one-way sync from store (left panel drives, rail follows) ────
 interface AccordionSectionProps {
   tabId: TabId;
   title: string;
@@ -27,11 +28,19 @@ interface AccordionSectionProps {
 
 function AccordionSection({ tabId, title, subtitle, children }: AccordionSectionProps) {
   const { activeDetailTab, setActiveDetailTab } = useWorkspaceV2Store();
-  // isOpen is purely derived from store — no local state needed
-  const isOpen = activeDetailTab === tabId;
+  const [localOpen, setLocalOpen] = useState(false);
+
+  // Sync FROM left panel: when left panel activates this tab, expand accordion.
+  // Right rail toggling does NOT write back to activeDetailTab.
+  useEffect(() => {
+    if (activeDetailTab === tabId) {
+      setLocalOpen(true);
+    }
+  }, [activeDetailTab, tabId]);
 
   const handleToggle = () => {
-    setActiveDetailTab(isOpen ? null : tabId);
+    // Only toggle local state — never sets activeDetailTab (no left panel side-effect)
+    setLocalOpen((prev) => !prev);
   };
 
   return (
@@ -49,16 +58,17 @@ function AccordionSection({ tabId, title, subtitle, children }: AccordionSection
           className={cn(
             "grid h-6 w-6 flex-none place-items-center rounded-full",
             "bg-[rgba(17,17,17,0.06)] transition-transform duration-200",
-            isOpen && "rotate-180"
+            localOpen && "rotate-180"
           )}
         >
           <ChevronDown className="h-3 w-3 text-[--ws-ink-ghost]" aria-hidden="true" />
         </div>
       </button>
 
-      {isOpen && (
+      {localOpen && (
         <div className="border-t border-[--ws-border] px-4 pb-4 pt-3">
           {children}
+          {/* This button explicitly opens the left panel for deeper analysis */}
           <button
             type="button"
             onClick={() => setActiveDetailTab(tabId)}
