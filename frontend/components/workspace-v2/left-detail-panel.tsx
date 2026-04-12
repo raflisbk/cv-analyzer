@@ -64,7 +64,7 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
 
           {/* Detail content area */}
           <div className="flex-1 overflow-y-auto p-4">
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-[--ws-ink-ghost]">
+            <p className="font-display mb-3 text-[11px] font-bold uppercase tracking-widest text-[--ws-ink-ghost]">
               {currentTab?.label}
             </p>
             <div className="rounded-xl border border-[--ws-border] bg-[--ws-surface-active] p-4">
@@ -80,7 +80,7 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
         // ── Compact mode — vertical tab list (210px wide) ──────────────
         <>
           <div className="border-b border-[--ws-border] px-4 py-3 flex-none">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[--ws-ink-ghost]">
+            <p className="font-display text-[11px] font-bold uppercase tracking-widest text-[--ws-ink-ghost]">
               Analisis
             </p>
           </div>
