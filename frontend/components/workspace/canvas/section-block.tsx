@@ -12,8 +12,8 @@ import { SuggestionHighlight } from "@/lib/tiptap/suggestion-highlight";
 import { EditorToolbar } from "./editor-toolbar";
 import { SuggestionTooltip } from "./suggestion-tooltip";
 import type { SuggestionItem } from "@/lib/types";
-
-type SpacingValue = "compact" | "normal" | "spacious";
+import { plainTextToTiptapDoc, type SpacingValue } from "@/lib/workspace-utils";
+export { plainTextToTiptapDoc } from "@/lib/workspace-utils";
 
 interface SectionBlockProps {
   sectionType: string;
@@ -33,19 +33,7 @@ const SPACING_PADDING: Record<SpacingValue, string> = {
   normal: "py-3",
   spacious: "py-6",
 };
-
-/** Convert plain text (with newlines) to a Tiptap-compatible doc JSONContent */
-export function plainTextToTiptapDoc(text: string): JSONContent {
-  const lines = text.split("\n");
-  return {
-    type: "doc",
-    content: lines.map((line) => ({
-      type: "paragraph",
-      content: line.trim() ? [{ type: "text", text: line }] : [],
-    })),
-  };
-}
-
+
 // ─── Stabilo highlight utilities ────────────────────────────────────────────
 
 function findTextRange(

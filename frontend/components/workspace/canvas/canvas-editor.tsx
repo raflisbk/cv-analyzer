@@ -3,54 +3,18 @@
 import { useState, useCallback } from "react";
 import type { JSONContent } from "@tiptap/core";
 import type { WorkspaceHydration } from "@/lib/workspace";
-import type { SuggestionItem } from "@/lib/types";
 import { useDraftSave, type SaveState } from "@/hooks/use-draft-save";
-import { SectionBlock, plainTextToTiptapDoc } from "./section-block";
+import { SectionBlock } from "./section-block";
 import { CanvasSplitPanel } from "./canvas-split-panel";
+import {
+  normalizeSuggestion,
+  buildInitialSections,
+  type SectionState,
+  type SpacingValue,
+} from "@/lib/workspace-utils";
 
 interface CanvasEditorProps {
   data: WorkspaceHydration;
-}
-
-type SpacingValue = "compact" | "normal" | "spacious";
-
-interface SectionState {
-  type: string;
-  json: JSONContent;
-  spacing: SpacingValue;
-}
-
-/** Normalize a raw API suggestion item — backend sends snake_case, frontend expects camelCase */
-function normalizeSuggestion(raw: Record<string, unknown>): SuggestionItem {
-  return {
-    priority: (raw.priority as SuggestionItem["priority"]) ?? "quick_win",
-    text: (raw.text as string) ?? "",
-    type: (raw.type as SuggestionItem["type"]) ?? "action_verb",
-    originalText:
-      (raw.originalText as string | undefined) ??
-      (raw.original_text as string | undefined),
-    afterText:
-      (raw.afterText as string | undefined) ??
-      (raw.after_text as string | undefined),
-  };
-}
-
-function buildInitialSections(
-  sections: WorkspaceHydration["document"]["sections"],
-  draftContent?: Record<string, JSONContent> | null
-): SectionState[] {
-  // Deduplicate by type — merge text of duplicate sections (NLP may emit multiple blocks per type)
-  const merged = new Map<string, string>();
-  for (const section of sections) {
-    const existing = merged.get(section.type);
-    merged.set(section.type, existing ? `${existing}\n${section.text}` : section.text);
-  }
-
-  return Array.from(merged.entries()).map(([type, text]) => ({
-    type,
-    json: draftContent?.[type] ?? plainTextToTiptapDoc(text),
-    spacing: "normal" as SpacingValue,
-  }));
 }
 
 function UnsavedIndicator({ saveState }: { saveState: SaveState }) {
