@@ -1,4 +1,4 @@
-﻿import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import type { JSONContent } from "@tiptap/core";
 import type {
   AtsCheck,
@@ -6,6 +6,7 @@ import type {
   ScoreResult,
   SectionResult,
   SuggestionCard,
+  GrammarIssue,
 } from "@/lib/types";
 
 // Phase 14: Suggestion anchor coordinate types (mirror of backend/app/schemas/anchors.py)
@@ -42,6 +43,8 @@ export interface WorkspaceAnalysisContext {
   scores: ScoreResult | null;
   ats_checks: AtsCheck[];
   suggestions?: SuggestionCard[] | null;
+  skills?: string[];
+  grammar_issues?: GrammarIssue[];
   comparison_result?: ComparisonResult | null;
   comparison_status?: "pending" | "comparing" | "complete" | "failed" | null;
 }

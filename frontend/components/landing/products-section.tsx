@@ -41,14 +41,20 @@ const products = [
 
 export default function ProductsSection() {
   return (
-    <section className="bg-[#141414] py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+    <section 
+      className="py-20 md:py-32"
+      style={{
+        background: "linear-gradient(180deg, #1A170F 0%, #16130C 100%)",
+        borderTop: "1px solid rgba(255,255,255,0.04)"
+      }}
+    >
+      <div className="mx-auto max-w-6xl px-4 md:px-8">
         {/* Section heading */}
-        <div className="text-center mb-12">
-          <h2 className="font-display font-extrabold text-2xl md:text-3xl text-[#F5F2D8] mb-4">
+        <div className="mb-16 text-center">
+          <h2 className="mb-5 font-display text-3xl md:text-5xl font-extrabold tracking-tight text-[#F5F2D8]">
             What <PathkrInline variant="dark" /> Offers
           </h2>
-          <p className="text-base text-[#F5F2D8]/60">
+          <p className="text-base md:text-lg font-medium tracking-wide text-[#F5F2D8]/50">
             Three tools. One career platform.
           </p>
         </div>
@@ -59,44 +65,68 @@ export default function ProductsSection() {
             return (
               <div
                 key={product.id}
-                className="bg-[#1C1C1C] rounded-2xl p-6 border border-[#F5F2D8]/5
-                           transition-transform duration-200 hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.03)",
+                }}
               >
-                {/* Icon container */}
-                <div className={`inline-flex ${product.iconContainer}`}>
-                  <product.Icon size={28} className={product.iconColor} />
-                </div>
+                {/* Subtle top gradient glow on hover */}
+                <div 
+                  className="absolute inset-x-0 top-0 h-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background: `radial-gradient(ellipse at top, ${product.iconColor === 'text-[#CAFF43]' ? 'rgba(202,255,67,0.1)' : product.iconColor === 'text-[#FF8C42]' ? 'rgba(255,140,66,0.1)' : 'rgba(139,92,246,0.1)'} 0%, transparent 70%)`
+                  }}
+                  aria-hidden="true"
+                />
 
-                {/* Status badge */}
-                <div className="mt-3 mb-2">
-                  {product.status === "active" ? (
-                    <AccentPill color="lime" size="md">Active</AccentPill>
-                  ) : (
-                    <span className="rounded-full px-4 py-1 text-sm bg-[#F5F2D8]/10 text-[#F5F2D8]/50">
-                      Coming Soon
-                    </span>
-                  )}
-                </div>
+                <div className="relative z-10">
+                  {/* Header: Icon + Status */}
+                  <div className="flex items-start justify-between mb-8">
+                    {/* Icon container */}
+                    <div 
+                      className={`inline-flex items-center justify-center h-14 w-14 rounded-2xl ${product.iconContainer.split(' ')[0]}`}
+                      style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+                    >
+                      <product.Icon size={28} className={product.iconColor} />
+                    </div>
 
-                <p className="text-base font-extrabold text-[#F5F2D8] mt-3 mb-2">
-                  {product.title}
-                </p>
-                <p className="text-sm text-[#F5F2D8]/60 leading-relaxed">
-                  {product.description}
-                </p>
+                    {/* Status badge */}
+                    <div>
+                      {product.status === "active" ? (
+                        <AccentPill color="lime" size="sm">Active</AccentPill>
+                      ) : (
+                        <span className="rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wide uppercase"
+                              style={{ background: "rgba(245,242,216,0.06)", color: "rgba(245,242,216,0.4)" }}>
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                {/* CTA */}
-                <div className="mt-4">
-                  <Link
-                    href={product.href!}
-                    className={`text-sm font-extrabold transition-colors ${
-                      product.status === "active"
-                        ? "text-[#CAFF43] hover:text-[#CAFF43]/80"
-                        : "text-[#F5F2D8]/40 hover:text-[#F5F2D8]/70"
-                    }`}
-                  >
-                    {product.status === "active" ? "Try Now →" : "Learn more →"}
-                  </Link>
+                  <h3 className="mb-3 font-display text-xl font-bold tracking-tight text-[#F5F2D8]">
+                    {product.title}
+                  </h3>
+                  
+                  <p className="mb-8 min-h-[60px] text-[15px] leading-relaxed text-[#F5F2D8]/60">
+                    {product.description}
+                  </p>
+
+                  {/* CTA */}
+                  <div>
+                    <Link
+                      href={product.href!}
+                      className={`inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-wider transition-all duration-200 ${
+                        product.status === "active"
+                          ? "text-[#CAFF43] hover:text-[#CAFF43]/80 group-hover:gap-2.5"
+                          : "text-[#F5F2D8]/30 hover:text-[#F5F2D8]/50 group-hover:gap-2.5"
+                      }`}
+                    >
+                      {product.status === "active" ? "Try Now" : "Learn more"}
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             );

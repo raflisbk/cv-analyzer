@@ -1,16 +1,15 @@
 """
-RAG embedding function using text-embedding-3-large per D-11, RAG-05.
-SEPARATE from scoring/embeddings.py which uses text-embedding-3-small (1536 dims).
-text-embedding-3-large produces 3072-dim vectors for higher quality retrieval.
+RAG embedding function using HF Inference BGE-M3 per D-11, RAG-05.
+Uses BAAI/bge-m3 model for high-quality retrieval (1024 dimensions).
 """
 
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.logging import structured_logger as logger
-from app.services.scoring.embeddings import get_openai_client
+from app.services.scoring.hf_embeddings import get_embedding
 
 
-_MAX_RAG_CHARS = 20000  # text-embedding-3-large: ~8191 tokens max, ~4 chars/token
+_MAX_RAG_CHARS = 20000  # BGE-M3 token limit
 
 
 @retry(
@@ -20,15 +19,18 @@ _MAX_RAG_CHARS = 20000  # text-embedding-3-large: ~8191 tokens max, ~4 chars/tok
 )
 def get_rag_embedding(text: str) -> list[float]:
     """
-    Get text-embedding-3-large embedding (3072 dimensions) for RAG per D-11.
-    DIFFERENT from get_embedding() in scoring/embeddings.py (text-embedding-3-small, 1536 dims).
-    Using wrong model causes dimension mismatch when inserting/querying knowledge_chunks.
+    Get BGE-M3 embedding (1024 dimensions) for RAG per D-11.
+
+    Args:
+        text: Input text to embed
+
+    Returns:
+        List of float values (1024 dimensions)
+
+    Raises:
+        Exception: If HF API request fails after retries
     """
-    client = get_openai_client()
-    response = client.embeddings.create(
-        model="text-embedding-3-large",
-        input=text[:_MAX_RAG_CHARS],
-    )
-    result = response.data[0].embedding  # 3072 floats
+    logger.debug("Requesting RAG embedding", extra={"text_length": len(text)})
+    result = get_embedding(text[:_MAX_RAG_CHARS])
     logger.debug("RAG embedding retrieved", extra={"dims": len(result)})
     return result

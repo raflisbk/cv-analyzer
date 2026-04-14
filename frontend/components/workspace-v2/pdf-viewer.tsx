@@ -19,9 +19,11 @@ interface PdfViewerProps {
   containerWidth: number;
   currentPage?: number;
   onPageLoadSuccess?: (page: unknown) => void;
+  onDocumentLoadSuccess?: (numPages: number) => void;
+  anchors?: any[];
 }
 
-export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSuccess }: PdfViewerProps) {
+export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSuccess, onDocumentLoadSuccess, anchors }: PdfViewerProps) {
   if (!url) {
     return (
       <div
@@ -45,6 +47,8 @@ export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSucc
       containerWidth={containerWidth}
       currentPage={currentPage}
       onPageLoadSuccess={onPageLoadSuccess}
+      onDocumentLoadSuccess={onDocumentLoadSuccess}
+      anchors={anchors}
     />
   );
 }

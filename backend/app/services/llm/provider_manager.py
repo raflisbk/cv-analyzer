@@ -1,6 +1,7 @@
 """
 Provider manager for LLM/embedding fallback strategy.
-Tracks consecutive failures and switches between OpenAI (primary) and Z AI (fallback).
+Currently using HF Inference as the primary and only provider.
+This module is kept for potential future multi-provider support.
 """
 
 from collections import defaultdict
@@ -34,10 +35,11 @@ class ProviderManager:
     Manages provider selection with fallback strategy.
 
     Strategy:
-    - Primary: OpenAI
-    - Fallback: Z AI (triggers after 3 consecutive OpenAI failures)
+    - Primary: HF Inference (Qwen2.5-7B-Instruct)
+    - Fallback: None (HF is the only LLM provider)
+    - HF Inference: Used for all LLM + embeddings (scoring, RAG, suggestions)
     - Reset: Successful call resets consecutive failure counter
-    - All error types count as failures (429, timeout, 500, etc.)
+    - All error types count as failures (timeout, 500, etc.)
     """
 
     _instance: "ProviderManager | None" = None
@@ -55,7 +57,7 @@ class ProviderManager:
             self._stats: dict[ProviderType, ProviderStats] = defaultdict(
                 lambda: ProviderStats()
             )
-            self._current_provider: ProviderType = ProviderType.OPENAI
+            self._current_provider: ProviderType = ProviderType.ZAI  # Z AI as primary
             self._failure_threshold: int = 3
             self._initialized = True
 

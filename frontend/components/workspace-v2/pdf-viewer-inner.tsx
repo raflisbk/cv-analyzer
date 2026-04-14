@@ -9,20 +9,16 @@
  *
  * containerWidth + currentPage are controlled externally by PdfViewerPanel (unchanged API).
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import type { PageProps } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
-import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { AnnotationOverlay } from "./annotation-overlay";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 
 // Derive CustomTextRenderer from PageProps so we don't rely on a non-exported type
 type CustomTextRenderer = NonNullable<PageProps["customTextRenderer"]>;
-
-// Must be set at module level before any Document renders
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 function priorityToColor(priority: string): { bg: string; border: string } {
   const map: Record<string, { bg: string; border: string }> = {
@@ -37,6 +33,8 @@ interface PdfViewerInnerProps {
   containerWidth: number;
   currentPage?: number;
   onPageLoadSuccess?: (page: unknown) => void;
+  onDocumentLoadSuccess?: (numPages: number) => void;
+  anchors?: SuggestionAnchorRecord[];
 }
 
 function PageLoadingSkeleton({ width }: { width: number }) {
@@ -55,15 +53,29 @@ export default function PdfViewerInner({
   containerWidth,
   currentPage = 1,
   onPageLoadSuccess,
+  onDocumentLoadSuccess,
+  anchors = [],
 }: PdfViewerInnerProps) {
   // _numPages: tracks total page count; used by Phase 14-03 for page boundary checks
   const [_numPages, setNumPages] = useState<number>(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pageWidth, setPageWidth] = useState<number>(595.5);
 
-  const anchors = useWorkspaceV2Store(
-    (s) => (s.hydration?.suggestion_anchors ?? []) as SuggestionAnchorRecord[]
-  );
+  // Guard: Don't render page beyond PDF page count (e.g., when PDF has 1 page but state shows page 2)
+  const isValidPage = _numPages === 0 || currentPage <= _numPages;
+
+  // Debug: Log anchors prop on every render
+  console.log("[PDF Viewer] Render - Anchors prop:", {
+    hasAnchors: !!anchors,
+    anchorCount: anchors?.length ?? 0,
+    firstAnchor: anchors?.[0]?.suggestion_id ?? null,
+    anchors: anchors?.slice(0, 3) ?? [], // Log first 3 for debugging
+  });
+
+  // Set up worker on mount - use CDN version for Next.js 15 compatibility
+  useEffect(() => {
+    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+  }, []);
 
   const handleApply = useCallback((_id: string) => {
     // Phase 14-04: will wire to setSuggestionStatus(id, "applied")
@@ -74,16 +86,40 @@ export default function PdfViewerInner({
   }, []);
 
   // customTextRenderer — injects colored <span> highlights for each anchor match.
-  // Must be wrapped in useCallback with stable deps to avoid infinite re-renders.
+  // Uses anchors prop directly instead of local state to avoid subscription issues.
   const customTextRenderer: CustomTextRenderer = useCallback(
     ({ str, pageIndex }) => {
       if (!str.trim() || str.trim().length <= 2) { return str; }
 
-      const match = anchors.find(
-        (a) =>
-          a.page_index === pageIndex &&
-          a.text_anchor.toLowerCase().includes(str.toLowerCase().trim())
-      );
+      // Debug: Log first call
+      if (str.includes("Experienced")) {
+        console.log("[PDF Highlight] Checking str:", str);
+        console.log("[PDF Highlight] PageIndex:", pageIndex);
+        console.log("[PDF Highlight] Anchors count:", anchors.length);
+        console.log("[PDF Highlight] Anchors:", anchors);
+      }
+
+      // Normalize both strings for matching (handle whitespace variations)
+      const normalizedStr = str.toLowerCase().trim().replace(/\s+/g, ' ');
+
+      const match = anchors.find((a) => {
+        if (a.page_index !== pageIndex) { return false; }
+
+        // Normalize anchor text
+        const normalizedAnchor = a.text_anchor.toLowerCase().trim().replace(/\s+/g, ' ');
+
+        // Check both directions: anchor contains str OR str contains part of anchor
+        // This handles cases where PDF text layer chunks text differently
+        const anchorContainsStr = normalizedAnchor.includes(normalizedStr);
+        const strContainsAnchor = normalizedStr.length > 10 && normalizedAnchor.includes(normalizedStr.slice(0, 20));
+
+        if (anchorContainsStr || strContainsAnchor) {
+          console.log("[PDF Highlight] MATCH found!", { str, anchor: a.text_anchor.slice(0, 50) });
+        }
+
+        return anchorContainsStr || strContainsAnchor;
+      });
+
       if (!match) { return str; }
 
       const color = priorityToColor(match.priority);
@@ -114,19 +150,21 @@ export default function PdfViewerInner({
     <div className="relative">
       <Document
         file={url}
-        onLoadSuccess={({ numPages: n }) => setNumPages(n)}
+        onLoadSuccess={({ numPages: n }) => {
+          setNumPages(n);
+          if (onDocumentLoadSuccess) { onDocumentLoadSuccess(n); }
+        }}
         onLoadError={(err) => setLoadError(err.message)}
         loading={<PageLoadingSkeleton width={containerWidth} />}
         error={null}
       >
-        {containerWidth > 0 && (
+        {containerWidth > 0 && isValidPage && (
           <div style={{ position: "relative" }}>
             <Page
               pageNumber={currentPage}
               width={containerWidth}
-              renderTextLayer={true}
+              renderTextLayer={false}
               renderAnnotationLayer={false}
-              customTextRenderer={customTextRenderer}
               loading={<PageLoadingSkeleton width={containerWidth} />}
               onLoadSuccess={(page) => {
                 setPageWidth((page as { originalWidth?: number }).originalWidth ?? 595.5);

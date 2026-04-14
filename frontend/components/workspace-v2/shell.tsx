@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useCallback, type CSSProperties } from "react";
+import { Wand2, GitCompare, Download, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { useWorkspaceDoc } from "@/hooks/use-workspace-doc";
@@ -7,6 +8,7 @@ import { WorkspaceV2Header } from "./header";
 import { LeftDetailPanel } from "./left-detail-panel";
 import { PdfViewerPanel } from "./pdf-viewer-panel";
 import { RightRailStats } from "./right-rail-stats";
+import { getWorkspaceHydration } from "@/lib/workspace";
 import type { WorkspaceHydration } from "@/lib/workspace";
 interface WorkspaceV2ShellProps {
   jobId: string;
@@ -46,29 +48,60 @@ export function WorkspaceV2Shell({
     }
   }, [applyAllSuggestions, storeHydration, statusMapRef]);
 
+  // Fetch hydration data client-side to avoid SSR network issues
+  const fetchHydration = useCallback(async () => {
+    try {
+      console.log('[Shell] Fetching hydration for job:', jobId);
+      const data = await getWorkspaceHydration(jobId);
+      console.log('[Shell] Hydration fetched successfully:', {
+        jobId,
+        hasData: !!data,
+        anchorCount: data?.suggestion_anchors?.length ?? 0,
+        keys: data ? Object.keys(data) : 'null',
+      });
+      if (data) {
+        setHydration(data);
+      }
+    } catch (error) {
+      console.error('[Shell] Failed to fetch hydration:', error);
+    }
+  }, [jobId, setHydration]);
+
   // Fetch pdfUrl client-side so it's visible in DevTools and not dependent on SSR
   const fetchPdfUrl = useCallback(async () => {
     if (pdfUrl) { return; }
     try {
-      const res = await fetch(`/api/v1/jobs/${jobId}/file`);
-      if (!res.ok) { return; }
-      const json = await res.json();
-      const url = json?.data?.file_url;
-      if (url) { setPdfUrl(url); }
+      // Use proxy endpoint to avoid CORS issues with R2 presigned URLs
+      const proxyUrl = `/api/v1/jobs/${jobId}/file/proxy`;
+      setPdfUrl(proxyUrl);
     } catch {
       // silently fail — PDF viewer shows error state
     }
   }, [jobId, pdfUrl, setPdfUrl]);
 
   useEffect(() => {
+    console.log('[Shell] Hydration received from page.tsx:', {
+      jobId,
+      hasHydration: !!hydration,
+      anchorCount: hydration?.suggestion_anchors?.length ?? 0,
+      hydrationKeys: hydration ? Object.keys(hydration) : 'null',
+      hasStoreHydration: !!storeHydration,
+    });
     setJobId(jobId);
-    if (hydration) { setHydration(hydration); }
+    if (hydration) {
+      console.log('[Shell] Setting hydration with anchors:', hydration.suggestion_anchors);
+      setHydration(hydration);
+    } else if (!storeHydration) {
+      // Only fetch if we don't have hydration from props AND don't have it in store yet
+      console.log('[Shell] No hydration from props or store, fetching...');
+      fetchHydration();
+    }
     if (initialPdfUrl) {
       setPdfUrl(initialPdfUrl);
     } else {
       fetchPdfUrl();
     }
-  }, [jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl, fetchPdfUrl]);
+  }, [jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl, fetchPdfUrl, fetchHydration, storeHydration]);
 
   // Grid columns: narrow left strip by default, left expands + PDF collapses in detail-focus
   const gridStyle: CSSProperties = {
@@ -163,20 +196,27 @@ export function WorkspaceV2Shell({
         className="relative z-10 flex-none"
       />
 
-      {/* Body — 3-panel grid; mobile falls back to single column */}
+      {/* Body — 3-panel grid with padding so panels float */}
       <div
-        className="relative z-10 flex-1 overflow-hidden grid"
+        className="relative z-10 flex-1 overflow-hidden grid p-2 gap-2"
         style={gridStyle}
       >
-        {/* Left detail panel — always visible on desktop (compact strip by default) */}
-        <aside className="hidden lg:flex flex-col overflow-hidden border-r border-[--ws-border]">
+        {/* Left detail panel — floating warm-dark card */}
+        <aside
+          className="hidden lg:flex flex-col overflow-hidden rounded-2xl"
+          style={{
+            background: "linear-gradient(160deg, #201C14 0%, #1A170F 55%, #16130C 100%)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 4px 32px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.04) inset",
+          }}
+        >
           <LeftDetailPanel className="h-full" />
         </aside>
 
         {/* Center PDF panel — hidden when detail-focus is active */}
         <main
           className={cn(
-            "relative flex flex-col overflow-hidden",
+            "relative flex flex-col overflow-hidden rounded-2xl",
             "transition-opacity duration-250 ease-in-out",
             isDetailFocus && "opacity-0 pointer-events-none"
           )}
@@ -185,100 +225,121 @@ export function WorkspaceV2Shell({
           <PdfViewerPanel pdfUrl={pdfUrl} />
         </main>
 
-        {/* Right rail — overflow-hidden + min-h-0 ensures inner scroll works */}
-        <aside className="hidden lg:flex flex-col border-l border-[--ws-border] overflow-hidden min-h-0">
+        {/* Right rail — floating warm-dark card */}
+        <aside
+          className="hidden lg:flex flex-col overflow-hidden min-h-0 rounded-2xl"
+          style={{
+            background: "linear-gradient(160deg, #201C14 0%, #1A170F 55%, #16130C 100%)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 4px 32px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.04) inset",
+          }}
+        >
           <RightRailStats className="h-full" />
         </aside>
       </div>
 
-      {/* Action footer — in-flow light bar, right-aligned, never overlaps rails */}
+      {/* Action footer — frosted light bar */}
       <footer
-        className="relative z-10 flex-none flex justify-end items-center gap-1.5 px-4 py-2"
+        className="relative z-10 flex-none flex justify-between items-center gap-3 px-5 py-2.5"
         style={{
-          background: "rgba(255,255,255,0.72)",
-          backdropFilter: "blur(12px)",
-          borderTop: "1px solid rgba(17,17,17,0.07)",
+          background: "rgba(245,242,216,0.80)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderTop: "1px solid rgba(17,17,17,0.09)",
+          boxShadow: "0 -4px 24px rgba(17,17,17,0.04), inset 0 1px 0 rgba(255,255,255,0.70)",
         }}
         aria-label="Workspace actions"
       >
-        {/* Apply */}
-        <button
-          type="button"
-          onClick={handleApplyAll}
-          disabled={allPending === 0}
-          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            background: "rgba(202,255,67,0.28)",
-            border: "1px solid rgba(202,255,67,0.4)",
-            color: "#2a4200",
-          }}
-        >
-          <span>Apply</span>
-          {allPending > 0 && (
-            <span
-              className="rounded-full px-1.5 py-0.5 text-[9px] font-black"
-              style={{ background: "rgba(202,255,67,0.55)", color: "#1a2900" }}
-            >
-              {allPending}
-            </span>
-          )}
-        </button>
-
-        {/* Diff toggle */}
-        <button
-          type="button"
-          onClick={() => setViewMode(isDiffActive ? "optimized" : "original")}
-          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
-          style={{
-            background: isDiffActive ? "rgba(246,122,223,0.2)" : "rgba(17,17,17,0.05)",
-            border: isDiffActive
-              ? "1px solid rgba(246,122,223,0.36)"
-              : "1px solid rgba(17,17,17,0.10)",
-            color: isDiffActive ? "#6b0050" : "#111111",
-          }}
-          aria-pressed={isDiffActive}
-        >
-          <span>Diff</span>
-          <span
-            className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider"
+        {/* Left group: Apply + Diff */}
+        <div className="flex items-center gap-1.5">
+          {/* Apply all */}
+          <button
+            type="button"
+            onClick={handleApplyAll}
+            disabled={allPending === 0}
+            className="group flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:brightness-95 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: isDiffActive ? "rgba(246,122,223,0.12)" : "rgba(17,17,17,0.05)",
-              border: "1px solid rgba(17,17,17,0.08)",
-              color: "#111111",
-              opacity: 0.72,
-              minWidth: 52,
-              textAlign: "center",
+              background: allPending > 0 ? "rgba(202,255,67,0.22)" : "rgba(17,17,17,0.05)",
+              border: allPending > 0 ? "1px solid rgba(202,255,67,0.45)" : "1px solid rgba(17,17,17,0.10)",
+              color: allPending > 0 ? "#2a4200" : "#555",
             }}
           >
-            {isDiffActive ? "Original" : "Optimized"}
-          </span>
-        </button>
+            <Wand2 className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>Apply</span>
+            {allPending > 0 && (
+              <span
+                className="flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-black"
+                style={{ background: "#CAFF43", color: "#1a2900" }}
+              >
+                {allPending}
+              </span>
+            )}
+          </button>
 
-        {/* Save optimized PDF */}
-        <button
-          type="button"
-          className="flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
-          style={{
-            background: "rgba(255,140,66,0.14)",
-            border: "1px solid rgba(255,140,66,0.28)",
-            color: "#6b2d00",
-          }}
-        >
-          Save PDF
-        </button>
+          {/* Visual separator */}
+          <div className="h-4 w-px bg-[rgba(17,17,17,0.1)]" aria-hidden="true" />
 
-        {/* Save report */}
-        <button
-          type="button"
-          className="flex items-center whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-black tracking-wide transition-colors hover:brightness-95"
-          style={{
-            background: "rgba(17,17,17,0.06)",
-            border: "1px solid rgba(17,17,17,0.12)",
-            color: "#111111",
-          }}
-        >
-          Save Report
-        </button>
+          {/* Diff toggle */}
+          <button
+            type="button"
+            onClick={() => setViewMode(isDiffActive ? "optimized" : "original")}
+            className="flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:brightness-95 active:scale-[0.97]"
+            style={{
+              background: isDiffActive ? "rgba(246,122,223,0.18)" : "rgba(17,17,17,0.05)",
+              border: isDiffActive
+                ? "1px solid rgba(246,122,223,0.38)"
+                : "1px solid rgba(17,17,17,0.10)",
+              color: isDiffActive ? "#6b0050" : "#333333",
+            }}
+            aria-pressed={isDiffActive}
+          >
+            <GitCompare className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>Diff</span>
+            <span
+              className="rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider"
+              style={{
+                background: isDiffActive ? "rgba(246,122,223,0.15)" : "rgba(17,17,17,0.06)",
+                border: "1px solid rgba(17,17,17,0.07)",
+                color: isDiffActive ? "#6b0050" : "#555",
+                minWidth: 56,
+                textAlign: "center" as const,
+              }}
+            >
+              {isDiffActive ? "Original" : "Optimized"}
+            </span>
+          </button>
+        </div>
+
+        {/* Right group: Save actions */}
+        <div className="flex items-center gap-1.5">
+          {/* Save optimized PDF */}
+          <button
+            type="button"
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:brightness-95 active:scale-[0.97]"
+            style={{
+              background: "rgba(255,140,66,0.12)",
+              border: "1px solid rgba(255,140,66,0.30)",
+              color: "#6b2d00",
+            }}
+          >
+            <Download className="h-3.5 w-3.5" aria-hidden="true" />
+            Save PDF
+          </button>
+
+          {/* Save report */}
+          <button
+            type="button"
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:bg-[rgba(17,17,17,0.08)] active:scale-[0.97]"
+            style={{
+              background: "rgba(17,17,17,0.05)",
+              border: "1px solid rgba(17,17,17,0.11)",
+              color: "#333333",
+            }}
+          >
+            <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+            Save Report
+          </button>
+        </div>
       </footer>
     </div>
   );

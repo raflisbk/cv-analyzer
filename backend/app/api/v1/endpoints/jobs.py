@@ -2,8 +2,10 @@
 
 import uuid
 from datetime import UTC, datetime
+from io import BytesIO
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 
 from app.db.session import AsyncSession, get_db
@@ -115,4 +117,83 @@ async def get_job_file_url(
                 message=f"Failed to get file URL: {str(exc)}",
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+
+@router.get(
+    "/jobs/{job_id}/file/proxy",
+    summary="Stream PDF file directly (avoids CORS issues)",
+    tags=["jobs"],
+)
+async def proxy_job_file(
+    job_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Stream PDF file directly from R2 to avoid CORS issues with react-pdf.
+    Returns StreamingResponse with proper Content-Type for PDF rendering.
+    """
+    try:
+        stmt = select(Job).where(Job.id == job_id)
+        result = await db.execute(stmt)
+        job = result.scalar_one_or_none()
+
+        if not job:
+            return WrappedResponse(
+                error=ErrorDetail(
+                    code="JOB_NOT_FOUND",
+                    message=f"Job {job_id} not found.",
+                ),
+                meta=ResponseMeta(
+                    request_id=str(uuid.uuid4()),
+                    timestamp=datetime.now(UTC).isoformat()
+                ),
+            )
+
+        if not job.file_id:
+            return WrappedResponse(
+                error=ErrorDetail(
+                    code="FILE_NOT_FOUND",
+                    message="CV file not available for this job.",
+                ),
+                meta=ResponseMeta(
+                    request_id=str(uuid.uuid4()),
+                    timestamp=datetime.now(UTC).isoformat()
+                ),
+            )
+
+        # Get file content from R2
+        file_content = storage_service.get_file(job.file_id)
+
+        # Stream as PDF with proper headers
+        return StreamingResponse(
+            BytesIO(file_content),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'inline; filename="{job.file_id}"',
+                "Cache-Control": "public, max-age=3600",
+            },
+        )
+
+    except StorageError as exc:
+        return WrappedResponse(
+            error=ErrorDetail(
+                code="FILE_FETCH_FAILED",
+                message=f"Failed to fetch file: {str(exc)}",
+            ),
+            meta=ResponseMeta(
+                request_id=str(uuid.uuid4()),
+                timestamp=datetime.now(UTC).isoformat()
+            ),
+        )
+    except Exception as exc:
+        return WrappedResponse(
+            error=ErrorDetail(
+                code="FILE_FETCH_FAILED",
+                message=f"Failed to fetch file: {str(exc)}",
+            ),
+            meta=ResponseMeta(
+                request_id=str(uuid.uuid4()),
+                timestamp=datetime.now(UTC).isoformat()
+            ),
         )

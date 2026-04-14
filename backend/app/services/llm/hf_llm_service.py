@@ -1,18 +1,23 @@
 """
-Z AI LLM service using GLM-4.5-Flash model.
-OpenAI-compatible API with custom base URL.
-Implements LLMService protocol for fallback support.
+HF Inference LLM service using Qwen2.5-7B-Instruct.
+Free tier via Hugging Face Inference API.
+Implements LLMService protocol for suggestions and comparison.
 """
 
 import json
+import re
 
-from openai import OpenAI
+from huggingface_hub import InferenceClient
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
+
+
+# Model configuration
+HF_LLM_MODEL = "Qwen/Qwen2-7B-Instruct"
 
 
 _SYSTEM_PROMPT_TEMPLATE = """You are an expert CV coach and recruitment specialist.
@@ -60,6 +65,21 @@ Detected Sections: {sections_json}
 
 Generate improvement suggestions for this CV."""
 
+_COMPARISON_SYSTEM_PROMPT = (
+    "You are an expert CV/resume evaluator. "
+    "Compare the provided CV against the job description and return a JSON object. "
+    "Be specific, evidence-based, and concise.\n\n"
+    "Return ONLY valid JSON matching this exact schema:\n"
+    "{\n"
+    '  "match_pct": <integer 0-100>,\n'
+    '  "matched_skills": [<string>],\n'
+    '  "missing_skills": [<string>],\n'
+    '  "matched_experience": [<string>],\n'
+    '  "missing_experience": [<string>],\n'
+    '  "overall_recommendation": <string, max 200 chars>\n'
+    "}"
+)
+
 
 def _build_system_prompt(rag_context: str) -> str:
     context_text = (
@@ -77,16 +97,23 @@ def _build_user_prompt(cv_text: str, sections: list[dict]) -> str:
     )
 
 
-class ZAILLMService:
-    """LLMService implementation using Z AI GLM-4.5-Flash with OpenAI-compatible API."""
+class HFLLMService:
+    """LLMService implementation using HF Inference Qwen2.5-7B-Instruct."""
 
     def __init__(self) -> None:
         settings = get_settings()
-        self.client = OpenAI(
-            api_key=settings.CV_ANALYZER_ZAI_API_KEY,
-            base_url=settings.CV_ANALYZER_ZAI_BASE_URL,
+
+        if not settings.CV_ANALYZER_HF_API_KEY:
+            raise ValueError(
+                "CV_ANALYZER_HF_API_KEY not configured. "
+                "Please set it in your .env file."
+            )
+
+        self.client = InferenceClient(
+            provider="hf-inference",
+            api_key=settings.CV_ANALYZER_HF_API_KEY,
         )
-        self.model = settings.CV_ANALYZER_ZAI_LLM_MODEL
+        self.model = HF_LLM_MODEL
 
     @retry(
         stop=stop_after_attempt(3),
@@ -100,7 +127,7 @@ class ZAILLMService:
         rag_context: str,
     ) -> dict:
         """
-        Call GLM-4.5-Flash with JSON mode to generate structured CV suggestions.
+        Call Qwen2.5-7B-Instruct to generate structured CV suggestions.
 
         Args:
             cv_text: Full extracted CV text
@@ -116,44 +143,66 @@ class ZAILLMService:
         system_prompt = _build_system_prompt(rag_context)
         user_prompt = _build_user_prompt(cv_text, sections)
 
-        response = self.client.chat.completions.create(
+        # HF Inference uses text generation, not chat completions
+        full_prompt = f"<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{user_prompt}<|im_end|>\n<|im_start|>assistant\n"
+
+        response = self.client.text_generation(
+            prompt=full_prompt,
             model=self.model,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=1500,
+            max_new_tokens=1500,
+            temperature=0.7,
+            do_sample=True,
+            return_full_text=False,  # Only return the generated response
         )
 
-        raw_json = response.choices[0].message.content
-        usage = response.usage
+        raw_json = response
+
+        # Log raw response for debugging
+        logger.info(
+            "HF LLM raw response received",
+            extra={
+                "raw_length": len(raw_json) if raw_json else 0,
+                "raw_preview": (raw_json[:200] if raw_json else None),
+            },
+        )
+
+        # Validate response is not empty
+        if not raw_json or not raw_json.strip():
+            raise ValueError("HF LLM returned empty response")
+
+        # Extract JSON from response (may have trailing text)
+        raw_json = self._extract_json(raw_json)
+
+        # Estimate tokens (Qwen2.5 uses similar tokenization to GPT)
+        # Rough estimate: ~4 chars per token
+        prompt_tokens = len(full_prompt) // 4
+        completion_tokens = len(raw_json) // 4
 
         # Increment Prometheus counters
         llm_tokens_counter.labels(
-            provider="zai",
+            provider="hf",
             model=self.model,
             type="prompt",
-        ).inc(usage.prompt_tokens)
+        ).inc(prompt_tokens)
         llm_tokens_counter.labels(
-            provider="zai",
+            provider="hf",
             model=self.model,
             type="completion",
-        ).inc(usage.completion_tokens)
+        ).inc(completion_tokens)
 
         logger.info(
-            "Z AI LLM suggestions generated",
+            "HF LLM suggestions generated",
             extra={
                 "model": self.model,
-                "prompt_tokens": usage.prompt_tokens,
-                "completion_tokens": usage.completion_tokens,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
             },
         )
 
         return {
             "raw_json": raw_json,
-            "prompt_tokens": usage.prompt_tokens,
-            "completion_tokens": usage.completion_tokens,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
         }
 
     @retry(
@@ -163,7 +212,7 @@ class ZAILLMService:
     )
     def compare_cv(self, cv_text: str, jd_text: str) -> dict:
         """
-        Compare CV against job description via GLM-4.5-Flash JSON mode.
+        Compare CV against job description via Qwen2.5-7B-Instruct.
 
         Args:
             cv_text: Candidate CV text
@@ -178,21 +227,6 @@ class ZAILLMService:
         cv_truncated = cv_text[:4000]
         jd_truncated = jd_text[:2000]
 
-        system_prompt = (
-            "You are an expert CV/resume evaluator. "
-            "Compare the provided CV against the job description and return a JSON object. "
-            "Be specific, evidence-based, and concise.\n\n"
-            "Return ONLY valid JSON matching this exact schema:\n"
-            "{\n"
-            '  "match_pct": <integer 0-100>,\n'
-            '  "matched_skills": [<string>],\n'
-            '  "missing_skills": [<string>],\n'
-            '  "matched_experience": [<string>],\n'
-            '  "missing_experience": [<string>],\n'
-            '  "overall_recommendation": <string, max 200 chars>\n'
-            "}"
-        )
-
         user_prompt = (
             f"Job Description:\n{jd_truncated}\n\n"
             f"=== CANDIDATE CV ===\n{cv_truncated}\n\n"
@@ -201,46 +235,76 @@ class ZAILLMService:
             "Return the JSON comparison."
         )
 
-        response = self.client.chat.completions.create(
+        # HF Inference uses text generation with Qwen chat template
+        full_prompt = f"<|im_start|>system\n{_COMPARISON_SYSTEM_PROMPT}<|im_end|>\n<|im_start|>user\n{user_prompt}<|im_end|>\n<|im_start|>assistant\n"
+
+        response = self.client.text_generation(
+            prompt=full_prompt,
             model=self.model,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            max_tokens=1500,
+            max_new_tokens=1500,
+            temperature=0.7,
+            do_sample=True,
+            return_full_text=False,
         )
 
-        raw_json = response.choices[0].message.content
-        usage = response.usage
+        raw_json = self._extract_json(response)
         comparison_data = json.loads(raw_json)
+
+        # Estimate tokens
+        prompt_tokens = len(full_prompt) // 4
+        completion_tokens = len(raw_json) // 4
 
         # Increment Prometheus counters
         llm_tokens_counter.labels(
-            provider="zai",
+            provider="hf",
             model=self.model,
             type="prompt",
-        ).inc(usage.prompt_tokens)
+        ).inc(prompt_tokens)
         llm_tokens_counter.labels(
-            provider="zai",
+            provider="hf",
             model=self.model,
             type="completion",
-        ).inc(usage.completion_tokens)
+        ).inc(completion_tokens)
 
         logger.info(
-            "Z AI CV comparison generated",
+            "HF LLM CV comparison generated",
             extra={
                 "model": self.model,
-                "prompt_tokens": usage.prompt_tokens,
-                "completion_tokens": usage.completion_tokens,
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
             },
         )
 
         return {
             "comparison": comparison_data,
-            "prompt_tokens": usage.prompt_tokens,
-            "completion_tokens": usage.completion_tokens,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
         }
+
+    def _extract_json(self, response: str) -> str:
+        """
+        Extract JSON from LLM response, handling markdown code blocks.
+
+        Args:
+            response: Raw response text from LLM
+
+        Returns:
+            Cleaned JSON string
+        """
+        response = response.strip()
+
+        # Remove markdown code blocks
+        if "```" in response:
+            json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', response, re.DOTALL)
+            if json_match:
+                return json_match.group(1)
+
+        # Find first { ... } pattern
+        brace_match = re.search(r'\{.*\}', response, re.DOTALL)
+        if brace_match:
+            return brace_match.group(0)
+
+        return response
 
     def validate_output(self, raw_json: str) -> SuggestionsOutput:
         """
@@ -254,6 +318,22 @@ class ZAILLMService:
 
         Raises:
             ValidationError: If JSON doesn't match schema
+            ValueError: If JSON is invalid or response is empty
         """
-        data = json.loads(raw_json)
+        if not raw_json or not raw_json.strip():
+            raise ValueError("Empty JSON response from HF LLM")
+
+        try:
+            data = json.loads(raw_json)
+        except json.JSONDecodeError as e:
+            logger.error(
+                "HF LLM JSON parsing failed",
+                extra={
+                    "error": str(e),
+                    "raw_length": len(raw_json),
+                    "raw_preview": raw_json[:500] if raw_json else None,
+                },
+            )
+            raise ValueError(f"Invalid JSON from HF LLM: {e}") from e
+
         return SuggestionsOutput.model_validate(data)

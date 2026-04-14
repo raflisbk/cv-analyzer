@@ -85,7 +85,7 @@ export function AtsChecklist({ checks }: AtsChecklistProps) {
           return (
             <div
               key={index}
-              className={`flex items-start justify-between gap-4 rounded-xl bg-[#1C1C1C] border ${style.border} px-4 py-3`}
+              className={`flex items-start justify-between gap-4 rounded-xl bg-[#F5F2D8]/[0.03] backdrop-blur-sm border ${style.border} px-4 py-3`}
             >
               <div className="flex items-start gap-3 flex-1 min-w-0">
                 {style.icon}

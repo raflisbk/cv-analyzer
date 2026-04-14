@@ -14,7 +14,6 @@ import language_tool_python
 
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.services.scoring.embeddings import get_openai_client
 
 
 _tool: language_tool_python.LanguageTool | None = None
@@ -75,22 +74,39 @@ def get_tool() -> language_tool_python.LanguageTool | None:
 
 
 def _check_grammar_with_llm(text: str) -> list[dict]:
-    """LLM-based grammar check fallback when LanguageTool is unavailable."""
+    """LLM-based grammar check fallback using HF Inference Qwen2.5 when LanguageTool is unavailable."""
     try:
-        client = get_openai_client()
+        from app.services.llm.hf_openai_llm_service import HFOpenAILLMService
+
         settings = get_settings()
 
-        response = client.chat.completions.create(
-            model=settings.CV_ANALYZER_LLM_MODEL,
-            response_format={"type": "json_object"},
+        if not settings.CV_ANALYZER_HF_API_KEY:
+            raise ValueError("HF API key not configured")
+
+        llm_service = HFOpenAILLMService()
+
+        user_prompt = f"CV Text:\n{text[:5000]}"
+
+        response = llm_service.client.chat.completions.create(
+            model=llm_service.model,
             messages=[
                 {"role": "system", "content": _GRAMMAR_SYSTEM_PROMPT},
-                {"role": "user", "content": f"CV Text:\n{text[:5000]}"},
+                {"role": "user", "content": user_prompt},
             ],
+            temperature=0.3,
             max_tokens=1000,
         )
 
-        raw = response.choices[0].message.content or "{}"
+        raw = response.choices[0].message.content.strip()
+
+        # Extract JSON from response if wrapped in markdown
+        if "```" in raw:
+            import re
+
+            json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', raw, re.DOTALL)
+            if json_match:
+                raw = json_match.group(1)
+
         data = json.loads(raw)
         issues_raw = data.get("issues", [])
 
@@ -110,16 +126,15 @@ def _check_grammar_with_llm(text: str) -> list[dict]:
             )
 
         logger.info(
-            "LLM grammar check complete",
+            "HF LLM grammar check complete",
             extra={"issue_count": len(issues)},
         )
+        return issues
     except Exception as exc:
         logger.warning(
-            "LLM grammar check failed — returning empty list",
+            "HF LLM grammar check failed — returning empty list",
             extra={"error": str(exc)},
         )
-    else:
-        return issues
     return []
 
 

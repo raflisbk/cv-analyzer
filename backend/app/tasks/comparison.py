@@ -7,7 +7,7 @@ Flow per D-C1:
 1. Check Redis cache (comparison:{job_id}:{jd_hash[:16]}) — return if hit
 2. Set job.comparison_status = "comparing" + emit comparing_job SSE stage
 3. Get CV text from jobs.result["text"]
-4. Call OpenAILLMService.compare_cv() with 3x retry inside service
+4. Call HFLLMService.compare_cv() with 3x retry inside service
 5. Cache in Redis (TTL 24h per D-C7) + save to jobs table + emit complete
 On failure (D-C8): set comparison_status = "failed", emit complete (not page-level failure)
 """
@@ -25,13 +25,13 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus  # noqa: F401
 from app.schemas.analysis import ComparisonResult
-from app.services.llm.openai_service import OpenAILLMService
+from app.services.llm.hf_openai_llm_service import HFOpenAILLMService
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
 
-# Module-level singleton — avoids re-instantiation per Celery task call
-_llm_service = OpenAILLMService()
+# Module-level singleton — HF LLM (Qwen2.5)
+_llm_service = HFOpenAILLMService()
 
 # Module-level Redis client — lazy init (same pattern as llm_suggest.py)
 _redis_client: redis_lib.Redis | None = None

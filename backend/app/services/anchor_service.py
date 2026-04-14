@@ -48,6 +48,7 @@ def compute_suggestion_anchors(file_id: str, suggestions: list[dict]) -> list[di
         return []
 
     anchors: list[dict] = []
+    seen_positions: set[tuple[int, int, float, float, float, float]] = set()
 
     for card_idx, card in enumerate(suggestions):
         section = card.get("section", "unknown")
@@ -57,17 +58,67 @@ def compute_suggestion_anchors(file_id: str, suggestions: list[dict]) -> list[di
                 :100
             ].strip()
             if not raw_anchor:
+                logger.debug(
+                    "anchor_service: skipping suggestion without original_text",
+                    extra={
+                        "suggestion_id": f"{section}_{item_idx}_{card_idx}",
+                        "text_preview": item.get("text", "")[:50],
+                    },
+                )
                 continue
 
+            # Try multiple search strategies with increasing tolerance
+            anchor_found = False
+
             for page_idx in range(len(doc)):
+                if anchor_found:
+                    break
+
                 page = doc[page_idx]
-                rects = page.search_for(raw_anchor)  # case-insensitive by default
-                if not rects:
-                    # Try shorter truncation to improve match probability
+
+                # Strategy 1: Exact match
+                rects = page.search_for(raw_anchor)
+                if rects:
+                    anchor_found = True
+                else:
+                    # Strategy 2: Shorter substring (first 60 chars)
                     short_anchor = raw_anchor[:60].strip()
                     rects = page.search_for(short_anchor)
+                    if rects:
+                        anchor_found = True
+                    else:
+                        # Strategy 3: Whitespace-normalized substring (first 40 chars)
+                        # Remove extra whitespace and newlines for more lenient matching
+                        normalized_anchor = " ".join(raw_anchor[:40].split())
+                        if len(normalized_anchor) > 10:  # Only if meaningful
+                            rects = page.search_for(normalized_anchor)
+                            if rects:
+                                anchor_found = True
+
                 if rects:
                     r = rects[0]
+                    # Deduplicate by position (page + rect coordinates)
+                    # Round coordinates to avoid floating point differences
+                    pos_key = (
+                        page_idx,
+                        round(r.x0, 1),
+                        round(r.y0, 1),
+                        round(r.x1, 1),
+                        round(r.y1, 1),
+                    )
+                    if pos_key in seen_positions:
+                        # Skip duplicate anchor at this position
+                        logger.debug(
+                            "anchor_service: skipping duplicate anchor position",
+                            extra={
+                                "suggestion_id": f"{section}_{item_idx}_{card_idx}",
+                                "page": page_idx,
+                                "rect": pos_key,
+                            },
+                        )
+                        break
+
+                    seen_positions.add(pos_key)
                     anchors.append(
                         {
                             "suggestion_id": f"{section}_{item_idx}_{card_idx}",
@@ -84,6 +135,16 @@ def compute_suggestion_anchors(file_id: str, suggestions: list[dict]) -> list[di
                         }
                     )
                     break  # First matching page only
+
+            # Log if no match found after all strategies
+            if not anchor_found:
+                logger.debug(
+                    "anchor_service: no match found for suggestion after all strategies",
+                    extra={
+                        "suggestion_id": f"{section}_{item_idx}_{card_idx}",
+                        "anchor_preview": raw_anchor[:50],
+                    },
+                )
 
     doc.close()
     logger.info(

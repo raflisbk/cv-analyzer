@@ -15,35 +15,30 @@ const DIMENSIONS: Array<{
   label: string;
   description: string;
   accentColor: string;
-  bgColor: string;
 }> = [
   {
     key: "clarity",
     label: "Clarity",
     description: "Readability and structure",
     accentColor: "#CAFF43",
-    bgColor: "bg-[#1A2200]",
   },
   {
     key: "impact",
     label: "Impact",
     description: "Achievements & action verbs",
     accentColor: "#FF8C42",
-    bgColor: "bg-[#221200]",
   },
   {
     key: "completeness",
     label: "Completeness",
     description: "Sections and coverage",
     accentColor: "#8B5CF6",
-    bgColor: "bg-[#150E2A]",
   },
   {
     key: "relevance",
     label: "Relevance",
     description: "Keywords & ATS match",
     accentColor: "#FF4FCB",
-    bgColor: "bg-[#230016]",
   },
 ];
 
@@ -51,7 +46,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
   return (
     <div className="space-y-6">
       {/* Overall gauge hero */}
-      <div className="bg-[#141414] rounded-2xl p-8 flex flex-col items-center gap-3">
+      <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-[#F5F2D8]/[0.08]">
         <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">Overall Score</span>
         <GaugeChart value={scores.overall} label="Overall" size={180} />
         <ScoreRangeBadge score={scores.overall} />
@@ -59,12 +54,13 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
 
       {/* 2×2 dimension cards */}
       <div className="grid grid-cols-2 gap-4">
-        {DIMENSIONS.map(({ key, label, description, accentColor, bgColor }) => {
+        {DIMENSIONS.map(({ key, label, description, accentColor }) => {
           const scoreVal = scores[key] ?? 0;
           return (
             <div
               key={key}
-              className={`${bgColor} rounded-2xl p-5 flex flex-col items-center gap-2 border border-white/5`}
+              className="rounded-2xl p-5 flex flex-col items-center gap-2 border border-[#F5F2D8]/[0.08] backdrop-blur-sm"
+              style={{ backgroundColor: `color-mix(in srgb, ${accentColor} 8%, transparent)` }}
             >
               {/* Accent label pill */}
               <span

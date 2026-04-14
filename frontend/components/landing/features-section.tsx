@@ -31,31 +31,46 @@ export default function FeaturesSection() {
   return (
     <section
       aria-labelledby="features-heading"
-      className="bg-[#F5F2D8] py-16 md:py-24"
+      className="bg-[#F5F2D8] py-20 md:py-32"
     >
       <div className="max-w-6xl mx-auto px-4 md:px-8">
-        <h2
-          id="features-heading"
-          className="font-display font-extrabold text-2xl md:text-3xl text-[#141414] text-center mb-4"
-        >
-          What CV Analyzer can do
-        </h2>
-        <p className="text-base text-[#141414]/60 text-center mb-12 max-w-2xl mx-auto">
-          AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility,
-          and keyword relevance.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mb-16 text-center">
+          <h2
+            id="features-heading"
+            className="mb-5 font-display text-3xl md:text-5xl font-extrabold tracking-tight text-[#141414]"
+          >
+            What CV Analyzer can do
+          </h2>
+          <p className="mx-auto max-w-2xl text-base md:text-lg font-medium tracking-wide text-[#141414]/60">
+            AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility,
+            and keyword relevance.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {features.map(({ Icon, iconContainer, iconColor, title, description }) => (
             <div
               key={title}
-              className="bg-white rounded-2xl p-6 border-0 shadow-sm
-                         transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
+              className="group relative overflow-hidden rounded-[2rem] bg-white p-8 transition-all duration-300 hover:-translate-y-1.5"
+              style={{
+                boxShadow: "0 8px 32px rgba(20,20,20,0.04), 0 1px 2px rgba(20,20,20,0.02)",
+                border: "1px solid rgba(20,20,20,0.02)"
+              }}
             >
-              <div className={`inline-flex ${iconContainer}`}>
-                <Icon size={24} className={iconColor} />
+              {/* Icon */}
+              <div 
+                className={`mb-8 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${iconContainer.split(' ')[0]}`}
+              >
+                <Icon size={28} className={iconColor} />
               </div>
-              <p className="text-base font-extrabold text-[#141414] mt-3 mb-2">{title}</p>
-              <p className="text-sm text-[#141414]/60 leading-relaxed">{description}</p>
+              
+              <h3 className="mb-3 font-display text-xl font-bold tracking-tight text-[#141414]">
+                {title}
+              </h3>
+              
+              <p className="text-[15px] leading-relaxed text-[#141414]/60">
+                {description}
+              </p>
             </div>
           ))}
         </div>

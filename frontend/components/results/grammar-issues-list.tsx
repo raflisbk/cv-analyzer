@@ -32,7 +32,7 @@ export function GrammarIssuesList({ issues }: GrammarIssuesListProps) {
       {issues.map((issue, index) => {
         const { pillBg, pillText } = getRuleStyle(issue.rule);
         return (
-          <div key={index} className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-5 space-y-2">
+          <div key={index} className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl border border-[#F5F2D8]/[0.08] p-5 space-y-2">
             <span className={`inline-block rounded-full text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 ${pillBg} ${pillText}`}>
               {issue.rule}
             </span>

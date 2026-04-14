@@ -19,9 +19,11 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [numPages, setNumPages] = useState<number>(0);
 
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";
+  const anchors = hydration?.suggestion_anchors ?? [];
   const modeLabel = viewMode === "optimized" ? "Optimized" : "Original Uploaded";
   const modeNote = viewMode === "original"
     ? "Optimized PDF available after edits applied"
@@ -124,12 +126,12 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
-            <span className="min-w-[1.6rem] text-center text-[11px] font-bold text-[#F5F2D8]/55">
-              {currentPage}
+            <span className="min-w-[3rem] text-center text-[11px] font-bold text-[#F5F2D8]/55">
+              {currentPage}{numPages > 0 && ` / ${numPages}`}
             </span>
             <button
               onClick={() => setCurrentPage((p) => p + 1)}
-              disabled={!pdfUrl}
+              disabled={!pdfUrl || (numPages > 0 && currentPage >= numPages)}
               aria-label="Next page"
               className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
@@ -149,6 +151,8 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             containerWidth={containerWidth}
             currentPage={currentPage}
             onPageLoadSuccess={onPageLoadSuccess}
+            onDocumentLoadSuccess={setNumPages}
+            anchors={anchors}
           />
         </div>
 

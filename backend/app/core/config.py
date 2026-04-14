@@ -31,26 +31,18 @@ class Settings(BaseSettings):
     CV_ANALYZER_MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5MB per D-02
     CV_ANALYZER_UPLOAD_RATE_LIMIT: str = "5/hour"  # per D-31
 
-    # OpenAI API (Phase 2: embedding scoring per D-07, D-10)
-    CV_ANALYZER_OPENAI_API_KEY: str = ""
-
-    # Z AI API (fallback provider for LLM only)
-    CV_ANALYZER_ZAI_API_KEY: str = ""
-    CV_ANALYZER_ZAI_BASE_URL: str = "https://api.z.ai/api/paas/v4/"
-    CV_ANALYZER_ZAI_LLM_MODEL: str = "glm-4.5-flash"
-
-    # Hugging Face Inference API (fallback provider for embeddings)
+    # Hugging Face Inference API (primary provider for LLM + embeddings)
     CV_ANALYZER_HF_API_KEY: str = ""
 
     # Analysis pipeline rate limit per D-15
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
     # Phase 3: LLM + RAG settings (per D-02, D-11, D-14)
-    CV_ANALYZER_LLM_MODEL: str = "gpt-4o-mini"
+    CV_ANALYZER_LLM_MODEL: str = "Qwen/Qwen2-7B-Instruct"
     CV_ANALYZER_LLM_MAX_TOKENS: int = 1500
     CV_ANALYZER_LLM_CACHE_TTL: int = 86400  # 24h in seconds (D-14)
     CV_ANALYZER_RAG_TOP_K: int = 5  # Top-K retrieval (D-13)
-    CV_ANALYZER_RAG_EMBEDDING_MODEL: str = "text-embedding-3-large"  # D-11
+    CV_ANALYZER_RAG_EMBEDDING_MODEL: str = "BAAI/bge-m3"  # HF embeddings
 
     # CORS
     CV_ANALYZER_CORS_ORIGINS: str = "*"  # CSV string, "*" for dev (D-50)

@@ -1,8 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Download, Sparkles, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
+import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 
 interface WorkspaceV2HeaderProps {
   filename: string | null;
@@ -19,55 +20,188 @@ export function WorkspaceV2Header({
 }: WorkspaceV2HeaderProps) {
   const router = useRouter();
   const displayName = filename ?? "Document";
+  const overallScore = useWorkspaceV2Store(
+    (s) => s.hydration?.analysis?.scores?.overall ?? null
+  );
+
+  const isReady = jobStatus === "ready";
+  const isPreparing = jobStatus === "preparing";
+
+  // Score grade for color
+  const scoreColor =
+    overallScore === null
+      ? null
+      : overallScore >= 85
+      ? "#CAFF43"
+      : overallScore >= 70
+      ? "#FF8C42"
+      : "#f87171";
 
   return (
     <header
       className={cn(
-        "relative z-10 flex items-start justify-between gap-4 px-5 py-4",
-        "border-b border-[rgba(17,17,17,0.08)] bg-[rgba(255,255,255,0.28)] backdrop-blur-sm",
+        "relative z-10 flex items-center justify-between gap-4 px-5",
         className
       )}
+      style={{
+        minHeight: 60,
+        background: "rgba(245,242,216,0.88)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(17,17,17,0.09)",
+        boxShadow:
+          "0 1px 0 rgba(255,255,255,0.9) inset, 0 4px 24px rgba(17,17,17,0.06)",
+      }}
     >
-      {/* Left — logo + title */}
-      <div className="flex items-start gap-3 min-w-0">
-        {/* Path Karir logo — reuses the same component as landing page */}
-        <PathkrLogo size="md" variant="light" className="flex-none pt-0.5" />
+      {/* Lime accent hairline at very bottom */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(202,255,67,0.45) 30%, rgba(202,255,67,0.6) 50%, rgba(202,255,67,0.45) 70%, transparent 100%)",
+        }}
+      />
+
+      {/* ── Left: Logo + divider + breadcrumb/title ── */}
+      <div className="relative flex min-w-0 flex-1 items-center gap-3">
+        <PathkrLogo size="md" variant="light" className="flex-none" />
 
         {/* Divider */}
-        <div className="mt-1.5 h-4 w-px bg-[rgba(17,17,17,0.12)] flex-none" aria-hidden="true" />
+        <div
+          className="h-5 w-px flex-none"
+          style={{ background: "rgba(17,17,17,0.15)" }}
+          aria-hidden="true"
+        />
 
         {/* Title block */}
-        <div className="min-w-0 pt-0.5">
-          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[rgba(17,17,17,0.42)] mb-0.5">
-            cv analysis workspace
-          </p>
-          <h1
-            className="font-display text-[clamp(13px,1.6vw,18px)] font-black leading-[0.97] tracking-[-0.04em] text-[#111111] max-w-[480px] truncate"
+        <div className="min-w-0">
+          {/* Breadcrumb */}
+          <p
+            className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px]"
+            style={{ color: "rgba(17,17,17,0.38)" }}
           >
-            {displayName}{" "}
+            Workspace
+            <span className="mx-1 opacity-50">/</span>
+            CV Analysis
+          </p>
+
+          {/* Document title */}
+          <h1
+            className="flex items-center gap-1.5 font-display font-black leading-none tracking-[-0.035em] truncate"
+            style={{
+              fontSize: "clamp(13px, 1.4vw, 17px)",
+              color: "#141414",
+              maxWidth: 380,
+            }}
+          >
+            <span className="truncate">{displayName}</span>
             <span
-              className="rounded-full px-[0.22em] inline-block"
-              style={{ background: "rgba(202,255,67,0.82)" }}
+              className="inline-flex flex-none items-center gap-0.5 rounded-full px-[0.45em] py-[0.12em]"
+              style={{
+                background: "#CAFF43",
+                color: "#1a2900",
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.02em",
+              }}
             >
+              <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
               optimized
             </span>
           </h1>
         </div>
       </div>
 
-      {/* Right — status pills + back */}
-      <div className="flex flex-none items-center gap-2 flex-wrap justify-end">
-        {jobStatus === "ready" && (
+      {/* ── Center: Status + Score ── */}
+      <div className="relative flex flex-none items-center gap-2">
+        {isPreparing && (
           <span
-            className="rounded-full px-3 py-2 text-[11px] font-black text-[#F5F2D8] border border-[rgba(255,255,255,0.08)]"
-            style={{ background: "#111111" }}
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black"
+            style={{
+              background: "rgba(255,140,66,0.12)",
+              border: "1px solid rgba(255,140,66,0.32)",
+              color: "#7a3500",
+            }}
           >
-            Done
+            <span
+              className="h-1.5 w-1.5 rounded-full animate-pulse"
+              style={{ background: "#FF8C42" }}
+              aria-hidden="true"
+            />
+            Preparing…
           </span>
         )}
+
+        {isReady && (
+          <span
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black"
+            style={{
+              background: "rgba(202,255,67,0.18)",
+              border: "1px solid rgba(202,255,67,0.45)",
+              color: "#294000",
+            }}
+          >
+            <Zap
+              className="h-3 w-3"
+              style={{ fill: "#CAFF43", stroke: "#CAFF43" }}
+              aria-hidden="true"
+            />
+            Ready
+          </span>
+        )}
+
+        {/* Score badge */}
+        {overallScore !== null && (
+          <div
+            className="flex items-baseline gap-0.5 rounded-full px-3 py-1.5"
+            style={{
+              background: `${scoreColor}18`,
+              border: `1px solid ${scoreColor}44`,
+            }}
+            title="Overall CV score"
+          >
+            <span
+              className="text-[15px] font-black leading-none"
+              style={{ color: scoreColor ?? undefined }}
+            >
+              {overallScore}
+            </span>
+            <span
+              className="text-[10px] font-bold"
+              style={{ color: `${scoreColor}88` }}
+            >
+              /100
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Right: CTAs ── */}
+      <div className="relative flex flex-none items-center gap-1.5">
+        {/* Save PDF — primary action */}
+        <button
+          type="button"
+          className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-black tracking-wide transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
+          style={{
+            background: "#141414",
+            color: "#F5F2D8",
+            border: "1px solid rgba(255,255,255,0.10)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.20)",
+          }}
+        >
+          <Download className="h-3 w-3" aria-hidden="true" />
+          Save PDF
+        </button>
+
+        {/* Back */}
         <button
           onClick={() => router.push(`/results/${jobId}`)}
-          className="flex items-center gap-1 rounded-full border border-[rgba(17,17,17,0.1)] bg-[rgba(255,255,255,0.6)] px-3 py-2 text-[11px] font-black text-[#111111] transition-colors hover:bg-white"
+          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97]"
+          style={{
+            background: "rgba(17,17,17,0.06)",
+            border: "1px solid rgba(17,17,17,0.13)",
+          }}
           aria-label="Back to results"
         >
           <ChevronLeft className="h-3.5 w-3.5" />

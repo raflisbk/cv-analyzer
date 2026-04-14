@@ -1,6 +1,6 @@
 """
 LLM service abstraction layer per LLM-05, D-04.
-Protocol allows swapping providers (OpenAI → Claude) without changing call sites.
+Protocol allows swapping providers (HF Inference, others) without changing call sites.
 Pydantic models enforce JSON output schema per LLM-04, D-03.
 """
 
@@ -14,7 +14,7 @@ class SuggestionItemOutput(BaseModel):
 
     priority: Literal["high_impact", "quick_win"]
     text: str
-    type: Literal["action_verb", "impact_metric", "missing_section"]
+    type: Literal["action_verb", "impact_metric", "missing_section"] = "action_verb"
     original_text: str | None = None
     after_text: str | None = None
 
