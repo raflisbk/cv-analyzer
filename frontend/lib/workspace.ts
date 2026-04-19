@@ -8,6 +8,7 @@ import type {
   SuggestionCard,
   GrammarIssue,
 } from "@/lib/types";
+import type { ChatMessage } from "@/lib/stores/workspace-v2-store";
 
 // Phase 14: Suggestion anchor coordinate types (mirror of backend/app/schemas/anchors.py)
 export interface AnchorRect {
@@ -63,6 +64,7 @@ export interface WorkspaceHydration {
   navigation: WorkspaceNavigation;
   error?: string | null;
   suggestion_anchors?: SuggestionAnchorRecord[];  // Phase 14: ANNOT-04; empty for pre-Phase-14 jobs
+  messages?: ChatMessage[];  // Phase 16: chat history
 }
 
 export async function getWorkspaceHydration(

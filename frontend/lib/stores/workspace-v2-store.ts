@@ -11,6 +11,13 @@ import type { WorkspaceHydration } from "@/lib/workspace";
 
 export type SuggestionStatus = "pending" | "applied" | "dismissed";
 
+export type ChatMessage = {
+  timestamp: string;
+  role: "user" | "assistant";
+  content: string;
+  status: "complete" | "streaming" | "error";
+};
+
 interface WorkspaceV2State {
   // PDF state
   pdfUrl: string | null;
@@ -28,6 +35,10 @@ interface WorkspaceV2State {
   // Phase 15: inline edit document state
   cvDocument: Record<string, any> | null;
 
+  // Phase 16: Chat state
+  chatMessages: ChatMessage[];
+  isChatStreaming: boolean;
+
   // Job context
   jobId: string;
   hydration: WorkspaceHydration | null;
@@ -40,6 +51,10 @@ interface WorkspaceV2State {
   setSuggestionStatus: (id: string, status: SuggestionStatus) => void;
   applyAllSuggestions: () => void;
   applyInlineEdit: (editId: string, originalText: string, rewrittenText: string) => void;
+  addChatMessage: (message: ChatMessage) => void;
+  updateLastChatMessage: (content: string) => void;
+  setChatStreaming: (streaming: boolean) => void;
+  clearChatMessages: () => void;
   setJobId: (jobId: string) => void;
   setHydration: (hydration: WorkspaceHydration) => void;
 }
@@ -51,6 +66,8 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   activeSuggestionId: null,   // Phase 14: no active suggestion by default
   suggestionStatuses: {},     // Phase 14: all suggestions start as pending
   cvDocument: null,           // Phase 15: optimized document state
+  chatMessages: [],           // Phase 16: chat message history
+  isChatStreaming: false,     // Phase 16: streaming indicator
   jobId: "",
   hydration: null,
 
@@ -91,6 +108,21 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
         },
       };
     }),
+  addChatMessage: (message) =>
+    set((state) => ({
+      chatMessages: [...state.chatMessages, message],
+    })),
+  updateLastChatMessage: (content) =>
+    set((state) => {
+      const updated = [...state.chatMessages];
+      const last = updated[updated.length - 1];
+      if (last && last.role === "assistant") {
+        last.content += content;
+      }
+      return { chatMessages: updated };
+    }),
+  setChatStreaming: (streaming) => set({ isChatStreaming: streaming }),
+  clearChatMessages: () => set({ chatMessages: [] }),
   setJobId: (jobId) => set({ jobId }),
   setHydration: (hydration) => set({ hydration }),
 }));
