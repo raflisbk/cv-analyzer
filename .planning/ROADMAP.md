@@ -29,7 +29,7 @@
 - [x] **Phase 13: PDF-First Workspace Shell** `v4.0` - `/workspace-v2` parallel route, 3-panel layout, react-pdf v10 viewer, file endpoint, DB schema additions, and annotation coordinate spike (completed 2026-04-12)
 - [x] **Phase 14: Annotation Overlay & Diff Toggle** `v4.0` - Stabilo highlights on PDF via customTextRenderer, 1.5s hover popover, left panel sync, diff toggle, and sticky footer shell ✅ **COMPLETE** (2026-04-12)
 - [x] **Phase 15: Inline AI Edit & Analysis Panel Wiring** `v4.0` - Wire existing analysis components into left panel; text selection → "Edit with AI" popover with backend rewrite endpoint (completed 2026-04-19)
-- [ ] **Phase 16: Live Chat & CRDT Foundation** `v4.0` - Contextual chat copilot with ReadableStream streaming, pycrdt-websocket WebSocket endpoint, and cv_document JSONB hydration pipeline
+- [x] **Phase 16: Live Chat & CRDT Foundation** `v4.0` - Contextual chat copilot with ReadableStream streaming, pycrdt-websocket WebSocket endpoint, and cv_document JSONB hydration pipeline ✅ **COMPLETE** (2026-04-19)
 - [ ] **Phase 17: Export v4, Migration Cutover & Preservation** `v4.0` - WeasyPrint optimized PDF export, save report, upload flow redirect to /workspace-v2, job match verified and documented
 
 ## Phase Details
@@ -293,10 +293,10 @@ Plans:
 **Plans**: 4 plans across 3 waves
 
 Plans:
-- [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
+- [x] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1) (completed 2026-04-19)
 - [x] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2) (completed 2026-04-19)
 - [x] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2) (completed 2026-04-19)
-- [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
+- [x] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3) (completed 2026-04-19)
 
 **UI hint**: yes
 
@@ -515,10 +515,10 @@ Plans:
 **Plans**: 4 plans across 3 waves
 
 Plans:
-- [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
+- [x] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1) (completed 2026-04-19)
 - [x] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2) (completed 2026-04-19)
 - [x] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2) (completed 2026-04-19)
-- [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
+- [x] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3) (completed 2026-04-19)
 
 **UI hint**: yes
 
@@ -541,7 +541,7 @@ Plans:
 | 13. PDF-First Workspace Shell (v4.0) | 6/6 | Complete | 2026-04-12 |
 | 14. Annotation Overlay & Diff Toggle (v4.0) | 0/4 | Not started | - |
 | 15. Inline AI Edit & Analysis Panel Wiring (v4.0) | 1/1 | Complete    | 2026-04-19 |
-| 16. Live Chat & CRDT Foundation (v4.0) | 3/4 | In Progress | - |
+| 16. Live Chat & CRDT Foundation (v4.0) | 4/4 | Complete | 2026-04-19 |
 | 17. Export v4, Migration Cutover & Preservation (v4.0) | 0/TBD | Not started | - |
 
 ## Phase Dependencies
@@ -664,5 +664,5 @@ Phase 17: Export v4, Migration Cutover & Preservation (v4.0)
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-19 (Phase 16 plan 16-03 complete)*
-*Next: `/gsd-execute-phase 16` (continue with 16-04)*
+*Last updated: 2026-04-19 (Phase 16 complete — all 4 plans done)*
+*Next: Plan Phase 17 (Export v4, Migration Cutover & Preservation)*

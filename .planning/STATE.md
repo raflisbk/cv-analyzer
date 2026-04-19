@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: — PDF-First Analysis Workspace
 current_phase: 16
-status: executing
-stopped_at: Completed 16-03-PLAN.md (CRDT WebSocket backend)
-last_updated: "2026-04-19T17:30:00.000Z"
-last_activity: 2026-04-19 -- Phase 16 plan 16-03 complete
+status: complete
+stopped_at: Phase 16 complete — all 4 plans done
+last_updated: "2026-04-19T18:15:00.000Z"
+last_activity: 2026-04-19 -- Phase 16 complete (16-04 Yjs WebSocket + cv_document)
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 15
-  completed_plans: 14
-  percent: 87
+  completed_plans: 15
+  percent: 100
 ---
 
 # Project State: CV Analyzer (pathkr)
@@ -44,10 +44,10 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 **Milestone v4.0 — PDF-First Analysis Workspace**
 
-Phase: 16 (live-chat-crdt-foundation) — EXECUTING
-Plan: 3 of 4 complete (16-01, 16-02, 16-03 done)
-Status: Executing Phase 16
-Last activity: 2026-04-19 -- 16-03 complete (CRDT WebSocket backend)
+Phase: 16 (live-chat-crdt-foundation) — COMPLETE
+Plan: 4 of 4 complete (16-01, 16-02, 16-03, 16-04 done)
+Status: Phase 16 complete
+Last activity: 2026-04-19 -- 16-04 complete (Yjs WebSocket + cv_document)
 
 **Why this milestone now:**
 
@@ -209,6 +209,12 @@ Last activity: 2026-04-19 -- 16-03 complete (CRDT WebSocket backend)
 - [Phase 16]: Room scoping by URL path (/yjs/{job_id}) — no manual room management; on_connect callback handles job validation
 - [Phase 16]: WebsocketServer.start() called in FastAPI startup event to initialize internal task group
 
+| Phase 16 P04 | 30 min | 4 tasks | 4 files |
+
+- [Phase 16]: cv_document populated in llm_suggest.py (not cv_analysis_task.py — file doesn't exist); llm_suggest is the actual final task that sets COMPLETE
+- [Phase 16]: y-websocket@3.0.0 WebsocketProvider connects to ws://localhost:8000/yjs/{job_id} via NEXT_PUBLIC_API_URL env var protocol swap
+- [Phase 16]: cv_document includes sections, metadata, suggestions, scores — written atomically in same DB transaction as COMPLETE status
+
 - [Phase 16]: Mock streaming placeholder for chat — HF InferenceClient does not support streaming yet, will be replaced in future plan
 - [Phase 16]: Messages persisted via await _save_messages() after stream completes rather than FastAPI BackgroundTasks to avoid session issues with SSE generators
 - [Phase 16]: job.scores JSONB dict wrapped with ScoreResult(**job.scores) in chat context builder for type-safe attribute access
@@ -239,14 +245,15 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-19T17:30:00.000Z
-**Stopped At:** Completed 16-03-PLAN.md (CRDT WebSocket backend)
+**Last Session:** 2026-04-19T18:15:00.000Z
+**Stopped At:** Phase 16 complete — all 4 plans done
 **Phase 2 completed:** 2026-04-06
 **Phase 15 completed:** 2026-04-19
+**Phase 16 completed:** 2026-04-19
 
 **Next Actions:**
 
-1. Execute 16-04-PLAN.md (Yjs WebSocket integration + cv_document population)
+1. Plan Phase 17 (Export v4, Migration Cutover & Preservation)
 
 ## Technical Stack
 
