@@ -16,6 +16,7 @@ from app.schemas.analysis import (
     SectionResult,
     SuggestionCard,
     SuggestionItem,
+    GrammarIssue,
 )
 from app.schemas.anchors import SuggestionAnchorRecord
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
@@ -45,6 +46,7 @@ def _build_scores(raw_scores: dict[str, Any] | None) -> ScoreResult | None:
         impact=raw_scores.get("impact", 0),
         completeness=raw_scores.get("completeness", 0),
         relevance=raw_scores.get("relevance", 0),
+        reasonings=raw_scores.get("reasonings", {}),
     )
 
 
@@ -86,6 +88,27 @@ def _build_ats_checks(raw_ats_checks: list[dict[str, Any]] | None) -> list[AtsCh
     ]
 
 
+def _build_grammar_issues(raw_grammar_issues: list[dict[str, Any]] | None) -> list[GrammarIssue]:
+    if not raw_grammar_issues:
+        return []
+    
+    return [
+        GrammarIssue(
+            text=issue.get("text", ""),
+            offset=issue.get("offset", 0),
+            suggestion=issue.get("suggestion", ""),
+            rule=issue.get("rule", ""),
+        )
+        for issue in raw_grammar_issues
+    ]
+
+
+def _build_skills(raw_nlp_result: dict[str, Any] | None) -> list[str]:
+    if not raw_nlp_result or not raw_nlp_result.get("skills"):
+        return []
+    return raw_nlp_result.get("skills", [])
+
+
 def _build_suggestions(
     raw_suggestions: list[dict[str, Any]] | None,
 ) -> list[SuggestionCard] | None:
@@ -100,6 +123,7 @@ def _build_suggestions(
                     SuggestionItem(
                         priority=item.get("priority", "quick_win"),
                         text=item.get("text", ""),
+                        explanation=item.get("explanation", ""),
                         type=item.get("type", "action_verb"),
                         original_text=item.get("original_text"),
                         after_text=item.get("after_text"),
@@ -233,6 +257,8 @@ async def get_workspace_hydration(
                 safe_comparison_result, safe_comparison_status
             ),
             comparison_status=safe_comparison_status,
+            grammar_issues=_build_grammar_issues(job.grammar_issues if isinstance(job.grammar_issues, list) else None),
+            skills=_build_skills(safe_nlp_result),
         )
         navigation = WorkspaceNavigation(
             workspace_url=f"/workspace/{job.id}",

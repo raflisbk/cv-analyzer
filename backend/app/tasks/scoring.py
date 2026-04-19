@@ -74,6 +74,17 @@ def score_cv_task(self: Task, job_id: str) -> dict:
 
         # score_cv raises on OpenAI failure after 3 retries (D-10)
         scores = score_cv(text)
+        
+        # Generate AI explanations for scores
+        try:
+            from app.services.llm.score_explainer import ScoreExplainerService
+            explainer = ScoreExplainerService()
+            reasonings = explainer.explain_scores(text, scores)
+            scores["reasonings"] = reasonings
+        except Exception as e:
+            logger.error(f"Score explanation failed: {e}")
+            scores["reasonings"] = {}
+
         asyncio.run(_save_scores(scores))
 
         logger.info(

@@ -26,6 +26,7 @@ class ScoreResult(BaseModel):
     impact: int
     completeness: int
     relevance: int
+    reasonings: dict[str, str] = {}  # AI explanations for each dimension
 
 
 class GrammarIssue(BaseModel):
@@ -50,6 +51,7 @@ class SuggestionItem(BaseModel):
 
     priority: Literal["high_impact", "quick_win"]
     text: str
+    explanation: str = ""  # Reason why AI suggested this change
     type: Literal["action_verb", "impact_metric", "missing_section"]
     original_text: str | None = None
     after_text: str | None = None  # Concrete rewritten example applying this suggestion

@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Download, Sparkles, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
+import Link from "next/link";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 
 interface WorkspaceV2HeaderProps {
@@ -65,7 +66,9 @@ export function WorkspaceV2Header({
 
       {/* ── Left: Logo + divider + breadcrumb/title ── */}
       <div className="relative flex min-w-0 flex-1 items-center gap-3">
-        <PathkrLogo size="md" variant="light" className="flex-none" />
+        <Link href="/" className="hover:opacity-80 transition-opacity">
+          <PathkrLogo size="md" variant="light" className="flex-none" />
+        </Link>
 
         {/* Divider */}
         <div

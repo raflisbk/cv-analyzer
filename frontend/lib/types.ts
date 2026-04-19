@@ -57,6 +57,7 @@ export interface ScoreResult {
   impact: number;
   completeness: number;
   relevance: number;
+  reasonings?: Record<string, string>;
 }
 
 export interface SectionResult {
@@ -88,6 +89,7 @@ export type SuggestionType = "action_verb" | "impact_metric" | "missing_section"
 export interface SuggestionItem {
   priority: SuggestionPriority;
   text: string;
+  explanation?: string;
   type: SuggestionType;
   originalText?: string;  // Original CV text for before/after comparison
   afterText?: string;     // Rewritten example implementing the suggestion
@@ -102,6 +104,7 @@ export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText" |
   original_text?: string;
   afterText?: string;
   after_text?: string;
+  explanation?: string;
 }
 
 /** API-facing suggestion card shape before UI normalization. */

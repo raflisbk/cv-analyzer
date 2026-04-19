@@ -35,6 +35,7 @@ Respond with ONLY valid JSON matching this exact schema:
         {{
           "priority": "<high_impact|quick_win>",
           "text": "<specific actionable suggestion>",
+          "explanation": "<short reasoning why this is suggested>",
           "type": "<action_verb|impact_metric|missing_section>",
           "original_text": "<EXACT text from the CV being improved, copy verbatim>",
           "after_text": "<rewritten version of original_text that implements this suggestion>"

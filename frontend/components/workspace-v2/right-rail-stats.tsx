@@ -21,28 +21,24 @@ type TabId = "overview" | "scores" | "suggestions" | "grammar" | "skills";
 function ScoreBar({
   score,
   color,
-  delay = 0,
 }: {
   score: number | null;
   color: string;
-  delay?: number;
 }) {
   const [width, setWidth] = useState(0);
-  const ran = useRef(false);
 
   useEffect(() => {
-    if (ran.current) return;
-    ran.current = true;
-    const t = setTimeout(() => {
+    // Small delay to ensure mount transition works
+    const frame = requestAnimationFrame(() => {
       setWidth(score ?? 0);
-    }, delay + 80);
-    return () => clearTimeout(t);
-  }, [score, delay]);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [score]);
 
   return (
-    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[rgba(245,242,216,0.07)]">
+    <div className="h-2 w-full overflow-hidden rounded-full bg-[rgba(245,242,216,0.07)] border border-white/5">
       <div
-        className="h-full rounded-full transition-all duration-700 ease-out"
+        className="h-full rounded-full transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1)"
         style={{ width: `${width}%`, background: color }}
       />
     </div>
@@ -284,24 +280,32 @@ export function RightRailStats({ className }: RightRailStatsProps) {
             accentColor="#FF8C42"
             Icon={BarChart2}
           >
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {[
-                { label: "Clarity", score: clarityScore, color: "#CAFF43", delay: 0 },
-                { label: "Impact", score: impactScore, color: "#FF8C42", delay: 80 },
-                { label: "ATS Compat.", score: atsCompatibility, color: "#8B5CF6", delay: 160 },
-              ].map(({ label, score, color, delay }) => (
-                <div key={label} className="flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#F5F2D8]/70">
-                      {label}
-                    </span>
-                    <span className="text-[12px] font-bold" style={{ color: score !== null ? color : undefined }}>
-                      {score !== null ? `${score}%` : "—"}
-                    </span>
+                { label: "Clarity", key: "clarity", score: clarityScore, color: "#CAFF43" },
+                { label: "Impact", key: "impact", score: impactScore, color: "#FF8C42" },
+                { label: "ATS Compat.", key: "ats", score: atsCompatibility, color: "#8B5CF6" },
+              ].map(({ label, key, score, color }) => {
+                const reasoning = analysis?.scores?.reasonings?.[key];
+                return (
+                  <div key={label} className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#F5F2D8]/70">
+                        {label}
+                      </span>
+                      <span className="text-[12px] font-bold" style={{ color: score !== null ? color : undefined }}>
+                        {score !== null ? `${score}%` : "—"}
+                      </span>
+                    </div>
+                    <ScoreBar score={score} color={color} />
+                    {reasoning && (
+                      <p className="text-[10px] italic text-[#F5F2D8]/40 leading-relaxed px-1">
+                        &ldquo;{reasoning}&rdquo;
+                      </p>
+                    )}
                   </div>
-                  <ScoreBar score={score} color={color} delay={delay} />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </AccordionSection>
 

@@ -11,7 +11,7 @@ interface ScoreDashboardProps {
 }
 
 const DIMENSIONS: Array<{
-  key: keyof Omit<ScoreResult, "overall" | "scoring_method">;
+  key: keyof Omit<ScoreResult, "overall" | "scoring_method" | "reasonings">;
   label: string;
   description: string;
   accentColor: string;
@@ -56,6 +56,8 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       <div className="grid grid-cols-2 gap-4">
         {DIMENSIONS.map(({ key, label, description, accentColor }) => {
           const scoreVal = scores[key] ?? 0;
+          const reasoning = scores.reasonings?.[key];
+          
           return (
             <div
               key={key}
@@ -64,7 +66,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
             >
               {/* Accent label pill */}
               <span
-                className="text-xs font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full"
+                className="text-xs font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full mb-1"
                 style={{ color: accentColor, backgroundColor: `${accentColor}18` }}
               >
                 {label}
@@ -75,10 +77,44 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
                 size={140}
                 accentColor={accentColor}
               />
-              <p className="text-xs text-[#F5F2D8]/40 text-center">{description}</p>
+              <p className="text-xs text-[#F5F2D8]/60 text-center font-medium mt-1">{description}</p>
+              
+              {reasoning && (
+                <div className="mt-3 p-3 rounded-xl bg-black/20 border border-white/5 w-full">
+                  <p className="text-[11px] leading-relaxed text-[#F5F2D8]/80 italic">
+                    &ldquo;{reasoning}&rdquo;
+                  </p>
+                </div>
+              )}
             </div>
           );
         })}
+      </div>
+
+      {/* Calculation Formula Legend */}
+      <div className="rounded-2xl bg-[#CAFF43]/5 border border-[#CAFF43]/10 p-5 space-y-3">
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#CAFF43]">Overall Calculation Breakdown</h4>
+        <p className="text-xs text-[#F5F2D8]/60 leading-relaxed">
+          The overall score is a weighted average based on industry standards for CV efficacy:
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-[#F5F2D8]/40">Clarity</span>
+            <span className="font-mono text-[#CAFF43]">40%</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-[#F5F2D8]/40">Impact</span>
+            <span className="font-mono text-[#FF8C42]">25%</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-[#F5F2D8]/40">Completeness</span>
+            <span className="font-mono text-[#8B5CF6]">20%</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-[#F5F2D8]/40">Relevance</span>
+            <span className="font-mono text-[#FF4FCB]">15%</span>
+          </div>
+        </div>
       </div>
     </div>
   );
