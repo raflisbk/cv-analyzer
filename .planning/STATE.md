@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Seamless Homepage
-current_phase: 14
-status: complete
-stopped_at: Completed 14-04-PLAN.md (Apply All + Yjs persistence + diff banner + individual annotation actions)
-last_updated: "2026-04-12T08:00:00.000Z"
-last_activity: 2026-04-12
+current_phase: 15
+status: verifying
+stopped_at: Completed 15-01-PLAN.md (inline AI edit workflow + left panel wiring)
+last_updated: "2026-04-19T05:15:49.424Z"
+last_activity: 2026-04-19
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 11
   percent: 100
 ---
 
@@ -19,7 +19,7 @@ progress:
 
 **Created:** 2026-04-03
 **Current Milestone:** v3.0 — Agentic CV Workspace
-**Current Phase:** 13
+**Current Phase:** 15
 
 ## Project Reference
 
@@ -44,10 +44,10 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 **Milestone v4.0 — PDF-First Analysis Workspace**
 
-Phase: 13 (pdf-first-workspace-shell) — EXECUTING
-Plan: 6 of 6
+Phase: 15 (inline-ai-edit-analysis-panel-wiring) — EXECUTING
+Plan: Not started
 Status: Phase complete — ready for verification
-Last activity: 2026-04-12
+Last activity: 2026-04-19
 
 **Why this milestone now:**
 
@@ -184,6 +184,13 @@ Last activity: 2026-04-12
 - [Phase 13]: grammarCount = 0 stub intentional di RightRailStats — grammar_issues tidak ada di WorkspaceAnalysisContext Phase 13, akan ditambahkan Phase 15
 - [Phase 13]: WorkspaceSkeleton menggunakan hard-coded hex bukan CSS vars — loading.tsx merender sebelum [data-workspace-v2] aktif
 
+| Phase 15 P01 | 269 | 6 tasks | 12 files |
+
+- [Phase 15]: Portal-based popover rendering to document.body avoids z-index conflicts with PDF viewer overlays
+- [Phase 15]: Inline edit state stored in separate Y.Map (inline_edits) from suggestion_statuses for clear separation of concerns
+- [Phase 15]: Text selection debounced by 150ms to avoid rapid re-renders while maintaining responsive UX
+- [Phase 15]: LLM rewrite limited to 300 tokens for concise responses that maintain CV formatting conventions
+
 ### Architecture Approach
 
 **Major Components:**
@@ -210,8 +217,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-12T04:29:32.151Z
-**Stopped At:** Completed 13-05-PLAN.md (workspace panel components + shell wiring)
+**Last Session:** 2026-04-19T05:12:58.069Z
+**Stopped At:** Completed 15-01-PLAN.md (inline AI edit workflow + left panel wiring)
 **Phase 2 completed:** 2026-04-06
 
 **Next Actions:**

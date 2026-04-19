@@ -14,21 +14,21 @@
 
 ## v2.0 — Seamless Homepage
 
-- [x] **Phase 6: Infrastructure & Primitives** - Font wiring, RSC shell, Dialog primitive (zero-risk prerequisites) (completed 2026-04-10)
-- [x] **Phase 7: Static Landing Sections** - Navbar, Features, How It Works server components (completed 2026-04-10)
+- [x] **Phase 6: Infrastructure & Primitives** - Font wiring, RSC shell, Dialog primitive (zero-risk prerequisites) (completed 2026-04-10)
+- [x] **Phase 7: Static Landing Sections** - Navbar, Features, How It Works server components (completed 2026-04-10)
 - [x] **Phase 8: Upload Modal + Navbar Expansion** - Brand "pathkr", multi-product navbar, full marketing homepage, full-screen upload overlay ✅ **COMPLETE**
 - [ ] **Phase 9: Visual Design System** - Full Mathical-style redesign: Bricolage Grotesque font, cream palette, dark hero cards, word-pill headlines (all pages)
 - [ ] **Phase 10: Animation Polish** - Scroll animations, score counter, reduced-motion support
 - [x] **Phase 11: Workspace Foundation & Routing** - Redirect completed uploads into a dedicated editor workspace while preserving results page access ✅ **COMPLETE** (2026-04-11)
-- [x] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls (completed 2026-04-11)
-- [x] **Phase 13: Agentic Review Cockpit** - ~~Combine analysis panels, action queue, and AI-assisted inline editing in one workspace~~ **CANCELLED** (completed 2026-04-12)
+- [x] **Phase 12: Editable Canvas & Layout Controls** - Render CV as editable blocks with inline text and formatting controls (completed 2026-04-11)
+- [x] **Phase 13: Agentic Review Cockpit** - ~~Combine analysis panels, action queue, and AI-assisted inline editing in one workspace~~ **CANCELLED** (completed 2026-04-12)
 - [ ] **Phase 14: Preview, Export & Variants** - ~~Preview edited CV, export polished versions, and support tailored output variants~~ **CANCELLED**
 
 ## v4.0 — PDF-First Analysis Workspace
 
-- [x] **Phase 13: PDF-First Workspace Shell** `v4.0` - `/workspace-v2` parallel route, 3-panel layout, react-pdf v10 viewer, file endpoint, DB schema additions, and annotation coordinate spike (completed 2026-04-12)
+- [x] **Phase 13: PDF-First Workspace Shell** `v4.0` - `/workspace-v2` parallel route, 3-panel layout, react-pdf v10 viewer, file endpoint, DB schema additions, and annotation coordinate spike (completed 2026-04-12)
 - [x] **Phase 14: Annotation Overlay & Diff Toggle** `v4.0` - Stabilo highlights on PDF via customTextRenderer, 1.5s hover popover, left panel sync, diff toggle, and sticky footer shell ✅ **COMPLETE** (2026-04-12)
-- [ ] **Phase 15: Inline AI Edit & Analysis Panel Wiring** `v4.0` - Wire existing analysis components into left panel; text selection → "Edit with AI" popover with backend rewrite endpoint
+- [x] **Phase 15: Inline AI Edit & Analysis Panel Wiring** `v4.0` - Wire existing analysis components into left panel; text selection → "Edit with AI" popover with backend rewrite endpoint (completed 2026-04-19)
 - [ ] **Phase 16: Live Chat & CRDT Foundation** `v4.0` - Contextual chat copilot with ReadableStream streaming, pycrdt-websocket WebSocket endpoint, and cv_document JSONB hydration pipeline
 - [ ] **Phase 17: Export v4, Migration Cutover & Preservation** `v4.0` - WeasyPrint optimized PDF export, save report, upload flow redirect to /workspace-v2, job match verified and documented
 
@@ -331,7 +331,7 @@ Plans:
   1. CV content renders as editable sections/blocks rather than static result cards only
   2. User can edit text inline and see changes reflected in the preview surface
   3. Supported content blocks/sections can be safely reordered or restructured
-  4. Layout/formatting controls adjust presentation without breaking CV readability
+  4. Layout/format controls adjust presentation without breaking CV readability
   5. Workspace maintains a coherent preview of the edited CV version
 
 **Plans**: 3 plans across 3 waves
@@ -441,7 +441,10 @@ Plans:
 - Backend `POST /api/v1/jobs/{id}/inline-edit`: selected text + prompt + system context → Claude/OpenAI → rewritten text
 - Yjs `Y.Doc` + `y-indexeddb` provider with SSR guard (`typeof window !== 'undefined'`) and Strict Mode ref guard
 
-**Plans**: TBD
+**Plans**: 1 plan across 1 wave
+
+Plans:
+- [x] 15-01-PLAN.md — Inline edit hook + popover + API endpoint + state management (Wave 1)
 
 **UI hint**: yes
 
@@ -513,13 +516,13 @@ Plans:
 | 8. Upload Modal + Navbar Expansion | 5/5 | ✅ Complete | 2026-01-27 |
 | 9. Hero Integration | 0/0 | Not started | - |
 | 10. Animation Polish | 0/0 | Not started | - |
-| 11. Workspace Foundation & Routing | 2/3 | In Progress|  |
+| 11. Workspace Foundation & Routing | 3/3 | Complete | 2026-04-11 |
 | 12. Editable Canvas & Layout Controls | 3/3 | Complete   | 2026-04-11 |
 | 13. Agentic Review Cockpit | 6/6 | Complete   | 2026-04-12 |
 | 14. Preview, Export & Variants | 0/3 | ~~Not started~~ CANCELLED | - |
-| 13. PDF-First Workspace Shell (v4.0) | 0/TBD | Not started | - |
-| 14. Annotation Overlay & Diff Toggle (v4.0) | 0/TBD | Not started | - |
-| 15. Inline AI Edit & Analysis Panel Wiring (v4.0) | 0/TBD | Not started | - |
+| 13. PDF-First Workspace Shell (v4.0) | 6/6 | Complete | 2026-04-12 |
+| 14. Annotation Overlay & Diff Toggle (v4.0) | 0/4 | Not started | - |
+| 15. Inline AI Edit & Analysis Panel Wiring (v4.0) | 1/1 | Complete    | 2026-04-19 |
 | 16. Live Chat & CRDT Foundation (v4.0) | 0/TBD | Not started | - |
 | 17. Export v4, Migration Cutover & Preservation (v4.0) | 0/TBD | Not started | - |
 
@@ -643,5 +646,5 @@ Phase 17: Export v4, Migration Cutover & Preservation (v4.0)
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-11 (v4.0 PDF-First Analysis Workspace phases 13–17 added; old phases 13–14 marked CANCELLED)*
-*Next: `/gsd-plan-phase 13`*
+*Last updated: 2026-04-17 (Phase 15 plan added)*
+*Next: `/gsd-execute-phase 15`*
