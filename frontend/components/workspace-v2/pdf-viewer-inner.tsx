@@ -12,9 +12,12 @@
 import { useState, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import type { PageProps } from "react-pdf";
+import { createPortal } from "react-dom";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import { AnnotationOverlay } from "./annotation-overlay";
+import { InlineEditPopover } from "./inline-edit-popover";
+import { useInlineEdit } from "@/hooks/use-inline-edit";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 
 // Derive CustomTextRenderer from PageProps so we don't rely on a non-exported type
@@ -35,6 +38,7 @@ interface PdfViewerInnerProps {
   onPageLoadSuccess?: (page: unknown) => void;
   onDocumentLoadSuccess?: (numPages: number) => void;
   anchors?: SuggestionAnchorRecord[];
+  jobId?: string;
 }
 
 function PageLoadingSkeleton({ width }: { width: number }) {
@@ -55,6 +59,7 @@ export default function PdfViewerInner({
   onPageLoadSuccess,
   onDocumentLoadSuccess,
   anchors = [],
+  jobId = "",
 }: PdfViewerInnerProps) {
   // _numPages: tracks total page count; used by Phase 14-03 for page boundary checks
   const [_numPages, setNumPages] = useState<number>(0);
@@ -84,6 +89,9 @@ export default function PdfViewerInner({
   const handleDismiss = useCallback((_id: string) => {
     // Phase 14-04: will wire to setSuggestionStatus(id, "dismissed")
   }, []);
+
+  // Inline edit hook for text selection detection
+  const { state: inlineEditState, handleSelectionChange, closePopover } = useInlineEdit(jobId);
 
   // customTextRenderer — injects colored <span> highlights for each anchor match.
   // Uses anchors prop directly instead of local state to avoid subscription issues.
@@ -146,8 +154,23 @@ export default function PdfViewerInner({
     );
   }
 
+  // Dismiss inline edit popover on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (inlineEditState.isVisible) {
+        closePopover();
+      }
+    };
+
+    const container = document.querySelector(".react-pdf-document");
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, [inlineEditState.isVisible, closePopover]);
+
   return (
-    <div className="relative">
+    <div className="relative" onMouseUp={handleSelectionChange}>
       <Document
         file={url}
         onLoadSuccess={({ numPages: n }) => {
@@ -182,6 +205,19 @@ export default function PdfViewerInner({
           </div>
         )}
       </Document>
+
+      {/* Inline edit popover - rendered via Portal */}
+      {inlineEditState.isVisible &&
+        inlineEditState.selectionRect &&
+        createPortal(
+          <InlineEditPopover
+            rect={inlineEditState.selectionRect}
+            selectedText={inlineEditState.selectedText}
+            jobId={jobId}
+            onClose={closePopover}
+          />,
+          document.body
+        )}
     </div>
   );
 }

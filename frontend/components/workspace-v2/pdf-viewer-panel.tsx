@@ -24,6 +24,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";
   const anchors = hydration?.suggestion_anchors ?? [];
+  const jobId = hydration?.job.job_id ?? "";
   const modeLabel = viewMode === "optimized" ? "Optimized" : "Original Uploaded";
   const modeNote = viewMode === "original"
     ? "Optimized PDF available after edits applied"
@@ -153,6 +154,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             onPageLoadSuccess={onPageLoadSuccess}
             onDocumentLoadSuccess={setNumPages}
             anchors={anchors}
+            jobId={jobId}
           />
         </div>
 

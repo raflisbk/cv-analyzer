@@ -21,9 +21,10 @@ interface PdfViewerProps {
   onPageLoadSuccess?: (page: unknown) => void;
   onDocumentLoadSuccess?: (numPages: number) => void;
   anchors?: any[];
+  jobId?: string;
 }
 
-export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSuccess, onDocumentLoadSuccess, anchors }: PdfViewerProps) {
+export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSuccess, onDocumentLoadSuccess, anchors, jobId }: PdfViewerProps) {
   if (!url) {
     return (
       <div
@@ -49,6 +50,7 @@ export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSucc
       onPageLoadSuccess={onPageLoadSuccess}
       onDocumentLoadSuccess={onDocumentLoadSuccess}
       anchors={anchors}
+      jobId={jobId}
     />
   );
 }
