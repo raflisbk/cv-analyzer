@@ -25,6 +25,9 @@ interface WorkspaceV2State {
   // Phase 14: per-suggestion apply/dismiss status
   suggestionStatuses: Record<string, SuggestionStatus>;
 
+  // Phase 15: inline edit document state
+  cvDocument: Record<string, any> | null;
+
   // Job context
   jobId: string;
   hydration: WorkspaceHydration | null;
@@ -36,6 +39,7 @@ interface WorkspaceV2State {
   setActiveSuggestionId: (id: string | null) => void;
   setSuggestionStatus: (id: string, status: SuggestionStatus) => void;
   applyAllSuggestions: () => void;
+  applyInlineEdit: (editId: string, originalText: string, rewrittenText: string) => void;
   setJobId: (jobId: string) => void;
   setHydration: (hydration: WorkspaceHydration) => void;
 }
@@ -46,6 +50,7 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   activeDetailTab: null,      // default PDF-first mode
   activeSuggestionId: null,   // Phase 14: no active suggestion by default
   suggestionStatuses: {},     // Phase 14: all suggestions start as pending
+  cvDocument: null,           // Phase 15: optimized document state
   jobId: "",
   hydration: null,
 
@@ -69,6 +74,21 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
       }
       return {
         suggestionStatuses: { ...state.suggestionStatuses, ...updates },
+      };
+    }),
+  applyInlineEdit: (editId, originalText, rewrittenText) =>
+    set((state) => {
+      // Initialize cvDocument if null
+      const currentDoc = state.cvDocument || {};
+      return {
+        cvDocument: {
+          ...currentDoc,
+          [editId]: {
+            originalText,
+            rewrittenText,
+            appliedAt: new Date().toISOString(),
+          },
+        },
       };
     }),
   setJobId: (jobId) => set({ jobId }),

@@ -48,7 +48,7 @@ export function InlineEditPopover({
   onClose,
 }: InlineEditPopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
-  const { applyInlineEdit } = useWorkspaceV2Store();
+  const { applyInlineEdit, hydration } = useWorkspaceV2Store();
 
   // State management
   const [popoverState, setPopoverState] = useState<PopoverState>("prompt");
@@ -100,8 +100,11 @@ export function InlineEditPopover({
     setError(null);
 
     try {
-      // TODO: Fetch cvContext from store hydration
-      const cvContext = null;
+      // Fetch cvContext from store hydration
+      const cvContext = hydration?.analysis ? {
+        scores: hydration.analysis.scores,
+        skills: hydration.analysis.skills,
+      } : null;
 
       const response = await fetch(`/api/v1/jobs/${jobId}/inline-edit`, {
         method: "POST",
