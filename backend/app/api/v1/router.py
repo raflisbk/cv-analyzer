@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    chat,
     compare,
     export,
     inline_edit,
@@ -25,4 +26,5 @@ router.include_router(workspace.router, tags=["workspace"])
 router.include_router(inline_edit.router, tags=["inline-edit"])
 router.include_router(export.router, tags=["export"])
 router.include_router(compare.router, tags=["comparison"])
+router.include_router(chat.router, tags=["chat"])
 router.include_router(provider_status.router, prefix="/provider", tags=["provider"])
