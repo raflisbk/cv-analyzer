@@ -10,6 +10,7 @@ NEVER sets JobStatus.FAILED due to LLM error — partial results pattern.
 
 import asyncio
 import json
+from datetime import UTC, datetime
 
 import redis as redis_lib
 from celery import Task
@@ -175,7 +176,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         tokens_used: int,
         file_id: str = "",
     ) -> None:
-        """Save suggestions + token count + anchors to DB, set COMPLETE status."""
+        """Save suggestions + token count + anchors + cv_document to DB, set COMPLETE status."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -188,6 +189,48 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
                     job.suggestion_anchors = compute_suggestion_anchors(
                         file_id, suggestions_json
                     )
+
+                # Phase 16: Populate cv_document JSONB for chat context and CRDT
+                cv_document = {
+                    "sections": [],
+                    "metadata": {
+                        "extracted_at": datetime.now(UTC).isoformat(),
+                        "parser_version": "1.0",
+                    },
+                }
+                if job.nlp_result and "sections" in job.nlp_result:
+                    for section_data in job.nlp_result["sections"]:
+                        cv_document["sections"].append({
+                            "type": section_data.get("type", "unknown"),
+                            "title": section_data.get("title", ""),
+                            "content": section_data.get("text", ""),
+                            "items": section_data.get("items", []),
+                        })
+                if suggestions_json:
+                    cv_document["suggestions"] = [
+                        {
+                            "section": s.get("section", "unknown") if isinstance(s, dict) else s.section,
+                            "suggestions": [
+                                {
+                                    "priority": sug.get("priority", "medium") if isinstance(sug, dict) else sug.priority,
+                                    "text": sug.get("text", "") if isinstance(sug, dict) else sug.text,
+                                    "type": sug.get("type", "action_verb") if isinstance(sug, dict) else sug.type,
+                                }
+                                for sug in (s.get("suggestions", []) if isinstance(s, dict) else s.suggestions)
+                            ],
+                        }
+                        for s in suggestions_json
+                    ]
+                if job.scores:
+                    cv_document["scores"] = {
+                        "overall": job.scores.get("overall") if isinstance(job.scores, dict) else job.scores.overall,
+                        "clarity": job.scores.get("clarity") if isinstance(job.scores, dict) else job.scores.clarity,
+                        "impact": job.scores.get("impact") if isinstance(job.scores, dict) else job.scores.impact,
+                        "completeness": job.scores.get("completeness") if isinstance(job.scores, dict) else job.scores.completeness,
+                        "relevance": job.scores.get("relevance") if isinstance(job.scores, dict) else job.scores.relevance,
+                    }
+                job.cv_document = cv_document
+
                 job.status = JobStatus.COMPLETE  # THIS task sets COMPLETE
                 await session.commit()
 
