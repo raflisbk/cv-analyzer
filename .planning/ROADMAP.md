@@ -290,7 +290,13 @@ Plans:
   2. The score counter in "How It Works" Step 3 counts up from 0 to the target value when that section scrolls into view
   3. All CSS entrance animations and the score counter animation are completely suppressed when the user's OS reports `prefers-reduced-motion: reduce`
 
-**Plans**: TBD
+**Plans**: 4 plans across 3 waves
+
+Plans:
+- [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
+- [ ] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2)
+- [ ] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2)
+- [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
 
 **UI hint**: yes
 
@@ -472,7 +478,13 @@ Plans:
 - `pycrdt-websocket` WebSocket router mounted at `/yjs` in FastAPI `main.py`; room scoped to `job_id`
 - `cv_builder` Celery task: reads `NLPResult.sections` + `suggestions` → writes structured `cv_document` JSONB to `Job` model after analysis completes
 
-**Plans**: TBD
+**Plans**: 4 plans across 3 waves
+
+Plans:
+- [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
+- [ ] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2)
+- [ ] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2)
+- [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
 
 **UI hint**: yes
 
@@ -500,7 +512,13 @@ Plans:
 - Job match regression test pass: `compare.py`, `compare_cv_task`, `JobRole` model, `comparison_result` schema all confirmed unchanged
 - Code comments on `job.jd_role_id → JobRole` FK; `canvas/` directory deletion after cutover smoke test passes
 
-**Plans**: TBD
+**Plans**: 4 plans across 3 waves
+
+Plans:
+- [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
+- [ ] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2)
+- [ ] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2)
+- [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
 
 **UI hint**: yes
 
@@ -523,7 +541,7 @@ Plans:
 | 13. PDF-First Workspace Shell (v4.0) | 6/6 | Complete | 2026-04-12 |
 | 14. Annotation Overlay & Diff Toggle (v4.0) | 0/4 | Not started | - |
 | 15. Inline AI Edit & Analysis Panel Wiring (v4.0) | 1/1 | Complete    | 2026-04-19 |
-| 16. Live Chat & CRDT Foundation (v4.0) | 0/TBD | Not started | - |
+| 16. Live Chat & CRDT Foundation (v4.0) | 4/4 | Planned   | - |
 | 17. Export v4, Migration Cutover & Preservation (v4.0) | 0/TBD | Not started | - |
 
 ## Phase Dependencies
