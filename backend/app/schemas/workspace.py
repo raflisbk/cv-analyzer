@@ -10,6 +10,7 @@ from app.schemas.analysis import (
     ScoreResult,
     SectionResult,
     SuggestionCard,
+    GrammarIssue,
 )
 from app.schemas.anchors import SuggestionAnchorRecord
 
@@ -41,6 +42,17 @@ class WorkspaceAnalysisContext(BaseModel):
     suggestions: list[SuggestionCard] | None = None
     comparison_result: ComparisonResult | None = None
     comparison_status: str | None = None
+    grammar_issues: list[GrammarIssue] = Field(default_factory=list)
+    skills: list[str] = Field(default_factory=list)
+
+
+class ChatMessage(BaseModel):
+    """Single chat message in conversation history."""
+
+    timestamp: str  # ISO 8601 datetime string
+    role: Literal["user", "assistant"]
+    content: str
+    status: Literal["complete", "streaming", "error"] = "complete"
 
 
 class WorkspaceNavigation(BaseModel):
@@ -60,6 +72,7 @@ class WorkspaceHydration(BaseModel):
     analysis: WorkspaceAnalysisContext
     navigation: WorkspaceNavigation
     suggestion_anchors: list[SuggestionAnchorRecord] = Field(default_factory=list)
+    messages: list[ChatMessage] = Field(default_factory=list)  # Phase 16: Chat history
     error: str | None = None
 
 

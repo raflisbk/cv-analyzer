@@ -75,3 +75,6 @@ class Job(Base, TimestampMixin):
     cv_document = Column(JSONB, nullable=True)           # structured document model (CRDT-03)
     suggestion_anchors = Column(JSONB, nullable=True)    # PDF coordinate anchors
     yjs_snapshot = Column(sa.LargeBinary, nullable=True) # binary Yjs snapshot
+
+    # Phase 16: Chat conversation history
+    messages = Column(JSONB, nullable=True, default=list)
