@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     compare,
     export,
+    inline_edit,
     jobs,
     provider_status,
     results,
@@ -21,6 +22,7 @@ router.include_router(jobs.router, tags=["jobs"])
 router.include_router(stream.router, tags=["stream"])
 router.include_router(results.router, tags=["results"])
 router.include_router(workspace.router, tags=["workspace"])
+router.include_router(inline_edit.router, tags=["inline-edit"])
 router.include_router(export.router, tags=["export"])
 router.include_router(compare.router, tags=["comparison"])
 router.include_router(provider_status.router, prefix="/provider", tags=["provider"])
