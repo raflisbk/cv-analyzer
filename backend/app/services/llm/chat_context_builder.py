@@ -64,9 +64,28 @@ def build_chat_system_prompt(job: Job) -> str:
         if missing:
             context_parts.append(f"Missing: {', '.join(missing[:10])}")
 
+    # cv_document structure if available (Phase 16)
+    if job.cv_document and "sections" in job.cv_document:
+        context_parts.append("\n## CV Document Structure")
+        for section in job.cv_document["sections"][:8]:
+            section_type = section.get("type", "unknown")
+            section_title = section.get("title", "")
+            items_count = len(section.get("items", []))
+            if section_type == "header":
+                context_parts.append(f"- Header: {section_title or 'CV Header'}")
+            elif section_type == "experience":
+                context_parts.append(f"- Experience: {items_count} positions")
+            elif section_type == "education":
+                context_parts.append(f"- Education: {items_count} entries")
+            elif section_type == "skills":
+                skills_list = section.get("items", [])[:5]
+                context_parts.append(f"- Skills: {', '.join(skills_list)}")
+            else:
+                context_parts.append(f"- {section_type.title()}: {section_title or items_count} items")
+
     return (
         "You are a CV optimization assistant. The user's CV has been analyzed with the following context:\n\n"
         + "\n".join(context_parts)
-        + "\n\nProvide specific, actionable advice. Reference their actual CV content when making suggestions. "
+        + "\n\nProvide specific, actionable advice. Reference their actual CV content, structure, and sections when making suggestions. "
         "Keep responses concise (2-3 paragraphs max)."
     )
