@@ -24,3 +24,4 @@ prometheus-fastapi-instrumentator==7.0.0
 slowapi==0.1.9
 alembic==1.13.1
 pgvector==0.3.0
+pycrdt-websocket>=0.1.0

@@ -294,7 +294,7 @@ Plans:
 
 Plans:
 - [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
-- [ ] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2)
+- [x] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2) (completed 2026-04-19)
 - [ ] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2)
 - [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
 
@@ -481,8 +481,8 @@ Plans:
 **Plans**: 4 plans across 3 waves
 
 Plans:
-- [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
-- [ ] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2)
+- [x] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1) (completed 2026-04-19)
+- [x] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2) (completed 2026-04-19)
 - [ ] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2)
 - [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
 
@@ -516,7 +516,7 @@ Plans:
 
 Plans:
 - [ ] 16-01-PLAN.md — Backend chat infrastructure: SSE endpoint, context builder, message persistence, DB migration (Wave 1)
-- [ ] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2)
+- [x] 16-02-PLAN.md — Frontend chat UI: ChatPanel, SSE hook, message list, input, Zustand integration (Wave 2) (completed 2026-04-19)
 - [ ] 16-03-PLAN.md — CRDT WebSocket backend: pycrdt-websocket install, Yjs endpoint, router mount (Wave 2)
 - [ ] 16-04-PLAN.md — Yjs WebSocket integration + cv_document population: y-websocket client, Celery extension, chat context (Wave 3)
 
@@ -541,7 +541,7 @@ Plans:
 | 13. PDF-First Workspace Shell (v4.0) | 6/6 | Complete | 2026-04-12 |
 | 14. Annotation Overlay & Diff Toggle (v4.0) | 0/4 | Not started | - |
 | 15. Inline AI Edit & Analysis Panel Wiring (v4.0) | 1/1 | Complete    | 2026-04-19 |
-| 16. Live Chat & CRDT Foundation (v4.0) | 4/4 | Planned   | - |
+| 16. Live Chat & CRDT Foundation (v4.0) | 1/4 | In Progress | - |
 | 17. Export v4, Migration Cutover & Preservation (v4.0) | 0/TBD | Not started | - |
 
 ## Phase Dependencies
@@ -664,5 +664,5 @@ Phase 17: Export v4, Migration Cutover & Preservation (v4.0)
 
 ---
 *Roadmap created: 2026-04-03*
-*Last updated: 2026-04-17 (Phase 15 plan added)*
-*Next: `/gsd-execute-phase 15`*
+*Last updated: 2026-04-19 (Phase 16 plan 16-02 complete)*
+*Next: `/gsd-execute-phase 16` (continue with 16-02)*
