@@ -1,9 +1,11 @@
 /**
- * use-workspace-doc.ts — Yjs Y.Doc + IndexeddbPersistence hook.
+ * use-workspace-doc.ts — Yjs Y.Doc + IndexeddbPersistence + WebSocket provider hook.
  *
  * Phase 13 deliverable: proof-of-concept CRDT initialization (CRDT-01).
  * Membuktikan Yjs + y-indexeddb bisa diinisialisasi di Next.js App Router
  * tanpa SSR crash.
+ *
+ * Phase 16: adds y-websocket WebsocketProvider for CRDT sync (CRDT-02).
  *
  * SSR safety: y-indexeddb uses browser-only `indexedDB` global.
  * useEffect tidak pernah berjalan di server — aman.
@@ -15,11 +17,13 @@
 import { useEffect, useRef } from "react";
 import * as Y from "yjs";
 import { IndexeddbPersistence } from "y-indexeddb";
+import { WebsocketProvider } from "y-websocket";
 
 interface UseWorkspaceDocResult {
   docRef: React.MutableRefObject<Y.Doc | null>;
   persistenceRef: React.MutableRefObject<IndexeddbPersistence | null>;
   statusMapRef: React.MutableRefObject<Y.Map<string> | null>;
+  wsProviderRef: React.MutableRefObject<WebsocketProvider | null>;
 }
 
 /**
@@ -36,6 +40,7 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
   const docRef = useRef<Y.Doc | null>(null);
   const persistenceRef = useRef<IndexeddbPersistence | null>(null);
   const statusMapRef = useRef<Y.Map<string> | null>(null);
+  const wsProviderRef = useRef<WebsocketProvider | null>(null);
 
   useEffect(() => {
     if (!jobId) return;
@@ -67,5 +72,34 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     };
   }, [jobId]);
 
-  return { docRef, persistenceRef, statusMapRef };
+  // Phase 16: Yjs WebSocket provider for CRDT sync
+  useEffect(() => {
+    if (!jobId || !docRef.current) return;
+
+    const wsUrl =
+      process.env.NEXT_PUBLIC_API_URL?.replace("http://", "ws://").replace(
+        "https://",
+        "wss://"
+      ) || "ws://localhost:8000";
+
+    const wsProvider = new WebsocketProvider(
+      `${wsUrl}/yjs/${jobId}`,
+      `workspace-v2-${jobId}`,
+      docRef.current,
+      { connect: true }
+    );
+
+    wsProviderRef.current = wsProvider;
+
+    wsProvider.on("status", (event: { status: string }) => {
+      console.log("[Yjs] WebSocket status:", event.status);
+    });
+
+    return () => {
+      wsProvider.destroy();
+      wsProviderRef.current = null;
+    };
+  }, [jobId]);
+
+  return { docRef, persistenceRef, statusMapRef, wsProviderRef };
 }
