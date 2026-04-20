@@ -62,6 +62,12 @@ class Job(Base, TimestampMixin):
         String(20), nullable=True
     )  # pending|comparing|complete|failed
     jd_text = Column(Text, nullable=True)  # raw JD text
+
+    # Foreign key to JobRole table (Phase 4 comparison feature)
+    # Links analyzed CV to pre-seeded job roles for comparison
+    # Example: jd_role_id connects to JobRole(title="Software Engineer", seniority="Senior")
+    # Phase 17 preservation: anchor for future "job finding" feature
+    # No code changes — documentation only (JOBMATCH-02)
     jd_role_id = Column(
         UUID(as_uuid=True),
         ForeignKey("job_roles.id"),
