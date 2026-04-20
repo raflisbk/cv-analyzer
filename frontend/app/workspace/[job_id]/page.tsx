@@ -1,10 +1,4 @@
-import type { Metadata } from "next";
-import { WorkspaceEntry } from "@/components/workspace/workspace-entry";
-
-export const metadata: Metadata = {
-  title: "Workspace | CV Analyzer",
-  description: "Edit and refine your CV with AI-powered suggestions.",
-};
+import { redirect } from "next/navigation";
 
 interface WorkspacePageProps {
   params: Promise<{
@@ -12,10 +6,17 @@ interface WorkspacePageProps {
   }>;
 }
 
-export default async function WorkspacePage({
+/**
+ * Legacy workspace redirect — Phase 17 cutover.
+ *
+ * This route transparently redirects to /workspace-v2/{job_id}.
+ * Handles existing bookmarks, shared links, or browser history.
+ *
+ * Temporary measure before deleting entire directory.
+ */
+export default async function LegacyWorkspaceRedirect({
   params,
 }: WorkspacePageProps) {
   const { job_id: jobId } = await params;
-
-  return <WorkspaceEntry jobId={jobId} />;
+  redirect(`/workspace-v2/${jobId}`);
 }
