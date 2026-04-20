@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 2cm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 11pt;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+  h2 { font-size: 14px; font-weight: 600; margin-top: 16px; margin-bottom: 6px;
+       border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; color: #334155; text-transform: uppercase; letter-spacing: 0.5px; }
+  .header { margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #334155; }
+  .contact { font-size: 10pt; color: #64748b; margin-top: 4px; }
+  .score-bar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 8px; padding: 8px;
+    background: #f8fafc; border-radius: 6px;
+  }
+  .score-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .score-badge {
+    padding: 4px 10px; border-radius: 12px; font-size: 10pt; font-weight: 600;
+  }
+  .badge-excellent { background: #dcfce7; color: #166534; }
+  .badge-good { background: #dbeafe; color: #1e40af; }
+  .badge-fair { background: #fef3c7; color: #92400e; }
+  .badge-poor { background: #fee2e2; color: #991b1b; }
+  .section-content { margin-bottom: 12px; }
+  .section-item { margin-bottom: 6px; }
+  .section-title { font-weight: 600; color: #334155; }
+  .skills-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .skill-tag {
+    padding: 3px 8px; background: #f1f5f9; border-radius: 4px;
+    font-size: 10pt; color: #475569;
+  }
+  .suggestion-callout {
+    margin: 10px 0; padding: 8px 10px;
+    background: #fffbeb; border-left: 3px solid #f59e0b;
+    border-radius: 4px; font-size: 10pt;
+  }
+  .suggestion-callout .label {
+    font-weight: 600; color: #92400e; margin-bottom: 3px;
+    font-size: 9pt; text-transform: uppercase;
+  }
+  .footer {
+    margin-top: 24px; padding-top: 8px; border-top: 1px solid #e2e8f0;
+    font-size: 9pt; color: #94a3b8; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  {% if cv_document.header %}
+    {% set header = cv_document.header %}
+    <h1>{{ header.name if header.name is defined else '' }}</h1>
+    <div class="contact">
+      {% if header.email is defined and header.email %}{{ header.email }}{% endif %}
+      {% if header.email is defined and header.email and header.phone is defined and header.phone %} | {% endif %}
+      {% if header.phone is defined and header.phone %}{{ header.phone }}{% endif %}
+      {% if header.location is defined and header.location and (header.email or header.phone) %} | {% endif %}
+      {% if header.location is defined and header.location %}{{ header.location }}{% endif %}
+    </div>
+  {% else %}
+    <h1>{{ filename }}</h1>
+  {% endif %}
+
+  <!-- Score Badges -->
+  {% if scores %}
+  <div class="score-bar">
+    <div style="font-size: 10pt; color: #64748b; font-weight: 600;">SCORES</div>
+    <div class="score-badges">
+      {% set overall = scores.overall if scores.overall is defined else scores['overall'] %}
+      {% if overall >= 85 %}
+        <div class="score-badge badge-excellent">{{ overall }}/100 Excellent</div>
+      {% elif overall >= 70 %}
+        <div class="score-badge badge-good">{{ overall }}/100 Good</div>
+      {% elif overall >= 50 %}
+        <div class="score-badge badge-fair">{{ overall }}/100 Fair</div>
+      {% else %}
+        <div class="score-badge badge-poor">{{ overall }}/100 Poor</div>
+      {% endif %}
+      <div class="score-badge" style="background: #f1f5f9; color: #475569;">
+        C: {{ scores.clarity if scores.clarity is defined else scores['clarity'] }}
+      </div>
+      <div class="score-badge" style="background: #f1f5f9; color: #475569;">
+        I: {{ scores.impact if scores.impact is defined else scores['impact'] }}
+      </div>
+      <div class="score-badge" style="background: #f1f5f9; color: #475569;">
+        Cp: {{ scores.completeness if scores.completeness is defined else scores['completeness'] }}
+      </div>
+      <div class="score-badge" style="background: #f1f5f9; color: #475569;">
+        R: {{ scores.relevance if scores.relevance is defined else scores['relevance'] }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- CV Sections -->
+{% if cv_document.sections %}
+  {% for section in cv_document.sections %}
+    {% set section_title = section.title if section.title is defined else section['title'] %}
+    {% set section_items = section.items if section.items is defined else section.get('items', []) %}
+    <div class="section-content">
+      <h2>{{ section_title }}</h2>
+      {% for item in section_items %}
+        <div class="section-item">{{ item }}</div>
+      {% endfor %}
+
+      <!-- Inline Suggestions for this section -->
+      {% if cv_document.suggestions %}
+        {% set section_suggestions = [] %}
+        {% for suggestion_group in cv_document.suggestions %}
+          {% set sg_section = suggestion_group.section if suggestion_group.section is defined else suggestion_group.get('section', '') %}
+          {% if sg_section | lower == section_title | lower %}
+            {% set sg_items = suggestion_group.suggestions if suggestion_group.suggestions is defined else suggestion_group.get('suggestions', []) %}
+            {% for s in sg_items %}
+              {% set _ = section_suggestions.append(s) %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        {% if section_suggestions %}
+          {% for sug in section_suggestions %}
+            <div class="suggestion-callout">
+              <div class="label">Suggestion ({{ sug.priority if sug.priority is defined else sug.get('priority', 'quick_win') | replace('_', ' ') | title }})</div>
+              <div>{{ sug.text if sug.text is defined else sug.get('text', '') }}</div>
+              {% if sug.after_text is defined and sug.after_text or sug.get('after_text') %}
+                <div style="margin-top: 4px; font-style: italic; color: #64748b;">
+                  &rarr; Consider: {{ sug.after_text if sug.after_text is defined else sug.get('after_text', '') }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Skills -->
+{% if cv_document.skills %}
+<div class="section-content">
+  <h2>Skills</h2>
+  <div class="skills-cloud">
+    {% for skill in cv_document.skills %}
+      <div class="skill-tag">{{ skill }}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Footer -->
+<div class="footer">
+  Generated: {{ generated_at }} | Job ID: {{ job_id[:8] }} | CV Analyzer v4.0
+</div>
+
+</body>
+</html>
