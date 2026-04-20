@@ -9,7 +9,9 @@ function getJobRouteSegment(jobId: string): string {
 }
 
 export function getWorkspaceRoute(jobId: string): string {
-  return `/workspace/${getJobRouteSegment(jobId)}`;
+  // Phase 17 cutover: redirect to /workspace-v2 instead of /workspace
+  // Old route: return `/workspace/${getJobRouteSegment(jobId)}`;
+  return `/workspace-v2/${getJobRouteSegment(jobId)}`;
 }
 
 export function getResultsRoute(jobId: string): string {

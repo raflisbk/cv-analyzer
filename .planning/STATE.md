@@ -1,25 +1,25 @@
 ---
 gsd_state_version: 1.0
 milestone: v4.0
-milestone_name: — PDF-First Analysis Workspace
-current_phase: 16
-status: complete
-stopped_at: Phase 16 complete — all 4 plans done
-last_updated: "2026-04-19T18:15:00.000Z"
-last_activity: 2026-04-19 -- Phase 16 complete (16-04 Yjs WebSocket + cv_document)
+milestone_name: milestone
+current_phase: 17
+status: executing
+stopped_at: Completed 17-01-PLAN.md - Add V4 Export Support
+last_updated: "2026-04-20T06:35:29.550Z"
+last_activity: 2026-04-20
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 15
-  completed_plans: 15
-  percent: 100
+  total_phases: 1
+  completed_phases: 0
+  total_plans: 2
+  completed_plans: 1
+  percent: 50
 ---
 
 # Project State: CV Analyzer (pathkr)
 
 **Created:** 2026-04-03
 **Current Milestone:** v3.0 — Agentic CV Workspace
-**Current Phase:** 16
+**Current Phase:** 17
 
 ## Project Reference
 
@@ -44,10 +44,10 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 **Milestone v4.0 — PDF-First Analysis Workspace**
 
-Phase: 16 (live-chat-crdt-foundation) — COMPLETE
-Plan: 4 of 4 complete (16-01, 16-02, 16-03, 16-04 done)
-Status: Phase 16 complete
-Last activity: 2026-04-19 -- 16-04 complete (Yjs WebSocket + cv_document)
+Phase: 17 (export-v4-migration-cutover-job-match-preservation) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-20
 
 **Why this milestone now:**
 
@@ -219,6 +219,13 @@ Last activity: 2026-04-19 -- 16-04 complete (Yjs WebSocket + cv_document)
 - [Phase 16]: Messages persisted via await _save_messages() after stream completes rather than FastAPI BackgroundTasks to avoid session issues with SSE generators
 - [Phase 16]: job.scores JSONB dict wrapped with ScoreResult(**job.scores) in chat context builder for type-safe attribute access
 
+| Phase 17 P01 | 8 | 3 tasks | 3 files |
+
+- [Phase 17]: Optimized CV template uses CV-specific CSS (Arial 11pt, compact layout) instead of reusing analysis report styles
+- [Phase 17]: Score badges placed at top of CV header for immediate visibility without interfering with document content
+- [Phase 17]: Inline suggestion callouts positioned immediately after each affected section for contextual relevance
+- [Phase 17]: Filename sanitization uses strict whitelist (alnum, hyphen, underscore) to prevent path traversal attacks
+
 ### Architecture Approach
 
 **Major Components:**
@@ -245,8 +252,8 @@ None identified for milestone definition. Detailed implementation risks to asses
 
 ### Session Continuity
 
-**Last Session:** 2026-04-19T18:15:00.000Z
-**Stopped At:** Phase 16 complete — all 4 plans done
+**Last Session:** 2026-04-20T06:35:29.518Z
+**Stopped At:** Completed 17-01-PLAN.md - Add V4 Export Support
 **Phase 2 completed:** 2026-04-06
 **Phase 15 completed:** 2026-04-19
 **Phase 16 completed:** 2026-04-19

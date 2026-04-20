@@ -440,8 +440,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ### Export
 
-- [ ] **EXPV4-01**: "Save optimized PDF" generates a downloadable PDF from the current `cv_document` state via WeasyPrint + Jinja2 template
-- [ ] **EXPV4-02**: "Save report" generates a downloadable analysis report PDF (extends existing `export.py` endpoint)
+- [x] **EXPV4-01**: "Save optimized PDF" generates a downloadable PDF from the current `cv_document` state via WeasyPrint + Jinja2 template
+- [x] **EXPV4-02**: "Save report" generates a downloadable analysis report PDF (extends existing `export.py` endpoint)
 
 ### Job Match Preservation
 
@@ -494,8 +494,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Description | Status |
 |-------------|-------------|--------|
-| EXPV4-01 | Save optimized PDF (WeasyPrint) | Pending |
-| EXPV4-02 | Save report (extends existing) | Pending |
+| EXPV4-01 | Save optimized PDF (WeasyPrint) | Complete |
+| EXPV4-02 | Save report (extends existing) | Complete |
 | LAYOUT-02 | Upload flow redirected to /workspace-v2 | Complete |
 | JOBMATCH-01 | compare.py unchanged, fully functional | Pending |
 | JOBMATCH-02 | job.jd_role_id linkage preserved | Pending |
