@@ -180,6 +180,8 @@ async def export_pdf(
             "suggestions": job.suggestions or [],
             "comparison_result": job.comparison_result,
             "comparison_status": job.comparison_status,
+            "cv_document": job.cv_document or {},  # Phase 16: structured document model
+            "messages": job.messages or [],        # Phase 16: chat conversation history
         }
 
         try:

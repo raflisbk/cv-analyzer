@@ -199,6 +199,50 @@
 {% endfor %}
 {% endif %}
 
+<!-- CV Document Structure (Phase 16 v4.0) -->
+{% if cv_document %}
+<h2>CV Document Structure</h2>
+{% if cv_document.header %}
+<div class="section-card">
+  <div style="margin-bottom: 8px;">
+    <strong>Header:</strong> {{ cv_document.header.get('name', '') }}
+    {% if cv_document.header.get('email') %} | {{ cv_document.header.get('email') }}{% endif %}
+    {% if cv_document.header.get('phone') %} | {{ cv_document.header.get('phone') }}{% endif %}
+    {% if cv_document.header.get('location') %} | {{ cv_document.header.get('location') }}{% endif %}
+  </div>
+</div>
+{% endif %}
+{% if cv_document.sections %}
+<div class="section-card">
+  <strong>Sections:</strong>
+  <div style="margin-top: 6px;">
+    {% for section in cv_document.sections %}
+    <div style="padding: 4px 0; border-bottom: 1px solid #f1f5f9;">
+      <strong>{{ section.get('title', 'Untitled') }}</strong>
+      {% if section.get('items') %} ({{ section.items | length }} items){% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Chat Conversation (Phase 16 v4.0) -->
+{% if messages %}
+<h2>Chat Conversation</h2>
+{% for msg in messages %}
+<div class="section-card">
+  <div style="margin-bottom: 4px;">
+    <strong>{{ msg.role if msg.role is defined else msg.get('role', 'unknown') | title }}</strong>
+    {% if msg.timestamp is defined or msg.get('timestamp') %}
+    <span style="color: #94a3b8; font-size: 11px;"> — {{ msg.timestamp if msg.timestamp is defined else msg.get('timestamp', '') }}</span>
+    {% endif %}
+  </div>
+  <div style="color: #475569;">{{ msg.content if msg.content is defined else msg.get('content', '') }}</div>
+</div>
+{% endfor %}
+{% endif %}
+
 <!-- Comparison Results -->
 {% if comparison_result and comparison_status == 'complete' %}
 <h2>Job Match Analysis</h2>
