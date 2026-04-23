@@ -13,14 +13,16 @@ export const metadata: Metadata = {
 export default async function WorkspaceV2Page({ params }: WorkspaceV2PageProps) {
   const { job_id } = await params;
 
-  // Fetch hydration on client-side to avoid SSR network issues
-  // Use proxy endpoint directly to avoid CORS issues with R2 presigned URLs
+  // Fetch hydration data on server
+  const hydration = await getWorkspaceHydration(job_id);
+
+  // Use proxy endpoint for PDF to avoid CORS issues with R2 presigned URLs
   const proxyUrl = `/api/v1/jobs/${job_id}/file/proxy`;
 
   return (
     <WorkspaceV2Shell
       jobId={job_id}
-      hydration={null}
+      hydration={hydration}
       initialPdfUrl={proxyUrl}
     />
   );

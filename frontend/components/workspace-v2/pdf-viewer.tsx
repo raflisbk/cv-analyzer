@@ -18,13 +18,15 @@ interface PdfViewerProps {
   url: string | null;
   containerWidth: number;
   currentPage?: number;
+  scale?: number;
   onPageLoadSuccess?: (page: unknown) => void;
   onDocumentLoadSuccess?: (numPages: number) => void;
   anchors?: any[];
+  suggestions?: any[];
   jobId?: string;
 }
 
-export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSuccess, onDocumentLoadSuccess, anchors, jobId }: PdfViewerProps) {
+export function PdfViewer({ url, containerWidth, currentPage = 1, scale = 1.0, onPageLoadSuccess, onDocumentLoadSuccess, anchors, suggestions, jobId }: PdfViewerProps) {
   if (!url) {
     return (
       <div
@@ -47,9 +49,11 @@ export function PdfViewer({ url, containerWidth, currentPage = 1, onPageLoadSucc
       url={url}
       containerWidth={containerWidth}
       currentPage={currentPage}
+      scale={scale}
       onPageLoadSuccess={onPageLoadSuccess}
       onDocumentLoadSuccess={onDocumentLoadSuccess}
       anchors={anchors}
+      suggestions={suggestions}
       jobId={jobId}
     />
   );

@@ -18,6 +18,7 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import { AnnotationOverlay } from "./annotation-overlay";
 import { InlineEditPopover } from "./inline-edit-popover";
 import { useInlineEdit } from "@/hooks/use-inline-edit";
+import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 
 // Derive CustomTextRenderer from PageProps so we don't rely on a non-exported type
@@ -35,9 +36,11 @@ interface PdfViewerInnerProps {
   url: string;
   containerWidth: number;
   currentPage?: number;
+  scale?: number;
   onPageLoadSuccess?: (page: unknown) => void;
   onDocumentLoadSuccess?: (numPages: number) => void;
   anchors?: SuggestionAnchorRecord[];
+  suggestions?: any[];
   jobId?: string;
 }
 
@@ -56,9 +59,11 @@ export default function PdfViewerInner({
   url,
   containerWidth,
   currentPage = 1,
+  scale = 1.0,
   onPageLoadSuccess,
   onDocumentLoadSuccess,
   anchors = [],
+  suggestions = [],
   jobId = "",
 }: PdfViewerInnerProps) {
   // _numPages: tracks total page count; used by Phase 14-03 for page boundary checks
@@ -82,13 +87,17 @@ export default function PdfViewerInner({
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
   }, []);
 
-  const handleApply = useCallback((_id: string) => {
-    // Phase 14-04: will wire to setSuggestionStatus(id, "applied")
-  }, []);
+  const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
 
-  const handleDismiss = useCallback((_id: string) => {
-    // Phase 14-04: will wire to setSuggestionStatus(id, "dismissed")
-  }, []);
+  const handleApply = useCallback((id: string) => {
+    console.log("[PDF Viewer] Applying suggestion:", id);
+    setSuggestionStatus(id, "applied");
+  }, [setSuggestionStatus]);
+
+  const handleDismiss = useCallback((id: string) => {
+    console.log("[PDF Viewer] Dismissing suggestion:", id);
+    setSuggestionStatus(id, "dismissed");
+  }, [setSuggestionStatus]);
 
   // Inline edit hook for text selection detection
   const { state: inlineEditState, handleSelectionChange, closePopover } = useInlineEdit(jobId);
@@ -186,6 +195,7 @@ export default function PdfViewerInner({
             <Page
               pageNumber={currentPage}
               width={containerWidth}
+              scale={scale}
               renderTextLayer={false}
               renderAnnotationLayer={false}
               loading={<PageLoadingSkeleton width={containerWidth} />}
@@ -199,6 +209,8 @@ export default function PdfViewerInner({
               pageIndex={currentPage - 1}
               pageWidth={pageWidth}
               containerWidth={containerWidth}
+              scale={scale}
+              suggestions={suggestions}
               onApply={handleApply}
               onDismiss={handleDismiss}
             />

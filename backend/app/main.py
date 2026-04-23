@@ -77,10 +77,6 @@ async def startup_event():
         },
     )
 
-    # Start Yjs CRDT WebSocket server
-    await yjs_server.start()
-    logger.info("pycrdt-websocket WebsocketServer started")
-
 
 @app.on_event("startup")
 async def _prewarm_language_tool() -> None:
