@@ -41,11 +41,19 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   // Fetch HTML content when switching to edit mode
   useEffect(() => {
     if (editorMode === "edit" && jobId) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobId}/html`)
+      setHtmlContent("<p>Loading...</p>");
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${jobId}/html`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.data?.html) {
+          console.log("HTML response:", data);
+          // Handle WrappedResponse structure: { data: { html: "..." } }
+          if (data.data && data.data.html) {
             setHtmlContent(data.data.html);
+          } else if (data.error) {
+            console.error("API Error:", data.error);
+            setHtmlContent(`<p>Error: ${data.error.message || "Failed to load content"}</p>`);
+          } else {
+            setHtmlContent("<p>No content available. Please upload a CV first.</p>");
           }
         })
         .catch((err) => {
