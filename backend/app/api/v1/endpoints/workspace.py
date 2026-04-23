@@ -4,7 +4,8 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket
+from fastapi.responses import Response
 from sqlalchemy import select
 
 from app.db.session import AsyncSession, get_db
@@ -18,6 +19,8 @@ from app.schemas.analysis import (
     SuggestionItem,
     GrammarIssue,
 )
+from app.services.pdf_to_html import PDFToHTMLConverter
+from app.services.pdf_export import PDFExportService
 from app.schemas.anchors import SuggestionAnchorRecord
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.workspace import (
@@ -31,9 +34,22 @@ from app.schemas.workspace import (
     WorkspaceNavigation,
 )
 from app.services.storage import StorageError, storage_service
+from app.services.llm.inline_edit_service import InlineEditService
+from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
+from pydantic import BaseModel, Field
 
 
 router = APIRouter()
+
+# Initialize services
+inline_edit_service = InlineEditService()
+pdf_export_service = PDFExportService()
+
+
+class PDFExportRequest(BaseModel):
+    """Request schema for PDF export."""
+    html: str = Field(..., description="HTML content from Tiptap editor")
+    filename: str = Field(default="cv-optimized.pdf", description="Output filename")
 
 
 def _build_scores(raw_scores: dict[str, Any] | None) -> ScoreResult | None:
@@ -372,6 +388,70 @@ async def get_job_file_url(
         )
 
 
+@router.get(
+    "/jobs/{job_id}/html",
+    response_model=WrappedResponse[dict[str, Any]],
+    summary="Get editable HTML structure for Tiptap editor",
+)
+async def get_job_html(
+    job_id: str,
+    db: AsyncSession = Depends(get_db),
+) -> WrappedResponse[dict[str, Any]]:
+    """Convert PDF extraction to positioned HTML for Tiptap editor. (PDF-02)"""
+    request_id = str(uuid.uuid4())
+    timestamp = datetime.now(UTC).isoformat()
+
+    try:
+        stmt = select(Job).where(Job.id == job_id)
+        result = await db.execute(stmt)
+        job = result.scalar_one_or_none()
+
+        if not job:
+            return WrappedResponse(
+                error=ErrorDetail(
+                    code="JOB_NOT_FOUND",
+                    message=f"Job {job_id} not found.",
+                ),
+                meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+            )
+
+        # Extract data for conversion
+        safe_result = job.result if isinstance(job.result, dict) else {}
+        safe_nlp_result = job.nlp_result if isinstance(job.nlp_result, dict) else {}
+        safe_anchors = job.suggestion_anchors if isinstance(job.suggestion_anchors, list) else []
+
+        source_text = _get_source_text(safe_result)
+        sections = safe_nlp_result.get("sections", [])
+
+        # Get page dimensions from file metadata or use A4 defaults
+        safe_file_metadata = (
+            job.file_metadata if isinstance(job.file_metadata, dict) else {}
+        )
+        page_width = safe_file_metadata.get("page_width", 595.5)
+        page_height = safe_file_metadata.get("page_height", 842.0)
+
+        # Convert to HTML with positioning
+        converter = PDFToHTMLConverter()
+        html_result = converter.convert_to_html(
+            source_text=source_text or "",
+            sections=sections,
+            anchors=safe_anchors,
+            page_width=page_width,
+            page_height=page_height,
+        )
+
+        return WrappedResponse(
+            data=html_result,
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+    except Exception as exc:
+        return WrappedResponse(
+            error=ErrorDetail(code="HTML_CONVERSION_FAILED", message=str(exc)),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+
 @router.patch(
     "/jobs/{job_id}/workspace/content",
     response_model=WrappedResponse[WorkspaceContentSaveResult],
@@ -415,3 +495,70 @@ async def patch_workspace_content(
             error=ErrorDetail(code="DRAFT_SAVE_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
+
+
+@router.post(
+    "/ai/improve",
+    response_model=WrappedResponse[InlineEditResponse],
+    summary="Improve CV text with AI",
+)
+async def improve_text(
+    body: InlineEditRequest,
+) -> WrappedResponse[InlineEditResponse]:
+    """Generate AI rewrite for selected CV text. (Phase 17)"""
+    request_id = str(uuid.uuid4())
+    timestamp = datetime.now(UTC).isoformat()
+
+    try:
+        result = inline_edit_service.rewrite(
+            selected_text=body.selectedText,
+            prompt=body.prompt,
+            cv_context=body.cvContext,
+        )
+
+        return WrappedResponse(
+            data=result,
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+    except Exception as exc:
+        return WrappedResponse(
+            error=ErrorDetail(code="AI_IMPROVE_FAILED", message=str(exc)),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
+
+
+@router.post(
+    "/export/pdf",
+    summary="Export editor HTML to PDF",
+)
+async def export_pdf(body: PDFExportRequest) -> Response:
+    """Convert Tiptap editor HTML to formatted PDF. (Phase 17)"""
+    try:
+        pdf_bytes = pdf_export_service.export_html_to_pdf(
+            html_content=body.html,
+            metadata={"title": body.filename.replace(".pdf", "")},
+        )
+
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{body.filename}"',
+            },
+        )
+
+    except Exception as exc:
+        return Response(
+            content=f"PDF export failed: {str(exc)}",
+            status_code=500,
+            media_type="text/plain",
+        )
+
+
+# WebSocket route for Yjs real-time sync
+@router.websocket("/yws/{document_id}")
+async def yjs_websocket(websocket: WebSocket, document_id: str) -> None:
+    """WebSocket endpoint for Yjs CRDT sync. (Phase 17)"""
+    from app.api.v1.websocket.yws_handler import yjs_websocket_endpoint
+    await yjs_websocket_endpoint(websocket, document_id)

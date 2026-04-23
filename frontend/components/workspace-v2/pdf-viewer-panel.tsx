@@ -4,10 +4,12 @@
  * Dark hero-card banner (matching landing page hero card: #141414 + accent dots + cream text)
  * sits above the cream paper card. Page navigation and view mode live in the banner.
  * Ambient decorative dots float in the cream scroll area background.
+ * Phase 17: Added toggle between Edit Mode (Tiptap) and Preview Mode (PDF canvas).
  */
-import { useRef, useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2, Edit, FileText } from "lucide-react";
 import { PdfViewer } from "./pdf-viewer";
+import { RichTextEditor } from "./rich-text-editor";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 
 interface PdfViewerPanelProps {
@@ -15,20 +17,43 @@ interface PdfViewerPanelProps {
   onPageLoadSuccess?: (page: unknown) => void;
 }
 
+type EditorMode = "edit" | "preview";
+
 export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState<number>(0);
+  const [scale, setScale] = useState<number>(1.0);
+  const [editorMode, setEditorMode] = useState<EditorMode>("edit");
+  const [htmlContent, setHtmlContent] = useState<string>("<p>Loading...</p>");
 
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";
   const anchors = hydration?.suggestion_anchors ?? [];
-  const jobId = hydration?.job.job_id ?? "";
+  const suggestions = hydration?.analysis?.suggestions ?? [];
+  const jobId = hydration?.job_id ?? "";
   const modeLabel = viewMode === "optimized" ? "Optimized" : "Original Uploaded";
   const modeNote = viewMode === "original"
     ? "Optimized PDF available after edits applied"
     : null;
+
+  // Fetch HTML content when switching to edit mode
+  useEffect(() => {
+    if (editorMode === "edit" && jobId) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobId}/html`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.data?.html) {
+            setHtmlContent(data.data.html);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to load HTML:", err);
+          setHtmlContent("<p>Failed to load content. Please try again.</p>");
+        });
+    }
+  }, [editorMode, jobId]);
 
   useEffect(() => {
     if (!containerRef.current) { return; }
@@ -40,8 +65,17 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
     return () => observer.disconnect();
   }, []);
 
+  // Handle wheel event for zoom with Ctrl key
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setScale((s) => Math.max(0.5, Math.min(2.0, s + delta)));
+    }
+  }, []);
+
   return (
-    <div className="relative flex-1 overflow-y-auto bg-[--ws-bg]">
+    <div className="relative flex-1 overflow-y-auto bg-[--ws-bg]" onWheel={handleWheel}>
 
       {/* Layered background decoration — arcs + blurred orbs + cross-hatch */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -117,27 +151,88 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             )}
           </div>
 
-          {/* Page navigation */}
-          <div className="flex flex-none items-center gap-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage <= 1}
-              aria-label="Previous page"
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </button>
-            <span className="min-w-[3rem] text-center text-[11px] font-bold text-[#F5F2D8]/55">
-              {currentPage}{numPages > 0 && ` / ${numPages}`}
-            </span>
-            <button
-              onClick={() => setCurrentPage((p) => p + 1)}
-              disabled={!pdfUrl || (numPages > 0 && currentPage >= numPages)}
-              aria-label="Next page"
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
+          {/* Mode Toggle + Page navigation + Zoom controls */}
+          <div className="flex flex-none items-center gap-2">
+            {/* Edit/Preview mode toggle */}
+            <div className="flex items-center gap-0.5 border-r border-white/10 pr-2 mr-1">
+              <button
+                onClick={() => setEditorMode("edit")}
+                aria-label="Edit mode"
+                className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                  editorMode === "edit"
+                    ? "bg-[#CAFF43] text-[#111]"
+                    : "text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8]"
+                }`}
+              >
+                <Edit className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setEditorMode("preview")}
+                aria-label="Preview mode"
+                className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
+                  editorMode === "preview"
+                    ? "bg-[#CAFF43] text-[#111]"
+                    : "text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8]"
+                }`}
+              >
+                <FileText className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
+            {/* Zoom controls - only show in preview mode */}
+            {editorMode === "preview" && (
+              <div className="flex items-center gap-1 border-r border-white/10 pr-2 mr-1">
+              <button
+                onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}
+                aria-label="Zoom out"
+                className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <button
+                onClick={() => setScale(1.0)}
+                aria-label="Fit to width"
+                className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
+              >
+                <Maximize2 className="h-3 w-3" />
+              </button>
+              <button
+                onClick={() => setScale((s) => Math.min(2.0, s + 0.1))}
+                aria-label="Zoom in"
+                className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+                <span className="text-[10px] text-[#F5F2D8]/40 min-w-[2.5rem] text-center">
+                  {Math.round(scale * 100)}%
+                </span>
+              </div>
+            )}
+
+            {/* Page navigation - only show in preview mode */}
+            {editorMode === "preview" && (
+              <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                aria-label="Previous page"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </button>
+              <span className="min-w-[3rem] text-center text-[11px] font-bold text-[#F5F2D8]/55">
+                {currentPage}{numPages > 0 && ` / ${numPages}`}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => p + 1)}
+                disabled={!pdfUrl || (numPages > 0 && currentPage >= numPages)}
+                aria-label="Next page"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -145,17 +240,30 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
         <div
           ref={containerRef}
           className="overflow-hidden rounded-b-2xl border-b border-x border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_48px_rgba(17,17,17,0.10),0_2px_6px_rgba(17,17,17,0.05)]"
-          aria-label="PDF Document"
+          aria-label="Document Editor"
         >
-          <PdfViewer
-            url={pdfUrl}
-            containerWidth={containerWidth}
-            currentPage={currentPage}
-            onPageLoadSuccess={onPageLoadSuccess}
-            onDocumentLoadSuccess={setNumPages}
-            anchors={anchors}
-            jobId={jobId}
-          />
+          {editorMode === "edit" ? (
+            <RichTextEditor
+              content={htmlContent}
+              anchors={anchors}
+              suggestions={suggestions}
+              onContentChange={(html) => console.log("Content changed:", html.slice(0, 100))}
+              onExportPdf={() => alert("Export PDF coming soon!")}
+              className="min-h-[600px]"
+            />
+          ) : (
+            <PdfViewer
+              url={pdfUrl}
+              containerWidth={containerWidth}
+              currentPage={currentPage}
+              scale={scale}
+              onPageLoadSuccess={onPageLoadSuccess}
+              onDocumentLoadSuccess={setNumPages}
+              anchors={anchors}
+              suggestions={suggestions}
+              jobId={jobId}
+            />
+          )}
         </div>
 
       </div>
