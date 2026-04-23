@@ -163,7 +163,7 @@ export function RichTextEditor({
     try {
       const html = editor.getHTML();
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/export/pdf`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/export/pdf`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

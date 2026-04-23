@@ -42,7 +42,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   useEffect(() => {
     if (editorMode === "edit" && jobId) {
       setHtmlContent("<p>Loading...</p>");
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/jobs/${jobId}/html`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobId}/html`)
         .then((res) => res.json())
         .then((data) => {
           console.log("HTML response:", data);
