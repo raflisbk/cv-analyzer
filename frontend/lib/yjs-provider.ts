@@ -20,8 +20,9 @@ export function createYjsProvider(documentId: string) {
   const awareness = new Awareness(ydoc);
 
   // Create WebSocket provider for real-time sync
+  // Note: Backend route is /api/v1/yws/{document_id}
   const wsProvider = new WebsocketProvider(
-    `${WS_URL}/yjs`,
+    `${WS_URL}/api/v1/yws`,
     documentId,
     ydoc,
     {
