@@ -61,7 +61,7 @@ class InlineEditService:
         settings = get_settings()
         self.client = InferenceClient(
             model=HF_MODEL,
-            token=settings.hf_api_key,
+            token=settings.CV_ANALYZER_HF_API_KEY,
         )
         logger.info(f"[InlineEditService] Initialized with model: {HF_MODEL}")
 
