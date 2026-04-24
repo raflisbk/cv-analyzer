@@ -66,6 +66,15 @@ cd backend
 celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
 ```
 
+**Testing:**
+```bash
+cd backend
+pytest                                    # Run all tests
+pytest tests/test_upload_api.py           # Run specific test file
+pytest -v                                 # Verbose output
+pytest --cov=app                          # With coverage
+```
+
 **Code quality:**
 ```bash
 cd backend
@@ -95,6 +104,13 @@ npm run dev         # http://localhost:3000
 ```bash
 cd frontend
 npm run build
+```
+
+**Testing:**
+```bash
+cd frontend
+npm run test            # Run all tests (vitest)
+npm run test:watch      # Watch mode
 ```
 
 **Code quality:**

@@ -83,7 +83,7 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
       ) || "ws://localhost:8000";
 
     const wsProvider = new WebsocketProvider(
-      `${wsUrl}/yjs/${jobId}`,
+      `${wsUrl}/api/v1/yws/${jobId}`,
       `workspace-v2-${jobId}`,
       docRef.current,
       { connect: true }
