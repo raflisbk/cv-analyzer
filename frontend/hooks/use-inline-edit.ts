@@ -19,6 +19,7 @@ import * as Y from "yjs";
 export interface InlineEditState {
   selectedText: string;
   selectionRect: DOMRect | null;
+  rectPercent?: { left: number; top: number; width: number; height: number };
   isVisible: boolean;
 }
 
@@ -144,9 +145,22 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
+      let rectPercent = undefined;
+      const pageEl = document.querySelector(".react-pdf__Page");
+      if (pageEl) {
+        const pageRect = pageEl.getBoundingClientRect();
+        rectPercent = {
+          left: ((rect.left - pageRect.left) / pageRect.width) * 100,
+          top: ((rect.top - pageRect.top) / pageRect.height) * 100,
+          width: (rect.width / pageRect.width) * 100,
+          height: (rect.height / pageRect.height) * 100,
+        };
+      }
+
       setState({
         selectedText,
         selectionRect: rect,
+        rectPercent,
         isVisible: true,
       });
 
@@ -154,6 +168,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         length: selectedText.length,
         preview: selectedText.slice(0, 30),
         rect: { top: rect.top, left: rect.left, width: rect.width },
+        rectPercent,
       });
     }, SELECTION_DEBOUNCE_MS);
   }, []);

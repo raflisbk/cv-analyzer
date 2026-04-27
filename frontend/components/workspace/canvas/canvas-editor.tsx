@@ -125,11 +125,12 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
         </h2>
       </div>
 
-      {/* Split panel — editor left, live preview right */}
+      {/* Split panel — editor left, original PDF right */}
       <CanvasSplitPanel
         sections={sections}
         fileName={data.file.filename ?? ""}
         saveState={saveState}
+        jobId={data.job_id}
         editorSlot={sections.map((section, i) => (
           <SectionBlock
             key={section.type}

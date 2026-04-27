@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Zustand store untuk workspace-v2.
  * Phase 13: grid-based layout state - activeDetailTab drives left panel expansion.
  * null = PDF-first mode (left compact), string = detail tab active (PDF hidden).
@@ -50,7 +50,12 @@ interface WorkspaceV2State {
   setActiveSuggestionId: (id: string | null) => void;
   setSuggestionStatus: (id: string, status: SuggestionStatus) => void;
   applyAllSuggestions: () => void;
-  applyInlineEdit: (editId: string, originalText: string, rewrittenText: string) => void;
+  applyInlineEdit: (
+    editId: string,
+    originalText: string,
+    rewrittenText: string,
+    rectPercent?: { left: number; top: number; width: number; height: number }
+  ) => void;
   addChatMessage: (message: ChatMessage) => void;
   updateLastChatMessage: (content: string) => void;
   setChatStreaming: (streaming: boolean) => void;
@@ -93,7 +98,7 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
         suggestionStatuses: { ...state.suggestionStatuses, ...updates },
       };
     }),
-  applyInlineEdit: (editId, originalText, rewrittenText) =>
+  applyInlineEdit: (editId, originalText, rewrittenText, rectPercent) =>
     set((state) => {
       // Initialize cvDocument if null
       const currentDoc = state.cvDocument || {};
@@ -103,6 +108,7 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
           [editId]: {
             originalText,
             rewrittenText,
+            rectPercent,
             appliedAt: new Date().toISOString(),
           },
         },

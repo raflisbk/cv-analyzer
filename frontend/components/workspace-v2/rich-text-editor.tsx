@@ -16,7 +16,7 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import { SuggestionMark } from "./suggestion-mark";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -48,65 +48,25 @@ export function RichTextEditor({
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
 
-  // Apply suggestion highlights to HTML content
-  useEffect(() => {
-    if (!content || anchors.length === 0) {
-      setHtmlWithHighlights(content);
-      return;
-    }
-
-    // Create a map for quick suggestion lookup
-    const suggestionMap = new Map<string, { text: string; afterText?: string; section: string; priority: string }>();
-    for (const card of suggestions || []) {
-      card.suggestions?.forEach((item: any, idx: number) => {
-        const suggestionId = `${card.section}_${idx}_0`;
-        suggestionMap.set(suggestionId, {
-          text: item.text,
-          afterText: item.afterText || item.explanation,
-          section: card.section,
-          priority: item.priority,
-        });
-      });
-    }
-
-    // Apply highlights by replacing text matches with marked spans
-    let highlighted = content;
-    for (const anchor of anchors) {
-      const suggestion = suggestionMap.get(anchor.suggestion_id);
-      if (!suggestion) continue;
-
-      const textToHighlight = anchor.text_anchor;
-      if (!textToHighlight) continue;
-
-      // Escape special regex characters
-      const escapedText = textToHighlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(escapedText, 'gi');
-
-      // Replace with marked span
-      highlighted = highlighted.replace(regex, (match) => {
-        return `<span data-suggestion-id="${anchor.suggestion_id}" data-priority="${anchor.priority}" data-section="${suggestion.section}" class="suggestion-highlight" style="background: ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}; border-bottom: 2px solid ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.5)' : 'rgba(245,158,11,0.5)'}; border-radius: 2px; cursor: pointer; padding: 2px 0;">${match}</span>`;
-      });
-    }
-
-    setHtmlWithHighlights(highlighted);
-  }, [content, anchors, suggestions]);
+  // Memoize extensions to prevent Tiptap duplicate warning on re-renders
+  const extensions = useMemo(() => [
+    StarterKit.configure({
+      heading: { levels: [1, 2, 3] },
+      bulletList: { keepMarks: true },
+      orderedList: { keepMarks: true },
+    }),
+    Underline,
+    TextAlign.configure({ types: ["heading", "paragraph"] }),
+    Link.configure({ openOnClick: false }),
+    SuggestionMark,
+    Placeholder.configure({
+      placeholder: "Ketik atau tempel teks CV Anda di sini...",
+    }),
+  ], []);
 
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [1, 2, 3] },
-        bulletList: { keepMarks: true },
-        orderedList: { keepMarks: true },
-      }),
-      Underline,
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Link.configure({ openOnClick: false }),
-      SuggestionMark,
-      Placeholder.configure({
-        placeholder: "Ketik atau tempel teks CV Anda di sini...",
-      }),
-    ],
+    extensions,
     content: htmlWithHighlights,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
@@ -116,6 +76,46 @@ export function RichTextEditor({
       setIsLoading(false);
     },
   });
+
+  // Apply suggestion highlights to HTML content and update editor
+  useEffect(() => {
+    let highlighted = content;
+
+    if (content && anchors.length > 0) {
+      const suggestionMap = new Map<string, { text: string; afterText?: string; section: string; priority: string }>();
+      for (const card of suggestions || []) {
+        card.suggestions?.forEach((item: any, idx: number) => {
+          const suggestionId = `${card.section}_${idx}_0`;
+          suggestionMap.set(suggestionId, {
+            text: item.text,
+            afterText: item.afterText || item.explanation,
+            section: card.section,
+            priority: item.priority,
+          });
+        });
+      }
+
+      for (const anchor of anchors) {
+        const suggestion = suggestionMap.get(anchor.suggestion_id);
+        if (!suggestion) continue;
+
+        const textToHighlight = anchor.text_anchor;
+        if (!textToHighlight) continue;
+
+        const escapedText = textToHighlight.replace(/[.*+?^{}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escapedText, 'gi');
+
+        highlighted = highlighted.replace(regex, (match) => {
+          return `<span data-suggestion-id="${anchor.suggestion_id}" data-priority="${anchor.priority}" data-section="${suggestion.section}" class="suggestion-highlight" style="background: ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}; border-bottom: 2px solid ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.5)' : 'rgba(245,158,11,0.5)'}; border-radius: 2px; cursor: pointer; padding: 2px 0;">${match}</span>`;
+        });
+      }
+    }
+
+    if (editor) {
+      editor.commands.setContent(highlighted);
+    }
+    setHtmlWithHighlights(highlighted);
+  }, [content, anchors, suggestions, editor]);
 
   // Handle hover on suggestion highlights
   const handleHighlightMouseEnter = useCallback((e: MouseEvent) => {
@@ -304,10 +304,36 @@ export function RichTextEditor({
       <div className="relative min-h-[800px] bg-[#FFFDF4]">
         <EditorContent
           editor={editor}
-          className="prose prose-sm max-w-none p-6"
-          style={{
-            fontFamily: "Inter, system-ui, sans-serif",
-          }}
+          className={[
+            // Base
+            "min-h-[600px] outline-none",
+            // ProseMirror root font
+            "[&_.ProseMirror]:px-8 [&_.ProseMirror]:py-6",
+            "[&_.ProseMirror]:text-[14px] [&_.ProseMirror]:leading-[1.7] [&_.ProseMirror]:text-[#1a1a1a]",
+            "[&_.ProseMirror]:outline-none",
+            // H1 — Contact Information header (top of CV)
+            "[&_.ProseMirror_h1]:text-[18px] [&_.ProseMirror_h1]:font-bold [&_.ProseMirror_h1]:text-[#111]",
+            "[&_.ProseMirror_h1]:mt-0 [&_.ProseMirror_h1]:mb-2 [&_.ProseMirror_h1]:pb-1",
+            "[&_.ProseMirror_h1]:border-b-2 [&_.ProseMirror_h1]:border-[#111]",
+            // H2 — Section headers (Experience, Education, Skills…)
+            "[&_.ProseMirror_h2]:text-[13px] [&_.ProseMirror_h2]:font-bold [&_.ProseMirror_h2]:uppercase",
+            "[&_.ProseMirror_h2]:tracking-[0.1em] [&_.ProseMirror_h2]:text-[#111]",
+            "[&_.ProseMirror_h2]:mt-5 [&_.ProseMirror_h2]:mb-2 [&_.ProseMirror_h2]:pb-1",
+            "[&_.ProseMirror_h2]:border-b [&_.ProseMirror_h2]:border-[#ccc]",
+            // Paragraphs
+            "[&_.ProseMirror_p]:my-[3px] [&_.ProseMirror_p:first-child]:mt-0",
+            // Bold
+            "[&_.ProseMirror_strong]:font-semibold [&_.ProseMirror_strong]:text-[#0a0a0a]",
+            // Bullet list
+            "[&_.ProseMirror_ul]:ml-5 [&_.ProseMirror_ul]:my-1 [&_.ProseMirror_ul]:list-disc",
+            "[&_.ProseMirror_ul_li]:mb-[2px] [&_.ProseMirror_ul_li_p]:my-0",
+            // Ordered list
+            "[&_.ProseMirror_ol]:ml-5 [&_.ProseMirror_ol]:my-1 [&_.ProseMirror_ol]:list-decimal",
+            "[&_.ProseMirror_ol_li]:mb-[2px] [&_.ProseMirror_ol_li_p]:my-0",
+            // Placeholder
+            "[&_.ProseMirror_p.is-editor-empty:first-child::before]:text-[#141414]/40",
+            "[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
+          ].join(" ")}
         />
 
         {/* Suggestion Card Popup */}

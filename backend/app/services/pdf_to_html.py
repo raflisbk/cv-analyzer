@@ -1,7 +1,7 @@
 """
 PDF to HTML converter service.
-Converts extracted PDF text and coordinates into HTML with exact PDF positioning.
-Enables rendering CV as editable Tiptap editor while preserving original PDF layout.
+Converts extracted PDF text and NLP sections into semantic HTML
+compatible with Tiptap rich text editor.
 """
 
 from typing import Any
@@ -11,13 +11,29 @@ from app.core.logging import structured_logger as logger
 
 class PDFToHTMLConverter:
     """
-    Converts PDF extraction results to HTML with exact positioning.
+    Converts PDF extraction results to semantic HTML for Tiptap editor.
 
     Strategy:
-    - Parse source_text into sections based on NLP section results
-    - Use suggestion anchors for coordinate mapping
-    - Generate HTML with absolute positioning to match PDF layout
+    - Map NLP section types to appropriate HTML elements
+    - Generate clean, editable HTML (no absolute positioning)
+    - Preserve section structure for suggestion anchoring
     """
+
+    SECTION_HEADING_MAP: dict[str, str] = {
+        "header": "h1",
+        "summary": "h2",
+        "experience": "h2",
+        "education": "h2",
+        "skills": "h2",
+        "projects": "h2",
+        "certifications": "h2",
+        "languages": "h2",
+        "interests": "h2",
+        "references": "h2",
+        "awards": "h2",
+        "publications": "h2",
+        "volunteer": "h2",
+    }
 
     def __init__(self):
         self.logger = logger
@@ -27,194 +43,135 @@ class PDFToHTMLConverter:
         source_text: str,
         sections: list[dict[str, Any]],
         anchors: list[dict[str, Any]],
-        page_width: float = 595.5,  # A4 width in PDF points
-        page_height: float = 842.0,  # A4 height in PDF points
+        page_width: float = 595.5,
+        page_height: float = 842.0,
     ) -> dict[str, Any]:
         """
-        Convert PDF extraction to HTML structure for Tiptap editor.
+        Convert PDF extraction to semantic HTML for Tiptap editor.
 
         Args:
             source_text: Full extracted text from PDF
             sections: NLP section results with type and text
             anchors: Suggestion anchors with PDF coordinates
-            page_width: PDF page width in points (default A4)
-            page_height: PDF page height in points (default A4)
+            page_width: PDF page width in points (unused, kept for API compat)
+            page_height: PDF page height in points (unused, kept for API compat)
 
         Returns:
-            dict with:
-            - html: Complete HTML string
-            - blocks: List of positioned text blocks
-            - metadata: Page dimensions and section count
+            dict with html, blocks, and metadata
         """
-        if not source_text:
+        if not sections:
             return self._empty_html()
 
-        # Sort anchors by page and position (top to bottom, left to right)
-        sorted_anchors = sorted(
-            anchors,
-            key=lambda a: (a.get("page_index", 0), a.get("rect", {}).get("y", 0))
-        )
+        # Build anchor lookup by text content for highlighting
+        anchor_map = self._build_anchor_map(anchors)
 
-        # Create text blocks with positions
-        blocks = []
+        html_parts: list[str] = []
+
         for section in sections:
-            section_blocks = self._extract_section_blocks(
-                section,
-                source_text,
-                sorted_anchors
-            )
-            blocks.extend(section_blocks)
+            section_type = section.get("type", "other")
+            section_text = section.get("text", "")
+            if not section_text:
+                continue
 
-        # Generate HTML
-        html = self._generate_html(blocks, page_width, page_height)
+            # Section heading (skip for "other" type — usually contact info)
+            if section_type != "other":
+                heading_tag = self.SECTION_HEADING_MAP.get(section_type, "h2")
+                label = section_type.replace("_", " ").title()
+                html_parts.append(f"<{heading_tag}>{label}</{heading_tag}>")
+
+            # Section body — split into lines and wrap appropriately
+            html_parts.extend(self._render_section_body(section_text, section_type, anchor_map))
+
+        html = "\n".join(html_parts) if html_parts else "<p>No content available</p>"
 
         return {
             "html": html,
-            "blocks": blocks,
+            "blocks": [],
             "metadata": {
                 "page_width": page_width,
                 "page_height": page_height,
                 "section_count": len(sections),
-                "block_count": len(blocks),
-            }
+                "block_count": 0,
+            },
         }
+
+    def _build_anchor_map(self, anchors: list[dict[str, Any]]) -> dict[str, dict]:
+        """Build lookup from text_preview to anchor data for highlighting."""
+        anchor_map: dict[str, dict] = {}
+        for anchor in anchors:
+            text = anchor.get("text_preview", "") or anchor.get("text_anchor", "")
+            if text:
+                anchor_map[text.lower()] = anchor
+        return anchor_map
+
+    def _render_section_body(
+        self,
+        text: str,
+        section_type: str,
+        anchor_map: dict[str, dict],
+    ) -> list[str]:
+        """Render section text into semantic HTML elements."""
+        parts: list[str] = []
+
+        # Split text into lines
+        lines = text.strip().split("\n")
+
+        if section_type == "skills":
+            # Skills: each line as a paragraph, detect sub-headings
+            for line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                # Short lines without commas are likely sub-category headings
+                if len(stripped) < 60 and "," not in stripped:
+                    parts.append(f"<h3>{stripped}</h3>")
+                else:
+                    parts.append(f"<p>{stripped}</p>")
+        elif section_type == "header":
+            # Header: first line as paragraph, contact info as small text
+            for i, line in enumerate(lines):
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                if i == 0:
+                    # Main professional summary — could be long
+                    parts.append(f"<p><strong>{stripped}</strong></p>")
+                else:
+                    parts.append(f"<p>{stripped}</p>")
+        elif section_type in ("experience", "education", "projects"):
+            # Experience/education: detect job titles, company lines, bullets
+            for line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                # Lines starting with bullet-like chars → list items
+                if stripped[0] in "•·-–—*":
+                    content = stripped.lstrip("•·-–—* ").strip()
+                    parts.append(f"<ul><li>{content}</li></ul>")
+                elif "|" in stripped and len(stripped) < 120:
+                    # Likely a title | company line
+                    parts.append(f"<p><strong>{stripped}</strong></p>")
+                else:
+                    parts.append(f"<p>{stripped}</p>")
+        else:
+            # Default: plain paragraphs
+            for line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                parts.append(f"<p>{stripped}</p>")
+
+        return parts
 
     def _empty_html(self) -> dict[str, Any]:
         """Return empty HTML structure."""
         return {
-            "html": "<div>No content available</div>",
+            "html": "<p>No content available</p>",
             "blocks": [],
             "metadata": {
                 "page_width": 595.5,
                 "page_height": 842.0,
                 "section_count": 0,
                 "block_count": 0,
-            }
+            },
         }
-
-    def _extract_section_blocks(
-        self,
-        section: dict[str, Any],
-        source_text: str,
-        anchors: list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
-        """
-        Extract text blocks for a section with PDF coordinates.
-
-        Strategy:
-        1. Find section text in source_text
-        2. Match with suggestion anchors for coordinates
-        3. Create positioned blocks
-
-        Args:
-            section: NLP section result (type, text, entities)
-            source_text: Full extracted text
-            anchors: All suggestion anchors
-
-        Returns:
-            List of text blocks with position data
-        """
-        section_type = section.get("type", "other")
-        section_text = section.get("text", "")
-
-        if not section_text:
-            return []
-
-        # Find anchors that belong to this section
-        section_anchors = self._filter_anchors_by_section(
-            anchors,
-            section_type,
-            section_text
-        )
-
-        blocks = []
-        for anchor in section_anchors:
-            rect = anchor.get("rect", {})
-            text_preview = anchor.get("text_preview", "")
-
-            blocks.append({
-                "id": anchor.get("suggestion_id", ""),
-                "section_type": section_type,
-                "text": text_preview,
-                "position": {
-                    "x": rect.get("x", 0),
-                    "y": rect.get("y", 0),
-                    "width": rect.get("w", 0),
-                    "height": rect.get("h", 0),
-                    "page": anchor.get("page_index", 0),
-                },
-                "suggestion_id": anchor.get("suggestion_id", ""),
-            })
-
-        # If no anchors found but section has text, create a default block
-        if not blocks and section_text:
-            blocks.append({
-                "id": f"{section_type}_default",
-                "section_type": section_type,
-                "text": section_text[:500],  # Limit length for display
-                "position": {
-                    "x": 50,  # Default margin
-                    "y": 100 + len(blocks) * 100,  # Stack vertically
-                    "width": page_width - 100,
-                    "height": 100,
-                    "page": 0,
-                },
-                "suggestion_id": None,
-            })
-
-        return blocks
-
-    def _filter_anchors_by_section(
-        self,
-        anchors: list[dict[str, Any]],
-        section_type: str,
-        section_text: str
-    ) -> list[dict[str, Any]]:
-        """Filter anchors that belong to a section based on text overlap."""
-        section_anchors = []
-        section_lower = section_text.lower()
-
-        for anchor in anchors:
-            text_preview = anchor.get("text_preview", "")
-            # Check if this anchor's text appears in the section
-            if text_preview.lower() in section_lower:
-                section_anchors.append(anchor)
-
-        return section_anchors
-
-    def _generate_html(
-        self,
-        blocks: list[dict[str, Any]],
-        page_width: float,
-        page_height: float
-    ) -> str:
-        """
-        Generate HTML string with positioned blocks.
-
-        Uses absolute positioning to match PDF layout.
-        """
-        html_parts = ['<div class="pdf-page" style="']
-        html_parts.append(f'  width: {page_width}px;')
-        html_parts.append(f'  height: {page_height}px;')
-        html_parts.append('  position: relative;')
-        html_parts.append('  background: white;')
-        html_parts.append('">')
-
-        for block in blocks:
-            pos = block["position"]
-            section_type = block["section_type"]
-
-            html_parts.append(f'  <div class="text-block" data-section="{section_type}" data-id="{block["id"]}" style="')
-            html_parts.append(f'    position: absolute;')
-            html_parts.append(f'    left: {pos["x"]}px;')
-            html_parts.append(f'    top: {pos["y"]}px;')
-            html_parts.append(f'    width: {pos["width"]}px;')
-            html_parts.append(f'    height: {pos["height"]}px;')
-            html_parts.append(f'    z-index: 10;')
-            html_parts.append('">')
-            html_parts.append(f'    <div class="editable-content" contenteditable="true">{block["text"]}</div>')
-            html_parts.append('  </div>')
-
-        html_parts.append('</div>')
-
-        return "\n".join(html_parts)

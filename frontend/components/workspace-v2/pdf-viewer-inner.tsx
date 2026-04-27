@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 /**
  * PdfViewerInner - react-pdf canvas viewer with text layer.
  * Phase 14: Replaces the Phase 13 browser-native viewer. Enables customTextRenderer for annotation highlights.
@@ -102,53 +102,6 @@ export default function PdfViewerInner({
   // Inline edit hook for text selection detection
   const { state: inlineEditState, handleSelectionChange, closePopover } = useInlineEdit(jobId);
 
-  // customTextRenderer — injects colored <span> highlights for each anchor match.
-  // Uses anchors prop directly instead of local state to avoid subscription issues.
-  const customTextRenderer: CustomTextRenderer = useCallback(
-    ({ str, pageIndex }) => {
-      if (!str.trim() || str.trim().length <= 2) { return str; }
-
-      // Debug: Log first call
-      if (str.includes("Experienced")) {
-        console.log("[PDF Highlight] Checking str:", str);
-        console.log("[PDF Highlight] PageIndex:", pageIndex);
-        console.log("[PDF Highlight] Anchors count:", anchors.length);
-        console.log("[PDF Highlight] Anchors:", anchors);
-      }
-
-      // Normalize both strings for matching (handle whitespace variations)
-      const normalizedStr = str.toLowerCase().trim().replace(/\s+/g, ' ');
-
-      const match = anchors.find((a) => {
-        if (a.page_index !== pageIndex) { return false; }
-
-        // Normalize anchor text
-        const normalizedAnchor = a.text_anchor.toLowerCase().trim().replace(/\s+/g, ' ');
-
-        // Check both directions: anchor contains str OR str contains part of anchor
-        // This handles cases where PDF text layer chunks text differently
-        const anchorContainsStr = normalizedAnchor.includes(normalizedStr);
-        const strContainsAnchor = normalizedStr.length > 10 && normalizedAnchor.includes(normalizedStr.slice(0, 20));
-
-        if (anchorContainsStr || strContainsAnchor) {
-          console.log("[PDF Highlight] MATCH found!", { str, anchor: a.text_anchor.slice(0, 50) });
-        }
-
-        return anchorContainsStr || strContainsAnchor;
-      });
-
-      if (!match) { return str; }
-
-      const color = priorityToColor(match.priority);
-      return `<span
-        class="annot-hl"
-        data-sid="${match.suggestion_id}"
-        style="background:${color.bg};border-bottom:2px solid ${color.border};border-radius:2px;cursor:pointer"
-      >${str}</span>`;
-    },
-    [anchors]
-  );
-
   if (loadError) {
     return (
       <div
@@ -178,6 +131,9 @@ export default function PdfViewerInner({
     }
   }, [inlineEditState.isVisible, closePopover]);
 
+  const cvDocument = useWorkspaceV2Store((s) => s.cvDocument);
+  const viewMode = useWorkspaceV2Store((s) => s.viewMode);
+
   return (
     <div className="relative" onMouseUp={handleSelectionChange}>
       <Document
@@ -196,7 +152,7 @@ export default function PdfViewerInner({
               pageNumber={currentPage}
               width={containerWidth}
               scale={scale}
-              renderTextLayer={false}
+              renderTextLayer={true}
               renderAnnotationLayer={false}
               loading={<PageLoadingSkeleton width={containerWidth} />}
               onLoadSuccess={(page) => {
@@ -204,6 +160,7 @@ export default function PdfViewerInner({
                 if (onPageLoadSuccess) { onPageLoadSuccess(page); }
               }}
             />
+            {/* Render AI Suggestions Overlay */}
             <AnnotationOverlay
               anchors={anchors}
               pageIndex={currentPage - 1}
@@ -214,6 +171,41 @@ export default function PdfViewerInner({
               onApply={handleApply}
               onDismiss={handleDismiss}
             />
+
+            {/* Render Manual Inline Edit Patches */}
+            {viewMode !== "original" &&
+              Object.entries(cvDocument || {}).map(([id, patch]) => {
+                const p = patch as { rewrittenText: string; rectPercent?: { left: number; top: number; width: number; height: number } };
+                if (!p.rectPercent) return null;
+                return (
+                  <div
+                    key={id}
+                    style={{
+                      position: "absolute",
+                      left: `${p.rectPercent.left}%`,
+                      top: `calc(${p.rectPercent.top}% - 2px)`,
+                      width: `calc(${p.rectPercent.width}% + 4px)`,
+                      minHeight: `calc(${p.rectPercent.height}% + 4px)`,
+                      height: "max-content",
+                      zIndex: 10,
+                      background: "#ffffff",
+                      padding: "2px 4px",
+                      color: "#111111",
+                      fontFamily: "var(--font-sans), sans-serif",
+                      fontSize: "11px",
+                      lineHeight: "1.4",
+                      border: "1px solid rgba(202, 255, 67, 0.8)",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                      borderRadius: "3px",
+                      pointerEvents: "none",
+                      transformOrigin: "top left",
+                    }}
+                    aria-hidden="true"
+                  >
+                    {p.rewrittenText}
+                  </div>
+                );
+              })}
           </div>
         )}
       </Document>
@@ -224,6 +216,7 @@ export default function PdfViewerInner({
         createPortal(
           <InlineEditPopover
             rect={inlineEditState.selectionRect}
+            rectPercent={inlineEditState.rectPercent}
             selectedText={inlineEditState.selectedText}
             jobId={jobId}
             onClose={closePopover}

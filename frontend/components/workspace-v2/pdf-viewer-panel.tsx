@@ -17,16 +17,12 @@ interface PdfViewerPanelProps {
   onPageLoadSuccess?: (page: unknown) => void;
 }
 
-type EditorMode = "edit" | "preview";
-
 export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState<number>(0);
   const [scale, setScale] = useState<number>(1.0);
-  const [editorMode, setEditorMode] = useState<EditorMode>("edit");
-  const [htmlContent, setHtmlContent] = useState<string>("<p>Loading...</p>");
 
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";
@@ -37,31 +33,6 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const modeNote = viewMode === "original"
     ? "Optimized PDF available after edits applied"
     : null;
-
-  // Fetch HTML content when switching to edit mode
-  useEffect(() => {
-    if (editorMode === "edit" && jobId) {
-      setHtmlContent("<p>Loading...</p>");
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobId}/html`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("HTML response:", data);
-          // Handle WrappedResponse structure: { data: { html: "..." } }
-          if (data.data && data.data.html) {
-            setHtmlContent(data.data.html);
-          } else if (data.error) {
-            console.error("API Error:", data.error);
-            setHtmlContent(`<p>Error: ${data.error.message || "Failed to load content"}</p>`);
-          } else {
-            setHtmlContent("<p>No content available. Please upload a CV first.</p>");
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to load HTML:", err);
-          setHtmlContent("<p>Failed to load content. Please try again.</p>");
-        });
-    }
-  }, [editorMode, jobId]);
 
   useEffect(() => {
     if (!containerRef.current) { return; }
@@ -161,35 +132,8 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
 
           {/* Mode Toggle + Page navigation + Zoom controls */}
           <div className="flex flex-none items-center gap-2">
-            {/* Edit/Preview mode toggle */}
-            <div className="flex items-center gap-0.5 border-r border-white/10 pr-2 mr-1">
-              <button
-                onClick={() => setEditorMode("edit")}
-                aria-label="Edit mode"
-                className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                  editorMode === "edit"
-                    ? "bg-[#CAFF43] text-[#111]"
-                    : "text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8]"
-                }`}
-              >
-                <Edit className="h-3.5 w-3.5" />
-              </button>
-              <button
-                onClick={() => setEditorMode("preview")}
-                aria-label="Preview mode"
-                className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                  editorMode === "preview"
-                    ? "bg-[#CAFF43] text-[#111]"
-                    : "text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8]"
-                }`}
-              >
-                <FileText className="h-3.5 w-3.5" />
-              </button>
-            </div>
-
             {/* Zoom controls - only show in preview mode */}
-            {editorMode === "preview" && (
-              <div className="flex items-center gap-1 border-r border-white/10 pr-2 mr-1">
+            <div className="flex items-center gap-1 border-r border-white/10 pr-2 mr-1">
               <button
                 onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}
                 aria-label="Zoom out"
@@ -211,15 +155,13 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
               >
                 <Plus className="h-3 w-3" />
               </button>
-                <span className="text-[10px] text-[#F5F2D8]/40 min-w-[2.5rem] text-center">
-                  {Math.round(scale * 100)}%
-                </span>
-              </div>
-            )}
+              <span className="text-[10px] text-[#F5F2D8]/40 min-w-[2.5rem] text-center">
+                {Math.round(scale * 100)}%
+              </span>
+            </div>
 
             {/* Page navigation - only show in preview mode */}
-            {editorMode === "preview" && (
-              <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
@@ -237,10 +179,9 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
                 aria-label="Next page"
                 className="flex h-7 w-7 items-center justify-center rounded-lg text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            )}
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -250,28 +191,17 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
           className="overflow-hidden rounded-b-2xl border-b border-x border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_48px_rgba(17,17,17,0.10),0_2px_6px_rgba(17,17,17,0.05)]"
           aria-label="Document Editor"
         >
-          {editorMode === "edit" ? (
-            <RichTextEditor
-              content={htmlContent}
-              anchors={anchors}
-              suggestions={suggestions}
-              onContentChange={(html) => console.log("Content changed:", html.slice(0, 100))}
-              onExportPdf={() => alert("Export PDF coming soon!")}
-              className="min-h-[600px]"
-            />
-          ) : (
-            <PdfViewer
-              url={pdfUrl}
-              containerWidth={containerWidth}
-              currentPage={currentPage}
-              scale={scale}
-              onPageLoadSuccess={onPageLoadSuccess}
-              onDocumentLoadSuccess={setNumPages}
-              anchors={anchors}
-              suggestions={suggestions}
-              jobId={jobId}
-            />
-          )}
+          <PdfViewer
+            url={pdfUrl}
+            containerWidth={containerWidth}
+            currentPage={currentPage}
+            scale={scale}
+            onPageLoadSuccess={onPageLoadSuccess}
+            onDocumentLoadSuccess={setNumPages}
+            anchors={anchors}
+            suggestions={suggestions}
+            jobId={jobId}
+          />
         </div>
 
       </div>

@@ -20,7 +20,7 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
-from app.services.llm.hf_openai_llm_service import HFOpenAILLMService
+from app.services.llm.hf_llm_service import HFLLMService
 from app.services.llm.protocol import SuggestionsOutput  # noqa: TC001
 from app.services.rag.embeddings import get_rag_embedding
 from app.services.rag.retriever import retrieve_relevant_chunks
@@ -28,8 +28,8 @@ from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
 
-# Module-level singleton — HF LLM (Qwen2.5) as primary
-_llm_service = HFOpenAILLMService()
+# Module-level singleton — HFLLMService (free tier via hf-inference provider)
+_llm_service = HFLLMService()
 
 # Module-level Redis client — lazy init (same pattern as document_processing.py)
 _redis_client: redis_lib.Redis | None = None

@@ -25,6 +25,7 @@ type PopoverState = "prompt" | "loading" | "preview" | "error" | "too_long";
 
 interface InlineEditPopoverProps {
   rect: DOMRect;
+  rectPercent?: { left: number; top: number; width: number; height: number };
   selectedText: string;
   jobId: string;
   onClose: () => void;
@@ -43,6 +44,7 @@ interface RewritePreview {
  */
 export function InlineEditPopover({
   rect,
+  rectPercent,
   selectedText,
   jobId,
   onClose,
@@ -145,7 +147,7 @@ export function InlineEditPopover({
   const handleApply = () => {
     if (!preview) return;
 
-    applyInlineEdit(editId, preview.original, preview.rewritten);
+    applyInlineEdit(editId, preview.original, preview.rewritten, rectPercent);
     onClose();
   };
 
@@ -166,7 +168,7 @@ export function InlineEditPopover({
       ref={popoverRef}
       role="dialog"
       aria-label="Edit with AI"
-      className="fixed z-50 w-[380px] max-w-[90vw] rounded-xl border border-[rgba(17,17,17,0.12)] bg-[rgba(255,255,255,0.96)] backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.14)] animate-in fade-in slide-in-from-bottom-2 duration-200"
+      className="fixed z-50 w-[380px] max-w-[90vw] bg-[#F5F2D8] border-2 border-[#111111] shadow-[4px_4px_0px_#111111] animate-in fade-in slide-in-from-bottom-2 duration-200"
       style={{
         top: `${top}px`,
         left: `${left}px`,
@@ -174,33 +176,33 @@ export function InlineEditPopover({
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[rgba(17,17,17,0.08)] px-4 py-3">
+      <div className="flex items-center justify-between border-b-2 border-[#111111] px-4 py-3 bg-white">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-[#CAFF43]" />
-          <span className="text-sm font-bold text-[#111111]">Edit with AI</span>
+          <Sparkles className="h-4 w-4 text-[#111111]" />
+          <span className="text-sm font-bold text-[#111111] uppercase tracking-wider">AI Edit</span>
         </div>
         <button
           onClick={onClose}
           aria-label="Close"
-          className="rounded-lg p-1 text-[#111111]/60 hover:bg-[rgba(17,17,17,0.06)] hover:text-[#111111] transition-colors"
+          className="rounded-none p-1 text-[#111111] hover:bg-[#CAFF43] border border-transparent hover:border-[#111111] transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 bg-[#F5F2D8]">
         {popoverState === "too_long" && (
           <div className="space-y-3">
-            <p className="text-sm text-[#111111]/80">
+            <p className="text-sm text-[#111111]">
               Please select <strong>500 characters or less</strong> to edit with AI.
             </p>
-            <p className="text-xs text-[#111111]/60">
+            <p className="text-xs text-[#111111]/70 font-mono">
               Current selection: {selectedText.length} characters
             </p>
             <button
               onClick={onClose}
-              className="w-full rounded-full bg-[#CAFF43] px-4 py-2 text-[11px] font-black uppercase text-[#111111] transition-colors hover:bg-[#CAFF43]/90"
+              className="w-full bg-[#CAFF43] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-all hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
             >
               Got it
             </button>
@@ -208,16 +210,16 @@ export function InlineEditPopover({
         )}
 
         {popoverState === "prompt" && (
-          <div className="space-y-3">
-            <div className="rounded-lg bg-[rgba(17,17,17,0.04)] p-3">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#111111]/60">
+          <div className="space-y-4">
+            <div className="bg-white border-2 border-[#111111] p-3 shadow-[2px_2px_0px_#111111]">
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[#111111]">
                 Selected text
               </p>
-              <p className="text-sm text-[#111111] line-clamp-3">{selectedText}</p>
+              <p className="text-sm text-[#111111] line-clamp-3 font-serif italic">{selectedText}</p>
             </div>
 
             <div>
-              <label htmlFor="prompt-input" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#111111]/60">
+              <label htmlFor="prompt-input" className="mb-2 block text-[10px] font-black uppercase tracking-widest text-[#111111]">
                 How should we improve this?
               </label>
               <textarea
@@ -225,7 +227,7 @@ export function InlineEditPopover({
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="e.g., Make this more impactful, Add metrics, Improve clarity..."
-                className="w-full min-h-[80px] resize-y rounded-lg border border-[rgba(17,17,17,0.15)] bg-white px-3 py-2 text-sm text-[#111111] placeholder:text-[#111111]/40 focus:border-[#CAFF43] focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/20"
+                className="w-full min-h-[80px] resize-y bg-white border-2 border-[#111111] px-3 py-2 text-sm text-[#111111] placeholder:text-[#111111]/40 focus:outline-none focus:ring-0 shadow-[2px_2px_0px_#111111] transition-shadow focus:shadow-[4px_4px_0px_#111111]"
                 rows={3}
                 autoFocus
               />
@@ -234,7 +236,7 @@ export function InlineEditPopover({
             <button
               onClick={handleGenerate}
               disabled={!prompt.trim()}
-              className="w-full rounded-full bg-[#CAFF43] px-4 py-2.5 text-[11px] font-black uppercase text-[#111111] transition-colors hover:bg-[#CAFF43]/90 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#CAFF43]"
+              className="w-full bg-[#CAFF43] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-all hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:translate-y-[2px] active:translate-x-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:translate-x-0 disabled:hover:shadow-[2px_2px_0px_#111111]"
             >
               Generate rewrite
             </button>
@@ -249,35 +251,35 @@ export function InlineEditPopover({
         )}
 
         {popoverState === "preview" && preview && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 gap-2">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3">
               {/* Before */}
-              <div className="rounded-lg bg-red-500/10 p-3 border border-red-500/20">
-                <p className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-red-500">
-                  Before
-                </p>
-                <p className="text-xs text-red-200 line-clamp-4">{preview.original}</p>
+              <div className="bg-white border-2 border-[#111111] p-3 shadow-[2px_2px_0px_#111111] relative">
+                <div className="absolute -top-2.5 left-2 bg-[#ff5555] border-2 border-[#111111] px-2 py-0.5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-white">Before</p>
+                </div>
+                <p className="text-xs text-[#111111] line-clamp-4 mt-2 font-serif italic line-through decoration-[#ff5555]/50">{preview.original}</p>
               </div>
 
               {/* After */}
-              <div className="rounded-lg bg-green-500/10 p-3 border border-green-500/20">
-                <p className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-green-500">
-                  After
-                </p>
-                <p className="text-xs text-green-200 line-clamp-4">{preview.rewritten}</p>
+              <div className="bg-white border-2 border-[#111111] p-3 shadow-[2px_2px_0px_#111111] relative">
+                <div className="absolute -top-2.5 left-2 bg-[#CAFF43] border-2 border-[#111111] px-2 py-0.5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[#111111]">After</p>
+                </div>
+                <p className="text-xs text-[#111111] line-clamp-4 mt-2 font-serif">{preview.rewritten}</p>
               </div>
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={handleApply}
-                className="flex-1 rounded-full bg-[#CAFF43] px-4 py-2 text-[11px] font-black uppercase text-[#111111] transition-colors hover:bg-[#CAFF43]/90"
+                className="flex-1 bg-[#CAFF43] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-all hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
               >
                 Apply
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 rounded-full border border-[rgba(17,17,17,0.15)] px-4 py-2 text-[11px] font-black uppercase text-[#111111] transition-colors hover:bg-[rgba(17,17,17,0.06)]"
+                className="flex-1 bg-white border-2 border-[#111111] shadow-[2px_2px_0px_#111111] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-all hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:translate-y-[2px] active:translate-x-[2px] active:shadow-none hover:bg-gray-50"
               >
                 Cancel
               </button>
@@ -286,18 +288,21 @@ export function InlineEditPopover({
         )}
 
         {popoverState === "error" && (
-          <div className="space-y-3">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="space-y-4">
+            <div className="bg-white border-2 border-[#111111] p-3 shadow-[2px_2px_0px_#111111] border-l-4 border-l-[#ff5555]">
+              <p className="text-sm font-bold text-[#111111]">Failed to generate rewrite</p>
+              <p className="text-xs text-[#111111]/70 mt-1">{error}</p>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={handleReset}
-                className="flex-1 rounded-full bg-[#CAFF43] px-4 py-2 text-[11px] font-black uppercase text-[#111111] transition-colors hover:bg-[#CAFF43]/90"
+                className="flex-1 bg-[#CAFF43] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-all hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
               >
                 Try again
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 rounded-full border border-[rgba(17,17,17,0.15)] px-4 py-2 text-[11px] font-black uppercase text-[#111111] transition-colors hover:bg-[rgba(17,17,17,0.06)]"
+                className="flex-1 bg-white border-2 border-[#111111] shadow-[2px_2px_0px_#111111] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-all hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none active:translate-y-[2px] active:translate-x-[2px] active:shadow-none hover:bg-gray-50"
               >
                 Cancel
               </button>

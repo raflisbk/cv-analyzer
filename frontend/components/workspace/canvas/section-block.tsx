@@ -261,7 +261,36 @@ export function SectionBlock({
         <div ref={editorContainerRef} className="relative">
           <EditorContent
             editor={editor}
-            className="prose-none min-h-[60px] text-sm leading-[1.6] text-[#0A0A0A] outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-[#141414]/40 [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]"
+            className={[
+              "min-h-[60px] outline-none",
+              // ProseMirror root
+              "[&_.ProseMirror]:outline-none",
+              "[&_.ProseMirror]:text-[13.5px]",
+              "[&_.ProseMirror]:leading-[1.65]",
+              "[&_.ProseMirror]:text-[#1a1a1a]",
+              // Paragraphs
+              "[&_.ProseMirror_p]:my-[3px]",
+              "[&_.ProseMirror_p:first-child]:mt-0",
+              "[&_.ProseMirror_p:last-child]:mb-0",
+              // Bold
+              "[&_.ProseMirror_strong]:font-semibold",
+              "[&_.ProseMirror_strong]:text-[#0a0a0a]",
+              // Bullet list
+              "[&_.ProseMirror_ul]:my-1",
+              "[&_.ProseMirror_ul]:ml-5",
+              "[&_.ProseMirror_ul]:list-disc",
+              "[&_.ProseMirror_ul_li]:mb-[2px]",
+              "[&_.ProseMirror_ul_li_p]:my-0",
+              // Ordered list
+              "[&_.ProseMirror_ol]:my-1",
+              "[&_.ProseMirror_ol]:ml-5",
+              "[&_.ProseMirror_ol]:list-decimal",
+              "[&_.ProseMirror_ol_li]:mb-[2px]",
+              "[&_.ProseMirror_ol_li_p]:my-0",
+              // Placeholder
+              "[&_.ProseMirror_p.is-editor-empty:first-child::before]:text-[#141414]/40",
+              "[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
+            ].join(" ")}
           />
           {activeTooltip && editor && (
             <SuggestionTooltip

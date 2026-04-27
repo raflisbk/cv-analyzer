@@ -16,8 +16,9 @@ from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
 
 
-# Model configuration
-HF_LLM_MODEL = "Qwen/Qwen2-7B-Instruct"
+# Model configuration — defaults to Qwen2-7B-Instruct via settings
+settings = get_settings()
+HF_LLM_MODEL = settings.CV_ANALYZER_LLM_MODEL
 
 
 _SYSTEM_PROMPT_TEMPLATE = """You are an expert CV coach and recruitment specialist.
@@ -201,6 +202,53 @@ class HFLLMService:
 
         return {
             "raw_json": raw_json,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+        }
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
+    def inline_rewrite(self, text: str, prompt: str, context: dict | None = None) -> dict:
+        """
+        Rewrite a specific text snippet based on user prompt using Qwen2.5-7B-Instruct.
+        """
+        user_prompt = (
+            f"Here is a snippet of text from a CV:\n\"{text}\"\n\n"
+            f"Please rewrite this text according to the following instruction: {prompt}\n\n"
+        )
+        if context:
+            user_prompt += f"Context about the CV: {json.dumps(context)[:500]}\n\n"
+
+        user_prompt += "Return ONLY the rewritten text, nothing else."
+
+        full_prompt = f"<|im_start|>system\nYou are an expert CV editor. You rewrite text cleanly and professionally.<|im_end|>\n<|im_start|>user\n{user_prompt}<|im_end|>\n<|im_start|>assistant\n"
+
+        response = self.client.text_generation(
+            prompt=full_prompt,
+            model=self.model,
+            max_new_tokens=500,
+            temperature=0.7,
+            do_sample=True,
+            return_full_text=False,
+        )
+
+        rewritten = response.strip()
+        
+        # Sometimes models wrap output in quotes if we ask for text
+        if rewritten.startswith('"') and rewritten.endswith('"'):
+            rewritten = rewritten[1:-1]
+            
+        prompt_tokens = len(full_prompt) // 4
+        completion_tokens = len(rewritten) // 4
+
+        llm_tokens_counter.labels(provider="hf", model=self.model, type="prompt").inc(prompt_tokens)
+        llm_tokens_counter.labels(provider="hf", model=self.model, type="completion").inc(completion_tokens)
+
+        return {
+            "rewritten_text": rewritten,
             "prompt_tokens": prompt_tokens,
             "completion_tokens": completion_tokens,
         }

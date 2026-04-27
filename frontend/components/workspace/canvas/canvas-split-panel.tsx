@@ -2,7 +2,7 @@
 
 import type { JSONContent } from "@tiptap/core";
 import type { SaveState } from "@/hooks/use-draft-save";
-import { CVPreview } from "./cv-preview";
+import { PDFPreview } from "./pdf-preview";
 
 interface SplitSection {
   type: string;
@@ -14,9 +14,10 @@ interface CanvasSplitPanelProps {
   sections: SplitSection[];
   fileName: string;
   saveState: SaveState;
+  jobId: string;
 }
 
-export function CanvasSplitPanel({ editorSlot, sections, fileName, saveState }: CanvasSplitPanelProps) {
+export function CanvasSplitPanel({ editorSlot, fileName, saveState, jobId }: CanvasSplitPanelProps) {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       {/* Left pane — Editor (55% on desktop) */}
@@ -30,15 +31,15 @@ export function CanvasSplitPanel({ editorSlot, sections, fileName, saveState }: 
         <div className="space-y-4">{editorSlot}</div>
       </div>
 
-      {/* Right pane — Preview (45% on desktop) */}
+      {/* Right pane — Original PDF Preview (45% on desktop) */}
       <div className="min-w-0 lg:basis-[45%]">
         <div className="mb-2 flex items-center px-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#141414]/40">
-            Preview
+            Original CV
           </p>
         </div>
         <div className="lg:sticky lg:top-6">
-          <CVPreview sections={sections} fileName={fileName} />
+          <PDFPreview jobId={jobId} fileName={fileName} />
         </div>
       </div>
     </div>

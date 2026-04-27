@@ -81,7 +81,7 @@ class DocumentParser:
 
             text = ""
             for page in doc:
-                text += page.get_text()
+                text += page.get_text("text", sort=True)
 
             doc.close()
 

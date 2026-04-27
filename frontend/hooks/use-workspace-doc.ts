@@ -76,15 +76,16 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
   useEffect(() => {
     if (!jobId || !docRef.current) return;
 
+    // Backend WS route: /api/v1/yws/{document_id} (in workspace.py router)
     const wsUrl =
       process.env.NEXT_PUBLIC_API_URL?.replace("http://", "ws://").replace(
         "https://",
         "wss://"
-      ) || "ws://localhost:8000";
+      ) || "ws://localhost:8000/api/v1";
 
     const wsProvider = new WebsocketProvider(
-      `${wsUrl}/api/v1/yws/${jobId}`,
-      `workspace-v2-${jobId}`,
+      `${wsUrl}/yws`,
+      jobId,
       docRef.current,
       { connect: true }
     );

@@ -49,12 +49,19 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
+  const viewMode = useWorkspaceV2Store((s) => s.viewMode);
+  
   const status = suggestionStatuses[anchor.suggestion_id];
   const isApplied = status === "applied";
   const isDismissed = status === "dismissed";
 
+  // Hide patches/highlights if viewMode is original
+  const isOriginalMode = viewMode === "original";
+  const showHighlight = !isApplied && !isOriginalMode;
+  const showPatch = isApplied && !isOriginalMode;
+
   // Show card only if this is the active suggestion (prevent overlap)
-  const shouldShowCard = activeSuggestionId === anchor.suggestion_id;
+  const shouldShowCard = activeSuggestionId === anchor.suggestion_id && !isOriginalMode;
 
   const color = priorityToColor(anchor.priority);
   const cssRect = {
@@ -94,45 +101,78 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   return (
     <>
       {/* Visual highlight — shows colored background */}
-      <div
-        style={{
-          position: "absolute",
-          left: cssRect.left,
-          top: cssRect.top,
-          width: cssRect.width,
-          height: cssRect.height,
-          zIndex: 2,
-          background: color.bg,
-          borderBottom: `2px solid ${color.border}`,
-          borderRadius: "2px",
-          opacity: isApplied ? 0.15 : isDismissed ? 0.1 : 1.0,
-          transition: "opacity 200ms ease",
-          pointerEvents: "none",
-        }}
-        aria-hidden="true"
-        data-suggestion-id={anchor.suggestion_id}
-      />
+      {showHighlight && (
+        <div
+          style={{
+            position: "absolute",
+            left: cssRect.left,
+            top: cssRect.top,
+            width: cssRect.width,
+            height: cssRect.height,
+            zIndex: 2,
+            background: color.bg,
+            borderBottom: `2px solid ${color.border}`,
+            borderRadius: "2px",
+            opacity: isDismissed ? 0.0 : 1.0,
+            transition: "opacity 200ms ease",
+            pointerEvents: "none",
+          }}
+          aria-hidden="true"
+          data-suggestion-id={anchor.suggestion_id}
+        />
+      )}
+
+      {/* Visual Patch — covers original text and shows new text instantly */}
+      {showPatch && (
+        <div
+          style={{
+            position: "absolute",
+            left: cssRect.left,
+            top: cssRect.top - 2, // slight nudge to cover ascenders
+            width: cssRect.width + 4, // slight nudge to cover full width
+            minHeight: cssRect.height + 4,
+            height: "max-content", // Allow multi-line to grow
+            zIndex: 10,
+            background: "#ffffff",
+            padding: "2px 4px",
+            color: "#111111",
+            fontFamily: "var(--font-sans), sans-serif",
+            fontSize: "11px", // typical CV font size in pixels at scale 1
+            lineHeight: "1.4",
+            border: `1px solid ${color.border}`, // subtle border to show it's patched
+            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            borderRadius: "3px",
+            pointerEvents: "none",
+            transformOrigin: "top left",
+          }}
+          aria-hidden="true"
+        >
+          {suggestionText}
+        </div>
+      )}
 
       {/* Hit area — transparent div for mouse events */}
-      <div
-        ref={refs.setReference}
-        data-suggestion-id={anchor.suggestion_id}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          position: "absolute",
-          left: cssRect.left,
-          top: cssRect.top,
-          width: cssRect.width,
-          height: cssRect.height,
-          zIndex: 3,
-          cursor: isApplied || isDismissed ? "default" : "pointer",
-          opacity: isApplied ? 0.15 : isDismissed ? 0.1 : 1.0,
-          transition: "opacity 200ms ease",
-          pointerEvents: isApplied || isDismissed ? "none" : "auto",
-        }}
-        aria-label={`Suggestion: ${suggestionText.slice(0, 60)}`}
-      />
+      {(!isOriginalMode) && (
+        <div
+          ref={refs.setReference}
+          data-suggestion-id={anchor.suggestion_id}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            position: "absolute",
+            left: cssRect.left,
+            top: cssRect.top,
+            width: cssRect.width,
+            height: cssRect.height,
+            zIndex: 3,
+            cursor: isApplied || isDismissed ? "default" : "pointer",
+            opacity: showHighlight ? 1.0 : 0.0,
+            transition: "opacity 200ms ease",
+            pointerEvents: isApplied || isDismissed ? "none" : "auto",
+          }}
+          aria-label={`Suggestion: ${suggestionText.slice(0, 60)}`}
+        />
+      )}
 
       {shouldShowCard && (
         <FloatingPortal>
