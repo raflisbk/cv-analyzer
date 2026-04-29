@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PathkrInline } from "@/components/ui/pathkr-logo";
 import { AccentPill } from "@/components/ui/accent-pill";
 
 export default function Footer() {

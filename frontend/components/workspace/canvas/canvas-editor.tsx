@@ -17,7 +17,7 @@ interface CanvasEditorProps {
   data: WorkspaceHydration;
 }
 
-function UnsavedIndicator({ saveState }: { saveState: SaveState }) {
+function _UnsavedIndicator({ saveState }: { saveState: SaveState }) {
   if (saveState === "idle") { return null; }
 
   return (

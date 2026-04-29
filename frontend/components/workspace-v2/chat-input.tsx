@@ -16,7 +16,9 @@ export function ChatInput({ onSend, disabled, className }: ChatInputProps) {
   // Auto-resize textarea between 2 and 6 rows
   useEffect(() => {
     const textarea = textareaRef.current;
-    if (!textarea) return;
+    if (!textarea) {
+      return;
+    }
 
     const resize = () => {
       textarea.style.height = "auto";
@@ -32,10 +34,14 @@ export function ChatInput({ onSend, disabled, className }: ChatInputProps) {
 
   const handleSubmit = () => {
     const textarea = textareaRef.current;
-    if (!textarea || disabled) return;
+    if (!textarea || disabled) {
+      return;
+    }
 
     const message = textarea.value.trim();
-    if (!message) return;
+    if (!message) {
+      return;
+    }
 
     onSend(message);
     textarea.value = "";

@@ -46,7 +46,7 @@ export function RichTextEditor({
 
   const setActiveSuggestionId = useWorkspaceV2Store((s) => s.setActiveSuggestionId);
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
-  const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
+  const _suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
 
   // Memoize extensions to prevent Tiptap duplicate warning on re-renders
   const extensions = useMemo(() => [
@@ -97,13 +97,17 @@ export function RichTextEditor({
 
       for (const anchor of anchors) {
         const suggestion = suggestionMap.get(anchor.suggestion_id);
-        if (!suggestion) continue;
+        if (!suggestion) {
+          continue;
+        }
 
         const textToHighlight = anchor.text_anchor;
-        if (!textToHighlight) continue;
+        if (!textToHighlight) {
+          continue;
+        }
 
-        const escapedText = textToHighlight.replace(/[.*+?^{}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(escapedText, 'gi');
+    const escapedText = textToHighlight.replace(/[.*+?^{}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escapedText, "gi");
 
         highlighted = highlighted.replace(regex, (match) => {
           return `<span data-suggestion-id="${anchor.suggestion_id}" data-priority="${anchor.priority}" data-section="${suggestion.section}" class="suggestion-highlight" style="background: ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}; border-bottom: 2px solid ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.5)' : 'rgba(245,158,11,0.5)'}; border-radius: 2px; cursor: pointer; padding: 2px 0;">${match}</span>`;
@@ -132,9 +136,10 @@ export function RichTextEditor({
 
   // Handle AI improvement - replace selected text with improved version
   const handleApplyImprovement = useCallback((originalText: string, improvedText: string) => {
-    if (!editor) return;
+    if (!editor) {
+      return;
+    }
 
-    // Find and replace the selected text
     const { from, to } = editor.state.selection;
     const currentText = editor.state.doc.textBetween(from, to);
 
@@ -145,7 +150,6 @@ export function RichTextEditor({
       const docText = editor.getText();
       const index = docText.indexOf(originalText);
       if (index !== -1) {
-        const pos = editor.state.doc.resolve(index + 1);
         editor.chain()
           .focus()
           .deleteRange({ from: index, to: index + originalText.length })
@@ -157,7 +161,9 @@ export function RichTextEditor({
 
   // Handle PDF export
   const handleExportPdf = useCallback(async () => {
-    if (!editor || isExporting) return;
+    if (!editor || isExporting) {
+      return;
+    }
 
     setIsExporting(true);
     try {
@@ -197,7 +203,9 @@ export function RichTextEditor({
 
   // Attach event listeners for suggestion highlights
   useEffect(() => {
-    if (!editor) return;
+    if (!editor) {
+      return;
+    }
 
     const editorElement = editor.view.dom;
     editorElement.addEventListener('mouseover', handleHighlightMouseEnter);

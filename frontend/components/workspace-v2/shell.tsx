@@ -53,13 +53,12 @@ export function WorkspaceV2Shell({
   // Fetch hydration data client-side to avoid SSR network issues
   const fetchHydration = useCallback(async () => {
     try {
-      console.log('[Shell] Fetching hydration for job:', jobId);
+      console.warn('[Shell] Fetching hydration for job:', jobId);
       const data = await getWorkspaceHydration(jobId);
-      console.log('[Shell] Hydration fetched successfully:', {
+      console.warn('[Shell] Hydration fetched:', {
         jobId,
         hasData: !!data,
         anchorCount: data?.suggestion_anchors?.length ?? 0,
-        keys: data ? Object.keys(data) : 'null',
       });
       if (data) {
         setHydration(data);
@@ -82,20 +81,19 @@ export function WorkspaceV2Shell({
   }, [jobId, pdfUrl, setPdfUrl]);
 
   useEffect(() => {
-    console.log('[Shell] Hydration received from page.tsx:', {
+    console.warn('[Shell] Hydration received:', {
       jobId,
       hasHydration: !!hydration,
       anchorCount: hydration?.suggestion_anchors?.length ?? 0,
-      hydrationKeys: hydration ? Object.keys(hydration) : 'null',
       hasStoreHydration: !!storeHydration,
     });
     setJobId(jobId);
     if (hydration) {
-      console.log('[Shell] Setting hydration with anchors:', hydration.suggestion_anchors);
+      console.warn('[Shell] Setting hydration with anchors:', hydration.suggestion_anchors);
       setHydration(hydration);
     } else if (!storeHydration) {
       // Only fetch if we don't have hydration from props AND don't have it in store yet
-      console.log('[Shell] No hydration from props or store, fetching...');
+      console.warn('[Shell] No hydration from props or store, fetching...');
       fetchHydration();
     }
     if (initialPdfUrl) {

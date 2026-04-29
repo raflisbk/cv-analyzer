@@ -66,7 +66,9 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
 
   // Call AI API to improve text
   const handleImprove = async () => {
-    if (!selectedText || isLoading) return;
+    if (!selectedText || isLoading) {
+      return;
+    }
 
     setIsLoading(true);
     try {

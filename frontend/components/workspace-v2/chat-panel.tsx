@@ -74,7 +74,9 @@ export function ChatPanel({ className }: { className?: string }) {
 
   const handleSend = useCallback(
     async (messageText: string) => {
-      if (isStreaming) return;
+      if (isStreaming) {
+        return;
+      }
 
       addChatMessage({
         timestamp: new Date().toISOString(),

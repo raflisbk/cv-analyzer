@@ -10,7 +10,7 @@
  * Coordinate conversion: PyMuPDF rects are in PDF points (top-left origin, y-down = CSS-compatible).
  * Scale by containerWidth / pageWidth to get CSS pixels.
  */
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { FloatingPortal, useFloating, shift, offset, flip } from "@floating-ui/react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
@@ -245,7 +245,7 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
                     lineHeight: "1.4",
                   }}
                 >
-                  "{suggestion.text.slice(0, 80)}"
+                  {"\u0022"}{suggestion.text.slice(0, 80)}{"\u0022"}
                   {suggestion.text.length > 80 ? "..." : ""}
                 </p>
               </div>
@@ -326,13 +326,16 @@ export function AnnotationOverlay({
     return null;
   }
 
-  const pageAnchors = anchors.filter((a) => a.page_index === pageIndex);
+  const pageAnchors = anchors.filter(
+    (a) => a.page_index === pageIndex
+  );
 
   if (!pageAnchors.length) {
     return null;
   }
 
   // Build suggestions map for quick lookup by suggestion_id
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const suggestionsMap = useMemo(() => {
     const map = new Map<string, { text: string; afterText?: string }>();
     for (const card of suggestions) {

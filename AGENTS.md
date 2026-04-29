@@ -61,6 +61,21 @@ docker compose up -d   # Starts Postgres (pgvector/pgvector:pg16) + Redis (redis
 docker compose down -v  # Stop + delete volumes (reset DB)
 ```
 
+## Git Commit Rules
+
+**Semua commit harus bersih dari AI-generated trailers.** Dilarang menyertakan:
+
+- `Co-authored-by:` (GitHub Copilot, ChatGPT)
+- `Assisted-by:` (Claude Code, Crush)
+- `Generated with ...` / `Powered by ...` (branding AI tools)
+- Signature trailers serupa dari Cursor, Windsurf, dsb
+
+Jika tool AI menambahkan trailer, hapus sebelum push:
+```bash
+git commit --amend
+# Hapus baris trailer dari editor, simpan
+```
+
 ---
 
 ## Architecture

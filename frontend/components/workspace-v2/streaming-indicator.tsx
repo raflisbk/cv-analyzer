@@ -14,7 +14,9 @@ export function StreamingIndicator({ active }: { active: boolean }) {
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  if (!active) return null;
+  if (!active) {
+    return null;
+  }
 
   return (
     <span

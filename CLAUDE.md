@@ -228,7 +228,36 @@ python --version        # Should be 3.11+
 - asyncio requires `WindowsSelectorEventLoopPolicy` (set in celery_app.py)
 - react-dropzone must be v15.0.0+ (v14 incompatible with React 19)
 
-**GSD Workflow:**
-The `.planning/` directory contains phase plans, UAT results, and execution context. These are gitignored and only exist locally after running GSD commands.
+## Git Commit Rules
+
+**Commit messages harus bersih dari trailer yang di-generate otomatis oleh AI tools:**
+
+Dilarang:
+- `Co-authored-by:` — trailer dari GitHub Copilot, ChatGPT, dll
+- `Assisted-by:` — trailer dari tools AI lain
+- `Generated with` / `Powered by` — branding AI tools
+- Signature trailers serupa dari Claude, Cursor, Windsurf, dsb
+
+Contoh commit yang **benar**:
+```
+feat: add upload workspace page at /workspace-v2/new
+fix: correct Yjs WebSocket endpoint path
+refactor: extract annotation overlay from pdf-viewer
+```
+
+Contoh commit yang **salah**:
+```
+feat: add upload workspace page
+
+Co-authored-by: GitHub Copilot <noreply@github.com>
+Generated with GitHub Copilot
+```
+
+**Cara membersihkan commit:**
+Jika AI tool menambahkan trailer, hapus manual sebelum push:
+```bash
+git commit --amend
+# Hapus baris Co-authored-by / Generated with / dsb dari editor
+```
 
 **For comprehensive conventions**, see `.github/copilot-instructions.md`.

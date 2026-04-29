@@ -7,9 +7,8 @@
  * Phase 17: Added toggle between Edit Mode (Tiptap) and Preview Mode (PDF canvas).
  */
 import { useRef, useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2, Edit, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";
 import { PdfViewer } from "./pdf-viewer";
-import { RichTextEditor } from "./rich-text-editor";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 
 interface PdfViewerPanelProps {

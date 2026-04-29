@@ -33,14 +33,30 @@ type SectionRole =
 
 function getSectionRole(type: string): SectionRole {
   const t = type.toLowerCase();
-  if (t.includes("header") || t.includes("contact") || t.includes("personal")) return "header";
-  if (t.includes("summary") || t.includes("objective") || t.includes("profile") || t.includes("about")) return "summary";
-  if (t.includes("experience") || t.includes("work") || t.includes("employment") || t.includes("career")) return "experience";
-  if (t.includes("education") || t.includes("academic") || t.includes("study") || t.includes("degree")) return "education";
-  if (t.includes("skill") || t.includes("technical") || t.includes("technology") || t.includes("competenc")) return "skills";
-  if (t.includes("language") || t.includes("lingua")) return "languages";
-  if (t.includes("certif") || t.includes("award") || t.includes("achievement") || t.includes("license")) return "certifications";
-  if (t.includes("project") || t.includes("portfolio")) return "projects";
+  if (t.includes("header") || t.includes("contact") || t.includes("personal")) {
+    return "header";
+  }
+  if (t.includes("summary") || t.includes("objective") || t.includes("profile") || t.includes("about")) {
+    return "summary";
+  }
+  if (t.includes("experience") || t.includes("work") || t.includes("employment") || t.includes("career")) {
+    return "experience";
+  }
+  if (t.includes("education") || t.includes("academic") || t.includes("study") || t.includes("degree")) {
+    return "education";
+  }
+  if (t.includes("skill") || t.includes("technical") || t.includes("technology") || t.includes("competenc")) {
+    return "skills";
+  }
+  if (t.includes("language") || t.includes("lingua")) {
+    return "languages";
+  }
+  if (t.includes("certif") || t.includes("award") || t.includes("achievement") || t.includes("license")) {
+    return "certifications";
+  }
+  if (t.includes("project") || t.includes("portfolio")) {
+    return "projects";
+  }
   return "generic";
 }
 
@@ -65,7 +81,9 @@ function cleanPreviewHTML(html: string): string {
 // ─── Role-specific section renderers ────────────────────────────────────────
 
 function SectionDivider({ label, role }: { label: string; role: SectionRole }) {
-  if (role === "header") return null; // header section needs no label
+  if (role === "header") {
+    return null;
+  }
 
   return (
     <div className="mb-2 mt-5 flex items-center gap-2">
@@ -118,7 +136,9 @@ function SectionPreview({ type, json }: PreviewSection) {
     }
   }, [json]);
 
-  if (!html) return null;
+  if (!html) {
+    return null;
+  }
 
   return (
     <>

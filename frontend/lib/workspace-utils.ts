@@ -53,9 +53,15 @@ const NUMBERED_RE = /^\d+[.)]\s+(.*)/;
  */
 function isPipeTitleLine(line: string): false | { title: string; rest: string } {
   const pipeIdx = line.indexOf(" | ");
-  if (pipeIdx < 2 || pipeIdx > 70) return false;
-  if (line.includes("@")) return false;
-  if (/^https?:\/\//i.test(line)) return false;
+  if (pipeIdx < 2 || pipeIdx > 70) {
+    return false;
+  }
+  if (line.includes("@")) {
+    return false;
+  }
+  if (/^https?:\/\//i.test(line)) {
+    return false;
+  }
   return { title: line.slice(0, pipeIdx), rest: line.slice(pipeIdx + 3) };
 }
 
@@ -66,10 +72,14 @@ function isPipeTitleLine(line: string): false | { title: string; rest: string } 
  */
 function isKeyColonLine(line: string): false | { key: string; desc: string } {
   const match = line.match(/^([A-Z][^:]{2,54}):\s+(.+)/);
-  if (!match) return false;
+  if (!match) {
+    return false;
+  }
   const key = match[1];
   // Avoid matching URLs like "https://..." or dates "Jan 2024"
-  if (/^https?/i.test(key) || /^\d/.test(key)) return false;
+  if (/^https?/i.test(key) || /^\d/.test(key)) {
+    return false;
+  }
   return { key, desc: match[2] };
 }
 
@@ -79,12 +89,24 @@ function isKeyColonLine(line: string): false | { key: string; desc: string } {
  * Only applied when the next line is non-empty (i.e., there's content below).
  */
 function isSubHeader(line: string, nextLine: string | undefined): boolean {
-  if (line.length < 3 || line.length > 60) return false;
-  if (/[.,;]$/.test(line)) return false;           // ends with punctuation → not a header
-  if (!/^[A-Z\u00C0-\u024F]/.test(line)) return false; // must start with capital
-  if (line.includes("@")) return false;              // email → skip
-  if (/^https?:\/\//i.test(line)) return false;     // URL → skip
-  if (nextLine !== undefined && nextLine.trim().length === 0) return false; // nothing below
+  if (line.length < 3 || line.length > 60) {
+    return false;
+  }
+  if (/[.,;]$/.test(line)) {
+    return false;
+  }           // ends with punctuation → not a header
+  if (!/^[A-Z\u00C0-\u024F]/.test(line)) {
+    return false;
+  } // must start with capital
+  if (line.includes("@")) {
+    return false;
+  }              // email → skip
+  if (/^https?:\/\//i.test(line)) {
+    return false;
+  }     // URL → skip
+  if (nextLine !== undefined && nextLine.trim().length === 0) {
+    return false;
+  } // nothing below
   return true;
 }
 
@@ -113,7 +135,9 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
     i++;
 
     // ── Empty line → skip ────────────────────────────────────────────────────
-    if (!trimmed) continue;
+    if (!trimmed) {
+      continue;
+    }
 
     // ── Explicit bullet marker ───────────────────────────────────────────────
     const bulletMatch = trimmed.match(BULLET_RE);
@@ -125,13 +149,18 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
       // Collect consecutive bullet lines
       while (i < lines.length) {
         const next = lines[i].trim();
-        if (!next) { i++; break; } // blank line ends the list
+        if (!next) {
+          i++;
+          break;
+        } // blank line ends the list
         const bm = next.match(BULLET_RE);
         const nm = next.match(NUMBERED_RE);
         if (bm || nm) {
           items.push(makeBulletItem(bm ? bm[2] : nm![1]));
           i++;
-        } else break;
+        } else {
+          break;
+        }
       }
 
       content.push({ type: "bulletList", content: items });
@@ -147,7 +176,6 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
       ]));
       continue;
     }
-
     // ── "Key: Description" ───────────────────────────────────────────────────
     const colonResult = isKeyColonLine(trimmed);
     if (colonResult) {
@@ -164,7 +192,6 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
       content.push(makeParagraph([boldText(trimmed)]));
       continue;
     }
-
     // ── Default: regular paragraph ───────────────────────────────────────────
     content.push(makeParagraph([normalText(trimmed)]));
   }

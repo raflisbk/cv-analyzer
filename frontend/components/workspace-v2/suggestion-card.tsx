@@ -17,20 +17,24 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
 
-  const status = suggestionStatuses[suggestionId];
-  const isApplied = status === "applied";
-  const isDismissed = status === "dismissed";
+  const _status = suggestionStatuses[suggestionId];
+  const _isApplied = _status === "applied";
+  const _isDismissed = _status === "dismissed";
 
   // Find the suggestion item
   const { item, card } = useMemo(() => {
     const [section, itemIdx, _cardIdx] = suggestionId.split("_");
     const foundCard = suggestions.find((c) => c.section === section);
-    if (!foundCard) return { item: null, card: null };
+    if (!foundCard) {
+      return { item: null, card: null };
+    }
     const foundItem = foundCard.suggestions[parseInt(itemIdx)];
     return { item: foundItem, card: foundCard };
   }, [suggestionId, suggestions]);
 
-  if (!item || !card) return null;
+  if (!item || !card) {
+    return null;
+  }
 
   const color = item.priority === "high_impact"
     ? { bg: "rgba(239,68,68,0.15)", border: "rgba(239,68,68,0.5)", text: "#ef4444" }
@@ -101,7 +105,7 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
               lineHeight: "1.4",
             }}
           >
-            "{item.text.slice(0, 80)}"
+            {"\u0022"}{item.text.slice(0, 80)}{"\u0022"}
             {item.text.length > 80 ? "..." : ""}
           </p>
         </div>

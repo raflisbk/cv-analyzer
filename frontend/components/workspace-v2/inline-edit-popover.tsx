@@ -96,7 +96,9 @@ export function InlineEditPopover({
    * Calls backend endpoint and handles loading/error states
    */
   const handleGenerate = async () => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim()) {
+      return;
+    }
 
     setPopoverState("loading");
     setError(null);
@@ -145,7 +147,9 @@ export function InlineEditPopover({
    * Calls store action and closes popover
    */
   const handleApply = () => {
-    if (!preview) return;
+    if (!preview) {
+      return;
+    }
 
     applyInlineEdit(editId, preview.original, preview.rewritten, rectPercent);
     onClose();

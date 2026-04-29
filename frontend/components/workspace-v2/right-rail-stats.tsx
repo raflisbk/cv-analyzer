@@ -6,7 +6,7 @@
  * - Right rail accordion toggle → local open state only, does NOT open left panel.
  * - "View details →" button explicitly opens left panel via setActiveDetailTab.
  */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Send, Bot, BarChart2, Lightbulb, LayoutDashboard, CheckCircle2, Layers, ExternalLink } from "lucide-react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { cn } from "@/lib/utils";

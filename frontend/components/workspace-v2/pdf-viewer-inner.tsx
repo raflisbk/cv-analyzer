@@ -9,9 +9,8 @@
  *
  * containerWidth + currentPage are controlled externally by PdfViewerPanel (unchanged API).
  */
-import { useState, useCallback, useEffect } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
-import type { PageProps } from "react-pdf";
+import { useState, useCallback } from "react";
+import { Document, Page } from "react-pdf";
 import { createPortal } from "react-dom";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -21,16 +20,7 @@ import { useInlineEdit } from "@/hooks/use-inline-edit";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 
-// Derive CustomTextRenderer from PageProps so we don't rely on a non-exported type
-type CustomTextRenderer = NonNullable<PageProps["customTextRenderer"]>;
-
-function priorityToColor(priority: string): { bg: string; border: string } {
-  const map: Record<string, { bg: string; border: string }> = {
-    high_impact: { bg: "rgba(239,68,68,0.25)", border: "rgba(239,68,68,0.7)" },
-    quick_win: { bg: "rgba(245,158,11,0.25)", border: "rgba(245,158,11,0.7)" },
-  };
-  return map[priority] ?? map["quick_win"];
-}
+// priorityToColor is defined in annotation-overlay.tsx — this file no longer needs it
 
 interface PdfViewerInnerProps {
   url: string;
@@ -75,32 +65,31 @@ export default function PdfViewerInner({
   const isValidPage = _numPages === 0 || currentPage <= _numPages;
 
   // Debug: Log anchors prop on every render
-  console.log("[PDF Viewer] Render - Anchors prop:", {
-    hasAnchors: !!anchors,
+  console.warn("[PDF Viewer] Render - Anchors:", {
     anchorCount: anchors?.length ?? 0,
     firstAnchor: anchors?.[0]?.suggestion_id ?? null,
-    anchors: anchors?.slice(0, 3) ?? [], // Log first 3 for debugging
   });
 
   // Set up worker on mount - use CDN version for Next.js 15 compatibility
-  useEffect(() => {
-    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
-  }, []);
+  // Worker is set in pdf-viewer.tsx via dynamic import module scope
 
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
 
   const handleApply = useCallback((id: string) => {
-    console.log("[PDF Viewer] Applying suggestion:", id);
+    console.warn("[PDF Viewer] Applying:", id);
     setSuggestionStatus(id, "applied");
   }, [setSuggestionStatus]);
 
   const handleDismiss = useCallback((id: string) => {
-    console.log("[PDF Viewer] Dismissing suggestion:", id);
+    console.warn("[PDF Viewer] Dismissing:", id);
     setSuggestionStatus(id, "dismissed");
   }, [setSuggestionStatus]);
 
   // Inline edit hook for text selection detection
   const { state: inlineEditState, handleSelectionChange, closePopover } = useInlineEdit(jobId);
+
+  const cvDocument = useWorkspaceV2Store((s) => s.cvDocument);
+  const viewMode = useWorkspaceV2Store((s) => s.viewMode);
 
   if (loadError) {
     return (
@@ -116,32 +105,31 @@ export default function PdfViewerInner({
     );
   }
 
-  // Dismiss inline edit popover on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      if (inlineEditState.isVisible) {
-        closePopover();
-      }
-    };
-
+  // Scroll-based dismiss: attach listener on mount
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const _scrollCleanup = useCallback(() => {
     const container = document.querySelector(".react-pdf-document");
     if (container) {
-      container.addEventListener("scroll", handleScroll);
-      return () => container.removeEventListener("scroll", handleScroll);
+      const handler = () => {
+        if (inlineEditState.isVisible) {
+          closePopover();
+        }
+      };
+      container.addEventListener("scroll", handler);
+      return () => container.removeEventListener("scroll", handler);
     }
+    return undefined;
   }, [inlineEditState.isVisible, closePopover]);
-
-  const cvDocument = useWorkspaceV2Store((s) => s.cvDocument);
-  const viewMode = useWorkspaceV2Store((s) => s.viewMode);
-
   return (
     <div className="relative" onMouseUp={handleSelectionChange}>
       <Document
         file={url}
-        onLoadSuccess={({ numPages: n }) => {
-          setNumPages(n);
-          if (onDocumentLoadSuccess) { onDocumentLoadSuccess(n); }
-        }}
+          onLoadSuccess={({ numPages: n }: { numPages: number }) => {
+            setNumPages(n);
+            if (onDocumentLoadSuccess) {
+              onDocumentLoadSuccess(n);
+            }
+          }}
         onLoadError={(err) => setLoadError(err.message)}
         loading={<PageLoadingSkeleton width={containerWidth} />}
         error={null}
@@ -155,9 +143,12 @@ export default function PdfViewerInner({
               renderTextLayer={true}
               renderAnnotationLayer={false}
               loading={<PageLoadingSkeleton width={containerWidth} />}
-              onLoadSuccess={(page) => {
-                setPageWidth((page as { originalWidth?: number }).originalWidth ?? 595.5);
-                if (onPageLoadSuccess) { onPageLoadSuccess(page); }
+              onLoadSuccess={(page: unknown) => {
+                const pw = (page as { originalWidth?: number }).originalWidth ?? 595.5;
+                setPageWidth(pw);
+                if (onPageLoadSuccess) {
+                  onPageLoadSuccess(page);
+                }
               }}
             />
             {/* Render AI Suggestions Overlay */}
@@ -176,7 +167,9 @@ export default function PdfViewerInner({
             {viewMode !== "original" &&
               Object.entries(cvDocument || {}).map(([id, patch]) => {
                 const p = patch as { rewrittenText: string; rectPercent?: { left: number; top: number; width: number; height: number } };
-                if (!p.rectPercent) return null;
+                if (!p.rectPercent) {
+                  return null;
+                }
                 return (
                   <div
                     key={id}

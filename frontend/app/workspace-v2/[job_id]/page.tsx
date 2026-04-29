@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getWorkspaceHydration, getJobFileUrl } from "@/lib/workspace";
+import { getWorkspaceHydration } from "@/lib/workspace";
 import { WorkspaceV2Shell } from "@/components/workspace-v2/shell";
 
 interface WorkspaceV2PageProps {
