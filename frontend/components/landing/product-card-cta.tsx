@@ -1,16 +1,12 @@
-"use client";
-
-import { useUploadModal } from "@/components/providers/upload-modal-provider";
+import Link from "next/link";
 
 export default function ProductCardCTA() {
-  const { openModal } = useUploadModal();
-
   return (
-    <button
-      onClick={openModal}
+    <Link
+      href="/workspace-v2/new"
       className="text-sm text-primary hover:underline transition-colors"
     >
       Analyze My CV →
-    </button>
+    </Link>
   );
 }

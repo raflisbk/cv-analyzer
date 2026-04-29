@@ -77,7 +77,7 @@ export default function HeroSection() {
           <div className="mt-12 flex flex-wrap items-center gap-3">
             {/* CV Analyzer — active primary */}
             <Link
-              href="/cv-analyzer"
+              href="/workspace-v2/new"
               className="group relative overflow-hidden rounded-full px-8 py-3.5 text-base font-extrabold transition-all duration-200 active:scale-[0.98]"
               style={{
                 background: "#CAFF43",

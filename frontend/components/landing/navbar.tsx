@@ -9,7 +9,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { useUploadModal } from "@/components/providers/upload-modal-provider";
+import { useRouter } from "next/navigation";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 
 const NAV_LINKS = [
@@ -19,7 +19,7 @@ const NAV_LINKS = [
 ] as const;
 
 export default function Navbar() {
-  const { openModal } = useUploadModal();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -133,7 +133,7 @@ export default function Navbar() {
 
           {/* Primary CTA — warm dark pill */}
           <button
-            onClick={openModal}
+            onClick={() => router.push("/workspace-v2/new")}
             className="group relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-2 text-[13px] font-black tracking-wide transition-all duration-200 hover:opacity-92 active:scale-[0.97]"
             style={{
               // Warm dark matching hero card (#141414) but not pure cold black
@@ -266,7 +266,7 @@ export default function Navbar() {
                   boxShadow: "0 4px 20px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.08)",
                 }}
                 onClick={() => {
-                  openModal();
+                  router.push("/workspace-v2/new");
                   setMobileOpen(false);
                 }}
               >

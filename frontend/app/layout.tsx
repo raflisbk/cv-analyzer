@@ -3,9 +3,7 @@ import { Inter, Bricolage_Grotesque } from "next/font/google";
 
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
-import { UploadModalProvider } from "@/components/providers/upload-modal-provider";
 import { Toaster } from "@/components/ui/sonner";
-import UploadOverlay from "@/components/landing/upload-overlay";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -34,11 +32,8 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`}>
       <body className="font-sans antialiased">
         <QueryProvider>
-          <UploadModalProvider>
             {children}
-            <UploadOverlay />
             <Toaster />
-          </UploadModalProvider>
         </QueryProvider>
       </body>
     </html>
