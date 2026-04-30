@@ -99,11 +99,11 @@ export function WorkspaceV2Shell({
 
   // Grid columns: upload mode shows centered panel, workspace mode has 3-panel layout
   const gridStyle: CSSProperties = isUpload
-    ? { gridTemplateColumns: "210px minmax(0, 1.18fr) 320px" }
+    ? { gridTemplateColumns: "210px minmax(0, 1.18fr) 280px" }
     : {
         gridTemplateColumns: isDetailFocus
-          ? "minmax(480px, 1.08fr) 0px 300px"
-          : "210px minmax(0, 1.18fr) 320px",
+          ? "minmax(480px, 1.08fr) 0px 280px"
+          : "210px minmax(0, 1.18fr) 280px",
         transition: "grid-template-columns 250ms ease-in-out",
       };
 

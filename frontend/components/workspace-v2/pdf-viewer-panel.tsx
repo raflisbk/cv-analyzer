@@ -21,7 +21,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState<number>(0);
-  const [scale, setScale] = useState<number>(1.0);
+  const [zoomScale, setZoomScale] = useState<number>(1.0);
   const [isPanning, setIsPanning] = useState(false);
   const panStartRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
 
@@ -45,16 +45,6 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
     return () => observer.disconnect();
   }, []);
 
-  // Handle wheel event for zoom with Ctrl key
-  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setScale((s) => Math.max(0.5, Math.min(3.0, s + delta)));
-    }
-  }, []);
-
-  // Native wheel listener to prevent browser zoom on the PDF panel
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const paperCardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -64,14 +54,14 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
       if (e.ctrlKey) {
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        setScale((s) => Math.max(0.5, Math.min(3.0, s + delta)));
+        setZoomScale((s) => Math.max(0.5, Math.min(3.0, s + delta)));
       }
     };
     el.addEventListener("wheel", handler, { passive: false });
     return () => el.removeEventListener("wheel", handler);
   }, []);
 
-  const isZoomed = scale > 1.05;
+  const isZoomed = zoomScale > 1.05;
 
   // Pan handlers — drag to scroll when zoomed in
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -185,28 +175,28 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             {/* Zoom controls - only show in preview mode */}
             <div className="flex items-center gap-1 border-r border-white/10 pr-2 mr-1">
               <button
-                onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}
+                onClick={() => setZoomScale((s) => Math.max(0.5, s - 0.1))}
                 aria-label="Zoom out"
                 className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
               >
                 <Minus className="h-3 w-3" />
               </button>
               <button
-                onClick={() => setScale(1.0)}
+                onClick={() => setZoomScale(1.0)}
                 aria-label="Fit to width"
                 className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
               >
                 <Maximize2 className="h-3 w-3" />
               </button>
               <button
-                onClick={() => setScale((s) => Math.min(3.0, s + 0.1))}
+                onClick={() => setZoomScale((s) => Math.min(3.0, s + 0.1))}
                 aria-label="Zoom in"
                 className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
               >
                 <Plus className="h-3 w-3" />
               </button>
               <span className="text-[10px] text-[#F5F2D8]/40 min-w-[2.5rem] text-center">
-                {Math.round(scale * 100)}%
+                {Math.round(zoomScale * 100)}%
               </span>
             </div>
 
@@ -252,17 +242,19 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
           }}
           aria-label="Document Editor"
         >
-          <PdfViewer
-            url={pdfUrl}
-            containerWidth={containerWidth}
-            currentPage={currentPage}
-            scale={scale}
-            onPageLoadSuccess={onPageLoadSuccess}
-            onDocumentLoadSuccess={setNumPages}
-            anchors={anchors}
-            suggestions={suggestions}
-            jobId={jobId}
-          />
+          <div style={{ transform: `scale(${zoomScale})`, transformOrigin: "top center", transition: "transform 0.15s ease-out" }}>
+            <PdfViewer
+              url={pdfUrl}
+              containerWidth={containerWidth}
+              currentPage={currentPage}
+              scale={1.0}
+              onPageLoadSuccess={onPageLoadSuccess}
+              onDocumentLoadSuccess={setNumPages}
+              anchors={anchors}
+              suggestions={suggestions}
+              jobId={jobId}
+            />
+          </div>
         </div>
 
       </div>
