@@ -28,7 +28,6 @@ dependencies = [
     "slowapi==0.1.9",
     "alembic==1.13.1",
     "spacy>=3.7",
-    "language-tool-python>=2.7",
     "rapidfuzz>=3.0",
     "openai>=1.0",
     "zai-sdk>=0.2.0",

@@ -1,5 +1,3 @@
-import asyncio
-import concurrent.futures
 from datetime import UTC, datetime
 
 import sentry_sdk
@@ -17,7 +15,6 @@ from app.api.v1.router import router as api_v1_router
 from app.core.config import get_settings
 from app.core.limiter import limiter
 from app.core.logging import structured_logger as logger
-from app.services.grammar.checker import get_tool as get_grammar_tool
 
 
 settings = get_settings()
@@ -66,7 +63,7 @@ logger.info("Prometheus instrumentation configured")
 
 
 @app.on_event("startup")
-async def startup_event():
+async def startup_event() -> None:
     """Application startup event handler"""
     logger.info(
         "FastAPI application starting",
@@ -76,26 +73,6 @@ async def startup_event():
             "environment": settings.CV_ANALYZER_ENV,
         },
     )
-
-
-@app.on_event("startup")
-async def _prewarm_language_tool() -> None:
-    """
-    Pre-warm LanguageTool on startup to avoid 30s cold start on first grammar check.
-    Runs in background thread to not block FastAPI startup.
-    Failure is non-fatal — grammar checks will return empty list if Java unavailable.
-    Per Pitfall 2 in 02-RESEARCH.md.
-    """
-    loop = asyncio.get_event_loop()
-    try:
-        with concurrent.futures.ThreadPoolExecutor() as pool:
-            await loop.run_in_executor(pool, get_grammar_tool)
-        logger.info("LanguageTool pre-warm complete")
-    except Exception as exc:
-        logger.warning(
-            "LanguageTool pre-warm failed — grammar checks will be skipped",
-            extra={"error": str(exc)},
-        )
 
 
 @app.get("/health")

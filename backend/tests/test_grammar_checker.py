@@ -1,67 +1,80 @@
-"""Tests for NLP-02: grammar checker service"""
+"""Tests for NLP-02: grammar checker service (HF Inference-based)"""
 
 from unittest.mock import MagicMock, patch
 
+from app.services.grammar.checker import check_grammar
 
-def _make_mock_match(
-    text: str, offset: int, error_length: int, replacements: list, rule_id: str
-):
-    """Helper to create mock LanguageTool Match"""
-    m = MagicMock()
-    m.offset = offset
-    m.errorLength = error_length
-    m.replacements = replacements
-    m.ruleId = rule_id
-    return m
+
+def _mock_llm_response(issues: list[dict]) -> MagicMock:
+    """Helper to create mock HF LLM response with grammar issues."""
+    choice = MagicMock()
+    choice.message.content = '{"issues": ' + str(issues).replace("'", '"') + "}"
+    response = MagicMock()
+    response.choices = [choice]
+    return response
 
 
 def test_check_grammar_returns_list() -> None:
     """check_grammar always returns a list per NLP-02"""
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = []
-        mock_get_tool.return_value = mock_tool
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.return_value = (
+            _mock_llm_response([])
+        )
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
 
-        from app.services.grammar.checker import check_grammar  # noqa: PLC0415
-
-        result = check_grammar("Perfect grammar here.")
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("Perfect grammar here.")
 
     assert isinstance(result, list)
 
 
 def test_check_grammar_no_issues_returns_empty() -> None:
-    """check_grammar returns empty list when no grammar issues"""
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = []
-        mock_get_tool.return_value = mock_tool
+    """check_grammar returns empty list when LLM finds no issues"""
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.return_value = (
+            _mock_llm_response([])
+        )
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
 
-        from app.services.grammar.checker import check_grammar  # noqa: PLC0415
-
-        result = check_grammar("This text has perfect grammar.")
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("This text has perfect grammar.")
 
     assert result == []
 
 
 def test_check_grammar_returns_issue_with_required_keys() -> None:
     """Each grammar issue has text, offset, suggestion, rule keys per D-12"""
-    test_text = "I recieve the package."
-    mock_match = _make_mock_match(
-        text=test_text,
-        offset=2,
-        error_length=7,
-        replacements=["receive"],
-        rule_id="SPELLING",
-    )
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.return_value = (
+            _mock_llm_response(
+                [
+                    {
+                        "text": "recieve",
+                        "suggestion": "receive",
+                        "rule": "SPELLING",
+                    }
+                ]
+            )
+        )
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
 
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = [mock_match]
-        mock_get_tool.return_value = mock_tool
-
-        from app.services.grammar.checker import check_grammar  # noqa: PLC0415
-
-        result = check_grammar(test_text)
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("I recieve the package.")
 
     assert len(result) == 1
     issue = result[0]
@@ -73,23 +86,27 @@ def test_check_grammar_returns_issue_with_required_keys() -> None:
 
 def test_check_grammar_captures_spelling_error() -> None:
     """Spelling errors are captured with correct text and suggestion"""
-    test_text = "I recieve the package."  # 'recieve' at offset 2
-    mock_match = _make_mock_match(
-        text=test_text,
-        offset=2,
-        error_length=7,
-        replacements=["receive"],
-        rule_id="SPELLING",
-    )
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.return_value = (
+            _mock_llm_response(
+                [
+                    {
+                        "text": "recieve",
+                        "suggestion": "receive",
+                        "rule": "SPELLING",
+                    }
+                ]
+            )
+        )
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
 
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = [mock_match]
-        mock_get_tool.return_value = mock_tool
-
-        from app.services.grammar.checker import check_grammar  # noqa: PLC0415
-
-        result = check_grammar(test_text)
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("I recieve the package.")
 
     issue = result[0]
     assert issue["text"] == "recieve"
@@ -98,40 +115,72 @@ def test_check_grammar_captures_spelling_error() -> None:
     assert issue["offset"] == 2
 
 
-def test_check_grammar_empty_suggestion_when_no_replacements() -> None:
-    """suggestion is empty string when no replacements available per D-12"""
-    test_text = "Test text here."
-    mock_match = _make_mock_match(
-        text=test_text, offset=0, error_length=4, replacements=[], rule_id="STYLE"
-    )
+def test_check_grammar_empty_suggestion_when_missing() -> None:
+    """suggestion defaults to empty string when not provided by LLM"""
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.return_value = (
+            _mock_llm_response(
+                [{"text": "Test text", "rule": "STYLE"}]
+            )
+        )
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
 
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = [mock_match]
-        mock_get_tool.return_value = mock_tool
-
-        from app.services.grammar.checker import check_grammar  # noqa: PLC0415
-
-        result = check_grammar(test_text)
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("Test text here.")
 
     assert result[0]["suggestion"] == ""
 
 
 def test_check_grammar_multiple_issues() -> None:
     """check_grammar handles multiple issues in one text"""
-    test_text = "I recieve and seperate these thing"
-    matches = [
-        _make_mock_match(test_text, 2, 7, ["receive"], "SPELLING"),
-        _make_mock_match(test_text, 14, 8, ["separate"], "SPELLING"),
-    ]
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.return_value = (
+            _mock_llm_response(
+                [
+                    {"text": "recieve", "suggestion": "receive", "rule": "SPELLING"},
+                    {"text": "seperate", "suggestion": "separate", "rule": "SPELLING"},
+                ]
+            )
+        )
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
 
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = matches
-        mock_get_tool.return_value = mock_tool
-
-        from app.services.grammar.checker import check_grammar  # noqa: PLC0415
-
-        result = check_grammar(test_text)
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("I recieve and seperate these thing")
 
     assert len(result) == 2
+
+
+def test_check_grammar_no_api_key_returns_empty() -> None:
+    """Returns empty list when HF API key is not configured"""
+    with patch("app.services.grammar.checker.get_settings") as mock_settings:
+        mock_settings.return_value.CV_ANALYZER_HF_API_KEY = ""
+        result = check_grammar("Some text")
+
+    assert result == []
+
+
+def test_check_grammar_llm_failure_returns_empty() -> None:
+    """Returns empty list when LLM call fails"""
+    with patch(
+        "app.services.grammar.checker.HFOpenAILLMService"
+    ) as mock_cls:
+        mock_svc = MagicMock()
+        mock_svc.client.chat.completions.create.side_effect = Exception("API error")
+        mock_svc.model = "test-model"
+        mock_cls.return_value = mock_svc
+
+        with patch("app.services.grammar.checker.get_settings") as mock_settings:
+            mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
+            result = check_grammar("Some text")
+
+    assert result == []

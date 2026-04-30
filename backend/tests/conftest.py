@@ -78,13 +78,3 @@ def mock_openai_embedding():
     with patch("app.services.scoring.embeddings.get_embedding") as mock_embed:
         mock_embed.return_value = fake_embedding
         yield mock_embed
-
-
-@pytest.fixture
-def mock_language_tool():
-    """Mock LanguageTool — avoids starting Java server in tests"""
-    with patch("app.services.grammar.checker.get_tool") as mock_get_tool:
-        mock_tool = MagicMock()
-        mock_tool.check.return_value = []
-        mock_get_tool.return_value = mock_tool
-        yield mock_get_tool
