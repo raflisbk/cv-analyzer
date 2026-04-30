@@ -10,10 +10,12 @@
  * containerWidth + currentPage are controlled externally by PdfViewerPanel (unchanged API).
  */
 import { useState, useCallback } from "react";
-import { Document, Page } from "react-pdf";
+import { Document, Page, pdfjs } from "react-pdf";
 import { createPortal } from "react-dom";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
+
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 import { AnnotationOverlay } from "./annotation-overlay";
 import { InlineEditPopover } from "./inline-edit-popover";
 import { useInlineEdit } from "@/hooks/use-inline-edit";
