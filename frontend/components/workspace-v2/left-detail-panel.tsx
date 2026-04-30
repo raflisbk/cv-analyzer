@@ -6,7 +6,7 @@
  * Grid column expansion is driven by the parent shell grid via activeDetailTab.
  */
 import { useEffect, useRef } from "react";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight, Sparkles } from "lucide-react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { cn } from "@/lib/utils";
 import type { SuggestionCard } from "@/lib/types";
@@ -27,6 +27,7 @@ const TABS: { id: TabId; label: string; subtitle: string }[] = [
 
 interface LeftDetailPanelProps {
   className?: string;
+  emptyMode?: boolean;
 }
 
 interface SuggestionsTabContentProps {
@@ -148,7 +149,7 @@ function SuggestionsTabContent({
   );
 }
 
-export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
+export function LeftDetailPanel({ className, emptyMode = false }: LeftDetailPanelProps) {
   const { activeDetailTab, setActiveDetailTab } = useWorkspaceV2Store();
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const analysis = useWorkspaceV2Store((s) => s.hydration?.analysis ?? null);
@@ -163,6 +164,25 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
     const el = cardRefs.current.get(activeSuggestionId);
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [activeSuggestionId]);
+
+  if (emptyMode) {
+    return (
+      <div className={cn("flex h-full flex-col items-center justify-center p-6 text-center", className)}>
+        <div
+          className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl"
+          style={{ background: "rgba(202,255,67,0.10)" }}
+        >
+          <Sparkles className="h-6 w-6 text-[#CAFF43]/60" aria-hidden="true" />
+        </div>
+        <p className="text-[13px] font-display font-bold text-[#F5F2D8]/70 mb-1">
+          Analysis Panel
+        </p>
+        <p className="text-[11px] text-[#F5F2D8]/40 leading-relaxed">
+          Upload a CV to see scores,<br />suggestions &amp; skills analysis.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("flex flex-col h-full overflow-hidden", className)}>

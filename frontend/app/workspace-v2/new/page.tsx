@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { UploadWorkspaceContent } from "@/components/workspace-v2/upload-workspace-content";
+import { WorkspaceV2Shell } from "@/components/workspace-v2/shell";
 
 export const metadata: Metadata = {
   title: "Upload CV — Path Karir",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function UploadWorkspacePage() {
-  return <UploadWorkspaceContent />;
+  return <WorkspaceV2Shell mode="upload" />;
 }

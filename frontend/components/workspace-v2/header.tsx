@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Download, Sparkles, Zap } from "lucide-react";
+import { ChevronLeft, Download, Sparkles, Upload, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 import Link from "next/link";
@@ -11,6 +11,7 @@ interface WorkspaceV2HeaderProps {
   jobId: string;
   jobStatus?: "preparing" | "ready" | "failed";
   className?: string;
+  uploadMode?: boolean;
 }
 
 export function WorkspaceV2Header({
@@ -18,6 +19,7 @@ export function WorkspaceV2Header({
   jobId,
   jobStatus,
   className,
+  uploadMode = false,
 }: WorkspaceV2HeaderProps) {
   const router = useRouter();
   const displayName = filename ?? "Document";
@@ -86,7 +88,7 @@ export function WorkspaceV2Header({
           >
             Workspace
             <span className="mx-1 opacity-50">/</span>
-            CV Analysis
+            {uploadMode ? "Upload" : "CV Analysis"}
           </p>
 
           {/* Document title */}
@@ -98,114 +100,134 @@ export function WorkspaceV2Header({
               maxWidth: 380,
             }}
           >
-            <span className="truncate">{displayName}</span>
-            <span
-              className="inline-flex flex-none items-center gap-0.5 rounded-full px-[0.45em] py-[0.12em]"
-              style={{
-                background: "#CAFF43",
-                color: "#1a2900",
-                fontSize: 10,
-                fontWeight: 900,
-                letterSpacing: "0.02em",
-              }}
-            >
-              <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
-              optimized
-            </span>
+            <span className="truncate">{uploadMode ? "New Analysis" : displayName}</span>
+            {uploadMode ? (
+              <span
+                className="inline-flex flex-none items-center gap-0.5 rounded-full px-[0.45em] py-[0.12em]"
+                style={{
+                  background: "rgba(255,140,66,0.15)",
+                  border: "1px solid rgba(255,140,66,0.35)",
+                  color: "#6b2d00",
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <Upload className="h-2.5 w-2.5" aria-hidden="true" />
+                upload
+              </span>
+            ) : (
+              <span
+                className="inline-flex flex-none items-center gap-0.5 rounded-full px-[0.45em] py-[0.12em]"
+                style={{
+                  background: "#CAFF43",
+                  color: "#1a2900",
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
+                optimized
+              </span>
+            )}
           </h1>
         </div>
       </div>
 
-      {/* ── Center: Status + Score ── */}
-      <div className="relative flex flex-none items-center gap-2">
-        {isPreparing && (
-          <span
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black"
-            style={{
-              background: "rgba(255,140,66,0.12)",
-              border: "1px solid rgba(255,140,66,0.32)",
-              color: "#7a3500",
-            }}
-          >
+      {/* ── Center: Status + Score (workspace mode only) ── */}
+      {!uploadMode && (
+        <div className="relative flex flex-none items-center gap-2">
+          {isPreparing && (
             <span
-              className="h-1.5 w-1.5 rounded-full animate-pulse"
-              style={{ background: "#FF8C42" }}
-              aria-hidden="true"
-            />
-            Preparing…
-          </span>
-        )}
-
-        {isReady && (
-          <span
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black"
-            style={{
-              background: "rgba(202,255,67,0.18)",
-              border: "1px solid rgba(202,255,67,0.45)",
-              color: "#294000",
-            }}
-          >
-            <Zap
-              className="h-3 w-3"
-              style={{ fill: "#CAFF43", stroke: "#CAFF43" }}
-              aria-hidden="true"
-            />
-            Ready
-          </span>
-        )}
-
-        {/* Score badge */}
-        {overallScore !== null && (
-          <div
-            className="flex items-baseline gap-0.5 rounded-full px-3 py-1.5"
-            style={{
-              background: `${scoreColor}18`,
-              border: `1px solid ${scoreColor}44`,
-            }}
-            title="Overall CV score"
-          >
-            <span
-              className="text-[15px] font-black leading-none"
-              style={{ color: scoreColor ?? undefined }}
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black"
+              style={{
+                background: "rgba(255,140,66,0.12)",
+                border: "1px solid rgba(255,140,66,0.32)",
+                color: "#7a3500",
+              }}
             >
-              {overallScore}
+              <span
+                className="h-1.5 w-1.5 rounded-full animate-pulse"
+                style={{ background: "#FF8C42" }}
+                aria-hidden="true"
+              />
+              Preparing…
             </span>
+          )}
+
+          {isReady && (
             <span
-              className="text-[10px] font-bold"
-              style={{ color: `${scoreColor}88` }}
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black"
+              style={{
+                background: "rgba(202,255,67,0.18)",
+                border: "1px solid rgba(202,255,67,0.45)",
+                color: "#294000",
+              }}
             >
-              /100
+              <Zap
+                className="h-3 w-3"
+                style={{ fill: "#CAFF43", stroke: "#CAFF43" }}
+                aria-hidden="true"
+              />
+              Ready
             </span>
-          </div>
-        )}
-      </div>
+          )}
+
+          {/* Score badge */}
+          {overallScore !== null && (
+            <div
+              className="flex items-baseline gap-0.5 rounded-full px-3 py-1.5"
+              style={{
+                background: `${scoreColor}18`,
+                border: `1px solid ${scoreColor}44`,
+              }}
+              title="Overall CV score"
+            >
+              <span
+                className="text-[15px] font-black leading-none"
+                style={{ color: scoreColor ?? undefined }}
+              >
+                {overallScore}
+              </span>
+              <span
+                className="text-[10px] font-bold"
+                style={{ color: `${scoreColor}88` }}
+              >
+                /100
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Right: CTAs ── */}
       <div className="relative flex flex-none items-center gap-1.5">
-        {/* Save PDF — primary action */}
-        <button
-          type="button"
-          className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-black tracking-wide transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
-          style={{
-            background: "#141414",
-            color: "#F5F2D8",
-            border: "1px solid rgba(255,255,255,0.10)",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.20)",
-          }}
-        >
-          <Download className="h-3 w-3" aria-hidden="true" />
-          Save PDF
-        </button>
+        {!uploadMode && (
+          <button
+            type="button"
+            className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-black tracking-wide transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
+            style={{
+              background: "#141414",
+              color: "#F5F2D8",
+              border: "1px solid rgba(255,255,255,0.10)",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.20)",
+            }}
+          >
+            <Download className="h-3 w-3" aria-hidden="true" />
+            Save PDF
+          </button>
+        )}
 
         {/* Back */}
         <button
-          onClick={() => router.push(`/results/${jobId}`)}
+          onClick={() => router.push(uploadMode ? "/" : `/results/${jobId}`)}
           className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97]"
           style={{
             background: "rgba(17,17,17,0.06)",
             border: "1px solid rgba(17,17,17,0.13)",
           }}
-          aria-label="Back to results"
+          aria-label={uploadMode ? "Back to home" : "Back to results"}
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           Back
