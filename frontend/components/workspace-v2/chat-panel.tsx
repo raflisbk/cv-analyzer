@@ -9,7 +9,7 @@ import { ChatInput } from "./chat-input";
 import { StreamingIndicator } from "./streaming-indicator";
 import { cn } from "@/lib/utils";
 
-export function ChatPanel({ className, emptyMode = false }: { className?: string; emptyMode?: boolean }) {
+export function ChatPanel({ className }: { className?: string }) {
   const {
     jobId,
     hydration,
@@ -97,25 +97,6 @@ export function ChatPanel({ className, emptyMode = false }: { className?: string
     },
     [isStreaming, addChatMessage, setChatStreaming, send]
   );
-
-  if (emptyMode) {
-    return (
-      <div className={cn("flex h-full flex-col items-center justify-center p-6 text-center", className)}>
-        <div
-          className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl"
-          style={{ background: "rgba(139,92,246,0.12)" }}
-        >
-          <Bot className="h-6 w-6 text-[#8B5CF6]/60" aria-hidden="true" />
-        </div>
-        <p className="text-[13px] font-display font-bold text-[#F5F2D8]/70 mb-1">
-          AI Copilot
-        </p>
-        <p className="text-[11px] text-[#F5F2D8]/40 leading-relaxed">
-          Upload a CV to start chatting<br />with your AI assistant.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className={cn("flex h-full flex-col overflow-hidden", className)}>

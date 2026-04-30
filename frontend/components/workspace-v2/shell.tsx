@@ -207,7 +207,7 @@ export function WorkspaceV2Shell({
             boxShadow: "0 4px 32px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.04) inset",
           }}
         >
-          <LeftDetailPanel className="h-full" emptyMode={isUpload} />
+          <LeftDetailPanel className="h-full" />
         </aside>
 
         {/* Center panel — PDF viewer or upload flow */}
@@ -217,6 +217,11 @@ export function WorkspaceV2Shell({
             !isUpload && "transition-opacity duration-250 ease-in-out",
             !isUpload && isDetailFocus && "opacity-0 pointer-events-none"
           )}
+          style={isUpload ? {
+            background: "linear-gradient(160deg, #201C14 0%, #1A170F 55%, #16130C 100%)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 4px 32px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.04) inset",
+          } : undefined}
           aria-hidden={!isUpload && isDetailFocus}
         >
           {isUpload ? <UploadPanel /> : <PdfViewerPanel pdfUrl={pdfUrl} />}
@@ -231,7 +236,7 @@ export function WorkspaceV2Shell({
             boxShadow: "0 4px 32px rgba(0,0,0,0.22), 0 1px 0 rgba(255,255,255,0.04) inset",
           }}
         >
-          <ChatPanel className="h-full" emptyMode={isUpload} />
+          <ChatPanel className="h-full" />
         </aside>
       </div>
 
