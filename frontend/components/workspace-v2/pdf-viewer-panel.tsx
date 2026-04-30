@@ -22,6 +22,8 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState<number>(0);
   const [scale, setScale] = useState<number>(1.0);
+  const [isPanning, setIsPanning] = useState(false);
+  const panStartRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
 
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";
@@ -54,6 +56,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
 
   // Native wheel listener to prevent browser zoom on the PDF panel
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const paperCardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) { return; }
@@ -66,6 +69,38 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
     };
     el.addEventListener("wheel", handler, { passive: false });
     return () => el.removeEventListener("wheel", handler);
+  }, []);
+
+  const isZoomed = scale > 1.05;
+
+  // Pan handlers — drag to scroll when zoomed in
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isZoomed) { return; }
+    const card = paperCardRef.current;
+    if (!card) { return; }
+    setIsPanning(true);
+    panStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: card.scrollLeft,
+      scrollTop: card.scrollTop,
+    };
+    card.setPointerCapture(e.pointerId);
+  }, [isZoomed]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isPanning || !panStartRef.current) { return; }
+    const card = paperCardRef.current;
+    if (!card) { return; }
+    const dx = e.clientX - panStartRef.current.x;
+    const dy = e.clientY - panStartRef.current.y;
+    card.scrollLeft = panStartRef.current.scrollLeft - dx;
+    card.scrollTop = panStartRef.current.scrollTop - dy;
+  }, [isPanning]);
+
+  const handlePointerUp = useCallback(() => {
+    setIsPanning(false);
+    panStartRef.current = null;
   }, []);
 
   return (
@@ -200,10 +235,21 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
           </div>
         </div>
 
-        {/* ── Cream paper card — flush below banner ── */}
+        {/* ── Cream paper card — scrollable when zoomed, pannable via drag ── */}
         <div
-          ref={containerRef}
-          className="overflow-hidden rounded-b-2xl border-b border-x border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_48px_rgba(17,17,17,0.10),0_2px_6px_rgba(17,17,17,0.05)]"
+          ref={(node) => {
+            (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            (paperCardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          className="rounded-b-2xl border-b border-x border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_48px_rgba(17,17,17,0.10),0_2px_6px_rgba(17,17,17,0.05)]"
+          style={{
+            overflow: isZoomed ? "auto" : "hidden",
+            cursor: isPanning ? "grabbing" : isZoomed ? "grab" : undefined,
+          }}
           aria-label="Document Editor"
         >
           <PdfViewer
