@@ -1,7 +1,6 @@
 /**
  * SuggestionCardItem — renders one suggestion card for a CV section.
  * SuggestionItemRow — internal component for a single suggestion row.
- * Per UI-SPEC Phase 3 §6 sections B and C.
  */
 "use client";
 

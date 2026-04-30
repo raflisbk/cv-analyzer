@@ -8,7 +8,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from threading import Lock
-from typing import Literal
 
 from app.core.logging import structured_logger as logger
 

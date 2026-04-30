@@ -1,17 +1,17 @@
 /**
  * use-workspace-doc.ts — Yjs Y.Doc + IndexeddbPersistence + WebSocket provider hook.
  *
- * Phase 13 deliverable: proof-of-concept CRDT initialization (CRDT-01).
+ * CRDT initialization for workspace documents.
  * Membuktikan Yjs + y-indexeddb bisa diinisialisasi di Next.js App Router
  * tanpa SSR crash.
  *
- * Phase 16: adds y-websocket WebsocketProvider for CRDT sync (CRDT-02).
+ * Adds y-websocket WebsocketProvider for CRDT sync.
  *
  * SSR safety: y-indexeddb uses browser-only `indexedDB` global.
  * useEffect tidak pernah berjalan di server — aman.
  * Tidak boleh diimport di Server Components.
  *
- * Phase 14: adds statusMapRef for suggestion_statuses Y.Map (CRDT-02).
+ * Adds statusMapRef for suggestion_statuses Y.Map.
  */
 "use client";
 import { useEffect, useRef } from "react";
@@ -59,10 +59,8 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     persistenceRef.current = persistence;
 
     persistence.on("synced", () => {
-      console.log("[Yjs] IndexedDB synced untuk job:", jobId);
     });
 
-    // Cleanup saat component unmount atau jobId berubah
     return () => {
       persistence.destroy();
       doc.destroy();
@@ -72,7 +70,7 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     };
   }, [jobId]);
 
-  // Phase 16: Yjs WebSocket provider for CRDT sync
+  // Yjs WebSocket provider for CRDT sync
   useEffect(() => {
     if (!jobId || !docRef.current) return;
 

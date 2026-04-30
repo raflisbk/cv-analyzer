@@ -1,8 +1,4 @@
-"""
-OCR service using EasyOCR
-Implements UPLOAD-04: OCR fallback for scanned PDFs
-Implements UPLOAD-05: International CV format handling
-"""
+"""OCR service using EasyOCR."""
 
 from app.core.logging import structured_logger as logger
 
@@ -29,12 +25,12 @@ class OCRService:
         if not EASYOCR_AVAILABLE:
             msg = "EasyOCR not installed. Install with: pip install easyocr pdf2image"
             raise RuntimeError(msg)
-        # Initialize with English and common CV languages per D-11
+        # Initialize with English and common CV languages
         self.reader = easyocr.Reader(["en"], gpu=False)  # CPU mode for compatibility
 
     def extract_from_pdf_images(self, pdf_content: bytes) -> tuple[str, float]:
         """
-        Perform OCR on PDF by converting to images per D-08
+        Perform OCR on PDF by converting to images
 
         Args:
             pdf_content: PDF file bytes

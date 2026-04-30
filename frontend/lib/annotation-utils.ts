@@ -1,16 +1,7 @@
 /**
- * annotation-utils.ts — Annotation coordinate mapping utilities.
+ * annotation-utils.ts - Annotation coordinate mapping utilities.
  *
- * Phase 13 deliverable: proof-of-concept text substring → PDF bounding rect.
- * Digunakan oleh annotation spike untuk memvalidasi pendekatan sebelum
- * membangun annotation overlay di Phase 14.
- *
- * Algorithm:
- * 1. Panggil page.getTextContent() untuk mendapatkan TextItem array
- * 2. Setiap TextItem memiliki transform [a,b,c,d,tx,ty] di mana tx/ty = bottom-left position
- * 3. Temukan item yang mengandung searchText
- * 4. Konversi koordinat PDF (bottom-up) ke viewport space (top-down) via viewport.convertToViewportPoint()
- * 5. Return SuggestionAnchor dengan rect
+ * Maps text substrings to PDF bounding rects using pdfjs TextItem positions.
  */
 
 /** Data structure untuk anchor koordinat saran ke PDF */

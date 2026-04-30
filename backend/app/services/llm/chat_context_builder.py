@@ -21,14 +21,18 @@ def build_chat_system_prompt(job: Job) -> str:
 
     # Scores
     if job.scores:
-        scores = ScoreResult(**job.scores) if isinstance(job.scores, dict) else job.scores
+        scores = (
+            ScoreResult(**job.scores) if isinstance(job.scores, dict) else job.scores
+        )
         context_parts.append(f"Overall Score: {scores.overall}/100")
-        context_parts.extend([
-            f"Clarity: {scores.clarity}/100",
-            f"Impact: {scores.impact}/100",
-            f"Completeness: {scores.completeness}/100",
-            f"Relevance: {scores.relevance}/100",
-        ])
+        context_parts.extend(
+            [
+                f"Clarity: {scores.clarity}/100",
+                f"Impact: {scores.impact}/100",
+                f"Completeness: {scores.completeness}/100",
+                f"Relevance: {scores.relevance}/100",
+            ]
+        )
     else:
         context_parts.append("Overall Score: N/A")
 
@@ -37,8 +41,16 @@ def build_chat_system_prompt(job: Job) -> str:
     if suggestions:
         context_parts.append(f"\n## Suggestions ({len(suggestions)} sections)")
         for section in suggestions[:5]:
-            section_name = section.get("section", "Unknown") if isinstance(section, dict) else section.section
-            count = len(section.get("suggestions", [])) if isinstance(section, dict) else len(section.suggestions)
+            section_name = (
+                section.get("section", "Unknown")
+                if isinstance(section, dict)
+                else section.section
+            )
+            count = (
+                len(section.get("suggestions", []))
+                if isinstance(section, dict)
+                else len(section.suggestions)
+            )
             context_parts.append(f"- {section_name}: {count} suggestions")
 
     # Grammar issues
@@ -64,7 +76,7 @@ def build_chat_system_prompt(job: Job) -> str:
         if missing:
             context_parts.append(f"Missing: {', '.join(missing[:10])}")
 
-    # cv_document structure if available (Phase 16)
+    # cv_document structure if available
     if job.cv_document and "sections" in job.cv_document:
         context_parts.append("\n## CV Document Structure")
         for section in job.cv_document["sections"][:8]:
@@ -81,7 +93,9 @@ def build_chat_system_prompt(job: Job) -> str:
                 skills_list = section.get("items", [])[:5]
                 context_parts.append(f"- Skills: {', '.join(skills_list)}")
             else:
-                context_parts.append(f"- {section_type.title()}: {section_title or items_count} items")
+                context_parts.append(
+                    f"- {section_type.title()}: {section_title or items_count} items"
+                )
 
     return (
         "You are a CV optimization assistant. The user's CV has been analyzed with the following context:\n\n"

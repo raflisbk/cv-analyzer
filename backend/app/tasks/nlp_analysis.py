@@ -1,9 +1,4 @@
-"""
-NLP analysis Celery task per D-17, D-18.
-Second task in the analysis pipeline chain.
-Reads parsed text from DB, runs section detection + entity extraction + skill extraction.
-Saves nlp_result JSONB column to job.
-"""
+"""NLP analysis Celery task."""
 
 import asyncio
 
@@ -27,14 +22,7 @@ from app.tasks.document_processing import ProgressTask
     default_retry_delay=30,
 )
 def nlp_analyze_task(self: Task, job_id: str) -> dict:
-    """
-    NLP analysis task: section detection + entity extraction + skill extraction.
-    Per D-17: second task in chain. Per D-18: emits 'analyzing_sections' and 'extracting_skills'.
-
-    Reads job.result['text'] from DB (set by process_document_task).
-    Writes nlp_result JSONB column to job.
-    Does NOT emit 'complete' — that is grammar_check_task's responsibility.
-    """
+    """NLP analysis: section detection, skill extraction, entity extraction."""
 
     async def _get_job_text() -> str | None:
         async with async_session_maker() as session:
@@ -73,13 +61,10 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
             self.update_progress(job_id, "failed", 0, msg)
             return {"error": msg}
 
-        # Stage: analyzing sections (30%)
         self.update_progress(
             job_id, "analyzing_sections", 30, "Detecting CV sections..."
         )
         sections = detect_sections(text)
-
-        # Stage: extracting skills (60%)
         self.update_progress(
             job_id, "extracting_skills", 60, "Extracting skills and entities..."
         )
@@ -112,7 +97,6 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
         return {"status": "nlp_complete", "job_id": job_id}  # noqa: TRY300
 
     except Exception as e:
-        # Catch ALL exceptions per Pitfall 4 — must NOT re-raise or chain breaks silently
         error_msg = f"NLP analysis failed: {e!s}"
         logger.error(
             "nlp_analyze_task failed",

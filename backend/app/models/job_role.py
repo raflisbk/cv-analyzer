@@ -1,4 +1,4 @@
-"""JobRole lookup table model per D-C3."""
+"""JobRole lookup table model."""
 
 import uuid
 
@@ -9,7 +9,7 @@ from app.db.base import Base
 
 
 class JobRole(Base):
-    """Pre-seeded job role definitions for comparison dropdown per D-C3."""
+    """Pre-seeded job role definitions for comparison dropdown."""
 
     __tablename__ = "job_roles"
 

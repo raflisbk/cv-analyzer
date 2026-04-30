@@ -80,7 +80,9 @@ class PDFToHTMLConverter:
                 html_parts.append(f"<{heading_tag}>{label}</{heading_tag}>")
 
             # Section body — split into lines and wrap appropriately
-            html_parts.extend(self._render_section_body(section_text, section_type, anchor_map))
+            html_parts.extend(
+                self._render_section_body(section_text, section_type, anchor_map)
+            )
 
         html = "\n".join(html_parts) if html_parts else "<p>No content available</p>"
 

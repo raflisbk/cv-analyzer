@@ -21,10 +21,7 @@ router = APIRouter()
 
 @router.get("/jobs/{job_id}", response_model=WrappedResponse[JobResponse])
 async def get_job_status(job_id: str, db: AsyncSession = Depends(get_db)):
-    """
-    Get job status and results
-    Implements D-14: Job status tracked via job ID with polling endpoint
-    """
+    """Get job status and results."""
     request_id = str(uuid.uuid4())
 
     try:
@@ -106,7 +103,7 @@ async def get_job_file_url(
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_URL_FETCH_FAILED",
-                message=f"Failed to get file URL: {str(exc)}",
+                message=f"Failed to get file URL: {exc!s}",
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -114,7 +111,7 @@ async def get_job_file_url(
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_URL_FETCH_FAILED",
-                message=f"Failed to get file URL: {str(exc)}",
+                message=f"Failed to get file URL: {exc!s}",
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -146,7 +143,7 @@ async def proxy_job_file(
                 ),
                 meta=ResponseMeta(
                     request_id=str(uuid.uuid4()),
-                    timestamp=datetime.now(UTC).isoformat()
+                    timestamp=datetime.now(UTC).isoformat(),
                 ),
             )
 
@@ -158,7 +155,7 @@ async def proxy_job_file(
                 ),
                 meta=ResponseMeta(
                     request_id=str(uuid.uuid4()),
-                    timestamp=datetime.now(UTC).isoformat()
+                    timestamp=datetime.now(UTC).isoformat(),
                 ),
             )
 
@@ -179,22 +176,20 @@ async def proxy_job_file(
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_FETCH_FAILED",
-                message=f"Failed to fetch file: {str(exc)}",
+                message=f"Failed to fetch file: {exc!s}",
             ),
             meta=ResponseMeta(
-                request_id=str(uuid.uuid4()),
-                timestamp=datetime.now(UTC).isoformat()
+                request_id=str(uuid.uuid4()), timestamp=datetime.now(UTC).isoformat()
             ),
         )
     except Exception as exc:
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_FETCH_FAILED",
-                message=f"Failed to fetch file: {str(exc)}",
+                message=f"Failed to fetch file: {exc!s}",
             ),
             meta=ResponseMeta(
-                request_id=str(uuid.uuid4()),
-                timestamp=datetime.now(UTC).isoformat()
+                request_id=str(uuid.uuid4()), timestamp=datetime.now(UTC).isoformat()
             ),
         )
 
@@ -203,6 +198,7 @@ async def proxy_job_file(
 
 import html as _html_lib  # noqa: E402
 import re as _re  # noqa: E402
+
 
 _SECTION_LABELS: dict[str, str] = {
     "header": "Contact Information",
@@ -230,7 +226,7 @@ def _section_label(stype: str) -> str:
 def _is_caps_header(line: str) -> bool:
     """Return True if line looks like an ALL-CAPS CV section title."""
     s = line.strip()
-    return bool(s and 3 <= len(s) <= 80 and s == s.upper() and _re.search(r'[A-Z]', s))
+    return bool(s and 3 <= len(s) <= 80 and s == s.upper() and _re.search(r"[A-Z]", s))
 
 
 def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
@@ -259,17 +255,18 @@ def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
             continue
 
         # Explicit bullet markers
-        bm = _re.match(r'^[•·▪▸–\-\*→]\s+(.*)', raw)
+        bm = _re.match(r"^[•·▪▸–\-\*→]\s+(.*)", raw)
         if bm:
             items = [_html_lib.escape(bm.group(1))]
             while i < len(lines):
                 nxt = lines[i].strip()
-                nm = _re.match(r'^[•·▪▸–\-\*→]\s+(.*)', nxt)
+                nm = _re.match(r"^[•·▪▸–\-\*→]\s+(.*)", nxt)
                 if nm:
                     items.append(_html_lib.escape(nm.group(1)))
                     i += 1
                 elif not nxt:
-                    i += 1; break
+                    i += 1
+                    break
                 else:
                     break
             parts.append("<ul>" + "".join(f"<li>{t}</li>" for t in items) + "</ul>")
@@ -279,12 +276,12 @@ def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
         pipe_idx = raw.find(" | ")
         if 2 <= pipe_idx <= 70 and "@" not in raw and not raw.startswith("http"):
             title = _html_lib.escape(raw[:pipe_idx])
-            rest = _html_lib.escape(raw[pipe_idx + 3:])
+            rest = _html_lib.escape(raw[pipe_idx + 3 :])
             parts.append(f"<p><strong>{title}</strong> | {rest}</p>")
             continue
 
         # "Key: Description"
-        cm = _re.match(r'^([A-Z][^:]{2,54}):\s+(.+)', raw)
+        cm = _re.match(r"^([A-Z][^:]{2,54}):\s+(.+)", raw)
         if cm:
             key = _html_lib.escape(cm.group(1))
             desc = _html_lib.escape(cm.group(2))
@@ -333,7 +330,9 @@ async def get_job_html(
 
         if not job:
             return WrappedResponse(
-                error=ErrorDetail(code="JOB_NOT_FOUND", message=f"Job {job_id} not found."),
+                error=ErrorDetail(
+                    code="JOB_NOT_FOUND", message=f"Job {job_id} not found."
+                ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
 
@@ -369,10 +368,12 @@ async def get_job_html(
 
 from pydantic import BaseModel
 
+
 class InlineEditRequest(BaseModel):
     selectedText: str
     prompt: str
     cvContext: dict | None = None
+
 
 @router.post(
     "/jobs/{job_id}/inline-edit",
@@ -386,34 +387,34 @@ async def generate_inline_rewrite(
 ):
     """Rewrite a specific snippet of text from the CV based on user prompt."""
     from app.services.llm.hf_llm_service import HFLLMService
-    
+
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
-    
+
     try:
         # Validate job exists
         stmt = select(Job).where(Job.id == job_id)
         result = await db.execute(stmt)
         job = result.scalar_one_or_none()
-        
+
         if not job:
             return WrappedResponse(
-                error=ErrorDetail(code="JOB_NOT_FOUND", message=f"Job {job_id} not found."),
+                error=ErrorDetail(
+                    code="JOB_NOT_FOUND", message=f"Job {job_id} not found."
+                ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
-            
+
         llm = HFLLMService()
         result = llm.inline_rewrite(
-            text=request.selectedText,
-            prompt=request.prompt,
-            context=request.cvContext
+            text=request.selectedText, prompt=request.prompt, context=request.cvContext
         )
-        
+
         return WrappedResponse(
             data={"rewrittenText": result["rewritten_text"]},
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
-        
+
     except Exception as exc:
         return WrappedResponse(
             error=ErrorDetail(code="INLINE_EDIT_FAILED", message=str(exc)),

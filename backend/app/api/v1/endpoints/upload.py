@@ -1,9 +1,4 @@
-"""
-File upload endpoint
-Implements UPLOAD-01: Upload PDF
-Implements UPLOAD-02: Upload DOC/DOCX
-Implements ERROR-01: Validate file type and size
-"""
+"""File upload endpoint."""
 
 import uuid
 from datetime import UTC, datetime
@@ -39,26 +34,14 @@ async def upload_file(
     file: UploadFile,
     db: AsyncSession = Depends(get_db),
 ):
-    """
-    Upload CV file for analysis
-
-    Accepts: PDF, DOC, DOCX files up to 5MB
-    Returns: job_id for tracking processing status
-
-    Process:
-    1. Validate file (type, size, magic bytes) per ERROR-01
-    2. Upload to R2 storage per UPLOAD-07
-    3. Create job record per D-45
-    4. Trigger async processing task per D-12
-    5. Return job_id immediately (non-blocking)
-    """
+    """Upload CV file for analysis. Accepts PDF, DOC, DOCX up to 5MB."""
     request_id = str(uuid.uuid4())
 
     try:
         # Read file content
         content = await file.read()
 
-        # Validate file per ERROR-01
+        # Validate file
         file_info = await validate_file(file.filename, content)
 
         logger.info(
@@ -92,7 +75,7 @@ async def upload_file(
 
         logger.info("Job created", extra={"job_id": str(job.id), "file_id": file_id})
 
-        # Trigger 5-task analysis pipeline per D-17, D-19 (.si() = immutable signatures)
+        # Trigger 5-task analysis pipeline (.si() = immutable signatures)
         pipeline = celery_chain(
             process_document_task.si(
                 str(job.id),
@@ -107,7 +90,7 @@ async def upload_file(
             nlp_analyze_task.si(str(job.id)),
             score_cv_task.si(str(job.id)),
             grammar_check_task.si(str(job.id)),
-            llm_suggest_task.si(str(job.id)),  # Phase 3: LLM suggestions (D-19)
+            llm_suggest_task.si(str(job.id)),
         )
         pipeline.delay()
 
@@ -119,7 +102,7 @@ async def upload_file(
         )
 
     except FileValidationError as e:
-        # Validation failed per ERROR-01
+        # Validation failed
         logger.warning(
             "File validation failed",
             extra={

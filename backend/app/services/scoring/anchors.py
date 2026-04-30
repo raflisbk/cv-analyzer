@@ -1,5 +1,5 @@
 """
-Ideal CV anchor text templates per D-08.
+Ideal CV anchor text templates.
 These represent high-quality CV segments used as cosine similarity targets.
 Content is agent's discretion - chosen to maximally differentiate good vs poor CVs.
 """

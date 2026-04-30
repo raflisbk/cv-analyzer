@@ -1,5 +1,5 @@
 """
-Inline edit LLM service for Phase 15.
+Inline edit LLM service.
 Generates AI rewrites for selected CV text based on user prompts.
 """
 
@@ -11,7 +11,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
+from app.schemas.inline_edit import InlineEditResponse
 
 
 # Model configuration for HF Inference
@@ -35,14 +35,18 @@ The user is editing their CV to improve it for job applications.
 Your rewrite should help them stand out to recruiters and hiring managers."""
 
 
-def _build_user_prompt(selected_text: str, user_prompt: str, cv_context: dict[str, Any] | None) -> str:
+def _build_user_prompt(
+    selected_text: str, user_prompt: str, cv_context: dict[str, Any] | None
+) -> str:
     """Build user prompt with selected text, user instruction, and optional CV context."""
     parts = [f"Selected text from CV:\n{selected_text}"]
 
     if cv_context:
         # Add relevant context if available
         if cv_context.get("scores"):
-            parts.append(f"\nCurrent CV scores: {json.dumps(cv_context['scores'], indent=2)}")
+            parts.append(
+                f"\nCurrent CV scores: {json.dumps(cv_context['scores'], indent=2)}"
+            )
 
         if cv_context.get("skills"):
             skills_list = cv_context["skills"][:5]  # Top 5 skills
@@ -66,7 +70,9 @@ class InlineEditService:
         logger.info(f"[InlineEditService] Initialized with model: {HF_MODEL}")
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=1, max=4))
-    def rewrite(self, selected_text: str, prompt: str, cv_context: dict[str, Any] | None) -> InlineEditResponse:
+    def rewrite(
+        self, selected_text: str, prompt: str, cv_context: dict[str, Any] | None
+    ) -> InlineEditResponse:
         """
         Generate AI rewrite for selected CV text.
 
@@ -82,23 +88,26 @@ class InlineEditService:
             return InlineEditResponse(
                 originalText=selected_text,
                 rewrittenText="",
-                error="No text selected for editing"
+                error="No text selected for editing",
             )
 
         if len(selected_text) > 500:
             return InlineEditResponse(
                 originalText=selected_text,
                 rewrittenText="",
-                error="Text selection too long. Please select 500 characters or less."
+                error="Text selection too long. Please select 500 characters or less.",
             )
 
         try:
             user_prompt = _build_user_prompt(selected_text, prompt, cv_context)
 
-            logger.info(f"[InlineEditService] Generating rewrite", extra={
-                "selected_length": len(selected_text),
-                "prompt_preview": prompt[:100],
-            })
+            logger.info(
+                "[InlineEditService] Generating rewrite",
+                extra={
+                    "selected_length": len(selected_text),
+                    "prompt_preview": prompt[:100],
+                },
+            )
 
             # Call HF Inference API
             response = self.client.chat.completions.create(
@@ -124,10 +133,13 @@ class InlineEditService:
                     lines = lines[:-1]
                 rewritten_text = "\n".join(lines).strip()
 
-            logger.info(f"[InlineEditService] Rewrite generated successfully", extra={
-                "original_length": len(selected_text),
-                "rewritten_length": len(rewritten_text),
-            })
+            logger.info(
+                "[InlineEditService] Rewrite generated successfully",
+                extra={
+                    "original_length": len(selected_text),
+                    "rewritten_length": len(rewritten_text),
+                },
+            )
 
             return InlineEditResponse(
                 originalText=selected_text,
@@ -136,12 +148,15 @@ class InlineEditService:
             )
 
         except Exception as e:
-            logger.error(f"[InlineEditService] Error generating rewrite", extra={
-                "error": str(e),
-                "selected_text": selected_text[:100],
-            })
+            logger.error(
+                "[InlineEditService] Error generating rewrite",
+                extra={
+                    "error": str(e),
+                    "selected_text": selected_text[:100],
+                },
+            )
             return InlineEditResponse(
                 originalText=selected_text,
                 rewrittenText="",
-                error=f"Failed to generate rewrite: {str(e)}"
+                error=f"Failed to generate rewrite: {e!s}",
             )

@@ -1,7 +1,7 @@
 """
-LLM service abstraction layer per LLM-05, D-04.
+LLM service abstraction layer.
 Protocol allows swapping providers (HF Inference, others) without changing call sites.
-Pydantic models enforce JSON output schema per LLM-04, D-03.
+Pydantic models enforce JSON output schema.
 """
 
 from typing import Literal, Protocol
@@ -10,7 +10,7 @@ from pydantic import BaseModel, field_validator
 
 
 class SuggestionItemOutput(BaseModel):
-    """A single CV improvement suggestion per LLM-01, LLM-02, LLM-03."""
+    """A single CV improvement suggestion."""
 
     priority: Literal["high_impact", "quick_win"]
     text: str
@@ -37,21 +37,21 @@ class SuggestionItemOutput(BaseModel):
 
 
 class SuggestionCardOutput(BaseModel):
-    """Suggestions grouped by CV section per D-06."""
+    """Suggestions grouped by CV section."""
 
     section: str
     suggestions: list[SuggestionItemOutput]
 
 
 class SuggestionsOutput(BaseModel):
-    """Root output structure validated from LLM JSON response per LLM-04."""
+    """Root output structure validated from LLM JSON response."""
 
     suggestions: list[SuggestionCardOutput]
 
 
 class LLMService(Protocol):
     """
-    Provider-agnostic LLM service interface per LLM-05, D-04.
+    Provider-agnostic LLM service interface.
     Implement this Protocol to add new providers (Claude, Gemini, etc.)
     without changing llm_suggest_task call sites.
     """

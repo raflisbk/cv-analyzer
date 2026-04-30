@@ -1,8 +1,4 @@
-"""
-Scheduled cleanup tasks
-Implements D-20: Scheduled cleanup deletes files 24h after upload
-Implements ERROR-05: Auto-delete data retention policy
-"""
+"""Scheduled cleanup tasks."""
 
 from app.core.logging import structured_logger as logger
 from app.services.storage import storage_service
@@ -11,10 +7,7 @@ from app.tasks.celery_app import celery_app
 
 @celery_app.task(name="app.tasks.cleanup.cleanup_expired_files")
 def cleanup_expired_files():
-    """
-    Delete files older than 24 hours from R2 storage
-    Runs every hour via Celery Beat schedule
-    """
+    """Delete files older than 24 hours from R2 storage."""
     logger.info("Starting expired files cleanup")
 
     try:

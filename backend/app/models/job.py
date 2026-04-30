@@ -2,7 +2,15 @@ import enum
 import uuid
 
 import sqlalchemy as sa
-from sqlalchemy import JSON, Column, Enum, ForeignKey, Integer, LargeBinary, String, Text
+from sqlalchemy import (
+    JSON,
+    Column,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.db.base import Base
@@ -10,24 +18,21 @@ from app.models.base import TimestampMixin
 
 
 class JobStatus(str, enum.Enum):
-    """Job status enum per D-46"""
+    """Job status enum."""
 
     PENDING = "pending"
     UPLOADING = "uploading"
     EXTRACTING = "extracting"
     PARSING = "parsing"
     ANALYZING = "analyzing"
-    GENERATING = "generating"  # Phase 3: LLM suggestion generation stage (D-19)
-    COMPARING = "comparing"  # Phase 4: CV vs JD comparison task per D-C1
+    GENERATING = "generating"
+    COMPARING = "comparing"
     COMPLETE = "complete"
     FAILED = "failed"
 
 
 class Job(Base, TimestampMixin):
-    """Job model per D-45, D-46, D-47
-
-    Tracks CV analysis jobs through the complete pipeline with detailed status tracking.
-    """
+    """Job model."""
 
     __tablename__ = "jobs"
 
@@ -36,11 +41,9 @@ class Job(Base, TimestampMixin):
     file_id = Column(String(255), nullable=False)  # R2 object key
     stages = Column(JSON, default=dict)  # Track completion of each stage
     error = Column(String(1000), nullable=True)  # Error message if failed
-    retry_count = Column(Integer, default=0, nullable=False)  # Retry tracking per D-16
-    file_metadata = Column(
-        JSON, default=dict
-    )  # File metadata (name, size, type) per D-21
-    result = Column(JSON, nullable=True)  # Analysis results (JSONB) per D-47
+    retry_count = Column(Integer, default=0, nullable=False)
+    file_metadata = Column(JSON, default=dict)  # File metadata
+    result = Column(JSON, nullable=True)
 
     # Phase 2 NLP analysis results (JSONB for PostgreSQL operators) per D-24
     nlp_result = Column(JSONB, nullable=True)  # sections + entities from spaCy
@@ -78,9 +81,9 @@ class Job(Base, TimestampMixin):
     workspace_draft = Column(JSONB, nullable=True)
 
     # Phase 13: PDF-first workspace columns
-    cv_document = Column(JSONB, nullable=True)           # structured document model (CRDT-03)
-    suggestion_anchors = Column(JSONB, nullable=True)    # PDF coordinate anchors
-    yjs_snapshot = Column(sa.LargeBinary, nullable=True) # binary Yjs snapshot
+    cv_document = Column(JSONB, nullable=True)  # structured document model (CRDT-03)
+    suggestion_anchors = Column(JSONB, nullable=True)  # PDF coordinate anchors
+    yjs_snapshot = Column(sa.LargeBinary, nullable=True)  # binary Yjs snapshot
 
     # Phase 16: Chat conversation history
     messages = Column(JSONB, nullable=True, default=list)

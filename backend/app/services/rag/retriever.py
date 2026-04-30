@@ -1,5 +1,5 @@
 """
-RAG retrieval using pgvector cosine distance per RAG-01, RAG-02, D-13.
+RAG retrieval using pgvector cosine distance.
 Retrieves top-K chunks from knowledge_chunks table by cosine similarity.
 section_type filter improves relevance for specific CV sections.
 """
@@ -17,17 +17,17 @@ async def retrieve_relevant_chunks(
     limit: int = 5,
 ) -> list[str]:
     """
-    Retrieve top-K chunks by cosine similarity using pgvector <=> operator per RAG-02.
+    Retrieve top-K chunks by cosine similarity using pgvector <=> operator.
 
     Args:
         query_embedding: 3072-dim vector from get_rag_embedding().
         section_type: Optional CV section filter (e.g. "experience", "skills").
                       If provided, only chunks tagged with this section_type are queried.
-        limit: Max chunks to return (default 5 per D-13).
+        limit: Max chunks to return (default 5).
 
     Returns:
-        List of content strings for injection into LLM system prompt per RAG-03.
-        Returns [] on retrieval failure (non-fatal per D-18).
+        List of content strings for injection into LLM system prompt.
+        Returns [] on retrieval failure (non-fatal).
     """
     try:
         async with async_session_maker() as session:

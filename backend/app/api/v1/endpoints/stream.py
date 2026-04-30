@@ -1,8 +1,4 @@
-"""
-SSE streaming endpoint
-Implements D-13: SSE streams detailed stages
-Implements D-25: Separate /stream/{job_id} endpoint for SSE
-"""
+"""SSE streaming endpoint."""
 
 import asyncio
 import json

@@ -1,5 +1,5 @@
 """
-Analysis result schemas per D-23.
+Analysis result schemas.
 Used by GET /api/v1/jobs/{id}/results endpoint.
 """
 
@@ -30,7 +30,7 @@ class ScoreResult(BaseModel):
 
 
 class GrammarIssue(BaseModel):
-    """A single grammar/spelling issue per D-12"""
+    """A single grammar/spelling issue."""
 
     text: str
     offset: int
@@ -39,7 +39,7 @@ class GrammarIssue(BaseModel):
 
 
 class AtsCheck(BaseModel):
-    """A single ATS compatibility check result per D-13, D-14"""
+    """A single ATS compatibility check result."""
 
     check: str
     status: str  # "pass" | "warn" | "fail"
@@ -47,7 +47,7 @@ class AtsCheck(BaseModel):
 
 
 class SuggestionItem(BaseModel):
-    """A single CV improvement suggestion item per LLM-01, LLM-02, LLM-03, LLM-04."""
+    """A single CV improvement suggestion item."""
 
     priority: Literal["high_impact", "quick_win"]
     text: str
@@ -58,14 +58,14 @@ class SuggestionItem(BaseModel):
 
 
 class SuggestionCard(BaseModel):
-    """Suggestions grouped by CV section per D-06, LLM-04."""
+    """Suggestions grouped by CV section."""
 
     section: str
     suggestions: list[SuggestionItem]
 
 
 class ComparisonResult(BaseModel):
-    """LLM comparison output per D-C6, COMPARE-03."""
+    """LLM comparison output."""
 
     match_pct: int  # 0-100 integer
     matched_skills: list[str]
@@ -76,7 +76,7 @@ class ComparisonResult(BaseModel):
 
 
 class SkillGapGroup(BaseModel):
-    """Skills grouped by gap status per COMPARE-05, UX-01."""
+    """Skills grouped by gap status."""
 
     present: list[str] = []  # matched_skills from ComparisonResult
     missing: list[str] = []  # missing_skills from ComparisonResult

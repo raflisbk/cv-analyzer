@@ -33,8 +33,8 @@ class FileValidationError(Exception):
 
 async def validate_file(filename: str, content: bytes) -> dict:
     """
-    Triple-check file validation per D-28: extension, MIME type, magic bytes.
-    Implements ERROR-01 requirement.
+    Triple-check file validation: extension, MIME type, magic bytes.
+
 
     Args:
         filename: Original filename
@@ -58,7 +58,7 @@ async def validate_file(filename: str, content: bytes) -> dict:
             message="File type not supported. Only PDF, DOC, and DOCX files are allowed.",
         )
 
-    # Check 2: File size per D-02 (5MB limit)
+    # Check 2: File size (5MB limit)
     file_size = len(content)
     if file_size > settings.CV_ANALYZER_MAX_FILE_SIZE:
         logger.warning(

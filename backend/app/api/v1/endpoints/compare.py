@@ -1,9 +1,3 @@
-"""
-Comparison endpoints per D-C1, D-C5.
-GET /job-roles — list seeded job roles for comparison dropdown (COMPARE-02)
-POST /jobs/{job_id}/compare — trigger async CV vs JD comparison task (COMPARE-01)
-"""
-
 import uuid
 from datetime import UTC, datetime
 
@@ -11,6 +5,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, field_validator
 from sqlalchemy import select
 
+from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
 from app.models.job_role import JobRole as JobRoleModel
@@ -21,14 +16,10 @@ from app.tasks.comparison import compare_cv_task
 
 router = APIRouter()
 
-# ─── Constants ────────────────────────────────────────────────────────────────
-
-_JD_MIN_LENGTH = 50  # Minimum job description length per D-C1
+_JD_MIN_LENGTH = 50
 
 
 class CompareRequest(BaseModel):
-    """POST /jobs/{id}/compare request body per D-C1, COMPARE-01."""
-
     jd_text: str
     jd_role_id: str | None = None
 
@@ -42,14 +33,9 @@ class CompareRequest(BaseModel):
 
 
 class CompareResponse(BaseModel):
-    """POST /jobs/{id}/compare response."""
-
     job_id: str
     message: str
     comparison_status: str
-
-
-# ─── Endpoints ────────────────────────────────────────────────────────────────
 
 
 @router.get(
@@ -60,10 +46,6 @@ class CompareResponse(BaseModel):
 async def list_job_roles(
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[list[JobRole]]:
-    """
-    Get all pre-seeded job roles for the comparison dropdown per D-C5, COMPARE-02.
-    Returns {id, title, seniority, industry} — description/requirements excluded for bandwidth.
-    """
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -72,23 +54,22 @@ async def list_job_roles(
         result = await db.execute(stmt)
         roles = result.scalars().all()
 
-        role_list = [
-            JobRole(
-                id=str(role.id),
-                title=role.title,
-                seniority=role.seniority,
-                industry=role.industry,
-            )
-            for role in roles
-        ]
-
         return WrappedResponse(
-            data=role_list,
+            data=[
+                JobRole(
+                    id=str(role.id),
+                    title=role.title,
+                    seniority=role.seniority,
+                    industry=role.industry,
+                )
+                for role in roles
+            ],
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.error("job_roles_fetch_failed", exc_info=True)
         return WrappedResponse(
-            error=ErrorDetail(code="JOB_ROLES_FETCH_FAILED", message=str(e)),
+            error=ErrorDetail(code="JOB_ROLES_FETCH_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -103,14 +84,6 @@ async def compare_cv(
     body: CompareRequest,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[CompareResponse]:
-    """
-    Trigger async CV comparison task per D-C1, COMPARE-01.
-
-    Validates: job exists, jd_text >= 50 chars (validated by CompareRequest).
-    Triggers: compare_cv_task.delay() with job_id, jd_text, jd_role_id.
-    Progress: emits 'comparing_job' SSE stage via existing /stream/{job_id} channel.
-    Note: Re-triggering overwrites previous comparison result (D-C10).
-    """
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -122,17 +95,14 @@ async def compare_cv(
         if not job:
             return WrappedResponse(
                 error=ErrorDetail(
-                    code="JOB_NOT_FOUND",
-                    message=f"Job {job_id} not found.",
+                    code="JOB_NOT_FOUND", message=f"Job {job_id} not found."
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
 
-        # Set comparison_status = pending immediately (before Celery task picks it up)
         job.comparison_status = "pending"
         await db.commit()
 
-        # Dispatch Celery task per D-C1 (non-blocking)
         compare_cv_task.delay(
             job_id=str(job.id),
             jd_text=body.jd_text,
@@ -147,8 +117,9 @@ async def compare_cv(
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
-    except Exception as e:
+    except Exception as exc:
+        logger.error("compare_trigger_failed", extra={"job_id": job_id}, exc_info=True)
         return WrappedResponse(
-            error=ErrorDetail(code="COMPARE_TRIGGER_FAILED", message=str(e)),
+            error=ErrorDetail(code="COMPARE_TRIGGER_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )

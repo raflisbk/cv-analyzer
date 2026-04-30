@@ -1,10 +1,4 @@
-"""
-Document parsing orchestrator
-Implements UPLOAD-03: Text extraction with quality validation
-Implements UPLOAD-04: OCR fallback for scanned PDFs
-Implements UPLOAD-05: International CV format handling
-Implements UPLOAD-06: Quality validation and error reporting
-"""
+"""Document parsing with quality validation and OCR fallback."""
 
 from io import BytesIO
 
@@ -41,18 +35,18 @@ class ParsingError(Exception):
 
 class DocumentParser:
     """
-    Document parsing orchestrator with fallback strategies per D-08, D-10
+    Document parsing orchestrator with fallback strategies
     """
 
     def parse_pdf(self, content: bytes) -> tuple[str, dict]:
         """
-        Parse PDF with OCR fallback per D-08
+        Parse PDF with OCR fallback
 
         Strategy:
         1. Try regular text extraction first
         2. If insufficient (<50 chars), try OCR
         3. Validate quality
-        4. Retry with different approaches if needed (per D-10)
+        4. Retry with different approaches if needed
 
         Args:
             content: PDF file bytes
@@ -97,11 +91,12 @@ class DocumentParser:
                 metadata["quality_score"] = quality_score
 
                 if quality_score >= 0.5:
-                    # Good quality, detect language per D-11
+                    # Good quality, detect language
                     if LANGDETECT_AVAILABLE:
                         try:
                             metadata["detected_language"] = langdetect.detect(text)
                         except Exception:
+                            logger.warning("langdetect_failed")
                             metadata["detected_language"] = "unknown"
                     else:
                         metadata["detected_language"] = "unknown"
@@ -116,7 +111,7 @@ class DocumentParser:
         except Exception as e:
             logger.warning("Regular PDF extraction failed", extra={"error": str(e)})
 
-        # Attempt 2: OCR fallback per D-08
+        # Attempt 2: OCR fallback
         if EASYOCR_AVAILABLE:
             try:
                 logger.info("Starting OCR fallback")

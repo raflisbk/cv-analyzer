@@ -198,7 +198,7 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {/* Tabs: Overview | Scores | Skills | Grammar | Compare per D-20, Phase 4 */}
+              {/* Tabs: Overview | Scores | Skills | Grammar | Compare */}
                 <ResultsTabs
                   result={normalizedResult}
                   jobRoles={jobRolesData ?? []}

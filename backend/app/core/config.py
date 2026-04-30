@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     CV_ANALYZER_VERSION: str = "0.1.0"
     CV_ANALYZER_ENV: str = "development"  # development | production
 
-    # Database (per D-48: prefixed naming)
+    # Database
     CV_ANALYZER_DB_HOST: str = "localhost"
     CV_ANALYZER_DB_PORT: int = 5432
     CV_ANALYZER_DB_NAME: str = "cv_analyzer"
@@ -28,16 +28,16 @@ class Settings(BaseSettings):
     CV_ANALYZER_R2_BUCKET: str = "cv-uploads"
 
     # Security
-    CV_ANALYZER_MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5MB per D-02
-    CV_ANALYZER_UPLOAD_RATE_LIMIT: str = "5/hour"  # per D-31
+    CV_ANALYZER_MAX_FILE_SIZE: int = 5 * 1024 * 1024
+    CV_ANALYZER_UPLOAD_RATE_LIMIT: str = "5/hour"
 
     # Hugging Face Inference API (primary provider for LLM + embeddings)
     CV_ANALYZER_HF_API_KEY: str = ""
 
-    # Analysis pipeline rate limit per D-15
+    # Analysis pipeline rate limit
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
-    # Phase 3: LLM + RAG settings (per D-02, D-11, D-14)
+    # LLM + RAG settings
     CV_ANALYZER_LLM_MODEL: str = "Qwen/Qwen2-7B-Instruct"
     CV_ANALYZER_LLM_MAX_TOKENS: int = 1500
     CV_ANALYZER_LLM_CACHE_TTL: int = 86400  # 24h in seconds (D-14)
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     # Sentry
     CV_ANALYZER_SENTRY_DSN: str = ""
 
-    # Logging (per D-40)
+    # Logging
     CV_ANALYZER_LOG_LEVEL: str = "INFO"  # DEBUG | INFO | WARNING | ERROR | CRITICAL
 
     @property

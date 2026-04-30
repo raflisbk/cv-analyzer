@@ -63,7 +63,7 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
           <SpellCheck className="h-4 w-4" />
           Grammar
         </TabsTrigger>
-        {/* Tab 5: Compare — Phase 4 per D-C17 */}
+        {/* Tab 5: Compare */}
         <TabsTrigger
           value="compare"
           className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
@@ -73,11 +73,11 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
         </TabsTrigger>
       </TabsList>
 
-      {/* Overview tab — ATS Checklist + AI Suggestions per UI-SPEC §7 C1 + Phase 3 */}
+      {/* Overview tab - ATS Checklist + AI Suggestions */}
       <TabsContent value="overview" className="pt-6 space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">ATS Compatibility Check</h2>
         <AtsChecklist checks={result.ats_checks} />
-        {/* Phase 3: AI suggestions below ATS checklist (D-05).
+        {/* AI suggestions below ATS checklist.
             Show skeleton while job is processing (any non-terminal status);
             only show null/"unavailable" when status=complete and LLM genuinely failed. */}
         <SuggestionCards
@@ -110,7 +110,7 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
         <GrammarIssuesList issues={result.grammar_issues} />
       </TabsContent>
 
-      {/* Compare tab — Phase 4 per D-C17 */}
+      {/* Compare tab per D-C17 */}
       <TabsContent value="compare" className="pt-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <CompareTab
           jobId={result.job_id}

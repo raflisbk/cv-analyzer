@@ -1,6 +1,6 @@
 /**
  * Shared workspace utility functions.
- * Diekstrak dari canvas-editor.tsx dan section-block.tsx pada Phase 13
+ * Workspace layout and annotation coordinate utilities
  * agar dapat dibagikan antara workspace-v1 (canvas) dan workspace-v2.
  *
  * PENTING: Jangan ubah behavior function ini — canvas editor bergantung padanya.

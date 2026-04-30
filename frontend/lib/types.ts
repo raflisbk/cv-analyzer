@@ -48,7 +48,7 @@ export interface Job {
 }
 
 // ============================================================
-// Phase 2: Analysis Result types (per D-23)
+// Analysis result types
 // ============================================================
 
 export interface ScoreResult {
@@ -80,7 +80,7 @@ export interface AtsCheck {
 }
 
 // ============================================================
-// Phase 3: AI Suggestion types (per LLM-01..04, D-06, D-08)
+// AI Suggestion types
 // ============================================================
 
 export type SuggestionPriority = "high_impact" | "quick_win";
@@ -126,8 +126,8 @@ export interface AnalysisResult {
     | "extracting"
     | "parsing"
     | "analyzing"
-    | "generating" // Phase 3: LLM suggestion generation stage (D-19)
-    | "comparing"  // Phase 4: comparison task running (D-C9)
+    | "generating"
+    | "comparing"
     | "complete"
     | "failed";
   scores: ScoreResult | null;
@@ -135,13 +135,13 @@ export interface AnalysisResult {
   skills: string[];
   grammar_issues: GrammarIssue[];
   ats_checks: AtsCheck[];
-  // Phase 3: AI suggestions (D-20)
-  // undefined = pre-Phase 3 job (field absent in DB) → render nothing
-  // null      = LLM failed (ERROR-02, D-17) → render "unavailable" state
+  // AI suggestions
+  // undefined = field absent in DB → render nothing
+  // null      = LLM failed → render "unavailable" state
   // []        = LLM succeeded, nothing to suggest → render "no suggestions" state
   // [...]     = populated suggestions → render suggestion cards
   suggestions?: SuggestionCard[] | null;
-  // Phase 4: Comparison data per D-C9
+  // Comparison data
   // undefined = comparison not triggered
   // null      = comparison failed
   // ComparisonResult = comparison complete
@@ -150,7 +150,7 @@ export interface AnalysisResult {
 }
 
 // ============================================================
-// Phase 4: Comparison types (per D-C6, D-C9, COMPARE-03..06)
+// Comparison types
 // ============================================================
 
 /** LLM comparison output per D-C6. Fields match backend ComparisonResult Pydantic schema. */

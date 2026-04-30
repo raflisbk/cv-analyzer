@@ -1,11 +1,6 @@
-"""
-LLM suggestion generation Celery task per D-19, D-20.
-FINAL TASK in the analysis pipeline. Runs after grammar_check_task.
+"""LLM suggestion generation Celery task. Final task in the analysis pipeline.
 
-Pipeline: document_processing → nlp_analysis → scoring → grammar_check → llm_suggest (FINAL)
-
-On LLM failure (D-17, ERROR-02): saves suggestions=None, still sets COMPLETE + emits 'complete'.
-NEVER sets JobStatus.FAILED due to LLM error — partial results pattern.
+On LLM failure: saves suggestions=None, still sets COMPLETE. NEVER sets FAILED due to LLM error.
 """
 
 import asyncio
@@ -28,10 +23,7 @@ from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
 
-# Module-level singleton — HFLLMService (free tier via hf-inference provider)
 _llm_service = HFLLMService()
-
-# Module-level Redis client — lazy init (same pattern as document_processing.py)
 _redis_client: redis_lib.Redis | None = None
 
 
@@ -44,23 +36,10 @@ def _get_redis_client() -> redis_lib.Redis:
 
 
 def _repair_llm_output(raw_json: str, cv_text: str) -> str:
-    """
-    Repair incomplete LLM JSON output by inferring missing fields.
-
-    Z AI GLM-4.5-flash often skips 'type', 'original_text', 'after_text' fields.
-    This function attempts to fill in missing values before Pydantic validation.
-
-    Args:
-        raw_json: JSON string from LLM response
-        cv_text: Original CV text for fuzzy matching original_text
-
-    Returns:
-        Repaired JSON string
-    """
+    """Repair incomplete LLM JSON by inferring missing fields."""
     try:
         data = json.loads(raw_json)
     except json.JSONDecodeError:
-        # If not valid JSON, return as-is (let validator handle it)
         return raw_json
 
     suggestions_list = data.get("suggestions", [])
@@ -70,28 +49,33 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
         card_suggestions = card.get("suggestions", [])
 
         for idx, suggestion in enumerate(card_suggestions):
-            # Repair missing 'type' field
             if "type" not in suggestion or not suggestion["type"]:
-                # Infer from suggestion text or default to action_verb
                 text_lower = suggestion.get("text", "").lower()
-                if any(word in text_lower for word in ["add", "include", "missing", "section"]):
+                if any(
+                    word in text_lower
+                    for word in ["add", "include", "missing", "section"]
+                ):
                     suggestion["type"] = "missing_section"
-                elif any(word in text_lower for word in ["metric", "quantif", "number", "%", "increased"]):
+                elif any(
+                    word in text_lower
+                    for word in ["metric", "quantif", "number", "%", "increased"]
+                ):
                     suggestion["type"] = "impact_metric"
                 else:
                     suggestion["type"] = "action_verb"
 
-            # Repair missing 'original_text' - try fuzzy match in CV
             if "original_text" not in suggestion or not suggestion["original_text"]:
-                # Extract first meaningful phrase from suggestion text as fallback
                 suggestion_text = suggestion.get("text", "")
-                # For action_verb, look for weak verbs in CV
                 if suggestion.get("type") == "action_verb":
-                    # Look for sentences with common weak verbs in cv_text
-                    weak_verbs = ["managed", "helped", "worked on", "assisted", "responsible for"]
+                    weak_verbs = [
+                        "managed",
+                        "helped",
+                        "worked on",
+                        "assisted",
+                        "responsible for",
+                    ]
                     for verb in weak_verbs:
                         if verb.lower() in cv_text.lower():
-                            # Extract surrounding context (up to 100 chars)
                             idx = cv_text.lower().find(verb.lower())
                             start = max(0, idx - 20)
                             end = min(len(cv_text), idx + 80)
@@ -100,7 +84,6 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
                     if not suggestion.get("original_text"):
                         suggestion["original_text"] = suggestion_text[:100]
                 else:
-                    # Fallback: use suggestion text truncated
                     suggestion["original_text"] = suggestion_text[:100]
 
             # Repair missing 'after_text' - None is acceptable per schema
@@ -113,36 +96,15 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
 @celery_app.task(
     bind=True,
     base=ProgressTask,
-    max_retries=1,  # LLM retries handled inside HFLLMService (3x)
+    max_retries=1,
     default_retry_delay=30,
 )
 def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
-    """
-    LLM suggestion generation — FINAL TASK in analysis pipeline per D-19.
-
-    Flow:
-    1. Check Redis cache (llm_suggestions:{job_id}) — return cached if hit
-    2. Set job.status = GENERATING in DB
-    3. Emit 'generating_suggestions' SSE stage
-    4. Retrieve CV text + sections from DB
-    5. Retrieve RAG context (top-5 chunks) via pgvector cosine search
-    6. Call HFLLMService.generate_suggestions() with 3x retry
-    7. Validate JSON output with SuggestionsOutput Pydantic model
-    8. Cache suggestions in Redis (TTL 24h per D-14)
-    9. Save suggestions to jobs.suggestions JSONB + llm_tokens_used
-    10. Set job.status = COMPLETE, emit 'complete' SSE
-
-    On ANY exception (D-17, ERROR-02):
-    - Save suggestions=None to DB
-    - Set job.status = COMPLETE (partial result — scores/grammar still available)
-    - Emit 'complete' SSE
-    - NEVER set JobStatus.FAILED due to LLM error
-    """
+    """LLM suggestion generation. Final task — sets COMPLETE or partial COMPLETE on failure."""
     cache_key = f"llm_suggestions:{job_id}"
-    cache_ttl = 86400  # 24 hours per D-14
+    cache_ttl = 86400
 
     async def _get_file_id() -> str:
-        """Returns job.file_id from DB."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -150,7 +112,6 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             return job.file_id if job else ""
 
     async def _get_job_data() -> tuple[str | None, list[dict] | None]:
-        """Returns (cv_text, sections_list) from DB."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -162,7 +123,6 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             return None, None
 
     async def _set_generating_status() -> None:
-        """Set job.status = GENERATING so frontend shows skeleton during LLM call."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -182,15 +142,13 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             result = await session.execute(stmt)
             job = result.scalar_one_or_none()
             if job:
-                job.suggestions = suggestions_json  # None = LLM failed (D-17)
+                job.suggestions = suggestions_json
                 job.llm_tokens_used = tokens_used
-                # Compute and save anchors when suggestions available (ANNOT-04, D-02)
                 if suggestions_json and file_id:
                     job.suggestion_anchors = compute_suggestion_anchors(
                         file_id, suggestions_json
                     )
 
-                # Phase 16: Populate cv_document JSONB for chat context and CRDT
                 cv_document = {
                     "sections": [],
                     "metadata": {
@@ -200,41 +158,82 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
                 }
                 if job.nlp_result and "sections" in job.nlp_result:
                     for section_data in job.nlp_result["sections"]:
-                        cv_document["sections"].append({
-                            "type": section_data.get("type", "unknown"),
-                            "title": section_data.get("title", ""),
-                            "content": section_data.get("text", ""),
-                            "items": section_data.get("items", []),
-                        })
+                        cv_document["sections"].append(
+                            {
+                                "type": section_data.get("type", "unknown"),
+                                "title": section_data.get("title", ""),
+                                "content": section_data.get("text", ""),
+                                "items": section_data.get("items", []),
+                            }
+                        )
                 if suggestions_json:
                     cv_document["suggestions"] = [
                         {
-                            "section": s.get("section", "unknown") if isinstance(s, dict) else s.section,
+                            "section": (
+                                s.get("section", "unknown")
+                                if isinstance(s, dict)
+                                else s.section
+                            ),
                             "suggestions": [
                                 {
-                                    "priority": sug.get("priority", "medium") if isinstance(sug, dict) else sug.priority,
-                                    "text": sug.get("text", "") if isinstance(sug, dict) else sug.text,
-                                    "type": sug.get("type", "action_verb") if isinstance(sug, dict) else sug.type,
+                                    "priority": (
+                                        sug.get("priority", "medium")
+                                        if isinstance(sug, dict)
+                                        else sug.priority
+                                    ),
+                                    "text": (
+                                        sug.get("text", "")
+                                        if isinstance(sug, dict)
+                                        else sug.text
+                                    ),
+                                    "type": (
+                                        sug.get("type", "action_verb")
+                                        if isinstance(sug, dict)
+                                        else sug.type
+                                    ),
                                 }
-                                for sug in (s.get("suggestions", []) if isinstance(s, dict) else s.suggestions)
+                                for sug in (
+                                    s.get("suggestions", [])
+                                    if isinstance(s, dict)
+                                    else s.suggestions
+                                )
                             ],
                         }
                         for s in suggestions_json
                     ]
                 if job.scores:
                     cv_document["scores"] = {
-                        "overall": job.scores.get("overall") if isinstance(job.scores, dict) else job.scores.overall,
-                        "clarity": job.scores.get("clarity") if isinstance(job.scores, dict) else job.scores.clarity,
-                        "impact": job.scores.get("impact") if isinstance(job.scores, dict) else job.scores.impact,
-                        "completeness": job.scores.get("completeness") if isinstance(job.scores, dict) else job.scores.completeness,
-                        "relevance": job.scores.get("relevance") if isinstance(job.scores, dict) else job.scores.relevance,
+                        "overall": (
+                            job.scores.get("overall")
+                            if isinstance(job.scores, dict)
+                            else job.scores.overall
+                        ),
+                        "clarity": (
+                            job.scores.get("clarity")
+                            if isinstance(job.scores, dict)
+                            else job.scores.clarity
+                        ),
+                        "impact": (
+                            job.scores.get("impact")
+                            if isinstance(job.scores, dict)
+                            else job.scores.impact
+                        ),
+                        "completeness": (
+                            job.scores.get("completeness")
+                            if isinstance(job.scores, dict)
+                            else job.scores.completeness
+                        ),
+                        "relevance": (
+                            job.scores.get("relevance")
+                            if isinstance(job.scores, dict)
+                            else job.scores.relevance
+                        ),
                     }
                 job.cv_document = cv_document
 
-                job.status = JobStatus.COMPLETE  # THIS task sets COMPLETE
+                job.status = JobStatus.COMPLETE
                 await session.commit()
 
-    # ─── Redis cache check (D-14) ───────────────────────────────────────────
     redis_client = _get_redis_client()
     cached = redis_client.get(cache_key)
     if cached:
@@ -247,22 +246,16 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
         return {"status": "complete", "job_id": job_id, "from_cache": True}
 
-    # ─── Retrieve file_id for anchor computation (ANNOT-04) ─────────────────
     job_file_id = asyncio.run(_get_file_id())
 
     try:
-        # ─── Set GENERATING status in DB ─────────────────────────────────────
         asyncio.run(_set_generating_status())
-
-        # ─── Emit SSE stage ───────────────────────────────────────────────────
         self.update_progress(
             job_id,
             "generating_suggestions",
             90,
             "Generating AI improvement suggestions...",
         )
-
-        # ─── Retrieve job data ────────────────────────────────────────────────
         cv_text, sections = asyncio.run(_get_job_data())
         if not cv_text:
             logger.warning(
@@ -274,12 +267,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
 
         sections = sections or []
 
-        # ─── RAG retrieval (D-18: non-fatal if fails) ────────────────────────
         rag_context: list[str] = []
         try:
-            query_embedding = get_rag_embedding(
-                cv_text[:2000]
-            )  # Truncate for embedding
+            query_embedding = get_rag_embedding(cv_text[:2000])
             rag_context = asyncio.run(
                 retrieve_relevant_chunks(
                     query_embedding=query_embedding,
@@ -292,17 +282,14 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
                 "RAG retrieval failed, proceeding without context",
                 extra={"job_id": job_id, "error": str(rag_error)},
             )
-            rag_context = []  # D-18: proceed with LLM call without RAG context
+            rag_context = []
 
-        # ─── LLM call (3x retry inside HFLLMService) ─────────────────────────
         result = _llm_service.generate_suggestions(
             cv_text=cv_text,
             sections=sections,
             rag_context=rag_context,
         )
 
-        # ─── Validate JSON output per LLM-04 ─────────────────────────────────
-        # First, repair missing fields that Z AI often skips (type, original_text, after_text)
         repaired_json = _repair_llm_output(result["raw_json"], cv_text)
         validated: SuggestionsOutput = _llm_service.validate_output(repaired_json)
         suggestions_list = [card.model_dump() for card in validated.suggestions]
@@ -310,18 +297,14 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         prompt_tokens = result["prompt_tokens"]
         completion_tokens = result["completion_tokens"]
         total_tokens = prompt_tokens + completion_tokens
-
-        # ─── Cache in Redis (D-14: TTL 24h) ──────────────────────────────────
         redis_client.setex(cache_key, cache_ttl, json.dumps(suggestions_list))
 
-        # ─── Save to DB + set COMPLETE ────────────────────────────────────────
         asyncio.run(
             _save_results(
                 suggestions_list, tokens_used=total_tokens, file_id=job_file_id
             )
         )
 
-        # ─── Emit final 'complete' SSE stage ─────────────────────────────────
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
 
         logger.info(
@@ -336,9 +319,6 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         return {"status": "complete", "job_id": job_id, "cards": len(suggestions_list)}
 
     except Exception as e:
-        # ─── D-17, ERROR-02: LLM failure → partial result, NEVER FAILED ──────
-        # Scores, grammar, ATS checks are still available to the user.
-        # suggestions=None signals "AI suggestions unavailable" state in frontend.
         logger.error(
             "llm_suggest_task failed — returning partial result",
             extra={"job_id": job_id, "error": str(e)},

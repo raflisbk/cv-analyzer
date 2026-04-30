@@ -1,5 +1,5 @@
 """
-ATS compatibility checker per D-13, D-14, NLP-03.
+ATS compatibility checker.
 Checks CV format/structure and keyword density.
 Output: list of {check, status, detail} where status is 'pass', 'warn', or 'fail'.
 """
@@ -67,7 +67,7 @@ def check_ats_compatibility(  # noqa: PLR0912
     sections: list[CvSection] | None = None,
 ) -> list[dict]:
     """
-    Run ATS compatibility checks on CV text per D-13, D-14, NLP-03.
+    Run ATS compatibility checks on CV text.
 
     Checks:
     1. Standard sections present (required: experience, education, skills)

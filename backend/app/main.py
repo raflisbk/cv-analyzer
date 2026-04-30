@@ -8,7 +8,7 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.api.v1.endpoints.yjs import yjs_asgi_app, yjs_server
+from app.api.v1.endpoints.yjs import yjs_asgi_app
 from app.api.v1.router import router as api_v1_router
 
 # Import settings and logging before anything else
@@ -85,7 +85,7 @@ async def health_check():
     }
 
 
-# Mount API v1 router per D-52
+# Mount API v1 router
 app.include_router(api_v1_router, prefix="/api")
 
 # Mount Yjs CRDT WebSocket sub-app

@@ -1,7 +1,7 @@
 "use client";
 /**
  * SuggestionCard — Floating card showing suggestion details.
- * Phase 17: Displayed when hovering over text highlights in Tiptap editor.
+ * Displayed when hovering over text highlights in Tiptap editor.
  */
 import { useMemo } from "react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";

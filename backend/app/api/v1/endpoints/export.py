@@ -1,5 +1,5 @@
 """
-PDF export endpoint per D-C11, EXPORT-01, EXPORT-03.
+PDF export endpoint.
 GET /jobs/{id}/export/pdf — streams WeasyPrint-rendered PDF of full analysis.
 Uses Jinja2 template: app/templates/cv_analysis_report.html
 """
@@ -88,7 +88,9 @@ async def export_optimized_cv(
                 None, partial(HTML(string=html_content).write_pdf)
             )
         except Exception:
-            logger.exception(mask_pii(f"Optimized CV export render failed for job {job_id}"))
+            logger.exception(
+                mask_pii(f"Optimized CV export render failed for job {job_id}")
+            )
             error_response = WrappedResponse(
                 error=ErrorDetail(
                     code="PDF_EXPORT_FAILED",
@@ -107,8 +109,14 @@ async def export_optimized_cv(
         original_name = (job.file_metadata or {}).get("filename", "")
         base_name = Path(original_name).stem  # drop .pdf/.docx
         # Keep only alphanumerics, hyphens, underscores; replace other chars with "_"
-        safe_prefix = "".join(c if c.isalnum() or c in "-_" else "_" for c in base_name).strip("_")
-        export_filename = f"cv-optimized-{safe_prefix}-{str(job.id)[:8]}.pdf" if safe_prefix else f"cv-optimized-{str(job.id)[:8]}.pdf"
+        safe_prefix = "".join(
+            c if c.isalnum() or c in "-_" else "_" for c in base_name
+        ).strip("_")
+        export_filename = (
+            f"cv-optimized-{safe_prefix}-{str(job.id)[:8]}.pdf"
+            if safe_prefix
+            else f"cv-optimized-{str(job.id)[:8]}.pdf"
+        )
 
         return StreamingResponse(
             io.BytesIO(pdf_bytes),
@@ -140,7 +148,7 @@ async def export_pdf(
     db: AsyncSession = Depends(get_db),
 ) -> Response:
     """
-    Generate and stream PDF of CV analysis per D-C11, EXPORT-01, EXPORT-03.
+    Generate and stream PDF of CV analysis.
 
     Renders all available analysis data (scores, skills, grammar, ATS, suggestions,
     comparison if present) into cv_analysis_report.html template via WeasyPrint.
@@ -180,8 +188,8 @@ async def export_pdf(
             "suggestions": job.suggestions or [],
             "comparison_result": job.comparison_result,
             "comparison_status": job.comparison_status,
-            "cv_document": job.cv_document or {},  # Phase 16: structured document model
-            "messages": job.messages or [],        # Phase 16: chat conversation history
+            "cv_document": job.cv_document or {},
+            "messages": job.messages or [],
         }
 
         try:
@@ -215,8 +223,14 @@ async def export_pdf(
         original_name = (job.file_metadata or {}).get("filename", "")
         base_name = Path(original_name).stem  # drop .pdf/.docx
         # Keep only alphanumerics, spaces, hyphens, underscores; replace spaces → _
-        safe_prefix = "".join(c if c.isalnum() or c in "-_" else "_" for c in base_name).strip("_")
-        export_filename = f"cv-analyze-{safe_prefix}-{str(job.id)[:8]}.pdf" if safe_prefix else f"cv-analyze-{str(job.id)[:8]}.pdf"
+        safe_prefix = "".join(
+            c if c.isalnum() or c in "-_" else "_" for c in base_name
+        ).strip("_")
+        export_filename = (
+            f"cv-analyze-{safe_prefix}-{str(job.id)[:8]}.pdf"
+            if safe_prefix
+            else f"cv-analyze-{str(job.id)[:8]}.pdf"
+        )
 
         return StreamingResponse(
             io.BytesIO(pdf_bytes),

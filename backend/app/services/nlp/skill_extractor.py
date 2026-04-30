@@ -1,5 +1,5 @@
 """
-Skill extraction service per D-03 and NLP-04.
+Skill extraction service.
 Uses spaCy noun chunks + curated tech/professional skills whitelist.
 ESCO taxonomy removed: it covers all job competencies (not just tech skills),
 producing false positives like 'perform eye surgery' from CV action phrases.

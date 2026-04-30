@@ -1,4 +1,4 @@
-"""Workspace hydration endpoint for Phase 11."""
+"""Workspace hydration endpoint."""
 
 import uuid
 from datetime import UTC, datetime
@@ -39,15 +39,16 @@ from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
 from pydantic import BaseModel, Field
 
 
-router = APIRouter()
+from app.core.logging import structured_logger as logger
 
-# Initialize services
+router = APIRouter()
 inline_edit_service = InlineEditService()
 pdf_export_service = PDFExportService()
 
 
 class PDFExportRequest(BaseModel):
     """Request schema for PDF export."""
+
     html: str = Field(..., description="HTML content from Tiptap editor")
     filename: str = Field(default="cv-optimized.pdf", description="Output filename")
 
@@ -104,10 +105,12 @@ def _build_ats_checks(raw_ats_checks: list[dict[str, Any]] | None) -> list[AtsCh
     ]
 
 
-def _build_grammar_issues(raw_grammar_issues: list[dict[str, Any]] | None) -> list[GrammarIssue]:
+def _build_grammar_issues(
+    raw_grammar_issues: list[dict[str, Any]] | None,
+) -> list[GrammarIssue]:
     if not raw_grammar_issues:
         return []
-    
+
     return [
         GrammarIssue(
             text=issue.get("text", ""),
@@ -150,6 +153,7 @@ def _build_suggestions(
             for card in raw_suggestions
         ]
     except Exception:
+        logger.warning("Failed to build suggestions", exc_info=True)
         return None
 
 
@@ -163,6 +167,7 @@ def _build_comparison_result(
     try:
         return ComparisonResult(**raw_comparison_result)
     except Exception:
+        logger.warning("Failed to build comparison result", exc_info=True)
         return None
 
 
@@ -199,9 +204,6 @@ def _is_workspace_ready(
 def _build_suggestion_anchors(
     raw_anchors: list[dict] | None,
 ) -> list[SuggestionAnchorRecord]:
-    """Parse JSONB suggestion_anchors into typed SuggestionAnchorRecord list.
-    Returns [] when column is null (e.g., existing jobs pre-Phase 14).
-    """
     if not raw_anchors:
         return []
     result = []
@@ -209,7 +211,7 @@ def _build_suggestion_anchors(
         try:
             result.append(SuggestionAnchorRecord.model_validate(item))
         except Exception:
-            continue  # Skip malformed entries — graceful degradation
+            continue
     return result
 
 
@@ -273,7 +275,9 @@ async def get_workspace_hydration(
                 safe_comparison_result, safe_comparison_status
             ),
             comparison_status=safe_comparison_status,
-            grammar_issues=_build_grammar_issues(job.grammar_issues if isinstance(job.grammar_issues, list) else None),
+            grammar_issues=_build_grammar_issues(
+                job.grammar_issues if isinstance(job.grammar_issues, list) else None
+            ),
             skills=_build_skills(safe_nlp_result),
         )
         navigation = WorkspaceNavigation(
@@ -320,8 +324,10 @@ async def get_workspace_hydration(
         )
 
     except Exception as exc:
+        logger.error(
+            "workspace_hydration_failed", extra={"job_id": job_id}, exc_info=True
+        )
         return WrappedResponse(
-            error=ErrorDetail(code="WORKSPACE_FETCH_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -379,10 +385,11 @@ async def get_job_file_url(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
     except Exception as exc:
+        logger.error("file_url_failed", extra={"job_id": job_id}, exc_info=True)
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_URL_FETCH_FAILED",
-                message=f"Gagal mendapatkan URL file: {exc!s}",
+                message=f"Failed to get file URL: {exc!s}",
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -418,7 +425,9 @@ async def get_job_html(
         # Extract data for conversion
         safe_result = job.result if isinstance(job.result, dict) else {}
         safe_nlp_result = job.nlp_result if isinstance(job.nlp_result, dict) else {}
-        safe_anchors = job.suggestion_anchors if isinstance(job.suggestion_anchors, list) else []
+        safe_anchors = (
+            job.suggestion_anchors if isinstance(job.suggestion_anchors, list) else []
+        )
 
         source_text = _get_source_text(safe_result)
         sections = safe_nlp_result.get("sections", [])
@@ -446,8 +455,8 @@ async def get_job_html(
         )
 
     except Exception as exc:
+        logger.error("html_conversion_failed", extra={"job_id": job_id}, exc_info=True)
         return WrappedResponse(
-            error=ErrorDetail(code="HTML_CONVERSION_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -462,7 +471,7 @@ async def patch_workspace_content(
     body: WorkspaceContentPatch,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[WorkspaceContentSaveResult]:
-    """Upsert the workspace draft sections (Tiptap JSON) for a job. (D-10, D-11, D-12)"""
+    """Upsert the workspace draft sections (Tiptap JSON) for a job."""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -491,8 +500,8 @@ async def patch_workspace_content(
 
     except Exception as exc:
         await db.rollback()
+        logger.error("draft_save_failed", extra={"job_id": job_id}, exc_info=True)
         return WrappedResponse(
-            error=ErrorDetail(code="DRAFT_SAVE_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -505,7 +514,7 @@ async def patch_workspace_content(
 async def improve_text(
     body: InlineEditRequest,
 ) -> WrappedResponse[InlineEditResponse]:
-    """Generate AI rewrite for selected CV text. (Phase 17)"""
+    """Generate AI rewrite for selected CV text."""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -522,8 +531,8 @@ async def improve_text(
         )
 
     except Exception as exc:
+        logger.error("ai_improve_failed", exc_info=True)
         return WrappedResponse(
-            error=ErrorDetail(code="AI_IMPROVE_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -533,7 +542,7 @@ async def improve_text(
     summary="Export editor HTML to PDF",
 )
 async def export_pdf(body: PDFExportRequest) -> Response:
-    """Convert Tiptap editor HTML to formatted PDF. (Phase 17)"""
+    """Convert Tiptap editor HTML to formatted PDF."""
     try:
         pdf_bytes = pdf_export_service.export_html_to_pdf(
             html_content=body.html,
@@ -549,8 +558,8 @@ async def export_pdf(body: PDFExportRequest) -> Response:
         )
 
     except Exception as exc:
+        logger.error("pdf_export_failed", exc_info=True)
         return Response(
-            content=f"PDF export failed: {str(exc)}",
             status_code=500,
             media_type="text/plain",
         )
@@ -559,6 +568,7 @@ async def export_pdf(body: PDFExportRequest) -> Response:
 # WebSocket route for Yjs real-time sync
 @router.websocket("/yws/{document_id}")
 async def yjs_websocket(websocket: WebSocket, document_id: str) -> None:
-    """WebSocket endpoint for Yjs CRDT sync. (Phase 17)"""
+    """WebSocket endpoint for Yjs CRDT sync."""
     from app.api.v1.websocket.yws_handler import yjs_websocket_endpoint
+
     await yjs_websocket_endpoint(websocket, document_id)

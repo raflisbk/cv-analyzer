@@ -1,7 +1,7 @@
 /**
  * inline-edit-popover.tsx — Portal-based popover for inline AI editing.
  *
- * Phase 15 deliverable: INLINE-02 (popover UI states) + INLINE-03 (API integration).
+ * Popover UI for inline editing with API integration.
  * Renders above text selection with prompt input, loading, preview, error, and warning states.
  *
  * Key patterns:

@@ -4,7 +4,7 @@ Supports both batch processing and streaming for inline chat.
 """
 
 import json
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from huggingface_hub import InferenceClient
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -232,7 +232,7 @@ class HFOpenAILLMService:
     async def generate_suggestions_stream(
         self,
         prompt: str,
-    ) -> AsyncGenerator[str, None]:
+    ) -> AsyncGenerator[str]:
         """
         Generate streaming response for inline editing (future feature).
 
@@ -267,22 +267,23 @@ class HFOpenAILLMService:
         json_str = raw_json.strip()
         if "```" in json_str:
             import re
+
             # Find the content between ``` markers
-            match = re.search(r'```(?:json)?\s*(.*?)\s*```', json_str, re.DOTALL)
+            match = re.search(r"```(?:json)?\s*(.*?)\s*```", json_str, re.DOTALL)
             if match:
                 json_str = match.group(1).strip()
             else:
                 # Fallback: find first { and count braces to find matching }
-                start_idx = json_str.find('{')
+                start_idx = json_str.find("{")
                 if start_idx != -1:
                     brace_count = 0
                     for i in range(start_idx, len(json_str)):
-                        if json_str[i] == '{':
+                        if json_str[i] == "{":
                             brace_count += 1
-                        elif json_str[i] == '}':
+                        elif json_str[i] == "}":
                             brace_count -= 1
                             if brace_count == 0:
-                                json_str = json_str[start_idx:i + 1]
+                                json_str = json_str[start_idx : i + 1]
                                 break
 
         try:

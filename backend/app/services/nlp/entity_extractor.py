@@ -1,5 +1,5 @@
 """
-Entity extraction service per D-03 and NLP-05.
+Entity extraction service.
 Extracts ORG, DATE, PERSON, GPE entities from CV sections using spaCy NER.
 """
 
@@ -20,7 +20,7 @@ _LABEL_MAP: dict[str, str] = {
 
 def extract_entities(text: str, sections: list[CvSection] | None = None) -> dict:
     """
-    Extract named entities from CV text using spaCy NER per D-03, NLP-05.
+    Extract named entities from CV text using spaCy NER.
 
     Args:
         text: Full CV text or section text

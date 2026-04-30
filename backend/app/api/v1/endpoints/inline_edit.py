@@ -1,4 +1,4 @@
-"""Inline edit endpoint for Phase 15."""
+"""Inline edit endpoint."""
 
 import uuid
 from datetime import UTC, datetime
@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
-from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
+from app.schemas.common import ResponseMeta, WrappedResponse
 from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
 from app.services.llm.inline_edit_service import InlineEditService
 
@@ -36,7 +36,9 @@ def _build_cv_context(job: Job) -> dict[str, Any] | None:
     }
 
 
-@router.post("/jobs/{job_id}/inline-edit", response_model=WrappedResponse[InlineEditResponse])
+@router.post(
+    "/jobs/{job_id}/inline-edit", response_model=WrappedResponse[InlineEditResponse]
+)
 async def inline_edit(
     job_id: str,
     request: InlineEditRequest,

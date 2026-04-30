@@ -1,13 +1,9 @@
-"""
-Yjs WebSocket endpoint for CRDT sync.
-Implements CRDT-02: pycrdt-websocket WebSocket endpoint.
+"""Yjs WebSocket endpoint for CRDT sync.
 
 Uses ASGIServer from pycrdt-websocket as a mounted sub-app.
-Room scoped to URL path (/yjs/{job_id}) for multi-user isolation.
-Single-user in Phase 16, multi-user ready for future phases.
+Room scoped to URL path (/yjs/{job_id}) for isolation.
 """
 
-from collections.abc import Awaitable, Callable
 from typing import Any
 
 from pycrdt.websocket import ASGIServer, WebsocketServer
@@ -17,13 +13,12 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job
 
+
 # Module-level Yjs server instance
 yjs_server = WebsocketServer()
 
 
-async def _on_connect(
-    msg: dict[str, Any], scope: dict[str, Any]
-) -> bool:
+async def _on_connect(msg: dict[str, Any], scope: dict[str, Any]) -> bool:
     """Validate job_id exists before accepting WebSocket connection.
 
     Returns True to reject the connection, False to accept.

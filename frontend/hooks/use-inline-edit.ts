@@ -1,7 +1,7 @@
 /**
  * use-inline-edit.ts — Text selection detection hook for inline AI editing.
  *
- * Phase 15 deliverable: INLINE-01 (text selection detection) + INLINE-03 (Yjs persistence).
+ * Text selection detection with Yjs persistence.
  * Detects text selection in PDF viewer, calculates coordinates, manages popover state.
  *
  * Key patterns:
@@ -9,7 +9,7 @@
  * - Debounced onMouseUp handler to avoid rapid re-renders
  * - Coordinate calculation via range.getBoundingClientRect()
  * - Yjs integration for inline edits persistence
- * - StrictMode guard ref pattern (per Phase 13)
+ * - StrictMode guard ref pattern
  */
 "use client";
 
@@ -45,7 +45,7 @@ const SELECTION_DEBOUNCE_MS = 150;
  * const { state, handleSelectionChange, closePopover } = useInlineEdit(jobId);
  */
 export function useInlineEdit(jobId: string): UseInlineEditResult {
-  // StrictMode guard ref (per Phase 13 pattern)
+  // StrictMode guard ref
   const initialized = useRef(false);
 
   // Yjs refs for inline edits persistence
@@ -64,7 +64,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
   /**
    * Initialize Yjs Doc for inline edits persistence
-   * Phase 15: INLINE-03 - Store inline edits in separate Y.Map
+   * Store inline edits in separate Y.Map
    */
   useEffect(() => {
     if (!jobId) return;
@@ -81,9 +81,6 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
     const inlineEditsMap = doc.getMap("inline_edits");
     inlineEditsMapRef.current = inlineEditsMap;
 
-    console.log("[useInlineEdit] Yjs initialized for job:", jobId);
-
-    // Cleanup
     return () => {
       doc.destroy();
       docRef.current = null;
@@ -199,7 +196,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
   /**
    * Apply rewrite to document state
-   * Phase 15: INLINE-03 - Store edit record in Yjs
+   * Store edit record in Yjs
    */
   const applyRewrite = useCallback(
     (editId: string, originalText: string, rewrittenText: string) => {

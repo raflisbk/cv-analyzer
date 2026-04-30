@@ -98,7 +98,7 @@ def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     if len(vec1) != len(vec2):
         raise ValueError(f"Vector dimensions don't match: {len(vec1)} vs {len(vec2)}")
 
-    dot_product = sum(v1 * v2 for v1, v2 in zip(vec1, vec2))
+    dot_product = sum(v1 * v2 for v1, v2 in zip(vec1, vec2, strict=False))
     magnitude1 = math.sqrt(sum(v * v for v in vec1))
     magnitude2 = math.sqrt(sum(v * v for v in vec2))
 

@@ -1,7 +1,6 @@
 "use client";
 /**
- * useAnnotationHover — Floating UI popover with 1.5s hover delay for annotation highlights.
- * Phase 14: ANNOT-02 — hover on annotation → Apply/Dismiss popover after 1.5s.
+ * useAnnotationHover - Floating UI popover with 1.5s hover delay for annotation highlights.
  */
 import { useState } from "react";
 import {

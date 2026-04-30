@@ -1,7 +1,7 @@
 "use client";
 /**
  * AnnotationOverlay — renders absolute-positioned hit-test divs at anchor rects.
- * Phase 14: ANNOT-01, ANNOT-02, ANNOT-03.
+ * Annotation overlay for PDF highlights.
  *
  * Two-layer approach:
  * 1. customTextRenderer (in pdf-viewer-inner.tsx) injects colored spans in text layer for visual highlights.

@@ -211,12 +211,14 @@ class HFLLMService:
         wait=wait_exponential(multiplier=1, min=2, max=10),
         reraise=True,
     )
-    def inline_rewrite(self, text: str, prompt: str, context: dict | None = None) -> dict:
+    def inline_rewrite(
+        self, text: str, prompt: str, context: dict | None = None
+    ) -> dict:
         """
         Rewrite a specific text snippet based on user prompt using Qwen2.5-7B-Instruct.
         """
         user_prompt = (
-            f"Here is a snippet of text from a CV:\n\"{text}\"\n\n"
+            f'Here is a snippet of text from a CV:\n"{text}"\n\n'
             f"Please rewrite this text according to the following instruction: {prompt}\n\n"
         )
         if context:
@@ -236,16 +238,20 @@ class HFLLMService:
         )
 
         rewritten = response.strip()
-        
+
         # Sometimes models wrap output in quotes if we ask for text
         if rewritten.startswith('"') and rewritten.endswith('"'):
             rewritten = rewritten[1:-1]
-            
+
         prompt_tokens = len(full_prompt) // 4
         completion_tokens = len(rewritten) // 4
 
-        llm_tokens_counter.labels(provider="hf", model=self.model, type="prompt").inc(prompt_tokens)
-        llm_tokens_counter.labels(provider="hf", model=self.model, type="completion").inc(completion_tokens)
+        llm_tokens_counter.labels(provider="hf", model=self.model, type="prompt").inc(
+            prompt_tokens
+        )
+        llm_tokens_counter.labels(
+            provider="hf", model=self.model, type="completion"
+        ).inc(completion_tokens)
 
         return {
             "rewritten_text": rewritten,
@@ -343,12 +349,14 @@ class HFLLMService:
 
         # Remove markdown code blocks
         if "```" in response:
-            json_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', response, re.DOTALL)
+            json_match = re.search(
+                r"```(?:json)?\s*(\{.*?\})\s*```", response, re.DOTALL
+            )
             if json_match:
                 return json_match.group(1)
 
         # Find first { ... } pattern
-        brace_match = re.search(r'\{.*\}', response, re.DOTALL)
+        brace_match = re.search(r"\{.*\}", response, re.DOTALL)
         if brace_match:
             return brace_match.group(0)
 

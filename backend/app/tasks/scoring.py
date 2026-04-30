@@ -1,8 +1,4 @@
-"""
-CV scoring Celery task per D-17, D-18.
-Third task in the analysis pipeline chain.
-Reads nlp_result from DB, runs OpenAI embedding scoring, saves scores JSONB column.
-"""
+"""CV scoring Celery task."""
 
 import asyncio
 
@@ -21,17 +17,10 @@ from app.tasks.document_processing import ProgressTask
     bind=True,
     base=ProgressTask,
     max_retries=3,
-    default_retry_delay=60,  # Longer delay for OpenAI rate limits
+    default_retry_delay=60,
 )
 def score_cv_task(self: Task, job_id: str) -> dict:
-    """
-    CV scoring task: OpenAI embedding cosine similarity scoring.
-    Per D-17: third task in chain. Per D-18: emits 'scoring'.
-
-    Reads job.result['text'] from DB (original parsed text for full-CV scoring).
-    Writes scores JSONB column to job.
-    Does NOT emit 'complete' — that is grammar_check_task's responsibility.
-    """
+    """CV scoring via embedding cosine similarity."""
 
     async def _get_cv_text() -> str | None:
         async with async_session_maker() as session:
@@ -72,12 +61,10 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             self.update_progress(job_id, "failed", 0, msg)
             return {"error": msg}
 
-        # score_cv raises on OpenAI failure after 3 retries (D-10)
         scores = score_cv(text)
-        
-        # Generate AI explanations for scores
         try:
             from app.services.llm.score_explainer import ScoreExplainerService
+
             explainer = ScoreExplainerService()
             reasonings = explainer.explain_scores(text, scores)
             scores["reasonings"] = reasonings
@@ -94,7 +81,6 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         return {"status": "scoring_complete", "job_id": job_id}  # noqa: TRY300
 
     except Exception as e:
-        # Catch ALL exceptions per Pitfall 4 — do NOT re-raise
         error_msg = f"CV scoring failed: {e!s}"
         logger.error(
             "score_cv_task failed",

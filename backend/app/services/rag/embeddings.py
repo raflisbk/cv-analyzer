@@ -1,5 +1,5 @@
 """
-RAG embedding function using HF Inference BGE-M3 per D-11, RAG-05.
+RAG embedding function using HF Inference BGE-M3.
 Uses BAAI/bge-m3 model for high-quality retrieval (1024 dimensions).
 """
 
@@ -19,7 +19,7 @@ _MAX_RAG_CHARS = 20000  # BGE-M3 token limit
 )
 def get_rag_embedding(text: str) -> list[float]:
     """
-    Get BGE-M3 embedding (1024 dimensions) for RAG per D-11.
+    Get BGE-M3 embedding (1024 dimensions) for RAG.
 
     Args:
         text: Input text to embed

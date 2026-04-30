@@ -1,7 +1,4 @@
-"""
-Extraction quality validation
-Implements UPLOAD-06: Quality validation and error detection
-"""
+"""Extraction quality validation."""
 
 import re
 
@@ -10,7 +7,7 @@ from app.core.logging import structured_logger as logger
 
 def validate_extraction_quality(text: str) -> tuple[float, str]:
     """
-    Validate extraction quality using heuristics per D-09
+    Validate extraction quality using heuristics
 
     Args:
         text: Extracted text

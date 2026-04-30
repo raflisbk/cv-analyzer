@@ -1,5 +1,5 @@
 """
-Text chunking helper for RAG knowledge base seeding per D-12.
+Text chunking helper for RAG knowledge base seeding.
 Splits text into overlapping chunks (~500 chars, 50-char overlap).
 """
 

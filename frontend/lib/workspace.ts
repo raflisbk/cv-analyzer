@@ -10,7 +10,7 @@ import type {
 } from "@/lib/types";
 import type { ChatMessage } from "@/lib/stores/workspace-v2-store";
 
-// Phase 14: Suggestion anchor coordinate types (mirror of backend/app/schemas/anchors.py)
+// Suggestion anchor coordinate types
 export interface AnchorRect {
   x: number;  // PDF points, left edge (top-left origin, y-down - CSS-compatible)
   y: number;  // PDF points, top edge
@@ -37,7 +37,7 @@ export interface WorkspaceFileInfo {
 export interface WorkspaceDocumentPayload {
   source_text: string | null;
   sections: SectionResult[];
-  draft_content?: Record<string, JSONContent> | null; // Phase 12: per-section Tiptap JSON draft
+  draft_content?: Record<string, JSONContent> | null;
 }
 
 export interface WorkspaceAnalysisContext {
@@ -63,8 +63,8 @@ export interface WorkspaceHydration {
   analysis: WorkspaceAnalysisContext;
   navigation: WorkspaceNavigation;
   error?: string | null;
-  suggestion_anchors?: SuggestionAnchorRecord[];  // Phase 14: ANNOT-04; empty for pre-Phase-14 jobs
-  messages?: ChatMessage[];  // Phase 16: chat history
+  suggestion_anchors?: SuggestionAnchorRecord[];
+  messages?: ChatMessage[];
 }
 
 export async function getWorkspaceHydration(
@@ -73,7 +73,7 @@ export async function getWorkspaceHydration(
   return apiFetch<WorkspaceHydration>(`/jobs/${jobId}/workspace`);
 }
 
-// Phase 13: file presigned URL fetch (PDF-02)
+// File presigned URL fetch
 export interface WorkspaceFileUrl {
   file_url: string;
   expires_in: number;

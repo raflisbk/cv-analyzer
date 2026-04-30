@@ -1,5 +1,5 @@
 /**
- * Yjs WebSocket Provider for Phase 17.
+ * Yjs WebSocket Provider.
  * Enables real-time CRDT sync for Tiptap editor.
  *
  * Uses WebsocketProvider from y-websocket for real-time collaboration.

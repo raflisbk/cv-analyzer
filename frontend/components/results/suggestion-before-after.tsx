@@ -12,7 +12,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SuggestionBeforeAfterProps {
-  /** The original CV text context (stored in suggestion card from Phase 3) */
+  /** The original CV text context */
   beforeText: string;
   /** Unique id for ARIA linking — should be unique per suggestion card */
   id: string;

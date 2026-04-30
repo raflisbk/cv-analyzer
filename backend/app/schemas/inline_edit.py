@@ -1,4 +1,4 @@
-"""Inline edit schemas for Phase 15."""
+"""Inline edit schemas."""
 
 from typing import Any
 
@@ -23,4 +23,6 @@ class InlineEditResponse(BaseModel):
     explanation: str | None = Field(
         default=None, description="Optional explanation of changes made"
     )
-    error: str | None = Field(default=None, description="Error message if rewrite failed")
+    error: str | None = Field(
+        default=None, description="Error message if rewrite failed"
+    )

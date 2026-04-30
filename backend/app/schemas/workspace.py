@@ -1,4 +1,4 @@
-"""Workspace hydration schemas for Phase 11."""
+"""Workspace hydration schemas."""
 
 from typing import Any, Literal
 
@@ -7,10 +7,10 @@ from pydantic import BaseModel, Field
 from app.schemas.analysis import (
     AtsCheck,
     ComparisonResult,
+    GrammarIssue,
     ScoreResult,
     SectionResult,
     SuggestionCard,
-    GrammarIssue,
 )
 from app.schemas.anchors import SuggestionAnchorRecord
 
@@ -29,9 +29,7 @@ class WorkspaceDocumentPayload(BaseModel):
 
     source_text: str | None = None
     sections: list[SectionResult] = Field(default_factory=list)
-    draft_content: dict | None = (
-        None  # Phase 12: loaded draft if job has workspace_draft
-    )
+    draft_content: dict | None = None
 
 
 class WorkspaceAnalysisContext(BaseModel):
@@ -72,11 +70,11 @@ class WorkspaceHydration(BaseModel):
     analysis: WorkspaceAnalysisContext
     navigation: WorkspaceNavigation
     suggestion_anchors: list[SuggestionAnchorRecord] = Field(default_factory=list)
-    messages: list[ChatMessage] = Field(default_factory=list)  # Phase 16: Chat history
+    messages: list[ChatMessage] = Field(default_factory=list)
     error: str | None = None
 
 
-# Phase 12: Draft content patch schemas (D-10, D-11, D-12)
+# Draft content patch schemas
 
 
 class WorkspaceContentPatch(BaseModel):
@@ -92,7 +90,7 @@ class WorkspaceContentSaveResult(BaseModel):
     updated_at: str
 
 
-# Phase 13: File presigned URL schema
+# File presigned URL schema
 class WorkspaceFileUrl(BaseModel):
     """Presigned R2 URL untuk akses langsung ke PDF CV yang diupload."""
 

@@ -1,5 +1,5 @@
 """
-Grammar and spelling check service per D-11, D-12, NLP-02.
+Grammar and spelling check service.
 
 Uses HuggingFace Inference API (Qwen2.5-7B-Instruct) for grammar checking.
 No Java or LanguageTool dependency required.
@@ -54,7 +54,7 @@ def check_grammar(text: str) -> list[dict]:
         text: CV text to check
 
     Returns:
-        List of grammar/spell issue dicts per D-12.
+        List of grammar/spell issue dicts.
         Returns empty list if no issues found or if the API call fails.
     """
     try:

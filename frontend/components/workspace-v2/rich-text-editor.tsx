@@ -1,7 +1,7 @@
 "use client";
 /**
  * RichTextEditor — Tiptap-based editor with PDF layout preservation.
- * Phase 17: Replaces PDF canvas viewer with editable rich text.
+ * Editable rich text editor replacing PDF canvas viewer.
  *
  * Features:
  * - Exact PDF positioning via absolute positioned blocks

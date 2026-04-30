@@ -1,8 +1,4 @@
-"""
-Cloudflare R2 storage service
-Implements UPLOAD-07: Store files in R2 with temporary access
-Implements ERROR-05: Auto-delete after 24h
-"""
+"""Cloudflare R2 storage service."""
 
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -48,7 +44,7 @@ class StorageService:
         self, content: bytes, original_filename: str, metadata: dict[str, str]
     ) -> str:
         """
-        Upload file to R2 with UUID-based naming per D-17
+        Upload file to R2 with UUID-based naming
 
         Args:
             content: File content bytes
@@ -61,10 +57,10 @@ class StorageService:
         Raises:
             Exception: If upload fails
         """
-        # Generate UUID-based filename per D-17
+        # Generate UUID-based filename
         file_id = f"{uuid.uuid4()}-{Path(original_filename).name}"
 
-        # Add metadata per D-21
+        # Add metadata
         s3_metadata = {
             "original-filename": original_filename,
             "upload-timestamp": datetime.now(UTC).isoformat(),
@@ -76,7 +72,7 @@ class StorageService:
         }
 
         try:
-            # Upload to R2 (flat structure per D-18)
+            # Upload to R2
             self.client.put_object(
                 Bucket=self.bucket,
                 Key=file_id,
@@ -130,7 +126,7 @@ class StorageService:
 
     def generate_presigned_url(self, file_id: str, expiration: int = 3600) -> str:
         """
-        Generate presigned URL for temporary file access per D-19
+        Generate presigned URL for temporary file access
 
         Args:
             file_id: UUID-based file identifier
@@ -163,7 +159,7 @@ class StorageService:
 
     def delete_file(self, file_id: str) -> bool:
         """
-        Delete file from R2 (called by cleanup task per D-20)
+        Delete file from R2
 
         Args:
             file_id: UUID-based file identifier

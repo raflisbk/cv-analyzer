@@ -2,10 +2,10 @@
 
 import asyncio
 import json
+from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
-from typing import AsyncGenerator
 
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 
@@ -32,7 +32,7 @@ async def _save_messages(job_id: str, messages: list[dict]) -> None:
             )
 
 
-async def _stream_mock_response(user_message: str) -> AsyncGenerator[str, None]:
+async def _stream_mock_response(user_message: str) -> AsyncGenerator[str]:
     """Mock LLM streaming response.
 
     NOTE: Replace with actual HF InferenceClient streaming when available.
@@ -61,7 +61,8 @@ async def chat_stream(job_id: str, message: str):
     3. Stream LLM response token-by-token
     4. Save both user and assistant messages to Job.messages
     """
-    async def stream_chat_response() -> AsyncGenerator[str, None]:
+
+    async def stream_chat_response() -> AsyncGenerator[str]:
         async with async_session_maker() as db:
             result = await db.execute(select(Job).where(Job.id == job_id))
             job = result.scalar_one_or_none()
@@ -70,7 +71,7 @@ async def chat_stream(job_id: str, message: str):
             yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"
             return
 
-        # Build system prompt with full context (per D-16-02)
+        # Build system prompt with full context
         system_prompt = build_chat_system_prompt(job)
 
         # Prepare messages array
@@ -118,7 +119,9 @@ async def chat_stream(job_id: str, message: str):
                 extra={"job_id": job_id, "error": str(e)},
             )
             assistant_msg["status"] = "error"
-            assistant_msg["content"] = "I couldn't generate a response. Please try again."
+            assistant_msg["content"] = (
+                "I couldn't generate a response. Please try again."
+            )
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(

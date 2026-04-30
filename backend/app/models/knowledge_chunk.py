@@ -1,5 +1,5 @@
 """
-KnowledgeChunk model for RAG vector knowledge base per RAG-05, D-11.
+KnowledgeChunk model for RAG vector knowledge base.
 Stores BAAI/bge-m3 embeddings (1024 dims) of career guide chunks.
 """
 
@@ -10,7 +10,7 @@ from app.db.base import Base
 
 
 class KnowledgeChunk(Base):
-    """A single chunk of career guide text with its embedding per RAG-05."""
+    """A single chunk of career guide text with its embedding."""
 
     __tablename__ = "knowledge_chunks"
 

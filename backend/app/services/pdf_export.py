@@ -1,12 +1,11 @@
 """
-PDF export service for Phase 17.
+PDF export service.
 Converts Tiptap editor HTML content to formatted PDF.
 """
 
-import io
 from typing import Any
 
-from weasyprint import HTML, CSS
+from weasyprint import CSS, HTML
 from weasyprint.text.fonts import FontConfiguration
 
 from app.core.logging import structured_logger as logger
@@ -34,9 +33,12 @@ class PDFExportService:
             PDF file as bytes
         """
         try:
-            logger.info(f"[PDFExportService] Starting PDF export", extra={
-                "content_length": len(html_content),
-            })
+            logger.info(
+                "[PDFExportService] Starting PDF export",
+                extra={
+                    "content_length": len(html_content),
+                },
+            )
 
             # Wrap content in proper HTML structure
             full_html = self._build_html_document(html_content, metadata)
@@ -56,19 +58,27 @@ class PDFExportService:
                 font_config=self.font_config,
             )
 
-            logger.info(f"[PDFExportService] PDF generated successfully", extra={
-                "pdf_size": len(pdf_bytes),
-            })
+            logger.info(
+                "[PDFExportService] PDF generated successfully",
+                extra={
+                    "pdf_size": len(pdf_bytes),
+                },
+            )
 
             return pdf_bytes
 
         except Exception as e:
-            logger.error(f"[PDFExportService] PDF export failed", extra={
-                "error": str(e),
-            })
+            logger.error(
+                "[PDFExportService] PDF export failed",
+                extra={
+                    "error": str(e),
+                },
+            )
             raise
 
-    def _build_html_document(self, content: str, metadata: dict[str, Any] | None) -> str:
+    def _build_html_document(
+        self, content: str, metadata: dict[str, Any] | None
+    ) -> str:
         """Wrap content in complete HTML document structure."""
         title = metadata.get("title", "CV Document") if metadata else "CV Document"
         author = metadata.get("author", "") if metadata else ""

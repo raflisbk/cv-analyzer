@@ -1,15 +1,6 @@
-"""
-CV vs Job Description comparison Celery task per D-C1, COMPARE-03, COMPARE-04.
-Mirrors llm_suggest.py structure exactly — same ProgressTask base, Redis singleton,
-asyncio.run() pattern, and exception handler.
+"""CV vs Job Description comparison Celery task.
 
-Flow per D-C1:
-1. Check Redis cache (comparison:{job_id}:{jd_hash[:16]}) — return if hit
-2. Set job.comparison_status = "comparing" + emit comparing_job SSE stage
-3. Get CV text from jobs.result["text"]
-4. Call HFLLMService.compare_cv() with 3x retry inside service
-5. Cache in Redis (TTL 24h per D-C7) + save to jobs table + emit complete
-On failure (D-C8): set comparison_status = "failed", emit complete (not page-level failure)
+On failure: sets comparison_status='failed', emits complete — NOT page-level error.
 """
 
 import asyncio
@@ -30,10 +21,7 @@ from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
 
-# Module-level singleton — HF LLM (Qwen2.5)
 _llm_service = HFOpenAILLMService()
-
-# Module-level Redis client — lazy init (same pattern as llm_suggest.py)
 _redis_client: redis_lib.Redis | None = None
 
 
@@ -48,7 +36,7 @@ def _get_redis_client() -> redis_lib.Redis:
 @celery_app.task(
     bind=True,
     base=ProgressTask,
-    max_retries=1,  # LLM retries handled inside OpenAILLMService (3x)
+    max_retries=1,
     default_retry_delay=30,
 )
 def compare_cv_task(  # noqa: PLR0915
@@ -57,20 +45,13 @@ def compare_cv_task(  # noqa: PLR0915
     jd_text: str,
     jd_role_id: str | None = None,
 ) -> dict:
-    """
-    Compare CV against a job description via gpt-4o-mini JSON mode per D-C6.
-
-    Emits 'comparing_job' SSE stage, saves result to jobs.comparison_result JSONB.
-    Redis cache key: comparison:{job_id}:{sha256(jd_text)[:16]}, TTL 24h per D-C7.
-    On failure (D-C8): sets comparison_status='failed', emits complete — NOT page-level error.
-    """
+    """Compare CV against a job description via LLM."""
     cache_key = (
         f"comparison:{job_id}:{hashlib.sha256(jd_text.encode()).hexdigest()[:16]}"
     )
-    cache_ttl = 86400  # 24h per D-C7
+    cache_ttl = 86400
 
     async def _get_cv_text() -> str | None:
-        """Returns cv_text from jobs.result JSONB."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -80,7 +61,6 @@ def compare_cv_task(  # noqa: PLR0915
             return None
 
     async def _set_comparing_status() -> None:
-        """Set job.comparison_status = 'comparing' so frontend shows comparing state."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -107,7 +87,6 @@ def compare_cv_task(  # noqa: PLR0915
                 job.jd_role_id = role_id
                 await session.commit()
 
-    # ─── Redis cache check (D-C7) ────────────────────────────────────────────
     redis_client = _get_redis_client()
     cached = redis_client.get(cache_key)
     if cached:
@@ -119,7 +98,6 @@ def compare_cv_task(  # noqa: PLR0915
         return {"status": "complete", "job_id": job_id, "from_cache": True}
 
     try:
-        # ─── Set comparing status + emit SSE stage ────────────────────────────
         asyncio.run(_set_comparing_status())
         self.update_progress(
             job_id,
@@ -127,8 +105,6 @@ def compare_cv_task(  # noqa: PLR0915
             50,
             "Comparing your CV against the job description...",
         )
-
-        # ─── Get CV text from DB ──────────────────────────────────────────────
         cv_text = asyncio.run(_get_cv_text())
         if not cv_text:
             logger.warning("compare_cv_task: missing CV text", extra={"job_id": job_id})
@@ -136,17 +112,13 @@ def compare_cv_task(  # noqa: PLR0915
             self.update_progress(job_id, "complete", 100, "Comparison unavailable")
             return {"status": "failed", "job_id": job_id, "reason": "no_text"}
 
-        # ─── LLM comparison call (3x retry inside service) ───────────────────
         result = _llm_service.compare_cv(cv_text=cv_text, jd_text=jd_text)
 
-        # ─── Validate JSON output with ComparisonResult schema ────────────────
         validated = ComparisonResult(**result["comparison"])
         comparison_dict = validated.model_dump()
 
-        # ─── Cache in Redis (D-C7: TTL 24h) ──────────────────────────────────
         redis_client.setex(cache_key, cache_ttl, json.dumps(comparison_dict))
 
-        # ─── Save to DB + emit complete ───────────────────────────────────────
         asyncio.run(_save_comparison(comparison_dict, "complete", jd_text, jd_role_id))
         self.update_progress(job_id, "complete", 100, "Comparison complete!")
 
@@ -161,8 +133,6 @@ def compare_cv_task(  # noqa: PLR0915
         }
 
     except Exception as e:
-        # D-C8: on final failure set comparison_status=failed
-        # NEVER set job.status = FAILED — comparison failure doesn't invalidate analysis
         logger.error(
             mask_pii(f"compare_cv_task failed: {e}"),
             extra={"job_id": job_id, "stage": "comparing"},

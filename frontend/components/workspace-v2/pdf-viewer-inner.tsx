@@ -1,7 +1,7 @@
 "use client";
 /**
  * PdfViewerInner - react-pdf canvas viewer with text layer.
- * Phase 14: Replaces the Phase 13 browser-native viewer. Enables customTextRenderer for annotation highlights.
+ * PDF viewer with customTextRenderer for annotation highlights.
  * Must be loaded via dynamic() with ssr: false (done in pdf-viewer.tsx).
  *
  * Worker setup: pdfjs.GlobalWorkerOptions.workerSrc must be set at module level BEFORE
@@ -58,22 +58,13 @@ export default function PdfViewerInner({
   suggestions = [],
   jobId = "",
 }: PdfViewerInnerProps) {
-  // _numPages: tracks total page count; used by Phase 14-03 for page boundary checks
+  // _numPages: tracks total page count
   const [_numPages, setNumPages] = useState<number>(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pageWidth, setPageWidth] = useState<number>(595.5);
 
   // Guard: Don't render page beyond PDF page count (e.g., when PDF has 1 page but state shows page 2)
   const isValidPage = _numPages === 0 || currentPage <= _numPages;
-
-  // Debug: Log anchors prop on every render
-  console.warn("[PDF Viewer] Render - Anchors:", {
-    anchorCount: anchors?.length ?? 0,
-    firstAnchor: anchors?.[0]?.suggestion_id ?? null,
-  });
-
-  // Set up worker on mount - use CDN version for Next.js 15 compatibility
-  // Worker is set in pdf-viewer.tsx via dynamic import module scope
 
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
 

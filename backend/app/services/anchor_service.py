@@ -1,10 +1,7 @@
-"""
-Anchor computation service using PyMuPDF (fitz).
-Phase 14: Pre-compute PDF bounding rects for suggestion anchors (ANNOT-04, D-02).
-Called from llm_suggest_task after suggestions are saved.
+"""Anchor computation service using PyMuPDF (fitz).
 
-PyMuPDF coordinate system: top-left origin, y increases downward (CSS-compatible).
-No coordinate flip needed — rects from search_for() are directly CSS-compatible.
+Pre-computes PDF bounding rects for suggestion anchors. PyMuPDF uses top-left origin,
+y increases downward — rects from search_for() are directly CSS-compatible.
 """
 
 import logging

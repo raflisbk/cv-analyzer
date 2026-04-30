@@ -1,10 +1,7 @@
 """
-Yjs WebSocket handler for Phase 17.
+Yjs WebSocket handler.
 Handles real-time CRDT sync for collaborative editing.
 """
-
-import json
-from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
@@ -28,10 +25,13 @@ class YjsConnectionManager:
 
         self.active_connections[document_id].add(websocket)
 
-        logger.info(f"[YjsWS] Client connected", extra={
-            "document_id": document_id,
-            "total_connections": len(self.active_connections[document_id]),
-        })
+        logger.info(
+            "[YjsWS] Client connected",
+            extra={
+                "document_id": document_id,
+                "total_connections": len(self.active_connections[document_id]),
+            },
+        )
 
     def disconnect(self, document_id: str, websocket: WebSocket) -> None:
         """Disconnect a WebSocket from a document room."""
@@ -42,27 +42,40 @@ class YjsConnectionManager:
             if not self.active_connections[document_id]:
                 del self.active_connections[document_id]
 
-        logger.info(f"[YjsWS] Client disconnected", extra={
-            "document_id": document_id,
-        })
+        logger.info(
+            "[YjsWS] Client disconnected",
+            extra={
+                "document_id": document_id,
+            },
+        )
 
-    async def broadcast(self, document_id: str, message: bytes, sender: WebSocket) -> None:
+    async def broadcast(
+        self, document_id: str, message: bytes, sender: WebSocket
+    ) -> None:
         """Broadcast a message to all connected clients in a document room."""
         if document_id not in self.active_connections:
             return
 
         # Send to all connected clients except sender
         for connection in self.active_connections[document_id]:
-            if connection != sender and connection.application_state == WebSocketState.CONNECTED:
+            if (
+                connection != sender
+                and connection.application_state == WebSocketState.CONNECTED
+            ):
                 try:
                     await connection.send_bytes(message)
                 except Exception as e:
-                    logger.error(f"[YjsWS] Failed to send message", extra={
-                        "error": str(e),
-                        "document_id": document_id,
-                    })
+                    logger.error(
+                        "[YjsWS] Failed to send message",
+                        extra={
+                            "error": str(e),
+                            "document_id": document_id,
+                        },
+                    )
 
-    async def send_state_vector(self, document_id: str, websocket: WebSocket, state_vector: bytes) -> None:
+    async def send_state_vector(
+        self, document_id: str, websocket: WebSocket, state_vector: bytes
+    ) -> None:
         """Send state vector request for sync."""
         await websocket.send_bytes(state_vector)
 
@@ -93,8 +106,11 @@ async def yjs_websocket_endpoint(websocket: WebSocket, document_id: str) -> None
     except WebSocketDisconnect:
         manager.disconnect(document_id, websocket)
     except Exception as e:
-        logger.error(f"[YjsWS] WebSocket error", extra={
-            "error": str(e),
-            "document_id": document_id,
-        })
+        logger.error(
+            "[YjsWS] WebSocket error",
+            extra={
+                "error": str(e),
+                "document_id": document_id,
+            },
+        )
         manager.disconnect(document_id, websocket)

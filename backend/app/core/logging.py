@@ -6,7 +6,7 @@ from loguru import logger
 from app.core.config import get_settings
 
 
-# Compiled once at module level for performance per D-C15
+# Compiled once at module level for performance
 _EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b")
 _PHONE_RE = re.compile(r"\b(\+?[\d][\d\s\-\(\)\.]{6,14}[\d])\b")
 # Name patterns: "John Smith" style (2 capitalized words) — conservative regex
@@ -14,7 +14,7 @@ _NAME_RE = re.compile(r"\b([A-Z][a-z]{1,20}\s){1,2}[A-Z][a-z]{1,20}\b")
 
 
 def mask_pii(text: str) -> str:
-    """Mask PII from error strings before logging per ERROR-04, D-C15.
+    """Mask PII from error strings before logging.
 
     Strips email addresses, phone numbers, and proper name patterns.
     Applied to all logger.error() calls in comparison task and export endpoint.
@@ -34,7 +34,7 @@ def setup_logging():
     # Remove default handler
     logger.remove()
 
-    # Add JSON structured format handler (per D-41)
+    # Add JSON structured format handler
     logger.add(
         sys.stdout,
         format="{message}",

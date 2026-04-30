@@ -1,5 +1,5 @@
 """
-Prometheus metrics for LLM token tracking per LLM-06, D-16.
+Prometheus metrics for LLM token tracking.
 Counter defined at module level — instantiate ONCE, import the instance.
 """
 

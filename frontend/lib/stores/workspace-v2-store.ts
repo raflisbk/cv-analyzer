@@ -1,8 +1,8 @@
 /**
  * Zustand store untuk workspace-v2.
- * Phase 13: grid-based layout state - activeDetailTab drives left panel expansion.
+ * Grid-based layout state for workspace.
  * null = PDF-first mode (left compact), string = detail tab active (PDF hidden).
- * Phase 14: activeSuggestionId tracks which suggestion card is highlighted.
+ * activeSuggestionId tracks which suggestion card is highlighted.
  * Jangan gunakan persist middleware - Yjs menangani persistence.
  */
 "use client";
@@ -26,16 +26,16 @@ interface WorkspaceV2State {
   // Layout state - null = PDF-first, string = detail focus on that tab
   activeDetailTab: string | null;
 
-  // Phase 14: tracks which suggestion annotation is active/highlighted
+  // Tracks which suggestion annotation is active/highlighted
   activeSuggestionId: string | null;
 
-  // Phase 14: per-suggestion apply/dismiss status
+  // Per-suggestion apply/dismiss status
   suggestionStatuses: Record<string, SuggestionStatus>;
 
-  // Phase 15: inline edit document state
+  // Inline edit document state
   cvDocument: Record<string, any> | null;
 
-  // Phase 16: Chat state
+  // Chat state
   chatMessages: ChatMessage[];
   isChatStreaming: boolean;
 
@@ -68,11 +68,11 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   pdfUrl: null,
   viewMode: "optimized",      // PDF-03: workspace defaults to optimized PDF view
   activeDetailTab: null,      // default PDF-first mode
-  activeSuggestionId: null,   // Phase 14: no active suggestion by default
-  suggestionStatuses: {},     // Phase 14: all suggestions start as pending
-  cvDocument: null,           // Phase 15: optimized document state
-  chatMessages: [],           // Phase 16: chat message history
-  isChatStreaming: false,     // Phase 16: streaming indicator
+  activeSuggestionId: null,
+  suggestionStatuses: {},
+  cvDocument: null,
+  chatMessages: [],
+  isChatStreaming: false,
   jobId: "",
   hydration: null,
 

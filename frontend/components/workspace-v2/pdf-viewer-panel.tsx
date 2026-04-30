@@ -4,7 +4,7 @@
  * Dark hero-card banner (matching landing page hero card: #141414 + accent dots + cream text)
  * sits above the cream paper card. Page navigation and view mode live in the banner.
  * Ambient decorative dots float in the cream scroll area background.
- * Phase 17: Added toggle between Edit Mode (Tiptap) and Preview Mode (PDF canvas).
+ * Toggle between Edit Mode (Tiptap) and Preview Mode (PDF canvas).
  */
 import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";

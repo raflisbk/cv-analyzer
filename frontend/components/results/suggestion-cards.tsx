@@ -1,7 +1,6 @@
 /**
  * SuggestionCards — orchestrator component for AI improvement suggestions.
  * Handles all render states: loading skeleton, unavailable, empty, populated.
- * Per UI-SPEC Phase 3 §6 sections A, D, E and §5 copywriting contract.
  */
 "use client";
 
@@ -103,7 +102,7 @@ export function SuggestionCards({ cards, isLoading }: SuggestionCardsProps) {
     return <SuggestionsSkeleton />;
   }
 
-  // Undefined: suggestions field absent (pre-Phase 3 job) — render nothing
+  // Undefined: suggestions field absent - render nothing
   if (cards === undefined) {
     return null;
   }

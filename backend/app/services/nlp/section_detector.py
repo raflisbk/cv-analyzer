@@ -1,5 +1,5 @@
 """
-CV section detection service per D-02.
+CV section detection service.
 Strategy: Hybrid — regex/keyword matching on heading lines for section boundaries,
 spaCy NER processes text within each section.
 """
@@ -59,7 +59,7 @@ _HEADING_UPPER_RE = re.compile(
 
 @dataclass
 class CvSection:
-    """Represents a detected CV section per D-02"""
+    """Represents a detected CV section."""
 
     type: str
     text: str
@@ -69,7 +69,7 @@ class CvSection:
 
 def detect_sections(text: str) -> list[CvSection]:
     """
-    Detect and extract CV sections using hybrid regex + keyword matching per D-02.
+    Detect and extract CV sections using hybrid regex + keyword matching.
 
     Args:
         text: Raw CV text (from job.result['text'])

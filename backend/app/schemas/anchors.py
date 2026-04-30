@@ -1,5 +1,5 @@
 """
-Pydantic schemas for suggestion anchor coordinates (ANNOT-04).
+Pydantic schemas for suggestion anchor coordinates.
 Stored as JSONB in jobs.suggestion_anchors column.
 """
 

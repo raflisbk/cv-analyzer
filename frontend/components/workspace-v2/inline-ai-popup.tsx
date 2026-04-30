@@ -1,7 +1,7 @@
 "use client";
 /**
  * InlineAIPopup — Floating "Improve" button on text selection.
- * Phase 17: AI-powered text improvement in Tiptap editor.
+ * AI-powered text improvement in Tiptap editor.
  *
  * Shows popup when user selects text in editor.
  * On click, calls AI API to improve selected text.

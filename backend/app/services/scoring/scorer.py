@@ -33,7 +33,9 @@ def _score_with_hf(text: str) -> dict:
     Returns:
         Dict with scores and metadata
     """
-    logger.info("Scoring CV with HF Inference embeddings", extra={"text_length": len(text)})
+    logger.info(
+        "Scoring CV with HF Inference embeddings", extra={"text_length": len(text)}
+    )
 
     clarity = hf_score_dimension(text, CLARITY_ANCHORS)
     impact = hf_score_dimension(text, IMPACT_ANCHORS)
