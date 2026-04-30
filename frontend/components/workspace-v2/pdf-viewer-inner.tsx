@@ -93,6 +93,21 @@ export default function PdfViewerInner({
   const cvDocument = useWorkspaceV2Store((s) => s.cvDocument);
   const viewMode = useWorkspaceV2Store((s) => s.viewMode);
 
+  // Scroll-based dismiss: attach listener on mount
+  const _scrollCleanup = useCallback(() => {
+    const container = document.querySelector(".react-pdf-document");
+    if (container) {
+      const handler = () => {
+        if (inlineEditState.isVisible) {
+          closePopover();
+        }
+      };
+      container.addEventListener("scroll", handler);
+      return () => container.removeEventListener("scroll", handler);
+    }
+    return undefined;
+  }, [inlineEditState.isVisible, closePopover]);
+
   if (loadError) {
     return (
       <div
@@ -107,21 +122,6 @@ export default function PdfViewerInner({
     );
   }
 
-  // Scroll-based dismiss: attach listener on mount
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const _scrollCleanup = useCallback(() => {
-    const container = document.querySelector(".react-pdf-document");
-    if (container) {
-      const handler = () => {
-        if (inlineEditState.isVisible) {
-          closePopover();
-        }
-      };
-      container.addEventListener("scroll", handler);
-      return () => container.removeEventListener("scroll", handler);
-    }
-    return undefined;
-  }, [inlineEditState.isVisible, closePopover]);
   return (
     <div className="relative" onMouseUp={handleSelectionChange}>
       <Document
