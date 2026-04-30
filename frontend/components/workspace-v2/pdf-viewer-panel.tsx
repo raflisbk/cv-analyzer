@@ -48,12 +48,28 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
     if (e.ctrlKey) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setScale((s) => Math.max(0.5, Math.min(2.0, s + delta)));
+      setScale((s) => Math.max(0.5, Math.min(3.0, s + delta)));
     }
   }, []);
 
+  // Native wheel listener to prevent browser zoom on the PDF panel
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) { return; }
+    const handler = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        setScale((s) => Math.max(0.5, Math.min(3.0, s + delta)));
+      }
+    };
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, []);
+
   return (
-    <div className="relative flex-1 overflow-y-auto bg-[--ws-bg]" onWheel={handleWheel}>
+    <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-[--ws-bg]">
 
       {/* Layered background decoration — arcs + blurred orbs + cross-hatch */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -148,7 +164,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
                 <Maximize2 className="h-3 w-3" />
               </button>
               <button
-                onClick={() => setScale((s) => Math.min(2.0, s + 0.1))}
+                onClick={() => setScale((s) => Math.min(3.0, s + 0.1))}
                 aria-label="Zoom in"
                 className="flex h-6 w-6 items-center justify-center rounded text-[#F5F2D8]/60 hover:bg-white/10 hover:text-[#F5F2D8] transition-colors"
               >
