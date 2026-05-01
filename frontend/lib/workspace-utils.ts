@@ -54,7 +54,6 @@ function isKeyColonLine(line: string): false | { key: string; desc: string } {
     return false;
   }
   const key = match[1];
-  // Avoid matching URLs like "https://..." or dates "Jan 2024"
   if (/^https?/i.test(key) || /^\d/.test(key)) {
     return false;
   }
@@ -92,20 +91,15 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
     const raw = lines[i];
     const trimmed = raw.trim();
     i++;
-
-    // ── Empty line → skip ────────────────────────────────────────────────────
     if (!trimmed) {
       continue;
     }
-
-    // ── Explicit bullet marker ───────────────────────────────────────────────
     const bulletMatch = trimmed.match(BULLET_RE);
     const numberedMatch = trimmed.match(NUMBERED_RE);
     if (bulletMatch || numberedMatch) {
       const firstText = bulletMatch ? bulletMatch[2] : numberedMatch![1];
       const items: JSONContent[] = [makeBulletItem(firstText)];
 
-      // Collect consecutive bullet lines
       while (i < lines.length) {
         const next = lines[i].trim();
         if (!next) {
@@ -125,8 +119,6 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
       content.push({ type: "bulletList", content: items });
       continue;
     }
-
-    // ── "Role | Company [Date]" ───────────────────────────────────────────────
     const pipeResult = isPipeTitleLine(trimmed);
     if (pipeResult) {
       content.push(makeParagraph([
@@ -135,7 +127,6 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
       ]));
       continue;
     }
-    // ── "Key: Description" ───────────────────────────────────────────────────
     const colonResult = isKeyColonLine(trimmed);
     if (colonResult) {
       content.push(makeParagraph([
@@ -144,18 +135,14 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
       ]));
       continue;
     }
-
-    // ── Short sub-section header ─────────────────────────────────────────────
     const nextTrimmed = lines[i]?.trim();
     if (isSubHeader(trimmed, nextTrimmed)) {
       content.push(makeParagraph([boldText(trimmed)]));
       continue;
     }
-    // ── Default: regular paragraph ───────────────────────────────────────────
     content.push(makeParagraph([normalText(trimmed)]));
   }
 
-  // Ensure at least one empty paragraph so Tiptap can place cursor
   if (content.length === 0) {
     content.push(makeParagraph([]));
   }

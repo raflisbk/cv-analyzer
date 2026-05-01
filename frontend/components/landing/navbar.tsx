@@ -33,11 +33,9 @@ export default function Navbar() {
     <header
       className="sticky top-0 z-50 w-full"
       style={{
-        // Warm frosted glass — perfectly aligned with workspace header language
         background: "rgba(245,242,216,0.82)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        // Warm inset top highlight + bottom border
         borderBottom: "1px solid rgba(17,17,17,0.10)",
         boxShadow: scrolled
           ? "inset 0 1px 0 rgba(255,255,255,0.80), 0 6px 32px rgba(17,17,17,0.09)"
@@ -125,7 +123,6 @@ export default function Navbar() {
             onClick={() => router.push("/workspace-v2/new")}
             className="group relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-2 text-[13px] font-black tracking-wide transition-all duration-200 hover:opacity-92 active:scale-[0.97]"
             style={{
-              // Warm dark matching hero card (#141414) but not pure cold black
               background: "linear-gradient(135deg, #1E1A12 0%, #141414 60%, #1A170F 100%)",
               color: "#F5F2D8",
               border: "1px solid rgba(255,255,255,0.10)",

@@ -74,7 +74,6 @@ export function WorkspaceV2Shell({
       const proxyUrl = `/api/v1/jobs/${jobId}/file/proxy`;
       setPdfUrl(proxyUrl);
     } catch {
-      // silently fail — PDF viewer shows error state
     }
   }, [jobId, pdfUrl, setPdfUrl]);
 

@@ -35,8 +35,6 @@ export class SSEConnection {
       try {
         const data = JSON.parse(event.data as string) as SSEMessage;
 
-        // Mark terminal state BEFORE calling onMessage so any onerror that fires
-        // synchronously after this message does not trigger a reconnect.
         if (data.stage === "complete" || data.stage === "failed") {
           this.completedReceived = true;
           this.isClosed = true;
@@ -49,13 +47,10 @@ export class SSEConnection {
     };
 
     this.eventSource.onerror = () => {
-      // Don't reconnect if deliberately closed or terminal event already received
       if (this.isClosed || this.completedReceived) { return; }
 
-      // Close current connection
       this.eventSource?.close();
 
-      // Attempt reconnection per D-15
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
 

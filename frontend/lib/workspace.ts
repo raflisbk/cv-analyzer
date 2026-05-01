@@ -72,7 +72,6 @@ export async function getWorkspaceHydration(
   return apiFetch<WorkspaceHydration>(`/jobs/${jobId}/workspace`);
 }
 
-// File presigned URL fetch
 export interface WorkspaceFileUrl {
   file_url: string;
   expires_in: number;

@@ -44,10 +44,6 @@ export interface Job {
   updated_at: string;
 }
 
-// ============================================================
-// Analysis result types
-// ============================================================
-
 export interface ScoreResult {
   overall: number;
   clarity: number;
@@ -76,8 +72,6 @@ export interface AtsCheck {
   detail?: string;
 }
 
-// ============================================================
-// AI Suggestion types
 // ============================================================
 
 export type SuggestionPriority = "high_impact" | "quick_win";

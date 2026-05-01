@@ -16,19 +16,14 @@ interface WorkspaceV2State {
   pdfUrl: string | null;
   viewMode: "optimized" | "original";
 
-  // Layout state - null = PDF-first, string = detail focus on that tab
   activeDetailTab: string | null;
 
-  // Tracks which suggestion annotation is active/highlighted
   activeSuggestionId: string | null;
 
-  // Per-suggestion apply/dismiss status
   suggestionStatuses: Record<string, SuggestionStatus>;
 
-  // Inline edit document state
   cvDocument: Record<string, any> | null;
 
-  // Chat state
   chatMessages: ChatMessage[];
   isChatStreaming: boolean;
 

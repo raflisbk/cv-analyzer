@@ -9,7 +9,6 @@
 import { describe, it, expect } from "vitest";
 import { plainTextToTiptapDoc } from "./section-block";
 
-// plainTextToTiptapDoc — pure function unit tests
 describe("plainTextToTiptapDoc", () => {
   it("returns a doc with 2 paragraph nodes for 'hello\\nworld'", () => {
     const doc = plainTextToTiptapDoc("hello\nworld");

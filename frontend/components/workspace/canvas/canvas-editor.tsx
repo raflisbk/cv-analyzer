@@ -59,7 +59,6 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
         : [];
 
   const [sections, setSections] = useState<SectionState[]>(() =>
-    // D-12: load draft_content if previously saved, else use parsed text
     buildInitialSections(rawSections, data.document.draft_content ?? null)
   );
 
@@ -71,7 +70,6 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
         const updated = prev.map((s) =>
           s.type === sectionType ? { ...s, json } : s
         );
-        // Build sections map for PATCH body (D-10, D-11)
         const sectionsMap = Object.fromEntries(
           updated.map((s) => [s.type, s.json])
         );

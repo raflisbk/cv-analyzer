@@ -69,7 +69,6 @@ export default function ResultsPage() {
   const normalizedResult = data ? normalizeAnalysisResult(data) : null;
   const suggestionsClipboardText = buildSuggestionsClipboardText(normalizedResult?.suggestions);
 
-  // Fetch job roles for Compare tab dropdown per D-C5, COMPARE-02
   const { data: jobRolesData } = useQuery<JobRole[]>({
     queryKey: ["job-roles"],
     queryFn: async () => {
@@ -80,7 +79,6 @@ export default function ResultsPage() {
     staleTime: Infinity,
   });
 
-  // Error state — network error or API error per UI-SPEC §5 "Error states"
   if (isError) {
     const isRateLimit =
       (error as Error)?.message?.includes("429") ||

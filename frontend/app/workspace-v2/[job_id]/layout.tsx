@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-// Diimport di layout supaya berlaku untuk seluruh workspace-v2 route
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 

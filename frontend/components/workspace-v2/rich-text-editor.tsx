@@ -294,32 +294,23 @@ export function RichTextEditor({
         <EditorContent
           editor={editor}
           className={[
-            // Base
             "min-h-[600px] outline-none",
-            // ProseMirror root font
             "[&_.ProseMirror]:px-8 [&_.ProseMirror]:py-6",
             "[&_.ProseMirror]:text-[14px] [&_.ProseMirror]:leading-[1.7] [&_.ProseMirror]:text-[#1a1a1a]",
             "[&_.ProseMirror]:outline-none",
-            // H1 — Contact Information header (top of CV)
             "[&_.ProseMirror_h1]:text-[18px] [&_.ProseMirror_h1]:font-bold [&_.ProseMirror_h1]:text-[#111]",
             "[&_.ProseMirror_h1]:mt-0 [&_.ProseMirror_h1]:mb-2 [&_.ProseMirror_h1]:pb-1",
             "[&_.ProseMirror_h1]:border-b-2 [&_.ProseMirror_h1]:border-[#111]",
-            // H2 — Section headers (Experience, Education, Skills…)
             "[&_.ProseMirror_h2]:text-[13px] [&_.ProseMirror_h2]:font-bold [&_.ProseMirror_h2]:uppercase",
             "[&_.ProseMirror_h2]:tracking-[0.1em] [&_.ProseMirror_h2]:text-[#111]",
             "[&_.ProseMirror_h2]:mt-5 [&_.ProseMirror_h2]:mb-2 [&_.ProseMirror_h2]:pb-1",
             "[&_.ProseMirror_h2]:border-b [&_.ProseMirror_h2]:border-[#ccc]",
-            // Paragraphs
             "[&_.ProseMirror_p]:my-[3px] [&_.ProseMirror_p:first-child]:mt-0",
-            // Bold
             "[&_.ProseMirror_strong]:font-semibold [&_.ProseMirror_strong]:text-[#0a0a0a]",
-            // Bullet list
             "[&_.ProseMirror_ul]:ml-5 [&_.ProseMirror_ul]:my-1 [&_.ProseMirror_ul]:list-disc",
             "[&_.ProseMirror_ul_li]:mb-[2px] [&_.ProseMirror_ul_li_p]:my-0",
-            // Ordered list
             "[&_.ProseMirror_ol]:ml-5 [&_.ProseMirror_ol]:my-1 [&_.ProseMirror_ol]:list-decimal",
             "[&_.ProseMirror_ol_li]:mb-[2px] [&_.ProseMirror_ol_li_p]:my-0",
-            // Placeholder
             "[&_.ProseMirror_p.is-editor-empty:first-child::before]:text-[#141414]/40",
             "[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
           ].join(" ")}

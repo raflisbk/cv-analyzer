@@ -31,7 +31,6 @@ export const SuggestionHighlight = Mark.create({
 
   renderHTML({ HTMLAttributes }) {
     const bgColor = (HTMLAttributes["data-color"] as string) ?? "#CAFF43";
-    // 66 hex = 40% opacity — stabilo effect per D-06
     return [
       "mark",
       {
@@ -77,7 +76,6 @@ export const SuggestionHighlight = Mark.create({
   },
 });
 
-// TypeScript command type augmentation
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     suggestionHighlight: {

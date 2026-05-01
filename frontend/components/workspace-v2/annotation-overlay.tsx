@@ -49,7 +49,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   const showHighlight = !isApplied && !isOriginalMode;
   const showPatch = isApplied && !isOriginalMode;
 
-  // Show card only if this is the active suggestion (prevent overlap)
   const shouldShowCard = activeSuggestionId === anchor.suggestion_id && !isOriginalMode;
 
   const color = priorityToColor(anchor.priority);

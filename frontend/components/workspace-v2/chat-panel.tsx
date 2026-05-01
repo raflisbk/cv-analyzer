@@ -21,7 +21,6 @@ export function ChatPanel({ className }: { className?: string }) {
 
   useEffect(() => {
     if (hydration?.messages && hydration.messages.length > 0) {
-      // Only hydrate if store is empty (initial load)
       const storeEmpty = useWorkspaceV2Store.getState().chatMessages.length === 0;
       if (storeEmpty) {
         for (const msg of hydration.messages) {

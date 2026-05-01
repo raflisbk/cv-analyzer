@@ -165,7 +165,6 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
   return (
     <div className={cn("flex flex-col h-full overflow-hidden", className)}>
       {isDetailFocus ? (
-        // ── Detail focus mode ────────────────────────────────────────────
         <>
           <div className="flex items-center gap-1.5 border-b border-[#F5F2D8]/[0.08] px-3 py-2 flex-none">
             <button
@@ -238,7 +237,6 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
           </div>
         </>
       ) : (
-        // ── Compact mode — vertical tab list (210px wide) ───────────────
         <>
           <div className="border-b border-[#F5F2D8]/[0.08] px-4 py-3 flex-none">
             <div className="flex items-center gap-1.5 flex-wrap">

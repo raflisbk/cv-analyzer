@@ -180,7 +180,6 @@ export function UploadPanel() {
     );
   }
 
-  // Preview state
   if (state === "preview" && selectedFile) {
     return (
       <div className="flex h-full w-full items-center justify-center p-6">
@@ -195,7 +194,6 @@ export function UploadPanel() {
     );
   }
 
-  // Idle — drop zone fills the PDF viewer area
   return (
     <div
       {...getRootProps()}

@@ -25,7 +25,6 @@ declare module "@tiptap/core" {
 export const SuggestionMark = Mark.create({
   name: "suggestionMark",
 
-  // HTML attributes for rendering
   addAttributes() {
     return {
       suggestionId: {
@@ -67,7 +66,6 @@ export const SuggestionMark = Mark.create({
     };
   },
 
-  // Parse HTML to create mark
   parseHTML() {
     return [
       {
@@ -76,7 +74,6 @@ export const SuggestionMark = Mark.create({
     ];
   },
 
-  // Render mark to HTML
   renderHTML({ HTMLAttributes }) {
     const priority = HTMLAttributes["data-priority"] || "quick_win";
     const color = priority === "high_impact"
@@ -94,7 +91,6 @@ export const SuggestionMark = Mark.create({
     ];
   },
 
-  // Commands for adding/removing marks
   addCommands() {
     return {
       setSuggestion:

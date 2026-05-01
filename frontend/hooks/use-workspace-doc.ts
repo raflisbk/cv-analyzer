@@ -33,7 +33,6 @@ interface UseWorkspaceDocResult {
  * @returns refs ke Y.Doc, IndexeddbPersistence, dan Y.Map suggestion_statuses
  *
  * @example
- * // Dalam "use client" component:
  * const { docRef, statusMapRef } = useWorkspaceDoc(jobId);
  */
 export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
@@ -45,16 +44,12 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
   useEffect(() => {
     if (!jobId) return;
 
-    // Buat Y.Doc baru untuk job ini
     const doc = new Y.Doc();
     docRef.current = doc;
 
-    // Shared map untuk suggestion statuses, keyed by suggestion_id
     const statusMap = doc.getMap<string>("suggestion_statuses");
     statusMapRef.current = statusMap;
 
-    // Persist ke IndexedDB di bawah key yang scoped ke job
-    // Format: "workspace-v2-{jobId}" untuk isolasi per job
     const persistence = new IndexeddbPersistence(`workspace-v2-${jobId}`, doc);
     persistenceRef.current = persistence;
 

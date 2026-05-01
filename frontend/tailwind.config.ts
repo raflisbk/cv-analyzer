@@ -13,7 +13,6 @@ export default {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
       },
-      // 8-point grid spacing (already default in Tailwind)
       spacing: {
         '1': '4px',
         '2': '8px',
@@ -23,7 +22,6 @@ export default {
         '12': '48px',
         '16': '64px',
       },
-      // Color palette from UI-SPEC section 4
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

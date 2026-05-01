@@ -41,25 +41,20 @@ const SELECTION_DEBOUNCE_MS = 150;
  * @returns Inline edit state dan handler functions
  *
  * @example
- * // Dalam "use client" component:
  * const { state, handleSelectionChange, closePopover } = useInlineEdit(jobId);
  */
 export function useInlineEdit(jobId: string): UseInlineEditResult {
-  // StrictMode guard ref
   const initialized = useRef(false);
 
-  // Yjs refs for inline edits persistence
   const docRef = useRef<Y.Doc | null>(null);
   const inlineEditsMapRef = useRef<Y.Map<any> | null>(null);
 
-  // Selection state
   const [state, setState] = useState<InlineEditState>({
     selectedText: "",
     selectionRect: null,
     isVisible: false,
   });
 
-  // Debounce timer ref
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   /**

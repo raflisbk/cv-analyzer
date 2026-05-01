@@ -51,7 +51,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
         } catch { /* ignore network errors during fallback poll */ }
       };
 
-      // Immediate check, then repeat every 4s
       void checkStatus();
       if (!pollIntervalRef.current) {
         pollIntervalRef.current = setInterval(() => { void checkStatus(); }, 4000);
@@ -61,7 +60,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
   );
 
   useEffect(() => {
-    // Reset state on job change
     setProgress(null);
     setIsConnected(false);
     setError(null);
@@ -72,8 +70,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
 
     const streamUrl = `${apiUrl}/stream/${jobId}`;
 
-    // connectionRef holds the active SSEConnection so the onmessage callback can close it.
-    // We use a local variable here; the ref is set immediately after construction.
     let connection: SSEConnection;
 
     connection = new SSEConnection(
@@ -90,8 +86,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
           if (data.stage === "complete" && options?.onComplete && jobId) {
             completedRef.current = true;
             stopPolling();
-            // Close SSE explicitly — SSEConnection.isClosed already set, but this
-            // also tears down the EventSource so no further onerror fires.
             connection.close();
             options.onComplete(jobId);
           }
@@ -105,7 +99,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       (err: Error) => {
         setError(err);
         setIsConnected(false);
-        // SSE exhausted all retries — fall back to REST polling
         if (!completedRef.current && jobId && options?.onComplete) {
           startFallbackPoll(jobId, options.onComplete);
         }
@@ -114,8 +107,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
 
     connection.connect();
 
-    // Safety timer: start fallback poll after 8s in case SSE never fires complete.
-    // This covers the window between job completion and the next SSE reconnect cycle.
     const safetyTimer = setTimeout(() => {
       if (!completedRef.current && jobId && options?.onComplete) {
         startFallbackPoll(jobId, options.onComplete);

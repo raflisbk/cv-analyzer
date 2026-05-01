@@ -73,7 +73,6 @@ function applyHighlights(editor: Editor, suggestions: SuggestionItem[]) {
       })
       .run();
   });
-  // Deselect after applying all marks
   editor.commands.setTextSelection(0);
 }
 
@@ -120,16 +119,13 @@ export function SectionBlock({
       }),
       SuggestionHighlight,
     ],
-    // Set content ONCE at init — never bind to React state (prevents cursor jump)
     content: draftContent ?? plainTextToTiptapDoc(initialText),
     onCreate: ({ editor: e }) => {
       if (suggestions && suggestions.length > 0) {
-        // Defer by one tick so the doc is fully parsed before applying marks
         setTimeout(() => applyHighlights(e, suggestions), 0);
       }
     },
     onUpdate: ({ editor: e }) => {
-      // Only fire on actual content changes — not cursor moves
       const json = JSON.stringify(e.getJSON());
       if (json !== lastContentRef.current) {
         lastContentRef.current = json;
@@ -138,7 +134,6 @@ export function SectionBlock({
     },
   });
 
-  // Track focus state reactively via useEditorState (editor.isFocused is not reactive in v3)
   const { isFocused } = useEditorState({
     editor,
     selector: ({ editor: e }) => ({ isFocused: e?.isFocused ?? false }),

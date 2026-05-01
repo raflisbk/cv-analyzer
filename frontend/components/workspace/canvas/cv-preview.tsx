@@ -64,7 +64,6 @@ function formatSectionLabel(type: string): string {
 }
 
 function cleanPreviewHTML(html: string): string {
-  // Replace empty <p></p> or <p><br></p> with minimal spacer
   return html
     .replace(/<p><\/p>/g, "")
     .replace(/<p><br\/?><\/p>/g, "")

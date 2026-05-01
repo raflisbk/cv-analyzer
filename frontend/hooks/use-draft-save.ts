@@ -36,19 +36,16 @@ export function useDraftSave(jobId: string) {
     },
     onSuccess: () => {
       setSaveState("saved");
-      // Auto-clear "saved" indicator after 1.5s per UI-SPEC save state contract
       setTimeout(() => setSaveState("idle"), 1500);
     },
     onError: () => {
       setSaveState("error");
-      // Toast copy from UI-SPEC copywriting contract
       toast.error(
         "Failed to save changes — your edits are not lost. Retrying..."
       );
     },
   });
 
-  // 800ms debounce, force flush after 5s of continuous typing (maxWait)
   const debouncedSave = useDebouncedCallback(
     (content: DraftContent) => {
       mutate(content);

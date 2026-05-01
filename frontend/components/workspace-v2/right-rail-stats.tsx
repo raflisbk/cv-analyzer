@@ -36,8 +36,6 @@ function ScoreBar({
     </div>
   );
 }
-
-// ── Accordion section — one-way sync from store ────────────────────────────
 interface AccordionSectionProps {
   tabId: TabId;
   title: string;
@@ -58,7 +56,6 @@ function AccordionSection({
   const { activeDetailTab, setActiveDetailTab } = useWorkspaceV2Store();
   const [localOpen, setLocalOpen] = useState(false);
 
-  // Sync FROM left panel
   useEffect(() => {
     if (activeDetailTab === tabId) {
       setLocalOpen(true);
@@ -150,8 +147,6 @@ function AccordionSection({
     </section>
   );
 }
-
-// ── Main component ────────────────────────────────────────────────────────
 export function RightRailStats({ className }: RightRailStatsProps) {
   const { hydration } = useWorkspaceV2Store();
   const [chatInput, setChatInput] = useState("");

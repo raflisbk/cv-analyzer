@@ -72,9 +72,6 @@ export function SuggestionTooltip({
     onClose();
   }
 
-  // Position above the mark, centered horizontally
-  // getBoundingClientRect() is viewport-relative; fixed elements are also viewport-relative
-  // — do NOT add window.scrollY here
   const top = anchorRect.top - 8;
   const left = anchorRect.left + anchorRect.width / 2;
 

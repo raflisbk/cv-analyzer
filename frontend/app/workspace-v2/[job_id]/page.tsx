@@ -15,7 +15,6 @@ export default async function WorkspaceV2Page({ params }: WorkspaceV2PageProps) 
 
   const hydration = await getWorkspaceHydration(job_id);
 
-  // Use proxy endpoint for PDF to avoid CORS issues with R2 presigned URLs
   const proxyUrl = `/api/v1/jobs/${job_id}/file/proxy`;
 
   return (

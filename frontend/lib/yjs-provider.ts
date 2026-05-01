@@ -9,11 +9,8 @@ const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/yjs";
 export function createYjsProvider(documentId: string) {
   const ydoc = new Y.Doc();
 
-  // Create awareness for cursor/selection sharing
   const awareness = new Awareness(ydoc);
 
-  // Create WebSocket provider for real-time sync
-  // Note: Backend route is /api/v1/yws/{document_id}
   const wsProvider = new WebsocketProvider(
     `${WS_URL}/api/v1/yws`,
     documentId,

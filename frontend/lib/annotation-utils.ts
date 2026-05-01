@@ -20,7 +20,6 @@ export async function findTextRect(
   pageIndex: number = 0,
   section: string = "unknown"
 ): Promise<SuggestionAnchor | null> {
-  // Cast ke any untuk mengakses pdfjs-dist API yang tidak punya TypeScript types di scope ini
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdfPage = page as any;
 

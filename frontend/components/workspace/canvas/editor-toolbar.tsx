@@ -80,8 +80,6 @@ export function EditorToolbar({ editor, isFocused }: EditorToolbarProps) {
   });
 
   return (
-    // Toolbar slides in on focus — transition-opacity per UI-SPEC animation contract
-    // onMouseDown preventDefault prevents editor blur when clicking toolbar buttons
     <div
       onMouseDown={(e) => e.preventDefault()}
       className={`flex h-10 items-center gap-0.5 border-b border-border px-2 transition-opacity duration-150 ease-in-out ${

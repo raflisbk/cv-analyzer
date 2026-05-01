@@ -33,7 +33,6 @@ export function useUpload() {
       return uploadFile(file);
     },
     onError: (error: ApiError) => {
-      // Display toast error per D-07
       toast.error(error.message, {
         description: "Please check your file and try again.",
         duration: 5000,

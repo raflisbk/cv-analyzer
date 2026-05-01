@@ -55,7 +55,6 @@ export function ExportStickyBar({
         throw new Error("Received empty PDF");
       }
 
-      // Prefer server-provided filename from Content-Disposition, fallback to default
       const disposition = response.headers.get("content-disposition") ?? "";
       const match = disposition.match(/filename="?([^";]+)"?/);
       const filename = match?.[1] ?? `cv-analyze-${jobId.slice(0, 8)}.pdf`;
@@ -75,7 +74,6 @@ export function ExportStickyBar({
     }
   }
 
-  // Element is hidden below viewport (translate-y-full) when not complete
   return (
     /* h-14=56px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
     <div
