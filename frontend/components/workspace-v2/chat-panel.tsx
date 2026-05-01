@@ -38,8 +38,7 @@ export function ChatPanel({ className }: { className?: string }) {
     },
     onComplete: () => {
       setChatStreaming(false);
-      // Mark last message as complete
-      const msgs = useWorkspaceV2Store.getState().chatMessages;
+        const msgs = useWorkspaceV2Store.getState().chatMessages;
       const last = msgs[msgs.length - 1];
       if (last && last.role === "assistant" && last.status === "streaming") {
         const updated = [...msgs];
@@ -54,8 +53,7 @@ export function ChatPanel({ className }: { className?: string }) {
     onError: (err) => {
       console.error("Chat error:", err);
       setChatStreaming(false);
-      // Update last streaming message to error state
-      const msgs = useWorkspaceV2Store.getState().chatMessages;
+        const msgs = useWorkspaceV2Store.getState().chatMessages;
       const last = msgs[msgs.length - 1];
       if (last && last.role === "assistant" && last.status === "streaming") {
         const updated = [...msgs];

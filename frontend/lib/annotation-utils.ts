@@ -28,8 +28,7 @@ export async function findTextRect(
     const viewport = pdfPage.getViewport({ scale: 1.0 });
 
     for (const item of textContent.items) {
-      // Filter hanya TextItem (bukan TextMarkedContent)
-      if (!("str" in item) || !item.str) { continue; }
+          if (!("str" in item) || !item.str) { continue; }
 
       const textItem = item as {
         str: string;
@@ -39,12 +38,9 @@ export async function findTextRect(
       };
 
       if (textItem.str.includes(searchText)) {
-        // PDF transform: [a, b, c, d, tx, ty]
-        // tx = x position (left), ty = y position (bottom-up dari PDF origin)
-        const [, , , , tx, ty] = textItem.transform;
+                    const [, , , , tx, ty] = textItem.transform;
 
-        // Konversi dari PDF coordinate space (bottom-up) ke viewport space (top-down)
-        const [viewportX, viewportY] = viewport.convertToViewportPoint(tx, ty);
+              const [viewportX, viewportY] = viewport.convertToViewportPoint(tx, ty);
 
         return {
           section,
@@ -62,11 +58,7 @@ export async function findTextRect(
       }
     }
 
-    // Text tidak ditemukan — bisa karena:
-    // 1. Text span multiple TextItems
-    // 2. Case/whitespace mismatch
-    // 3. Text tidak ada di page ini
-    return null;
+            return null;
   } catch (err) {
     console.warn("[annotation-utils] findTextRect error:", err);
     return null;

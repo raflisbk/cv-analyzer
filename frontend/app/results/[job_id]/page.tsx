@@ -1,9 +1,3 @@
-/**
- * Results page for /results/[job_id] per D-20, D-21, VIS-03.
- * Polls GET /api/v1/jobs/{id}/results until complete/failed.
- * Mathical design system: cream bg, dark score overview card, lime/orange/pink scoreColor.
- */
-
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
@@ -91,7 +85,6 @@ export default function ResultsPage() {
     );
   }
 
-  // Not found
   if (!isLoading && data === undefined) {
     return (
       <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
@@ -100,7 +93,6 @@ export default function ResultsPage() {
     );
   }
 
-  // Failed analysis
   if (normalizedResult?.status === "failed") {
     return (
       <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
@@ -112,7 +104,6 @@ export default function ResultsPage() {
   const isProcessing = !normalizedResult || normalizedResult.status !== "complete";
   const isComplete = normalizedResult?.status === "complete";
 
-  // Mathical score colors: lime (high >=80), orange (medium 60-79), pink (low <60) per VIS-03, D-02
   const scoreColor = normalizedResult?.scores
     ? normalizedResult.scores.overall >= 80
       ? "#CAFF43"
@@ -176,7 +167,6 @@ export default function ResultsPage() {
               <ResultsSkeleton />
             </div>
           ) : (
-            /* Complete state per UI-SPEC §7 C */
             <div className="space-y-8">
               {normalizedResult.scores && (
                 <div className="bg-[#141414] rounded-[2rem] px-8 py-10 flex flex-col items-center gap-2">

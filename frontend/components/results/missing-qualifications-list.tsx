@@ -1,10 +1,3 @@
-/**
- * MissingQualificationsList — Ordered list of missing experience items with severity icons.
- * Per UI-SPEC §7.4, COMPARE-06.
- * Severity assigned by position: first third=critical, mid third=moderate, rest=minor.
- * Mathical design system: dark card, pink/orange/purple severity.
- */
-
 import type { ComparisonResult } from "@/lib/types";
 
 interface MissingQualificationsListProps {

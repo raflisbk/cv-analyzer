@@ -1,10 +1,3 @@
-/**
- * SuggestionMark — Custom Tiptap Mark extension for suggestion highlights.
- * Text-based suggestion highlighting in Tiptap editor.
- *
- * Highlights text with colored background based on suggestion priority.
- * Stores suggestion_id and priority as HTML attributes for hover interactions.
- */
 import { Mark } from "@tiptap/core";
 
 export interface SuggestionAttributes {

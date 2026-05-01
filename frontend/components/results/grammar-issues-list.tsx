@@ -1,7 +1,3 @@
-/**
- * Grammar issues list — Mathical dark cards.
- */
-
 import type { GrammarIssue } from "@/lib/types";
 
 interface GrammarIssuesListProps {

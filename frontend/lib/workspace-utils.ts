@@ -168,7 +168,6 @@ export function buildInitialSections(
   sections: WorkspaceHydration["document"]["sections"],
   draftContent?: Record<string, JSONContent> | null
 ): SectionState[] {
-  // Deduplicate by type — merge text of duplicate sections (NLP may emit multiple blocks per type)
   const merged = new Map<string, string>();
   for (const section of sections) {
     const existing = merged.get(section.type);

@@ -1,15 +1,7 @@
-/**
- * SkillsGapDisplay — Badge clusters for present/missing/partial skills.
- * Per UI-SPEC §7.3 Badge Clusters, COMPARE-05, UX-01.
- * Partial group hidden entirely when partial.length === 0 (per UI-SPEC §7.3).
- * Mathical design system: dark card, lime/pink/orange pills.
- */
-
 import type { ComparisonResult } from "@/lib/types";
 
 interface SkillsGapDisplayProps {
   result: ComparisonResult;
-  /** Optional partial matches — not in LLM output, passed from external analysis */
   partial?: string[];
 }
 

@@ -1,18 +1,3 @@
-/**
- * use-workspace-doc.ts — Yjs Y.Doc + IndexeddbPersistence + WebSocket provider hook.
- *
- * CRDT initialization for workspace documents.
- * Membuktikan Yjs + y-indexeddb bisa diinisialisasi di Next.js App Router
- * tanpa SSR crash.
- *
- * Adds y-websocket WebsocketProvider for CRDT sync.
- *
- * SSR safety: y-indexeddb uses browser-only `indexedDB` global.
- * useEffect tidak pernah berjalan di server — aman.
- * Tidak boleh diimport di Server Components.
- *
- * Adds statusMapRef for suggestion_statuses Y.Map.
- */
 "use client";
 import { useEffect, useRef } from "react";
 import * as Y from "yjs";
@@ -26,15 +11,6 @@ interface UseWorkspaceDocResult {
   wsProviderRef: React.MutableRefObject<WebsocketProvider | null>;
 }
 
-/**
- * Hook untuk menginisialisasi Yjs Y.Doc dengan IndexedDB persistence.
- *
- * @param jobId - Job UUID untuk scope IndexedDB key
- * @returns refs ke Y.Doc, IndexeddbPersistence, dan Y.Map suggestion_statuses
- *
- * @example
- * const { docRef, statusMapRef } = useWorkspaceDoc(jobId);
- */
 export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
   const docRef = useRef<Y.Doc | null>(null);
   const persistenceRef = useRef<IndexeddbPersistence | null>(null);
@@ -65,11 +41,9 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     };
   }, [jobId]);
 
-  // Yjs WebSocket provider for CRDT sync
   useEffect(() => {
     if (!jobId || !docRef.current) return;
 
-    // Backend WS route: /api/v1/yws/{document_id} (in workspace.py router)
     const wsUrl =
       process.env.NEXT_PUBLIC_API_URL?.replace("http://", "ws://").replace(
         "https://",

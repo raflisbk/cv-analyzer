@@ -1,11 +1,3 @@
-/**
- * TDD RED phase — tests written before implementation
- * These tests describe the expected behavior of SectionBlock, CanvasEditor, and plainTextToTiptapDoc.
- *
- * Tests for plainTextToTiptapDoc are pure-function unit tests (no DOM).
- * Tests for React components use basic render checks (Tiptap requires browser APIs so we test
- * what is testable in jsdom).
- */
 import { describe, it, expect } from "vitest";
 import { plainTextToTiptapDoc } from "./section-block";
 

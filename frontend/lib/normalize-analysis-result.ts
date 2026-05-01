@@ -21,11 +21,6 @@ function normalizeSuggestionCard(card: ApiSuggestionCard): SuggestionCard {
   };
 }
 
-/**
- * Normalize API payload keys to stable frontend keys at the page boundary.
- *
- * Regression guard: UI components should only consume camelCase fields.
- */
 export function normalizeAnalysisResult(result: AnalysisResult): AnalysisResult {
   if (result.suggestions === undefined || result.suggestions === null) {
     return result;

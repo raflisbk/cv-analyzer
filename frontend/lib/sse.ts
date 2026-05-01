@@ -62,8 +62,7 @@ export class SSEConnection {
           this.connect();
         }, this.reconnectDelay);
 
-        // Exponential backoff
-        this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
+          this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
       } else {
         this.onError?.(new Error("Max SSE reconnection attempts exceeded"));
       }

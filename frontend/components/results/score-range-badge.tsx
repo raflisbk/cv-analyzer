@@ -1,8 +1,3 @@
-/**
- * Score range badge — Mathical color palette per VIS-03, D-02:
- * lime (>=80 High), orange (60-79 Average), pink (<60 Needs Work).
- */
-
 interface ScoreRangeBadgeProps {
   score: number;
 }

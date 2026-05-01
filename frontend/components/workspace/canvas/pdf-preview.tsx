@@ -37,7 +37,6 @@ export function PDFPreview({ jobId, fileName }: PDFPreviewProps) {
     return () => { cancelled = true; };
   }, [jobId]);
 
-  /* ── Loading state ── */
   if (loadState === "loading") {
     return (
       <div className="flex min-h-[500px] flex-col items-center justify-center gap-3 rounded-xl border border-border bg-white/60">
@@ -47,7 +46,6 @@ export function PDFPreview({ jobId, fileName }: PDFPreviewProps) {
     );
   }
 
-  /* ── Error state ── */
   if (loadState === "error" || !fileUrl) {
     return (
       <div className="flex min-h-[500px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-white/40 px-6 py-10 text-center">
@@ -60,7 +58,6 @@ export function PDFPreview({ jobId, fileName }: PDFPreviewProps) {
     );
   }
 
-  /* ── PDF iframe ── */
   const isPDF =
     fileName.toLowerCase().endsWith(".pdf") ||
     fileUrl.toLowerCase().includes(".pdf");
@@ -91,7 +88,6 @@ export function PDFPreview({ jobId, fileName }: PDFPreviewProps) {
     );
   }
 
-  /* ── Non-PDF fallback (DOCX etc.) — show download link ── */
   return (
     <div className="flex min-h-[300px] flex-col items-center justify-center gap-4 rounded-xl border border-border bg-white/60 px-6 py-10 text-center">
       <FileText className="h-8 w-8 text-[#141414]/25" />

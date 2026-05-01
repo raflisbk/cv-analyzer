@@ -75,7 +75,6 @@ export function ExportStickyBar({
   }
 
   return (
-    /* h-14=56px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
     <div
       className={`fixed bottom-0 left-0 right-0 h-14 z-50 bg-[#141414] border-t border-[#F5F2D8]/10
         px-4 flex items-center justify-end gap-2

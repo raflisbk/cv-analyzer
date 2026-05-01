@@ -1,16 +1,3 @@
-/**
- * use-inline-edit.ts — Text selection detection hook for inline AI editing.
- *
- * Text selection detection with Yjs persistence.
- * Detects text selection in PDF viewer, calculates coordinates, manages popover state.
- *
- * Key patterns:
- * - window.getSelection() API for text selection detection
- * - Debounced onMouseUp handler to avoid rapid re-renders
- * - Coordinate calculation via range.getBoundingClientRect()
- * - Yjs integration for inline edits persistence
- * - StrictMode guard ref pattern
- */
 "use client";
 
 import { useRef, useCallback, useEffect, useState } from "react";
@@ -34,15 +21,6 @@ const MIN_SELECTION_LENGTH = 2;
 const MAX_SELECTION_LENGTH = 500;
 const SELECTION_DEBOUNCE_MS = 150;
 
-/**
- * Hook untuk mendeteksi text selection dan mengelola inline edit popover state.
- *
- * @param jobId - Job UUID untuk Yjs scoping
- * @returns Inline edit state dan handler functions
- *
- * @example
- * const { state, handleSelectionChange, closePopover } = useInlineEdit(jobId);
- */
 export function useInlineEdit(jobId: string): UseInlineEditResult {
   const initialized = useRef(false);
 
@@ -57,22 +35,15 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  /**
-   * Initialize Yjs Doc for inline edits persistence
-   * Store inline edits in separate Y.Map
-   */
   useEffect(() => {
     if (!jobId) return;
 
-    // StrictMode guard
     if (initialized.current) return;
     initialized.current = true;
 
-    // Create Y.Doc for inline edits (separate from suggestion_statuses)
     const doc = new Y.Doc();
     docRef.current = doc;
 
-    // Shared map for inline edits, keyed by edit_id
     const inlineEditsMap = doc.getMap("inline_edits");
     inlineEditsMapRef.current = inlineEditsMap;
 
@@ -84,22 +55,15 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
     };
   }, [jobId]);
 
-  /**
-   * Handle text selection changes
-   * Detects selection, validates length, calculates coordinates
-   */
   const handleSelectionChange = useCallback(() => {
-    // Clear existing debounce timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
-    // Debounce selection detection
     debounceTimerRef.current = setTimeout(() => {
       const selection = window.getSelection();
 
-      // Dismiss if no selection or collapsed (cursor only)
-      if (!selection || selection.isCollapsed) {
+        if (!selection || selection.isCollapsed) {
         setState({
           selectedText: "",
           selectionRect: null,
@@ -110,8 +74,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
       const selectedText = selection.toString().trim();
 
-      // Validate selection length
-      if (selectedText.length < MIN_SELECTION_LENGTH) {
+        if (selectedText.length < MIN_SELECTION_LENGTH) {
         setState({
           selectedText: "",
           selectionRect: null,
@@ -121,8 +84,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
       }
 
       if (selectedText.length > MAX_SELECTION_LENGTH) {
-        // Show warning state (too long)
-        const range = selection.getRangeAt(0);
+            const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
 
         setState({
@@ -133,8 +95,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         return;
       }
 
-      // Valid selection - calculate coordinates
-      const range = selection.getRangeAt(0);
+        const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
       let rectPercent = undefined;
@@ -165,23 +126,17 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
     }, SELECTION_DEBOUNCE_MS);
   }, []);
 
-  /**
-   * Close popover and clear selection
-   */
   const closePopover = useCallback(() => {
-    // Clear browser selection
     const selection = window.getSelection();
     if (selection) {
       selection.removeAllRanges();
     }
 
-    // Clear debounce timer
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
       debounceTimerRef.current = null;
     }
 
-    // Reset state
     setState({
       selectedText: "",
       selectionRect: null,
@@ -189,10 +144,6 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
     });
   }, []);
 
-  /**
-   * Apply rewrite to document state
-   * Store edit record in Yjs
-   */
   const applyRewrite = useCallback(
     (editId: string, originalText: string, rewrittenText: string) => {
       if (!inlineEditsMapRef.current) {
@@ -200,8 +151,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         return;
       }
 
-      // Store edit record in Yjs
-      const editRecord = {
+        const editRecord = {
         editId,
         originalText,
         rewrittenText,
@@ -216,16 +166,11 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         rewrittenLength: rewrittenText.length,
       });
 
-      // Clear selection after apply
-      closePopover();
+        closePopover();
     },
     [closePopover]
   );
 
-  /**
-   * Dismiss popover on scroll
-   * Improves UX by clearing selection when user scrolls away
-   */
   useEffect(() => {
     const handleScroll = () => {
       if (state.isVisible) {
@@ -233,7 +178,6 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
       }
     };
 
-    // Add scroll listener to window
     window.addEventListener("scroll", handleScroll, true);
     return () => {
       window.removeEventListener("scroll", handleScroll, true);

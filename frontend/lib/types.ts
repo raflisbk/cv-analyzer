@@ -72,8 +72,6 @@ export interface AtsCheck {
   detail?: string;
 }
 
-// ============================================================
-
 export type SuggestionPriority = "high_impact" | "quick_win";
 export type SuggestionType = "action_verb" | "impact_metric" | "missing_section";
 
@@ -121,23 +119,10 @@ export interface AnalysisResult {
   skills: string[];
   grammar_issues: GrammarIssue[];
   ats_checks: AtsCheck[];
-  // AI suggestions
-  // undefined = field absent in DB → render nothing
-  // null      = LLM failed → render "unavailable" state
-  // []        = LLM succeeded, nothing to suggest → render "no suggestions" state
-  // [...]     = populated suggestions → render suggestion cards
   suggestions?: SuggestionCard[] | null;
-  // Comparison data
-  // undefined = comparison not triggered
-  // null      = comparison failed
-  // ComparisonResult = comparison complete
   comparison_result?: ComparisonResult | null;
   comparison_status?: "pending" | "comparing" | "complete" | "failed" | null;
 }
-
-// ============================================================
-// Comparison types
-// ============================================================
 
 export interface ComparisonResult {
   match_pct: number;

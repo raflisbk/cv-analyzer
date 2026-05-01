@@ -2,10 +2,6 @@
 
 import { Toaster as Sonner } from "sonner";
 
-/**
- * Mathical-themed Sonner toaster.
- * Dark card (#1C1C1C), accent border per variant, Bricolage Grotesque font.
- */
 export function Toaster() {
   return (
     <Sonner

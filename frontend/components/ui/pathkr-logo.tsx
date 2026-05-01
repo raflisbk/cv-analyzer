@@ -1,14 +1,3 @@
-/**
- * PathKarirLogo — brand mark for "Path Karir" (short: pathkr, domain: pathkr.ai).
- *
- * Design: split-color typography — no pills, just letter-level color accents.
- * - "Path", "ari" → base color (same weight, no muting)
- * - "K"           → purple #8B5CF6 on light / lime #CAFF43 on dark (kr monogram start)
- * - "r"           → same accent as K  (kr monogram end)
- *
- * Both "K" and "r" share one accent color so "kr" reads as a visual unit.
- */
-
 interface PathkrLogoProps {
   size?: "sm" | "md" | "lg" | "xl";
   variant?: "light" | "dark";
@@ -43,10 +32,6 @@ export function PathkrLogo({
   );
 }
 
-/**
- * PathkrInline — use inside existing text nodes / headings.
- * Inherits surrounding font size; renders "Path Karir" inline.
- */
 export function PathkrInline({ variant = "light" }: { variant?: "light" | "dark" }) {
   const base = variant === "dark" ? "text-[#F5F2D8]" : "text-[#141414]";
   const kr   = variant === "dark" ? "text-[#CAFF43]" : "text-[#8B5CF6]";

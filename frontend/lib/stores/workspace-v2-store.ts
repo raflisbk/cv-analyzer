@@ -27,11 +27,9 @@ interface WorkspaceV2State {
   chatMessages: ChatMessage[];
   isChatStreaming: boolean;
 
-  // Job context
   jobId: string;
   hydration: WorkspaceHydration | null;
 
-  // Actions
   setPdfUrl: (url: string | null) => void;
   setViewMode: (mode: "optimized" | "original") => void;
   setActiveDetailTab: (tab: string | null) => void;
@@ -88,7 +86,6 @@ export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
     }),
   applyInlineEdit: (editId, originalText, rewrittenText, rectPercent) =>
     set((state) => {
-      // Initialize cvDocument if null
       const currentDoc = state.cvDocument || {};
       return {
         cvDocument: {

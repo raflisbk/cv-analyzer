@@ -152,7 +152,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
   return (
     <>
       <style>{`
-        /* ── Container ── */
         .cv-document {
           font-family: 'Georgia', 'Times New Roman', serif;
           font-size: 10.5pt;
@@ -161,7 +160,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           background: #fff;
         }
 
-        /* ── Candidate name (h1 inside header section) ── */
         .cv-document .cv-section-header h1,
         .cv-document .cv-section-header h2 {
           font-family: 'Arial', 'Helvetica', sans-serif;
@@ -185,7 +183,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           line-height: 1.4;
         }
 
-        /* ── Summary / Objective ── */
         .cv-document .cv-section-summary p {
           font-size: 10pt;
           color: #333;
@@ -194,7 +191,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           font-style: italic;
         }
 
-        /* ── Experience / Projects ── */
         .cv-document .cv-section-experience p,
         .cv-document .cv-section-projects p {
           font-size: 10pt;
@@ -229,7 +225,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           line-height: 1.42;
         }
 
-        /* ── Education ── */
         .cv-document .cv-section-education p {
           font-size: 10pt;
           color: #222;
@@ -256,7 +251,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           margin: 1px 0;
         }
 
-        /* ── Skills / Languages / Certifications ── */
         .cv-document .cv-section-skills p,
         .cv-document .cv-section-languages p,
         .cv-document .cv-section-certifications p {
@@ -283,7 +277,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           break-inside: avoid;
         }
 
-        /* ── Generic fallback ── */
         .cv-document .cv-section-generic p {
           font-size: 10pt;
           color: #333;
@@ -301,11 +294,9 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           margin: 1px 0;
         }
 
-        /* ── Strong / em global reset inside cv-document ── */
         .cv-document strong { font-weight: 700; }
         .cv-document em { font-style: italic; }
 
-        /* ── Ordered lists ── */
         .cv-document ol {
           margin: 2px 0 4px 14px;
           list-style-type: decimal;

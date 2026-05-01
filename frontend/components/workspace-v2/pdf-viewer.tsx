@@ -1,8 +1,3 @@
-/**
- * PdfViewer — SSR-safe wrapper for PdfViewerInner.
- * Uses Next.js dynamic() with ssr: false so react-pdf doesn't crash on the server.
- * (LAYOUT-02, PDF-01)
- */
 import dynamic from "next/dynamic";
 import { PdfViewerSkeleton } from "./pdf-viewer-skeleton";
 
