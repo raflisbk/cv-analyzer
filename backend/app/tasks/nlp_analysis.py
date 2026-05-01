@@ -56,7 +56,7 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
         text = asyncio.run(_get_job_text())
         if not text:
             msg = f"No parsed text found for job {job_id}"
-            logger.error("NLP task: missing text", extra={"job_id": job_id})
+            logger.error("nlp_no_text", job_id=job_id)
             asyncio.run(_mark_failed(msg))
             self.update_progress(job_id, "failed", 0, msg)
             return {"error": msg}
@@ -87,20 +87,19 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
         asyncio.run(_save_nlp_result(nlp_result))
 
         logger.info(
-            "NLP analysis complete",
-            extra={
-                "job_id": job_id,
-                "section_count": len(sections),
-                "skill_count": len(skills),
-            },
+            "nlp_done",
+            job_id=job_id,
+            section_count=len(sections),
+            skill_count=len(skills),
         )
         return {"status": "nlp_complete", "job_id": job_id}  # noqa: TRY300
 
     except Exception as e:
         error_msg = f"NLP analysis failed: {e!s}"
         logger.error(
-            "nlp_analyze_task failed",
-            extra={"job_id": job_id, "error": error_msg},
+            "nlp_failed",
+            job_id=job_id,
+            error=error_msg,
         )
         asyncio.run(_mark_failed(error_msg))
         self.update_progress(job_id, "failed", 0, error_msg)

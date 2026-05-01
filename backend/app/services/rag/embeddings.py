@@ -30,7 +30,7 @@ def get_rag_embedding(text: str) -> list[float]:
     Raises:
         Exception: If HF API request fails after retries
     """
-    logger.debug("Requesting RAG embedding", extra={"text_length": len(text)})
+    logger.debug("rag_embedding_request", text_length=len(text))
     result = get_embedding(text[:_MAX_RAG_CHARS])
-    logger.debug("RAG embedding retrieved", extra={"dims": len(result)})
+    logger.debug("rag_embedding_received", dims=len(result))
     return result

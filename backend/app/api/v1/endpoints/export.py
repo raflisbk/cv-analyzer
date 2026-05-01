@@ -17,7 +17,6 @@ from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import select
 from weasyprint import HTML
 
-from app.core.logging import mask_pii
 from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
@@ -88,9 +87,7 @@ async def export_optimized_cv(
                 None, partial(HTML(string=html_content).write_pdf)
             )
         except Exception:
-            logger.exception(
-                mask_pii(f"Optimized CV export render failed for job {job_id}")
-            )
+            logger.exception("optimized_cv_render_failed", job_id=job_id)
             error_response = WrappedResponse(
                 error=ErrorDetail(
                     code="PDF_EXPORT_FAILED",
@@ -102,7 +99,8 @@ async def export_optimized_cv(
 
         logger.info(
             "Optimized CV export generated",
-            extra={"job_id": job_id, "pdf_bytes": len(pdf_bytes)},
+            job_id=job_id,
+            pdf_bytes=len(pdf_bytes),
         )
 
         # Build export filename: sanitize original filename, prefix with "cv-optimized-"
@@ -127,7 +125,7 @@ async def export_optimized_cv(
         )
 
     except Exception:
-        logger.exception(mask_pii(f"Optimized CV export failed for job {job_id}"))
+        logger.exception("optimized_cv_export_failed", job_id=job_id)
         error_response = WrappedResponse(
             error=ErrorDetail(
                 code="EXPORT_FETCH_FAILED",
@@ -203,7 +201,7 @@ async def export_pdf(
                 None, partial(HTML(string=html_content).write_pdf)
             )
         except Exception:
-            logger.exception(mask_pii(f"PDF export render failed for job {job_id}"))
+            logger.exception("pdf_export_render_failed", job_id=job_id)
             error_response = WrappedResponse(
                 error=ErrorDetail(
                     code="PDF_EXPORT_FAILED",
@@ -215,7 +213,8 @@ async def export_pdf(
 
         logger.info(
             "PDF export generated",
-            extra={"job_id": job_id, "pdf_bytes": len(pdf_bytes)},
+            job_id=job_id,
+            pdf_bytes=len(pdf_bytes),
         )
 
         # Build export filename: strip extension from original CV filename,
@@ -241,7 +240,7 @@ async def export_pdf(
         )
 
     except Exception:
-        logger.exception(mask_pii(f"PDF export failed for job {job_id}"))
+        logger.exception("pdf_export_failed", job_id=job_id)
         error_response = WrappedResponse(
             error=ErrorDetail(
                 code="EXPORT_FETCH_FAILED",

@@ -42,15 +42,17 @@ async def retrieve_relevant_chunks(
             result = await session.execute(stmt)
             chunks = [row[0] for row in result.fetchall()]
             logger.debug(
-                "RAG chunks retrieved",
-                extra={"count": len(chunks), "section_type": section_type},
+                "rag_chunks_retrieved",
+                count=len(chunks),
+                section_type=section_type,
             )
             return chunks
     except Exception as e:
         # D-18: RAG failure is non-fatal — log warning and return empty list
         # llm_suggest_task will proceed with LLM call without RAG context
         logger.warning(
-            "RAG retrieval failed, proceeding without context",
-            extra={"error": str(e), "section_type": section_type},
+            "rag_retrieval_failed",
+            error=str(e),
+            section_type=section_type,
         )
         return []

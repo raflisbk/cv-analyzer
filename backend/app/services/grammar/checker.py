@@ -61,7 +61,7 @@ def check_grammar(text: str) -> list[dict]:
         settings = get_settings()
 
         if not settings.CV_ANALYZER_HF_API_KEY:
-            logger.warning("HF API key not configured — grammar check skipped")
+            logger.warning("grammar_skipped_no_api_key")
             return []
 
         llm_service = HFOpenAILLMService()
@@ -104,13 +104,13 @@ def check_grammar(text: str) -> list[dict]:
             )
 
         logger.info(
-            "HF LLM grammar check complete",
-            extra={"issue_count": len(issues)},
+            "grammar_check_done",
+            issue_count=len(issues),
         )
     except Exception as exc:
         logger.warning(
-            "HF LLM grammar check failed — returning empty list",
-            extra={"error": str(exc)},
+            "grammar_check_failed",
+            error=str(exc),
         )
         return []
     else:

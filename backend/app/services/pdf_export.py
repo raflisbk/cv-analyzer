@@ -33,12 +33,7 @@ class PDFExportService:
             PDF file as bytes
         """
         try:
-            logger.info(
-                "[PDFExportService] Starting PDF export",
-                extra={
-                    "content_length": len(html_content),
-                },
-            )
+            logger.info("pdf_export_starting", content_length=len(html_content))
 
             # Wrap content in proper HTML structure
             full_html = self._build_html_document(html_content, metadata)
@@ -58,22 +53,12 @@ class PDFExportService:
                 font_config=self.font_config,
             )
 
-            logger.info(
-                "[PDFExportService] PDF generated successfully",
-                extra={
-                    "pdf_size": len(pdf_bytes),
-                },
-            )
+            logger.info("pdf_export_generated", pdf_size=len(pdf_bytes))
 
             return pdf_bytes
 
         except Exception as e:
-            logger.error(
-                "[PDFExportService] PDF export failed",
-                extra={
-                    "error": str(e),
-                },
-            )
+            logger.error("pdf_export_failed", error=str(e), exc_info=True)
             raise
 
     def _build_html_document(

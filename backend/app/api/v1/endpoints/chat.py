@@ -27,8 +27,9 @@ async def _save_messages(job_id: str, messages: list[dict]) -> None:
             job.messages = messages
             await db.commit()
             logger.info(
-                "Chat messages saved",
-                extra={"job_id": job_id, "message_count": len(messages)},
+                "chat_messages_saved",
+                job_id=job_id,
+                message_count=len(messages),
             )
 
 
@@ -115,8 +116,9 @@ async def chat_stream(job_id: str, message: str):
 
         except Exception as e:
             logger.error(
-                "Chat streaming failed",
-                extra={"job_id": job_id, "error": str(e)},
+                "chat_stream_failed",
+                job_id=job_id,
+                error=str(e),
             )
             assistant_msg["status"] = "error"
             assistant_msg["content"] = (

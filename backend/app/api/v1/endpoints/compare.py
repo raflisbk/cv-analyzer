@@ -118,7 +118,7 @@ async def compare_cv(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
     except Exception as exc:
-        logger.error("compare_trigger_failed", extra={"job_id": job_id}, exc_info=True)
+        logger.error("compare_trigger_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
             error=ErrorDetail(code="COMPARE_TRIGGER_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),

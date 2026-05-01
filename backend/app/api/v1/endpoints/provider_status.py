@@ -58,6 +58,6 @@ async def reset_provider_status() -> dict[str, str]:
     provider_manager = get_provider_manager()
     provider_manager.reset()
 
-    logger.info("Provider status reset via API endpoint")
+    logger.info("provider_status_reset")
 
     return {"status": "reset", "current_provider": "openai"}

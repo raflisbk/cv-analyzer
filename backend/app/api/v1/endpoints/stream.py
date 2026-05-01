@@ -45,7 +45,7 @@ async def stream_job_progress(job_id: str):
             await pubsub.subscribe(f"job:updates:{job_id}")
 
             yield f"data: {json.dumps({'type': 'connected', 'job_id': job_id})}\n\n"
-            logger.info("SSE client connected", extra={"job_id": job_id})
+            logger.info("sse_connected", job_id=job_id)
 
             # Use a scoped session here — open, query, close immediately.
             # This prevents connection leaks: the session is returned to the pool
@@ -61,8 +61,9 @@ async def stream_job_progress(job_id: str):
                 )
                 yield f"data: {terminal_event}\n\n"
                 logger.info(
-                    "Job already terminal on SSE connect, emitting event and closing",
-                    extra={"job_id": job_id, "stage": stage},
+                    "sse_terminal_on_connect",
+                    job_id=job_id,
+                    stage=stage,
                 )
                 return
 
@@ -75,13 +76,14 @@ async def stream_job_progress(job_id: str):
                     progress = json.loads(data)
                     if progress.get("stage") in ["complete", "failed"]:
                         logger.info(
-                            "Job terminal state reached, closing SSE",
-                            extra={"job_id": job_id, "stage": progress.get("stage")},
+                            "sse_terminal",
+                            job_id=job_id,
+                            stage=progress.get("stage"),
                         )
                         break
 
         except asyncio.CancelledError:
-            logger.info("SSE client disconnected", extra={"job_id": job_id})
+            logger.info("sse_disconnected", job_id=job_id)
         finally:
             await pubsub.unsubscribe(f"job:updates:{job_id}")
             await redis_client.close()

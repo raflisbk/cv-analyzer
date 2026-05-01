@@ -56,7 +56,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         text = asyncio.run(_get_cv_text())
         if not text:
             msg = f"No CV text for scoring, job {job_id}"
-            logger.error("score_cv_task: missing text", extra={"job_id": job_id})
+            logger.error("scoring_no_text", job_id=job_id)
             asyncio.run(_mark_failed(msg))
             self.update_progress(job_id, "failed", 0, msg)
             return {"error": msg}
@@ -69,22 +69,24 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             reasonings = explainer.explain_scores(text, scores)
             scores["reasonings"] = reasonings
         except Exception as e:
-            logger.error(f"Score explanation failed: {e}")
+            logger.error("score_explanation_failed", error=str(e), exc_info=True)
             scores["reasonings"] = {}
 
         asyncio.run(_save_scores(scores))
 
         logger.info(
-            "CV scoring complete",
-            extra={"job_id": job_id, "overall_score": scores.get("overall")},
+            "scoring_done",
+            job_id=job_id,
+            overall_score=scores.get("overall"),
         )
         return {"status": "scoring_complete", "job_id": job_id}  # noqa: TRY300
 
     except Exception as e:
         error_msg = f"CV scoring failed: {e!s}"
         logger.error(
-            "score_cv_task failed",
-            extra={"job_id": job_id, "error": error_msg},
+            "scoring_failed",
+            job_id=job_id,
+            error=error_msg,
         )
         asyncio.run(_mark_failed(error_msg))
         self.update_progress(job_id, "failed", 0, error_msg)

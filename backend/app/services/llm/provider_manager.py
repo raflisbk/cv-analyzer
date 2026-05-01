@@ -80,11 +80,9 @@ class ProviderManager:
         self._stats[provider].total_successes += 1
 
         logger.debug(
-            "Provider success recorded",
-            extra={
-                "provider": provider.value,
-                "total_successes": self._stats[provider].total_successes,
-            },
+            "provider_success",
+            provider=provider.value,
+            total_successes=self._stats[provider].total_successes,
         )
 
     def record_failure(self, provider: ProviderType, error: Exception) -> None:
@@ -103,13 +101,11 @@ class ProviderManager:
         stats.last_failure_time = time.time()
 
         logger.warning(
-            "Provider failure recorded",
-            extra={
-                "provider": provider.value,
-                "consecutive_failures": stats.consecutive_failures,
-                "error_type": type(error).__name__,
-                "error_message": str(error),
-            },
+            "provider_failure",
+            provider=provider.value,
+            consecutive_failures=stats.consecutive_failures,
+            error_type=type(error).__name__,
+            error_message=str(error),
         )
 
         # Trigger fallback if this is OpenAI and we've hit threshold
@@ -124,14 +120,12 @@ class ProviderManager:
         if self._current_provider == ProviderType.OPENAI:
             self._current_provider = ProviderType.ZAI
             logger.warning(
-                "Fallback triggered: switching to Z AI",
-                extra={
-                    "previous_provider": ProviderType.OPENAI.value,
-                    "new_provider": ProviderType.ZAI.value,
-                    "openai_consecutive_failures": self._stats[
-                        ProviderType.OPENAI
-                    ].consecutive_failures,
-                },
+                "provider_fallback",
+                previous_provider=ProviderType.OPENAI.value,
+                new_provider=ProviderType.ZAI.value,
+                openai_consecutive_failures=self._stats[
+                    ProviderType.OPENAI
+                ].consecutive_failures,
             )
 
     def reset(self) -> None:
@@ -142,7 +136,7 @@ class ProviderManager:
         for provider in self._stats:
             self._stats[provider] = ProviderStats()
 
-        logger.info("Provider manager reset to OpenAI as primary")
+        logger.info("provider_reset")
 
     def get_stats(self) -> dict[str, dict]:
         """

@@ -18,10 +18,11 @@ def get_nlp() -> spacy.Language:
     """
     global _nlp  # noqa: PLW0603
     if _nlp is None:
-        logger.info("Loading spaCy en_core_web_lg model (first call only)...")
+        logger.info("spacy_loading")
         _nlp = spacy.load("en_core_web_lg")
         logger.info(
-            "spaCy model loaded",
-            extra={"pipeline": _nlp.pipe_names, "model": _nlp.meta["name"]},
+            "spacy_loaded",
+            pipeline=_nlp.pipe_names,
+            model=_nlp.meta["name"],
         )
     return _nlp

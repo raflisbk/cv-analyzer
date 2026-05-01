@@ -6,23 +6,24 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, WebSocket
 from fastapi.responses import Response
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 
+from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job, JobStatus
 from app.schemas.analysis import (
     AtsCheck,
     ComparisonResult,
+    GrammarIssue,
     ScoreResult,
     SectionResult,
     SuggestionCard,
     SuggestionItem,
-    GrammarIssue,
 )
-from app.services.pdf_to_html import PDFToHTMLConverter
-from app.services.pdf_export import PDFExportService
 from app.schemas.anchors import SuggestionAnchorRecord
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
+from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
 from app.schemas.workspace import (
     WorkspaceAnalysisContext,
     WorkspaceContentPatch,
@@ -33,13 +34,11 @@ from app.schemas.workspace import (
     WorkspaceHydration,
     WorkspaceNavigation,
 )
-from app.services.storage import StorageError, storage_service
 from app.services.llm.inline_edit_service import InlineEditService
-from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
-from pydantic import BaseModel, Field
+from app.services.pdf_export import PDFExportService
+from app.services.pdf_to_html import PDFToHTMLConverter
+from app.services.storage import StorageError, storage_service
 
-
-from app.core.logging import structured_logger as logger
 
 router = APIRouter()
 inline_edit_service = InlineEditService()
@@ -153,7 +152,7 @@ def _build_suggestions(
             for card in raw_suggestions
         ]
     except Exception:
-        logger.warning("Failed to build suggestions", exc_info=True)
+        logger.warning("workspace_suggestions_failed", exc_info=True)
         return None
 
 
@@ -167,7 +166,7 @@ def _build_comparison_result(
     try:
         return ComparisonResult(**raw_comparison_result)
     except Exception:
-        logger.warning("Failed to build comparison result", exc_info=True)
+        logger.warning("workspace_comparison_failed", exc_info=True)
         return None
 
 
@@ -323,10 +322,8 @@ async def get_workspace_hydration(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
-    except Exception as exc:
-        logger.error(
-            "workspace_hydration_failed", extra={"job_id": job_id}, exc_info=True
-        )
+    except Exception:
+        logger.error("workspace_hydration_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -385,7 +382,7 @@ async def get_job_file_url(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
     except Exception as exc:
-        logger.error("file_url_failed", extra={"job_id": job_id}, exc_info=True)
+        logger.error("file_url_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
             error=ErrorDetail(
                 code="FILE_URL_FETCH_FAILED",
@@ -454,8 +451,8 @@ async def get_job_html(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
-    except Exception as exc:
-        logger.error("html_conversion_failed", extra={"job_id": job_id}, exc_info=True)
+    except Exception:
+        logger.error("html_conversion_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -498,9 +495,9 @@ async def patch_workspace_content(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
-    except Exception as exc:
+    except Exception:
         await db.rollback()
-        logger.error("draft_save_failed", extra={"job_id": job_id}, exc_info=True)
+        logger.error("draft_save_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
@@ -530,7 +527,7 @@ async def improve_text(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
-    except Exception as exc:
+    except Exception:
         logger.error("ai_improve_failed", exc_info=True)
         return WrappedResponse(
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
@@ -557,7 +554,7 @@ async def export_pdf(body: PDFExportRequest) -> Response:
             },
         )
 
-    except Exception as exc:
+    except Exception:
         logger.error("pdf_export_failed", exc_info=True)
         return Response(
             status_code=500,

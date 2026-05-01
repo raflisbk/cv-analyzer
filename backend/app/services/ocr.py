@@ -11,8 +11,8 @@ try:
 except ImportError:
     EASYOCR_AVAILABLE = False
     logger.warning(
-        "EasyOCR or pdf2image not available - OCR fallback disabled",
-        extra={"easyocr_available": False},
+        "ocr_unavailable",
+        easyocr_available=False,
     )
 
 
@@ -39,16 +39,14 @@ class OCRService:
             tuple of (extracted_text, confidence_score)
         """
         if not EASYOCR_AVAILABLE:
-            logger.error("OCR requested but EasyOCR not available")
+            logger.error("ocr_not_available")
             return "", 0.0
 
         try:
             # Convert PDF to images
             images = convert_from_bytes(pdf_content, dpi=300)
 
-            logger.info(
-                "Converting PDF to images for OCR", extra={"num_pages": len(images)}
-            )
+            logger.info("ocr_converting_pages", num_pages=len(images))
 
             extracted_text = []
             total_confidence = 0.0
@@ -64,8 +62,9 @@ class OCRService:
                     num_detections += 1
 
                 logger.debug(
-                    "OCR page processed",
-                    extra={"page": i + 1, "detections": len(results)},
+                    "ocr_page_done",
+                    page=i + 1,
+                    detections=len(results),
                 )
 
             full_text = " ".join(extracted_text)
@@ -74,18 +73,16 @@ class OCRService:
             )
 
             logger.info(
-                "OCR extraction complete",
-                extra={
-                    "text_length": len(full_text),
-                    "confidence": avg_confidence,
-                    "pages": len(images),
-                },
+                "ocr_complete",
+                text_length=len(full_text),
+                confidence=avg_confidence,
+                pages=len(images),
             )
 
             return full_text, avg_confidence
 
         except Exception as e:
-            logger.error("OCR extraction failed", extra={"error": str(e)})
+            logger.error("ocr_failed", error=str(e))
             return "", 0.0
 
 
@@ -100,7 +97,7 @@ def perform_ocr(pdf_content: bytes) -> tuple[str, float]:
         tuple of (extracted_text, confidence_score)
     """
     if not EASYOCR_AVAILABLE:
-        logger.warning("OCR requested but EasyOCR not installed")
+        logger.warning("ocr_not_installed")
         return "", 0.0
 
     ocr_service = OCRService()

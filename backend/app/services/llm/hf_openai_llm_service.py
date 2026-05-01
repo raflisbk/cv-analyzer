@@ -164,12 +164,10 @@ class HFOpenAILLMService:
         ).inc(completion_tokens)
 
         logger.info(
-            "HF LLM suggestions generated",
-            extra={
-                "model": self.model,
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-            },
+            "llm_suggestions_generated",
+            model=self.model,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
         )
 
         return {
@@ -215,12 +213,10 @@ class HFOpenAILLMService:
         completion_tokens = len(raw_json) // 4
 
         logger.info(
-            "HF LLM CV comparison generated",
-            extra={
-                "model": self.model,
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-            },
+            "llm_comparison_generated",
+            model=self.model,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
         )
 
         return {
@@ -290,12 +286,10 @@ class HFOpenAILLMService:
             data = json.loads(json_str)
         except json.JSONDecodeError as e:
             logger.error(
-                "HF LLM JSON parsing failed",
-                extra={
-                    "error": str(e),
-                    "raw_length": len(raw_json),
-                    "raw_preview": raw_json[:500] if raw_json else None,
-                },
+                "llm_json_parse_failed",
+                error=str(e),
+                raw_length=len(raw_json),
+                raw_preview=raw_json[:500] if raw_json else None,
             )
             raise ValueError(f"Invalid JSON from HF LLM: {e}") from e
 

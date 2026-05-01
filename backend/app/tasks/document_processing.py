@@ -37,8 +37,10 @@ class ProgressTask(Task):
         redis_client.publish(f"job:updates:{job_id}", json.dumps(progress_data))
 
         logger.info(
-            "Progress update emitted",
-            extra={"job_id": job_id, "stage": stage, "percentage": percentage},
+            "progress_update",
+            job_id=job_id,
+            stage=stage,
+            percentage=percentage,
         )
 
 
@@ -76,13 +78,11 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
         text, metadata = parse_document(file_content, file_metadata["extension"])
 
         logger.info(
-            "Document parsed successfully",
-            extra={
-                "job_id": job_id,
-                "text_length": len(text),
-                "extraction_method": metadata.get("extraction_method"),
-                "quality_score": metadata.get("quality_score"),
-            },
+            "document_parsed",
+            job_id=job_id,
+            text_length=len(text),
+            extraction_method=metadata.get("extraction_method"),
+            quality_score=metadata.get("quality_score"),
         )
 
         self.update_progress(
@@ -95,7 +95,8 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
             error_msg = f"Low quality extraction (score: {quality_score:.2f}). File may be corrupted or unreadable."
             logger.error(
                 "quality_validation_failed",
-                extra={"job_id": job_id, "quality_score": quality_score},
+                job_id=job_id,
+                quality_score=quality_score,
             )
             asyncio.run(update_job_status(JobStatus.FAILED, error=error_msg))
 
@@ -112,16 +113,19 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
         asyncio.run(update_job_status(JobStatus.ANALYZING, result=result_data))
 
         logger.info(
-            "Document processing complete",
-            extra={"job_id": job_id, "quality_score": quality_score},
+            "document_processing_done",
+            job_id=job_id,
+            quality_score=quality_score,
         )
 
         return result_data
 
     except ParsingError as e:
         logger.warning(
-            "Parsing failed, retrying",
-            extra={"job_id": job_id, "error": str(e), "retry": self.request.retries},
+            "parse_failed_retrying",
+            job_id=job_id,
+            error=str(e),
+            retry=self.request.retries,
         )
 
         self.update_progress(
@@ -137,9 +141,7 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
             raise self.retry(exc=e, countdown=countdown)
         except MaxRetriesExceededError:
             error_msg = f"Failed to extract text after 3 attempts: {e!s}"
-            logger.error(
-                "Max retries exceeded", extra={"job_id": job_id, "error": error_msg}
-            )
+            logger.error("max_retries_exceeded", job_id=job_id, error=error_msg)
 
             asyncio.run(update_job_status(JobStatus.FAILED, error=error_msg))
 
@@ -148,9 +150,7 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
 
     except Exception as e:
         error_msg = f"Unexpected error: {e!s}"
-        logger.error(
-            "Unexpected processing error", extra={"job_id": job_id, "error": error_msg}
-        )
+        logger.error("processing_error", job_id=job_id, error=error_msg)
 
         asyncio.run(update_job_status(JobStatus.FAILED, error=error_msg))
 

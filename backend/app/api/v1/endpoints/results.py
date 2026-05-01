@@ -111,7 +111,7 @@ async def get_job_results(
                     for card in job.suggestions
                 ]
             except Exception:
-                logger.warning("malformed_suggestions_jsonb", extra={"job_id": job_id})
+                logger.warning("malformed_suggestions_jsonb", job_id=job_id)
                 suggestions = None
 
         comparison_result: ComparisonResult | None = None
@@ -122,7 +122,7 @@ async def get_job_results(
             try:
                 comparison_result = ComparisonResult(**job.comparison_result)
             except Exception:
-                logger.warning("malformed_comparison_jsonb", extra={"job_id": job_id})
+                logger.warning("malformed_comparison_jsonb", job_id=job_id)
                 comparison_result = None
 
         return WrappedResponse(
@@ -142,7 +142,7 @@ async def get_job_results(
         )
 
     except Exception as exc:
-        logger.error("results_fetch_failed", extra={"job_id": job_id}, exc_info=True)
+        logger.error("results_fetch_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
             error=ErrorDetail(code="RESULTS_FETCH_FAILED", message=str(exc)),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),

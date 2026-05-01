@@ -70,7 +70,7 @@ def grammar_check_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         text, sections_raw = asyncio.run(_get_job_data())
         if not text:
             msg = f"No CV text for grammar check, job {job_id}"
-            logger.error("grammar_check_task: missing text", extra={"job_id": job_id})
+            logger.error("grammar_no_text", job_id=job_id)
             asyncio.run(_mark_failed(msg))
             self.update_progress(job_id, "failed", 0, msg)
             return {"error": msg}
@@ -94,20 +94,19 @@ def grammar_check_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         asyncio.run(_save_final_results(grammar_issues, ats_checks))
 
         logger.info(
-            "Grammar check and ATS analysis complete (pipeline continues to llm_suggest_task)",
-            extra={
-                "job_id": job_id,
-                "grammar_issues": len(grammar_issues),
-                "ats_checks": len(ats_checks),
-            },
+            "grammar_ats_done",
+            job_id=job_id,
+            grammar_issues=len(grammar_issues),
+            ats_checks=len(ats_checks),
         )
         return {"status": "complete", "job_id": job_id}  # noqa: TRY300
 
     except Exception as e:
         error_msg = f"Grammar/ATS check failed: {e!s}"
         logger.error(
-            "grammar_check_task failed",
-            extra={"job_id": job_id, "error": error_msg},
+            "grammar_task_failed",
+            job_id=job_id,
+            error=error_msg,
         )
         asyncio.run(_mark_failed(error_msg))
         self.update_progress(job_id, "failed", 0, error_msg)

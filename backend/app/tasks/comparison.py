@@ -11,7 +11,6 @@ import redis as redis_lib
 from celery import Task
 from sqlalchemy import select
 
-from app.core.logging import mask_pii
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus  # noqa: F401
@@ -90,7 +89,7 @@ def compare_cv_task(  # noqa: PLR0915
     redis_client = _get_redis_client()
     cached = redis_client.get(cache_key)
     if cached:
-        logger.info("Comparison cache hit", extra={"job_id": job_id})
+        logger.info("comparison_cache_hit", job_id=job_id)
         asyncio.run(
             _save_comparison(json.loads(cached), "complete", jd_text, jd_role_id)
         )
@@ -107,7 +106,7 @@ def compare_cv_task(  # noqa: PLR0915
         )
         cv_text = asyncio.run(_get_cv_text())
         if not cv_text:
-            logger.warning("compare_cv_task: missing CV text", extra={"job_id": job_id})
+            logger.warning("comparison_no_text", job_id=job_id)
             asyncio.run(_save_comparison(None, "failed", jd_text, jd_role_id))
             self.update_progress(job_id, "complete", 100, "Comparison unavailable")
             return {"status": "failed", "job_id": job_id, "reason": "no_text"}
@@ -123,8 +122,9 @@ def compare_cv_task(  # noqa: PLR0915
         self.update_progress(job_id, "complete", 100, "Comparison complete!")
 
         logger.info(
-            "CV comparison complete",
-            extra={"job_id": job_id, "match_pct": validated.match_pct},
+            "comparison_done",
+            job_id=job_id,
+            match_pct=validated.match_pct,
         )
         return {
             "status": "complete",
@@ -134,8 +134,11 @@ def compare_cv_task(  # noqa: PLR0915
 
     except Exception as e:
         logger.error(
-            mask_pii(f"compare_cv_task failed: {e}"),
-            extra={"job_id": job_id, "stage": "comparing"},
+            "comparison_failed",
+            job_id=job_id,
+            error=str(e),
+            stage="comparing",
+            exc_info=True,
         )
         asyncio.run(_save_comparison(None, "failed", jd_text, jd_role_id))
         self.update_progress(job_id, "complete", 100, "Comparison unavailable")

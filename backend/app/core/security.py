@@ -50,8 +50,9 @@ async def validate_file(filename: str, content: bytes) -> dict:
     file_ext = Path(filename).suffix.lower()
     if file_ext not in ALLOWED_EXTENSIONS:
         logger.warning(
-            "Invalid file extension",
-            extra={"filename": filename, "extension": file_ext},
+            "invalid_file_extension",
+            filename=filename,
+            extension=file_ext,
         )
         raise FileValidationError(
             code="INVALID_FILE_TYPE",
@@ -61,9 +62,7 @@ async def validate_file(filename: str, content: bytes) -> dict:
     # Check 2: File size (5MB limit)
     file_size = len(content)
     if file_size > settings.CV_ANALYZER_MAX_FILE_SIZE:
-        logger.warning(
-            "File size exceeds limit", extra={"filename": filename, "size": file_size}
-        )
+        logger.warning("file_too_large", filename=filename, size=file_size)
         raise FileValidationError(
             code="FILE_TOO_LARGE",
             message=f"File size exceeds {settings.CV_ANALYZER_MAX_FILE_SIZE // (1024*1024)}MB limit.",
@@ -72,7 +71,7 @@ async def validate_file(filename: str, content: bytes) -> dict:
     # Check 3: MIME type detection
     mime = magic.from_buffer(content, mime=True)
     if mime not in ALLOWED_MIME_TYPES:
-        logger.warning("Invalid MIME type", extra={"filename": filename, "mime": mime})
+        logger.warning("invalid_mime_type", filename=filename, mime=mime)
         raise FileValidationError(
             code="INVALID_MIME_TYPE",
             message=f"File MIME type {mime} not allowed. File may be corrupted or mislabeled.",
@@ -89,17 +88,17 @@ async def validate_file(filename: str, content: bytes) -> dict:
             break
 
     if not magic_byte_valid:
-        logger.warning(
-            "Magic bytes validation failed", extra={"filename": filename, "mime": mime}
-        )
+        logger.warning("magic_bytes_failed", filename=filename, mime=mime)
         raise FileValidationError(
             code="INVALID_FILE_STRUCTURE",
             message="File structure validation failed. File may be corrupted.",
         )
 
     logger.info(
-        "File validation successful",
-        extra={"filename": filename, "size": file_size, "mime": mime},
+        "file_validation_passed",
+        filename=filename,
+        size=file_size,
+        mime=mime,
     )
 
     return {

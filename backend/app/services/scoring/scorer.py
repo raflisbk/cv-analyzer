@@ -33,9 +33,7 @@ def _score_with_hf(text: str) -> dict:
     Returns:
         Dict with scores and metadata
     """
-    logger.info(
-        "Scoring CV with HF Inference embeddings", extra={"text_length": len(text)}
-    )
+    logger.info("scoring_start", text_length=len(text))
 
     clarity = hf_score_dimension(text, CLARITY_ANCHORS)
     impact = hf_score_dimension(text, IMPACT_ANCHORS)
@@ -60,7 +58,7 @@ def _score_with_hf(text: str) -> dict:
         "provider": "hf",
     }
 
-    logger.info("CV scoring complete with HF Inference", extra={"scores": scores})
+    logger.info("scoring_done", scores=scores)
 
     return scores
 
@@ -92,5 +90,5 @@ def score_cv(text: str) -> dict:
             "CV_ANALYZER_HF_API_KEY not configured. Please set it in your .env file."
         )
 
-    logger.info("Using HF Inference for scoring")
+    logger.info("scoring_provider_selected")
     return _score_with_hf(text)

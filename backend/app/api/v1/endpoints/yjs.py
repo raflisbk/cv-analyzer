@@ -30,7 +30,7 @@ async def _on_connect(msg: dict[str, Any], scope: dict[str, Any]) -> bool:
     job_id = parts[-1] if len(parts) >= 2 else ""
 
     if not job_id:
-        logger.warning("Yjs WebSocket rejected: missing job_id in path")
+        logger.warning("yjs_rejected_no_job_id")
         return True
 
     try:
@@ -40,24 +40,25 @@ async def _on_connect(msg: dict[str, Any], scope: dict[str, Any]) -> bool:
 
         if not job:
             logger.warning(
-                "Yjs WebSocket rejected: job not found",
-                extra={"job_id": job_id},
+                "yjs_rejected_not_found",
+                job_id=job_id,
             )
             return True
     except Exception as e:
         logger.error(
-            "Yjs WebSocket validation error",
-            extra={"job_id": job_id, "error": str(e)},
+            "yjs_validation_error",
+            job_id=job_id,
+            error=str(e),
         )
         return True
 
-    logger.info("Yjs WebSocket accepted", extra={"job_id": job_id})
+    logger.info("yjs_accepted", job_id=job_id)
     return False
 
 
 def _on_disconnect(msg: dict[str, Any]) -> None:
     """Handle WebSocket disconnection."""
-    logger.debug("Yjs WebSocket disconnected")
+    logger.debug("yjs_disconnected")
 
 
 # ASGI sub-app that handles WebSocket lifecycle

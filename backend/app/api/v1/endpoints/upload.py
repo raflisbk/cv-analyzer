@@ -45,12 +45,10 @@ async def upload_file(
         file_info = await validate_file(file.filename, content)
 
         logger.info(
-            "File validation successful",
-            extra={
-                "filename": file.filename,
-                "size": file_info["size"],
-                "mime_type": file_info["mime_type"],
-            },
+            "file_validation_passed",
+            filename=file.filename,
+            size=file_info["size"],
+            mime_type=file_info["mime_type"],
         )
 
         # Upload to R2 storage
@@ -73,7 +71,7 @@ async def upload_file(
         await db.commit()
         await db.refresh(job)
 
-        logger.info("Job created", extra={"job_id": str(job.id), "file_id": file_id})
+        logger.info("job_created", job_id=str(job.id), file_id=file_id)
 
         # Trigger 5-task analysis pipeline (.si() = immutable signatures)
         pipeline = celery_chain(
@@ -104,12 +102,10 @@ async def upload_file(
     except FileValidationError as e:
         # Validation failed
         logger.warning(
-            "File validation failed",
-            extra={
-                "filename": file.filename,
-                "error_code": e.code,
-                "error_message": e.message,
-            },
+            "file_validation_failed",
+            filename=file.filename,
+            error_code=e.code,
+            error_message=e.message,
         )
 
         return WrappedResponse(
@@ -120,9 +116,7 @@ async def upload_file(
         )
 
     except Exception as e:
-        logger.error(
-            "Upload failed", extra={"filename": file.filename, "error": str(e)}
-        )
+        logger.error("upload_failed", filename=file.filename, error=str(e))
 
         return WrappedResponse(
             error=ErrorDetail(

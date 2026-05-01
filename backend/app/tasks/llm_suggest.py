@@ -237,7 +237,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
     redis_client = _get_redis_client()
     cached = redis_client.get(cache_key)
     if cached:
-        logger.info("LLM suggestions cache hit", extra={"job_id": job_id})
+        logger.info("llm_suggest_cache_hit", job_id=job_id)
         cached_suggestions = json.loads(cached)
         job_file_id: str = asyncio.run(_get_file_id())
         asyncio.run(
@@ -258,9 +258,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         )
         cv_text, sections = asyncio.run(_get_job_data())
         if not cv_text:
-            logger.warning(
-                "llm_suggest_task: missing CV text", extra={"job_id": job_id}
-            )
+            logger.warning("llm_suggest_no_text", job_id=job_id)
             asyncio.run(_save_results(None, tokens_used=0))
             self.update_progress(job_id, "complete", 100, "Analysis complete!")
             return {"status": "complete_partial", "job_id": job_id, "reason": "no_text"}
@@ -279,8 +277,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             )
         except Exception as rag_error:
             logger.warning(
-                "RAG retrieval failed, proceeding without context",
-                extra={"job_id": job_id, "error": str(rag_error)},
+                "rag_failed_in_llm",
+                job_id=job_id,
+                error=str(rag_error),
             )
             rag_context = []
 
@@ -308,20 +307,19 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
 
         logger.info(
-            "LLM suggestions generated and saved",
-            extra={
-                "job_id": job_id,
-                "suggestion_cards": len(suggestions_list),
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-            },
+            "llm_suggest_done",
+            job_id=job_id,
+            suggestion_cards=len(suggestions_list),
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
         )
         return {"status": "complete", "job_id": job_id, "cards": len(suggestions_list)}
 
     except Exception as e:
         logger.error(
-            "llm_suggest_task failed — returning partial result",
-            extra={"job_id": job_id, "error": str(e)},
+            "llm_suggest_failed",
+            job_id=job_id,
+            error=str(e),
         )
         asyncio.run(_save_results(None, tokens_used=0))
         self.update_progress(

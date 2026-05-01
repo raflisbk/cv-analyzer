@@ -160,11 +160,9 @@ class HFLLMService:
 
         # Log raw response for debugging
         logger.info(
-            "HF LLM raw response received",
-            extra={
-                "raw_length": len(raw_json) if raw_json else 0,
-                "raw_preview": (raw_json[:200] if raw_json else None),
-            },
+            "llm_raw_response",
+            raw_length=len(raw_json) if raw_json else 0,
+            raw_preview=(raw_json[:200] if raw_json else None),
         )
 
         # Validate response is not empty
@@ -192,12 +190,10 @@ class HFLLMService:
         ).inc(completion_tokens)
 
         logger.info(
-            "HF LLM suggestions generated",
-            extra={
-                "model": self.model,
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-            },
+            "llm_suggestions_generated",
+            model=self.model,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
         )
 
         return {
@@ -321,12 +317,10 @@ class HFLLMService:
         ).inc(completion_tokens)
 
         logger.info(
-            "HF LLM CV comparison generated",
-            extra={
-                "model": self.model,
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-            },
+            "llm_comparison_generated",
+            model=self.model,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
         )
 
         return {
@@ -383,12 +377,10 @@ class HFLLMService:
             data = json.loads(raw_json)
         except json.JSONDecodeError as e:
             logger.error(
-                "HF LLM JSON parsing failed",
-                extra={
-                    "error": str(e),
-                    "raw_length": len(raw_json),
-                    "raw_preview": raw_json[:500] if raw_json else None,
-                },
+                "llm_json_parse_failed",
+                error=str(e),
+                raw_length=len(raw_json),
+                raw_preview=raw_json[:500] if raw_json else None,
             )
             raise ValueError(f"Invalid JSON from HF LLM: {e}") from e
 

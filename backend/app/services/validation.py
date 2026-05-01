@@ -17,7 +17,7 @@ def validate_extraction_quality(text: str) -> tuple[float, str]:
     """
     # Minimum length check
     if len(text.strip()) < 50:
-        logger.warning("Extraction too short", extra={"length": len(text)})
+        logger.warning("extraction_too_short", length=len(text))
         return 0.1, "Extracted text too short (< 50 characters)"
 
     # Check for garbage/mojibake patterns
@@ -26,15 +26,15 @@ def validate_extraction_quality(text: str) -> tuple[float, str]:
 
     if mojibake_count > len(text) * 0.1:
         logger.warning(
-            "High mojibake/garbage character count",
-            extra={"mojibake_ratio": mojibake_count / len(text)},
+            "high_mojibake_ratio",
+            mojibake_ratio=mojibake_count / len(text),
         )
         return 0.2, "Extracted text contains too many invalid characters"
 
     # Check for reasonable word count
     words = text.split()
     if len(words) < 20:
-        logger.warning("Word count too low", extra={"word_count": len(words)})
+        logger.warning("word_count_low", word_count=len(words))
         return 0.3, "Extracted text has insufficient word count"
 
     # Check for common CV keywords
@@ -55,9 +55,7 @@ def validate_extraction_quality(text: str) -> tuple[float, str]:
     keyword_matches = sum(1 for kw in cv_keywords if kw in text_lower)
 
     if keyword_matches < 2:
-        logger.warning(
-            "Few CV-related keywords found", extra={"keyword_matches": keyword_matches}
-        )
+        logger.warning("few_cv_keywords", keyword_matches=keyword_matches)
         return 0.5, "Extracted text may not be a CV"
 
     # Calculate quality score
@@ -68,13 +66,11 @@ def validate_extraction_quality(text: str) -> tuple[float, str]:
     quality_score = length_score * 0.3 + mojibake_score * 0.4 + keyword_score * 0.3
 
     logger.info(
-        "Extraction quality validated",
-        extra={
-            "quality_score": quality_score,
-            "length": len(text),
-            "words": len(words),
-            "keyword_matches": keyword_matches,
-        },
+        "quality_validated",
+        quality_score=quality_score,
+        length=len(text),
+        words=len(words),
+        keyword_matches=keyword_matches,
     )
 
     return quality_score, "Good quality extraction"

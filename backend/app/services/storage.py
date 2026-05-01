@@ -82,20 +82,19 @@ class StorageService:
             )
 
             logger.info(
-                "File uploaded to R2",
-                extra={
-                    "file_id": file_id,
-                    "original_filename": original_filename,
-                    "size": len(content),
-                },
+                "r2_upload_done",
+                file_id=file_id,
+                original_filename=original_filename,
+                size=len(content),
             )
 
             return file_id
 
         except ClientError as e:
             logger.error(
-                "R2 upload failed",
-                extra={"original_filename": original_filename, "error": str(e)},
+                "r2_upload_failed",
+                original_filename=original_filename,
+                error=str(e),
             )
             msg = f"Storage upload failed: {e!s}"
             raise StorageError(msg) from e
@@ -118,9 +117,7 @@ class StorageService:
             return response["Body"].read()
 
         except ClientError as e:
-            logger.error(
-                "R2 file retrieval failed", extra={"file_id": file_id, "error": str(e)}
-            )
+            logger.error("r2_retrieval_failed", file_id=file_id, error=str(e))
             msg = f"File not found or retrieval failed: {e!s}"
             raise StorageError(msg) from e
 
@@ -143,16 +140,18 @@ class StorageService:
             )
 
             logger.info(
-                "Presigned URL generated",
-                extra={"file_id": file_id, "expiration": expiration},
+                "presigned_url_generated",
+                file_id=file_id,
+                expiration=expiration,
             )
 
             return url
 
         except ClientError as e:
             logger.error(
-                "Presigned URL generation failed",
-                extra={"file_id": file_id, "error": str(e)},
+                "presigned_url_failed",
+                file_id=file_id,
+                error=str(e),
             )
             msg = f"URL generation failed: {e!s}"
             raise StorageError(msg) from e
@@ -170,14 +169,15 @@ class StorageService:
         try:
             self.client.delete_object(Bucket=self.bucket, Key=file_id)
 
-            logger.info("File deleted from R2", extra={"file_id": file_id})
+            logger.info("r2_delete_done", file_id=file_id)
 
             return True
 
         except ClientError as e:
             logger.error(
-                "R2 file deletion failed",
-                extra={"file_id": file_id, "error": str(e)},
+                "r2_delete_failed",
+                file_id=file_id,
+                error=str(e),
             )
             return False
 
@@ -207,12 +207,12 @@ class StorageService:
                     if now > delete_after:
                         expired_files.append(obj["Key"])
 
-            logger.info("Expired files found", extra={"count": len(expired_files)})
+            logger.info("expired_files_found", count=len(expired_files))
 
             return expired_files
 
         except ClientError as e:
-            logger.error("Listing expired files failed", extra={"error": str(e)})
+            logger.error("expired_files_list_failed", error=str(e))
             return []
 
 

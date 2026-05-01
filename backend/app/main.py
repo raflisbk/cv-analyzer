@@ -27,9 +27,7 @@ if settings.CV_ANALYZER_SENTRY_DSN:
         environment=settings.CV_ANALYZER_ENV,
         traces_sample_rate=1.0 if settings.CV_ANALYZER_ENV == "development" else 0.1,
     )
-    logger.info(
-        "Sentry SDK initialized", extra={"environment": settings.CV_ANALYZER_ENV}
-    )
+    logger.info("sentry_initialized", environment=settings.CV_ANALYZER_ENV)
 
 # Create FastAPI application
 app = FastAPI(
@@ -55,23 +53,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-logger.info("CORS middleware configured", extra={"origins": origins})
+logger.info("cors_configured", origins=origins)
 
 # Add Prometheus instrumentation
 Instrumentator().instrument(app).expose(app)
-logger.info("Prometheus instrumentation configured")
+logger.info("prometheus_configured")
 
 
 @app.on_event("startup")
 async def startup_event() -> None:
     """Application startup event handler"""
     logger.info(
-        "FastAPI application starting",
-        extra={
-            "app_name": settings.CV_ANALYZER_APP_NAME,
-            "version": settings.CV_ANALYZER_VERSION,
-            "environment": settings.CV_ANALYZER_ENV,
-        },
+        "app_starting",
+        app_name=settings.CV_ANALYZER_APP_NAME,
+        version=settings.CV_ANALYZER_VERSION,
+        environment=settings.CV_ANALYZER_ENV,
     )
 
 

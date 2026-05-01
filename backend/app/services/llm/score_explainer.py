@@ -67,11 +67,11 @@ class ScoreExplainerService:
             data = json.loads(json_str)
             reasonings = data.get("reasonings", {})
 
-            logger.info("Score explanations generated successfully")
+            logger.info("score_explanations_generated")
             return reasonings
 
         except Exception as e:
-            logger.error(f"Failed to generate score explanations: {e}")
+            logger.error("score_explanations_failed", error=str(e), exc_info=True)
             return {
                 "clarity": "Explanation unavailable.",
                 "impact": "Explanation unavailable.",

@@ -237,5 +237,5 @@ def extract_skills(text: str, score_cutoff: int = 85) -> list[str]:  # noqa: ARG
                 for j in range(i, i + ngram_len):
                     covered.add(j)
 
-    logger.info("Skill extraction complete", extra={"count": len(matched)})
+    logger.info("skill_extraction_done", count=len(matched))
     return sorted(matched)

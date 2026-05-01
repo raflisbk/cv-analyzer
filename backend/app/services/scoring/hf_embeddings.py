@@ -54,8 +54,9 @@ def get_embedding(text: str) -> list[float]:
     client = get_client()
 
     logger.debug(
-        "Requesting HF embedding",
-        extra={"text_length": len(text), "model": HF_MODEL_NAME},
+        "hf_embedding_request",
+        text_length=len(text),
+        model=HF_MODEL_NAME,
     )
 
     # Use feature_extraction to get embeddings
@@ -75,8 +76,8 @@ def get_embedding(text: str) -> list[float]:
         raise ValueError(f"Unexpected HF API response format: {type(result)}")
 
     logger.debug(
-        "HF embedding received",
-        extra={"embedding_dim": len(embedding)},
+        "hf_embedding_received",
+        embedding_dim=len(embedding),
     )
 
     return embedding
@@ -130,12 +131,13 @@ def score_dimension(text: str, anchors: list[str]) -> int:
             similarities.append(similarity)
         except Exception as e:
             logger.warning(
-                "Failed to get anchor embedding",
-                extra={"anchor": anchor[:50], "error": str(e)},
+                "anchor_embedding_failed",
+                anchor=anchor[:50],
+                error=str(e),
             )
 
     if not similarities:
-        logger.warning("No valid similarities calculated, returning default score")
+        logger.warning("no_valid_similarities")
         return 50
 
     # Average similarity and convert to 0-100 scale
@@ -146,13 +148,11 @@ def score_dimension(text: str, anchors: list[str]) -> int:
     score = max(0, min(100, score))
 
     logger.info(
-        "HF embedding dimension scored",
-        extra={
-            "dimension": anchors[0][:20] if anchors else "unknown",
-            "score": score,
-            "avg_similarity": avg_similarity,
-            "num_anchors": len(anchors),
-        },
+        "hf_dimension_scored",
+        dimension=anchors[0][:20] if anchors else "unknown",
+        score=score,
+        avg_similarity=avg_similarity,
+        num_anchors=len(anchors),
     )
 
     return score

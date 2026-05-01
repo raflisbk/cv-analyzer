@@ -67,7 +67,7 @@ class InlineEditService:
             model=HF_MODEL,
             token=settings.CV_ANALYZER_HF_API_KEY,
         )
-        logger.info(f"[InlineEditService] Initialized with model: {HF_MODEL}")
+        logger.info("inline_edit_service_initialized", model=HF_MODEL)
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=1, max=4))
     def rewrite(
@@ -102,11 +102,8 @@ class InlineEditService:
             user_prompt = _build_user_prompt(selected_text, prompt, cv_context)
 
             logger.info(
-                "[InlineEditService] Generating rewrite",
-                extra={
-                    "selected_length": len(selected_text),
-                    "prompt_preview": prompt[:100],
-                },
+                "inline_edit_rewrite_generating",
+                selected_length=len(selected_text),
             )
 
             # Call HF Inference API
@@ -134,11 +131,9 @@ class InlineEditService:
                 rewritten_text = "\n".join(lines).strip()
 
             logger.info(
-                "[InlineEditService] Rewrite generated successfully",
-                extra={
-                    "original_length": len(selected_text),
-                    "rewritten_length": len(rewritten_text),
-                },
+                "inline_edit_rewrite_generated",
+                original_length=len(selected_text),
+                rewritten_length=len(rewritten_text),
             )
 
             return InlineEditResponse(
@@ -149,11 +144,8 @@ class InlineEditService:
 
         except Exception as e:
             logger.error(
-                "[InlineEditService] Error generating rewrite",
-                extra={
-                    "error": str(e),
-                    "selected_text": selected_text[:100],
-                },
+                "inline_edit_rewrite_failed",
+                error=str(e),
             )
             return InlineEditResponse(
                 originalText=selected_text,

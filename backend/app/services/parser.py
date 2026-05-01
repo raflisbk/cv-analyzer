@@ -80,8 +80,9 @@ class DocumentParser:
             doc.close()
 
             logger.info(
-                "PDF text extraction complete",
-                extra={"length": len(text), "pages": metadata["page_count"]},
+                "pdf_extraction_done",
+                length=len(text),
+                pages=metadata["page_count"],
             )
 
             # Check if extraction sufficient
@@ -104,17 +105,17 @@ class DocumentParser:
                     return text, metadata
 
             logger.warning(
-                "Regular extraction insufficient, trying OCR",
-                extra={"text_length": len(text)},
+                "extraction_insufficient",
+                text_length=len(text),
             )
 
         except Exception as e:
-            logger.warning("Regular PDF extraction failed", extra={"error": str(e)})
+            logger.warning("pdf_extraction_failed", error=str(e))
 
         # Attempt 2: OCR fallback
         if EASYOCR_AVAILABLE:
             try:
-                logger.info("Starting OCR fallback")
+                logger.info("ocr_fallback_starting")
                 text, confidence = perform_ocr(content)
 
                 if len(text.strip()) >= 50:
@@ -135,14 +136,15 @@ class DocumentParser:
                         return text, metadata
 
                 logger.error(
-                    "OCR extraction insufficient",
-                    extra={"text_length": len(text), "confidence": confidence},
+                    "ocr_insufficient",
+                    text_length=len(text),
+                    confidence=confidence,
                 )
 
             except Exception as e:
-                logger.error("OCR extraction failed", extra={"error": str(e)})
+                logger.error("ocr_failed", error=str(e))
         else:
-            logger.warning("OCR fallback skipped - EasyOCR not available")
+            logger.warning("ocr_fallback_skipped")
 
         # All methods failed
         msg = (
@@ -182,8 +184,9 @@ class DocumentParser:
             text = "\n".join([para.text for para in doc.paragraphs])
 
             logger.info(
-                "DOCX extraction complete",
-                extra={"length": len(text), "paragraphs": len(doc.paragraphs)},
+                "docx_extraction_done",
+                length=len(text),
+                paragraphs=len(doc.paragraphs),
             )
 
             if len(text.strip()) < 50:
@@ -212,7 +215,7 @@ class DocumentParser:
         except ParsingError:
             raise
         except Exception as e:
-            logger.error("DOCX extraction failed", extra={"error": str(e)})
+            logger.error("docx_extraction_failed", error=str(e))
             msg = f"Failed to extract text from DOCX: {e!s}"
             raise ParsingError(msg) from e
 

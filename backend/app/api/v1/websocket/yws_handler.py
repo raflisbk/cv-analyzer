@@ -26,11 +26,9 @@ class YjsConnectionManager:
         self.active_connections[document_id].add(websocket)
 
         logger.info(
-            "[YjsWS] Client connected",
-            extra={
-                "document_id": document_id,
-                "total_connections": len(self.active_connections[document_id]),
-            },
+            "yjs_ws_connected",
+            document_id=document_id,
+            connections=len(self.active_connections[document_id]),
         )
 
     def disconnect(self, document_id: str, websocket: WebSocket) -> None:
@@ -42,12 +40,7 @@ class YjsConnectionManager:
             if not self.active_connections[document_id]:
                 del self.active_connections[document_id]
 
-        logger.info(
-            "[YjsWS] Client disconnected",
-            extra={
-                "document_id": document_id,
-            },
-        )
+        logger.info("yjs_ws_disconnected", document_id=document_id)
 
     async def broadcast(
         self, document_id: str, message: bytes, sender: WebSocket
@@ -66,11 +59,7 @@ class YjsConnectionManager:
                     await connection.send_bytes(message)
                 except Exception as e:
                     logger.error(
-                        "[YjsWS] Failed to send message",
-                        extra={
-                            "error": str(e),
-                            "document_id": document_id,
-                        },
+                        "yjs_ws_send_failed", error=str(e), document_id=document_id
                     )
 
     async def send_state_vector(
@@ -106,11 +95,5 @@ async def yjs_websocket_endpoint(websocket: WebSocket, document_id: str) -> None
     except WebSocketDisconnect:
         manager.disconnect(document_id, websocket)
     except Exception as e:
-        logger.error(
-            "[YjsWS] WebSocket error",
-            extra={
-                "error": str(e),
-                "document_id": document_id,
-            },
-        )
+        logger.error("yjs_ws_error", error=str(e), document_id=document_id)
         manager.disconnect(document_id, websocket)
