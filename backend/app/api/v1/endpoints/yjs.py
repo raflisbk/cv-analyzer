@@ -45,11 +45,7 @@ async def _on_connect(msg: dict[str, Any], scope: dict[str, Any]) -> bool:
             )
             return True
     except Exception as e:
-        logger.error(
-            "yjs_validation_error",
-            job_id=job_id,
-            error=str(e),
-        )
+        logger.error("yjs_validation_error", job_id=job_id, error=str(e), exc_info=True)
         return True
 
     logger.info("yjs_accepted", job_id=job_id)

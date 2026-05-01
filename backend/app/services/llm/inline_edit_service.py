@@ -143,10 +143,7 @@ class InlineEditService:
             )
 
         except Exception as e:
-            logger.error(
-                "inline_edit_rewrite_failed",
-                error=str(e),
-            )
+            logger.error("inline_edit_rewrite_failed", error=str(e), exc_info=True)
             return InlineEditResponse(
                 originalText=selected_text,
                 rewrittenText="",

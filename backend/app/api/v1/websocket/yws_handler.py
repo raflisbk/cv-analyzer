@@ -59,7 +59,10 @@ class YjsConnectionManager:
                     await connection.send_bytes(message)
                 except Exception as e:
                     logger.error(
-                        "yjs_ws_send_failed", error=str(e), document_id=document_id
+                        "yjs_ws_send_failed",
+                        error=str(e),
+                        document_id=document_id,
+                        exc_info=True,
                     )
 
     async def send_state_vector(
@@ -95,5 +98,7 @@ async def yjs_websocket_endpoint(websocket: WebSocket, document_id: str) -> None
     except WebSocketDisconnect:
         manager.disconnect(document_id, websocket)
     except Exception as e:
-        logger.error("yjs_ws_error", error=str(e), document_id=document_id)
+        logger.error(
+            "yjs_ws_error", error=str(e), document_id=document_id, exc_info=True
+        )
         manager.disconnect(document_id, websocket)

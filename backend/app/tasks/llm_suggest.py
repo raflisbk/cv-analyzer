@@ -316,11 +316,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         return {"status": "complete", "job_id": job_id, "cards": len(suggestions_list)}
 
     except Exception as e:
-        logger.error(
-            "llm_suggest_failed",
-            job_id=job_id,
-            error=str(e),
-        )
+        logger.error("llm_suggest_failed", job_id=job_id, error=str(e), exc_info=True)
         asyncio.run(_save_results(None, tokens_used=0))
         self.update_progress(
             job_id, "complete", 100, "Analysis complete (AI suggestions unavailable)"

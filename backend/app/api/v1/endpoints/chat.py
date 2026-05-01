@@ -116,9 +116,7 @@ async def chat_stream(job_id: str, message: str):
 
         except Exception as e:
             logger.error(
-                "chat_stream_failed",
-                job_id=job_id,
-                error=str(e),
+                "chat_stream_failed", job_id=job_id, error=str(e), exc_info=True
             )
             assistant_msg["status"] = "error"
             assistant_msg["content"] = (

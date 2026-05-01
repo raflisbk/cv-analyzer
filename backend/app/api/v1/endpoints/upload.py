@@ -116,7 +116,9 @@ async def upload_file(
         )
 
     except Exception as e:
-        logger.error("upload_failed", filename=file.filename, error=str(e))
+        logger.error(
+            "upload_failed", filename=file.filename, error=str(e), exc_info=True
+        )
 
         return WrappedResponse(
             error=ErrorDetail(

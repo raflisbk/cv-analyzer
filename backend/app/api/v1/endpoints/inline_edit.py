@@ -1,15 +1,13 @@
-"""Inline edit endpoint."""
-
 import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
-from app.schemas.common import ResponseMeta, WrappedResponse
+from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
 from app.services.llm.inline_edit_service import InlineEditService
 
@@ -17,21 +15,13 @@ from app.services.llm.inline_edit_service import InlineEditService
 router = APIRouter()
 
 
-def _generate_request_id() -> str:
-    """Generate unique request ID for tracing."""
-    return f"inline-edit-{uuid.uuid4().hex[:16]}"
-
-
 def _build_cv_context(job: Job) -> dict[str, Any] | None:
-    """Extract CV context from job result for LLM prompting."""
     if not job.result:
         return None
-
     result = job.result
-
     return {
         "scores": result.get("scores"),
-        "skills": result.get("skills", [])[:10],  # Top 10 skills
+        "skills": result.get("skills", [])[:10],
         "suggestions_count": len(result.get("suggestions", [])),
     }
 
@@ -44,33 +34,20 @@ async def inline_edit(
     request: InlineEditRequest,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[InlineEditResponse]:
-    """
-    Generate AI rewrite for selected CV text.
-
-    Args:
-        job_id: Job UUID
-        request: Inline edit request with selected text and prompt
-
-    Returns:
-        WrappedResponse containing InlineEditResponse with rewritten text
-
-    Raises:
-        HTTPException: If job not found
-    """
-    request_id = _generate_request_id()
+    request_id = f"inline-edit-{uuid.uuid4().hex[:16]}"
     timestamp = datetime.now(UTC).isoformat()
 
-    # Validate job exists
     result = await db.execute(select(Job).where(Job.job_id == job_id))
     job = result.scalar_one_or_none()
 
     if not job:
-        raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
+        return WrappedResponse(
+            error=ErrorDetail(code="NOT_FOUND", message=f"Job {job_id} not found."),
+            meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
+        )
 
-    # Build CV context for LLM
     cv_context = _build_cv_context(job)
 
-    # Call inline edit service
     service = InlineEditService()
     response = service.rewrite(
         selected_text=request.selectedText,
@@ -78,7 +55,6 @@ async def inline_edit(
         cv_context=cv_context,
     )
 
-    # Return wrapped response
     return WrappedResponse(
         data=response,
         meta=ResponseMeta(request_id=request_id, timestamp=timestamp),

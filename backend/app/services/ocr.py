@@ -82,7 +82,7 @@ class OCRService:
             return full_text, avg_confidence
 
         except Exception as e:
-            logger.error("ocr_failed", error=str(e))
+            logger.error("ocr_failed", error=str(e), exc_info=True)
             return "", 0.0
 
 

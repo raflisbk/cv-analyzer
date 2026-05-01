@@ -31,5 +31,5 @@ def cleanup_expired_files():
         return {"deleted": deleted_count, "total": len(expired_files)}
 
     except Exception as e:
-        logger.error("cleanup_failed", error=str(e))
+        logger.error("cleanup_failed", error=str(e), exc_info=True)
         return {"error": str(e)}

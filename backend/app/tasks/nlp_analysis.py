@@ -96,11 +96,7 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
 
     except Exception as e:
         error_msg = f"NLP analysis failed: {e!s}"
-        logger.error(
-            "nlp_failed",
-            job_id=job_id,
-            error=error_msg,
-        )
+        logger.error("nlp_failed", job_id=job_id, error=error_msg, exc_info=True)
         asyncio.run(_mark_failed(error_msg))
         self.update_progress(job_id, "failed", 0, error_msg)
         return {"error": error_msg}

@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends, WebSocket
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
@@ -210,6 +210,7 @@ def _build_suggestion_anchors(
         try:
             result.append(SuggestionAnchorRecord.model_validate(item))
         except Exception:
+            logger.warning("anchor_validation_skipped", item=str(item)[:80])
             continue
     return result
 
@@ -325,6 +326,10 @@ async def get_workspace_hydration(
     except Exception:
         logger.error("workspace_hydration_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
+            error=ErrorDetail(
+                code="HYDRATION_FAILED",
+                message="Failed to load workspace data.",
+            ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -454,6 +459,10 @@ async def get_job_html(
     except Exception:
         logger.error("html_conversion_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
+            error=ErrorDetail(
+                code="HTML_CONVERSION_FAILED",
+                message="Failed to convert CV to HTML.",
+            ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -499,6 +508,10 @@ async def patch_workspace_content(
         await db.rollback()
         logger.error("draft_save_failed", job_id=job_id, exc_info=True)
         return WrappedResponse(
+            error=ErrorDetail(
+                code="DRAFT_SAVE_FAILED",
+                message="Failed to save draft content.",
+            ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -530,6 +543,10 @@ async def improve_text(
     except Exception:
         logger.error("ai_improve_failed", exc_info=True)
         return WrappedResponse(
+            error=ErrorDetail(
+                code="AI_IMPROVE_FAILED",
+                message="Failed to generate AI rewrite.",
+            ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )
 
@@ -556,9 +573,18 @@ async def export_pdf(body: PDFExportRequest) -> Response:
 
     except Exception:
         logger.error("pdf_export_failed", exc_info=True)
-        return Response(
+        return JSONResponse(
             status_code=500,
-            media_type="text/plain",
+            content=WrappedResponse(
+                error=ErrorDetail(
+                    code="PDF_EXPORT_FAILED",
+                    message="PDF export failed.",
+                ),
+                meta=ResponseMeta(
+                    request_id=str(uuid.uuid4()),
+                    timestamp=datetime.now(UTC).isoformat(),
+                ),
+            ).model_dump(),
         )
 
 

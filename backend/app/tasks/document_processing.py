@@ -141,7 +141,9 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
             raise self.retry(exc=e, countdown=countdown)
         except MaxRetriesExceededError:
             error_msg = f"Failed to extract text after 3 attempts: {e!s}"
-            logger.error("max_retries_exceeded", job_id=job_id, error=error_msg)
+            logger.error(
+                "max_retries_exceeded", job_id=job_id, error=error_msg, exc_info=True
+            )
 
             asyncio.run(update_job_status(JobStatus.FAILED, error=error_msg))
 
@@ -150,7 +152,7 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
 
     except Exception as e:
         error_msg = f"Unexpected error: {e!s}"
-        logger.error("processing_error", job_id=job_id, error=error_msg)
+        logger.error("processing_error", job_id=job_id, error=error_msg, exc_info=True)
 
         asyncio.run(update_job_status(JobStatus.FAILED, error=error_msg))
 

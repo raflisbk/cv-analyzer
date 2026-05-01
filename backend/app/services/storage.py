@@ -95,6 +95,7 @@ class StorageService:
                 "r2_upload_failed",
                 original_filename=original_filename,
                 error=str(e),
+                exc_info=True,
             )
             msg = f"Storage upload failed: {e!s}"
             raise StorageError(msg) from e
@@ -117,7 +118,9 @@ class StorageService:
             return response["Body"].read()
 
         except ClientError as e:
-            logger.error("r2_retrieval_failed", file_id=file_id, error=str(e))
+            logger.error(
+                "r2_retrieval_failed", file_id=file_id, error=str(e), exc_info=True
+            )
             msg = f"File not found or retrieval failed: {e!s}"
             raise StorageError(msg) from e
 
@@ -149,9 +152,7 @@ class StorageService:
 
         except ClientError as e:
             logger.error(
-                "presigned_url_failed",
-                file_id=file_id,
-                error=str(e),
+                "presigned_url_failed", file_id=file_id, error=str(e), exc_info=True
             )
             msg = f"URL generation failed: {e!s}"
             raise StorageError(msg) from e
@@ -175,9 +176,7 @@ class StorageService:
 
         except ClientError as e:
             logger.error(
-                "r2_delete_failed",
-                file_id=file_id,
-                error=str(e),
+                "r2_delete_failed", file_id=file_id, error=str(e), exc_info=True
             )
             return False
 
@@ -212,7 +211,7 @@ class StorageService:
             return expired_files
 
         except ClientError as e:
-            logger.error("expired_files_list_failed", error=str(e))
+            logger.error("expired_files_list_failed", error=str(e), exc_info=True)
             return []
 
 

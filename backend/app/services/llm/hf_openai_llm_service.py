@@ -290,6 +290,7 @@ class HFOpenAILLMService:
                 error=str(e),
                 raw_length=len(raw_json),
                 raw_preview=raw_json[:500] if raw_json else None,
+                exc_info=True,
             )
             raise ValueError(f"Invalid JSON from HF LLM: {e}") from e
 

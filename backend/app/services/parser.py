@@ -129,6 +129,7 @@ class DocumentParser:
                             try:
                                 metadata["detected_language"] = langdetect.detect(text)
                             except Exception:
+                                logger.warning("langdetect_failed")
                                 metadata["detected_language"] = "unknown"
                         else:
                             metadata["detected_language"] = "unknown"
@@ -139,10 +140,11 @@ class DocumentParser:
                     "ocr_insufficient",
                     text_length=len(text),
                     confidence=confidence,
+                    exc_info=True,
                 )
 
             except Exception as e:
-                logger.error("ocr_failed", error=str(e))
+                logger.error("ocr_failed", error=str(e), exc_info=True)
         else:
             logger.warning("ocr_fallback_skipped")
 
@@ -215,7 +217,7 @@ class DocumentParser:
         except ParsingError:
             raise
         except Exception as e:
-            logger.error("docx_extraction_failed", error=str(e))
+            logger.error("docx_extraction_failed", error=str(e), exc_info=True)
             msg = f"Failed to extract text from DOCX: {e!s}"
             raise ParsingError(msg) from e
 
