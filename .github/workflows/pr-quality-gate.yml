@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e backend
-          pip install "black>=26.0" "ruff>=0.15" pytest
+          pip install "black>=26.0" "ruff>=0.15" pytest pytest-asyncio
 
       - name: Backend formatting (Black)
         run: black --check backend
