@@ -1,10 +1,8 @@
-"""Document parsing with quality validation and OCR fallback."""
-
 from io import BytesIO
 
 
 try:
-    import fitz  # PyMuPDF
+    import fitz
 
     PYMUPDF_AVAILABLE = True
 except ImportError:
@@ -30,33 +28,11 @@ from app.services.validation import validate_extraction_quality
 
 
 class ParsingError(Exception):
-    """Raised when document parsing fails after all retries"""
+    pass
 
 
 class DocumentParser:
-    """
-    Document parsing orchestrator with fallback strategies
-    """
-
     def parse_pdf(self, content: bytes) -> tuple[str, dict]:
-        """
-        Parse PDF with OCR fallback
-
-        Strategy:
-        1. Try regular text extraction first
-        2. If insufficient (<50 chars), try OCR
-        3. Validate quality
-        4. Retry with different approaches if needed
-
-        Args:
-            content: PDF file bytes
-
-        Returns:
-            tuple of (extracted_text, metadata_dict)
-
-        Raises:
-            ParsingError: If all extraction methods fail
-        """
         if not PYMUPDF_AVAILABLE:
             msg = "PyMuPDF not installed. Install with: pip install PyMuPDF"
             raise ParsingError(msg)
@@ -68,7 +44,6 @@ class DocumentParser:
             "detected_language": None,
         }
 
-        # Attempt 1: Regular text extraction
         try:
             doc = fitz.open(stream=content, filetype="pdf")
             metadata["page_count"] = len(doc)
@@ -85,14 +60,12 @@ class DocumentParser:
                 pages=metadata["page_count"],
             )
 
-            # Check if extraction sufficient
             if len(text.strip()) >= 50:
                 quality_score, _ = validate_extraction_quality(text)
                 metadata["extraction_method"] = "text_extraction"
                 metadata["quality_score"] = quality_score
 
                 if quality_score >= 0.5:
-                    # Good quality, detect language
                     if LANGDETECT_AVAILABLE:
                         try:
                             metadata["detected_language"] = langdetect.detect(text)
@@ -112,7 +85,6 @@ class DocumentParser:
         except Exception as e:
             logger.warning("pdf_extraction_failed", error=str(e))
 
-        # Attempt 2: OCR fallback
         if EASYOCR_AVAILABLE:
             try:
                 logger.info("ocr_fallback_starting")
@@ -124,7 +96,7 @@ class DocumentParser:
                     metadata["quality_score"] = quality_score
                     metadata["ocr_confidence"] = confidence
 
-                    if quality_score >= 0.4:  # Lower threshold for OCR
+                    if quality_score >= 0.4:
                         if LANGDETECT_AVAILABLE:
                             try:
                                 metadata["detected_language"] = langdetect.detect(text)
@@ -148,7 +120,6 @@ class DocumentParser:
         else:
             logger.warning("ocr_fallback_skipped")
 
-        # All methods failed
         msg = (
             "Failed to extract text from PDF after trying regular extraction and OCR. "
             "File may be corrupted, password-protected, or contain only images."
@@ -156,18 +127,6 @@ class DocumentParser:
         raise ParsingError(msg)
 
     def parse_docx(self, content: bytes) -> tuple[str, dict]:
-        """
-        Parse DOCX file
-
-        Args:
-            content: DOCX file bytes
-
-        Returns:
-            tuple of (extracted_text, metadata_dict)
-
-        Raises:
-            ParsingError: If extraction fails
-        """
         if not DOCX_AVAILABLE:
             msg = "python-docx not installed. Install with: pip install python-docx"
             raise ParsingError(msg)
@@ -179,10 +138,8 @@ class DocumentParser:
         }
 
         try:
-            # python-docx requires file-like object
             doc = Document(BytesIO(content))
 
-            # Extract text from paragraphs
             text = "\n".join([para.text for para in doc.paragraphs])
 
             logger.info(
@@ -195,7 +152,6 @@ class DocumentParser:
                 msg = "DOCX extraction yielded insufficient text (< 50 characters)"
                 raise ParsingError(msg)
 
-            # Validate quality
             quality_score, _ = validate_extraction_quality(text)
             metadata["quality_score"] = quality_score
 
@@ -203,7 +159,6 @@ class DocumentParser:
                 msg = f"Low quality DOCX extraction (score: {quality_score})"
                 raise ParsingError(msg)
 
-            # Detect language per D-11
             if LANGDETECT_AVAILABLE:
                 try:
                     metadata["detected_language"] = langdetect.detect(text)
@@ -223,19 +178,6 @@ class DocumentParser:
 
 
 def parse_document(content: bytes, file_type: str) -> tuple[str, dict]:
-    """
-    Module-level parse function per RESEARCH.md patterns
-
-    Args:
-        content: File content bytes
-        file_type: File extension (.pdf, .docx, .doc)
-
-    Returns:
-        tuple of (extracted_text, metadata_dict)
-
-    Raises:
-        ParsingError: If parsing fails
-    """
     parser = DocumentParser()
 
     if file_type.lower() in [".pdf"]:

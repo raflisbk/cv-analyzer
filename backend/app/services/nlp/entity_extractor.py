@@ -1,35 +1,18 @@
-"""
-Entity extraction service.
-Extracts ORG, DATE, PERSON, GPE entities from CV sections using spaCy NER.
-"""
-
 from app.services.nlp.model import get_nlp
 from app.services.nlp.section_detector import CvSection
 
 
-# spaCy NER label mapping to our entity types
 _LABEL_MAP: dict[str, str] = {
     "ORG": "organizations",
     "DATE": "dates",
     "PERSON": "persons",
-    "GPE": "locations",  # Geo-Political Entities (countries, cities)
-    "FAC": "locations",  # Facilities
-    "LOC": "locations",  # Locations
+    "GPE": "locations",
+    "FAC": "locations",
+    "LOC": "locations",
 }
 
 
 def extract_entities(text: str, sections: list[CvSection] | None = None) -> dict:
-    """
-    Extract named entities from CV text using spaCy NER.
-
-    Args:
-        text: Full CV text or section text
-        sections: Optional list of CvSection to annotate with entities (mutates in place)
-
-    Returns:
-        Dict with keys: 'organizations', 'dates', 'persons', 'locations'
-        Each value is a list of unique entity strings.
-    """
     nlp = get_nlp()
     doc = nlp(text)
 
@@ -47,7 +30,6 @@ def extract_entities(text: str, sections: list[CvSection] | None = None) -> dict
 
     result = {k: sorted(v) for k, v in entities.items()}
 
-    # If sections provided, annotate each section with its entities
     if sections:
         for section in sections:
             section_doc = nlp(section.text)

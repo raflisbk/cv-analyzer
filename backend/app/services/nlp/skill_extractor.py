@@ -1,18 +1,8 @@
-"""
-Skill extraction service.
-Uses spaCy noun chunks + curated tech/professional skills whitelist.
-ESCO taxonomy removed: it covers all job competencies (not just tech skills),
-producing false positives like 'perform eye surgery' from CV action phrases.
-"""
-
 from app.core.logging import structured_logger as logger
 from app.services.nlp.model import get_nlp
 
 
-# Curated tech & professional skills whitelist (single and multi-word).
-# Covers languages, frameworks, tools, cloud, data, methodologies.
 _SKILLS_WHITELIST: dict[str, str] = {
-    # ── Programming languages ──────────────────────────────────────────────
     "python": "Python",
     "java": "Java",
     "javascript": "JavaScript",
@@ -41,7 +31,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "powershell": "PowerShell",
     "cobol": "COBOL",
     "fortran": "Fortran",
-    # ── Web / Frontend ──────────────────────────────────────────────────────
     "react": "React",
     "angular": "Angular",
     "vue": "Vue.js",
@@ -63,7 +52,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "jquery": "jQuery",
     "redux": "Redux",
     "graphql": "GraphQL",
-    # ── Backend frameworks ──────────────────────────────────────────────────
     "fastapi": "FastAPI",
     "django": "Django",
     "flask": "Flask",
@@ -79,7 +67,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "gin": "Gin",
     "fiber": "Fiber",
     "actix": "Actix",
-    # ── Databases ───────────────────────────────────────────────────────────
     "postgresql": "PostgreSQL",
     "postgres": "PostgreSQL",
     "mysql": "MySQL",
@@ -98,7 +85,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "influxdb": "InfluxDB",
     "sql": "SQL",
     "nosql": "NoSQL",
-    # ── Cloud & DevOps ──────────────────────────────────────────────────────
     "aws": "AWS",
     "gcp": "GCP",
     "azure": "Azure",
@@ -123,7 +109,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "bitbucket": "Bitbucket",
     "ci/cd": "CI/CD",
     "cicd": "CI/CD",
-    # ── Data / ML / AI ──────────────────────────────────────────────────────
     "pandas": "Pandas",
     "numpy": "NumPy",
     "scipy": "SciPy",
@@ -154,7 +139,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "computer vision": "Computer Vision",
     "data engineering": "Data Engineering",
     "data science": "Data Science",
-    # ── APIs & architecture ──────────────────────────────────────────────────
     "rest": "REST API",
     "restful": "REST API",
     "rest api": "REST API",
@@ -163,7 +147,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "microservices": "Microservices",
     "event driven": "Event-Driven Architecture",
     "message queue": "Message Queue",
-    # ── Methods & practices ─────────────────────────────────────────────────
     "agile": "Agile",
     "scrum": "Scrum",
     "kanban": "Kanban",
@@ -178,7 +161,6 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "object oriented": "OOP",
     "oop": "OOP",
     "functional programming": "Functional Programming",
-    # ── Tools ───────────────────────────────────────────────────────────────
     "jira": "Jira",
     "confluence": "Confluence",
     "notion": "Notion",
@@ -194,41 +176,24 @@ _SKILLS_WHITELIST: dict[str, str] = {
     "datadog": "Datadog",
 }
 
-# Build lowercase lookup set for fast single-token matching
+
 _WHITELIST_LOWER: dict[str, str] = {k.lower(): v for k, v in _SKILLS_WHITELIST.items()}
 
-# Longest phrase length in whitelist (for n-gram window)
+
 _MAX_NGRAM = max(len(k.split()) for k in _SKILLS_WHITELIST)
 
 
 def extract_skills(text: str, score_cutoff: int = 85) -> list[str]:  # noqa: ARG001
-    """
-    Extract skills from CV text using curated whitelist matching.
-
-    Strategy:
-    1. Scan sliding n-gram windows (1 to max phrase length) over the token stream
-    2. Exact match (case-insensitive) against the curated whitelist
-    3. Prefer longer phrase matches (e.g. 'Spring Boot' over 'Spring')
-    4. Deduplicate and return sorted canonical display names
-
-    Args:
-        text: CV text to analyze
-        score_cutoff: Unused — kept for API compatibility. Whitelist uses exact matching.
-
-    Returns:
-        Sorted list of matched skill display names.
-    """
     nlp = get_nlp()
     doc = nlp(text)
 
     tokens = [token.text for token in doc if not token.is_space]
     matched: set[str] = set()
-    covered: set[int] = set()  # token indices already claimed by a longer match
+    covered: set[int] = set()
 
-    # Scan longest-first to prefer "Spring Boot" over "Spring"
     for ngram_len in range(_MAX_NGRAM, 0, -1):
         for i in range(len(tokens) - ngram_len + 1):
-            # Skip if any token in this window already claimed by longer match
+
             if any(j in covered for j in range(i, i + ngram_len)):
                 continue
             phrase = " ".join(tokens[i : i + ngram_len]).lower().strip(".,;:()")

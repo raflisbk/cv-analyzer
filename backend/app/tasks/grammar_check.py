@@ -1,5 +1,3 @@
-"""Grammar check + ATS check Celery task."""
-
 import asyncio
 
 from celery import Task
@@ -21,11 +19,8 @@ from app.tasks.document_processing import ProgressTask
     max_retries=2,
     default_retry_delay=30,
 )
-def grammar_check_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
-    """Grammar check + ATS check. llm_suggest_task runs after this."""
-
+def grammar_check_task(self: Task, job_id: str) -> dict:
     async def _get_job_data() -> tuple[str | None, list[dict] | None]:
-        """Returns (cv_text, nlp_sections_list)"""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)

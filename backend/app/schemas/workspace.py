@@ -1,5 +1,3 @@
-"""Workspace hydration schemas."""
-
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -16,7 +14,6 @@ from app.schemas.anchors import SuggestionAnchorRecord
 
 
 class WorkspaceFileInfo(BaseModel):
-    """Job-scoped file metadata safe to expose to the workspace."""
 
     filename: str | None = None
     mime_type: str | None = None
@@ -25,7 +22,6 @@ class WorkspaceFileInfo(BaseModel):
 
 
 class WorkspaceDocumentPayload(BaseModel):
-    """Document content available to hydrate the workspace shell."""
 
     source_text: str | None = None
     sections: list[SectionResult] = Field(default_factory=list)
@@ -33,7 +29,6 @@ class WorkspaceDocumentPayload(BaseModel):
 
 
 class WorkspaceAnalysisContext(BaseModel):
-    """Analysis subset reused by the workspace shell."""
 
     scores: ScoreResult | None = None
     ats_checks: list[AtsCheck] = Field(default_factory=list)
@@ -45,23 +40,20 @@ class WorkspaceAnalysisContext(BaseModel):
 
 
 class ChatMessage(BaseModel):
-    """Single chat message in conversation history."""
 
-    timestamp: str  # ISO 8601 datetime string
+    timestamp: str
     role: Literal["user", "assistant"]
     content: str
     status: Literal["complete", "streaming", "error"] = "complete"
 
 
 class WorkspaceNavigation(BaseModel):
-    """Job-scoped navigation affordances for workspace-related views."""
 
     workspace_url: str
     results_url: str
 
 
 class WorkspaceHydration(BaseModel):
-    """Read-only workspace hydration contract keyed by job UUID."""
 
     job_id: str
     status: Literal["preparing", "ready", "failed"]
@@ -74,25 +66,18 @@ class WorkspaceHydration(BaseModel):
     error: str | None = None
 
 
-# Draft content patch schemas
-
-
 class WorkspaceContentPatch(BaseModel):
-    """Draft content PATCH body — sections keyed by section type string."""
 
-    sections: dict[str, Any]  # { sectionType: TiptapJSONContent }
+    sections: dict[str, Any]
 
 
 class WorkspaceContentSaveResult(BaseModel):
-    """Response after successful workspace draft save."""
 
     saved: bool
     updated_at: str
 
 
-# File presigned URL schema
 class WorkspaceFileUrl(BaseModel):
-    """Presigned R2 URL untuk akses langsung ke PDF CV yang diupload."""
 
     file_url: str
-    expires_in: int = 3600  # detik
+    expires_in: int = 3600

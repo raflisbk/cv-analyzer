@@ -1,5 +1,3 @@
-"""Workspace hydration endpoint."""
-
 import uuid
 from datetime import UTC, datetime
 from typing import Any
@@ -46,7 +44,6 @@ pdf_export_service = PDFExportService()
 
 
 class PDFExportRequest(BaseModel):
-    """Request schema for PDF export."""
 
     html: str = Field(..., description="HTML content from Tiptap editor")
     filename: str = Field(default="cv-optimized.pdf", description="Output filename")
@@ -70,7 +67,6 @@ def _build_sections(raw_nlp_result: dict[str, Any] | None) -> list[SectionResult
     if not raw_nlp_result or not raw_nlp_result.get("sections"):
         return []
 
-    # Deduplicate by type — merge text of duplicate section blocks
     merged: dict[str, str] = {}
     entities_map: dict[str, list] = {}
     for section in raw_nlp_result["sections"]:
@@ -224,7 +220,6 @@ async def get_workspace_hydration(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[WorkspaceHydration]:
-    """Return a read-only workspace hydration payload keyed by the original job UUID."""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -343,7 +338,6 @@ async def get_job_file_url(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[WorkspaceFileUrl]:
-    """Return short-lived presigned R2 URL untuk PDF CV asli. (PDF-02)"""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -370,7 +364,6 @@ async def get_job_file_url(
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
 
-        # Generate presigned URL valid 1 jam
         file_url = storage_service.generate_presigned_url(job.file_id, expiration=3600)
 
         return WrappedResponse(
@@ -406,7 +399,6 @@ async def get_job_html(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[dict[str, Any]]:
-    """Convert PDF extraction to positioned HTML for Tiptap editor. (PDF-02)"""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -424,7 +416,6 @@ async def get_job_html(
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
 
-        # Extract data for conversion
         safe_result = job.result if isinstance(job.result, dict) else {}
         safe_nlp_result = job.nlp_result if isinstance(job.nlp_result, dict) else {}
         safe_anchors = (
@@ -434,14 +425,12 @@ async def get_job_html(
         source_text = _get_source_text(safe_result)
         sections = safe_nlp_result.get("sections", [])
 
-        # Get page dimensions from file metadata or use A4 defaults
         safe_file_metadata = (
             job.file_metadata if isinstance(job.file_metadata, dict) else {}
         )
         page_width = safe_file_metadata.get("page_width", 595.5)
         page_height = safe_file_metadata.get("page_height", 842.0)
 
-        # Convert to HTML with positioning
         converter = PDFToHTMLConverter()
         html_result = converter.convert_to_html(
             source_text=source_text or "",
@@ -477,7 +466,6 @@ async def patch_workspace_content(
     body: WorkspaceContentPatch,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[WorkspaceContentSaveResult]:
-    """Upsert the workspace draft sections (Tiptap JSON) for a job."""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -495,7 +483,6 @@ async def patch_workspace_content(
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
 
-        # Store draft as JSONB — sections keyed by section type
         job.workspace_draft = {"sections": body.sections}
         await db.commit()
 
@@ -524,7 +511,6 @@ async def patch_workspace_content(
 async def improve_text(
     body: InlineEditRequest,
 ) -> WrappedResponse[InlineEditResponse]:
-    """Generate AI rewrite for selected CV text."""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -556,7 +542,6 @@ async def improve_text(
     summary="Export editor HTML to PDF",
 )
 async def export_pdf(body: PDFExportRequest) -> Response:
-    """Convert Tiptap editor HTML to formatted PDF."""
     try:
         pdf_bytes = pdf_export_service.export_html_to_pdf(
             html_content=body.html,
@@ -588,10 +573,8 @@ async def export_pdf(body: PDFExportRequest) -> Response:
         )
 
 
-# WebSocket route for Yjs real-time sync
 @router.websocket("/yws/{document_id}")
 async def yjs_websocket(websocket: WebSocket, document_id: str) -> None:
-    """WebSocket endpoint for Yjs CRDT sync."""
     from app.api.v1.websocket.yws_handler import yjs_websocket_endpoint
 
     await yjs_websocket_endpoint(websocket, document_id)

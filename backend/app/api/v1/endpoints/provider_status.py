@@ -1,8 +1,3 @@
-"""
-Provider status monitoring endpoints.
-Track OpenAI/Z AI fallback status, failure counts, and current provider.
-"""
-
 from fastapi import APIRouter
 from pydantic import BaseModel
 
@@ -14,7 +9,6 @@ router = APIRouter()
 
 
 class ProviderStatusResponse(BaseModel):
-    """Response model for provider status endpoint"""
 
     current_provider: str
     failure_threshold: int
@@ -23,15 +17,6 @@ class ProviderStatusResponse(BaseModel):
 
 @router.get("/status", response_model=ProviderStatusResponse)
 async def get_provider_status() -> ProviderStatusResponse:
-    """
-    Get current provider status and statistics.
-
-    Returns:
-        ProviderStatusResponse with:
-        - current_provider: "openai" or "zai"
-        - failure_threshold: Number of consecutive failures before fallback
-        - providers: Dict with stats for each provider
-    """
     provider_manager = get_provider_manager()
     stats = provider_manager.get_stats()
 
@@ -44,17 +29,6 @@ async def get_provider_status() -> ProviderStatusResponse:
 
 @router.post("/reset")
 async def reset_provider_status() -> dict[str, str]:
-    """
-    Reset provider manager to OpenAI as primary.
-
-    Useful for:
-    - Testing fallback behavior
-    - Manual recovery after API key updates
-    - Health check recovery
-
-    Returns:
-        Dict with status message
-    """
     provider_manager = get_provider_manager()
     provider_manager.reset()
 

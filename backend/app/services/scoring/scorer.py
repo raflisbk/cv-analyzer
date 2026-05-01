@@ -1,8 +1,3 @@
-"""
-CV scoring orchestrator with AI-only scoring (no rule-based fallback).
-Uses HF Inference (BGE-M3) embeddings as primary provider.
-"""
-
 from app.core.logging import structured_logger as logger
 from app.services.scoring.anchors import (
     CLARITY_ANCHORS,
@@ -13,8 +8,6 @@ from app.services.scoring.anchors import (
 from app.services.scoring.hf_embeddings import score_dimension as hf_score_dimension
 
 
-# Dimension weights for overall score calculation
-# Clarity (40%) + Impact (25%) + Completeness (20%) + Relevance (15%) = 100%
 _DIMENSION_WEIGHTS: dict[str, float] = {
     "clarity": 0.40,
     "impact": 0.25,
@@ -24,15 +17,6 @@ _DIMENSION_WEIGHTS: dict[str, float] = {
 
 
 def _score_with_hf(text: str) -> dict:
-    """
-    Score CV using Hugging Face Inference embeddings (BGE-M3).
-
-    Args:
-        text: Full CV text
-
-    Returns:
-        Dict with scores and metadata
-    """
     logger.info("scoring_start", text_length=len(text))
 
     clarity = hf_score_dimension(text, CLARITY_ANCHORS)
@@ -64,23 +48,6 @@ def _score_with_hf(text: str) -> dict:
 
 
 def score_cv(text: str) -> dict:
-    """
-    Score a CV across 4 dimensions using AI embeddings only.
-
-    Provider Strategy:
-    - Primary: HF Inference BGE-M3 (only provider)
-    - No rule-based fallback: always requires working AI API
-
-    Args:
-        text: Full CV text (from job.result['text'])
-
-    Returns:
-        Dict with keys: overall, clarity, impact, completeness, relevance (all int 0-100),
-                        scoring_method, provider
-
-    Raises:
-        Exception: If HF Inference fails
-    """
     from app.core.config import get_settings
 
     settings = get_settings()

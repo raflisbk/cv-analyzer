@@ -1,10 +1,3 @@
-"""
-Grammar and spelling check service.
-
-Uses HuggingFace Inference API (Qwen2.5-7B-Instruct) for grammar checking.
-No Java or LanguageTool dependency required.
-"""
-
 import json
 import re
 
@@ -39,24 +32,6 @@ Rules:
 
 
 def check_grammar(text: str) -> list[dict]:
-    """
-    Check grammar and spelling in CV text using HF Inference API.
-
-    Returns list of issues. Each issue dict:
-    {
-        "text": str,        # The problematic text
-        "offset": int,      # Character offset in original text
-        "suggestion": str,  # Corrected replacement text
-        "rule": str         # Rule category: "SPELLING", "GRAMMAR", "PUNCTUATION", "STYLE"
-    }
-
-    Args:
-        text: CV text to check
-
-    Returns:
-        List of grammar/spell issue dicts.
-        Returns empty list if no issues found or if the API call fails.
-    """
     try:
         settings = get_settings()
 

@@ -13,18 +13,16 @@ ALLOWED_MIME_TYPES = {
     "application/pdf",
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/zip",  # DOCX files are detected as ZIP (they are ZIP archives)
+    "application/zip",
 }
 MAGIC_BYTES = {
     b"%PDF": "application/pdf",
-    b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1": "application/msword",  # DOC
-    b"PK\x03\x04": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # DOCX (ZIP)
+    b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1": "application/msword",
+    b"PK\x03\x04": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 }
 
 
 class FileValidationError(Exception):
-    """Raised when file validation fails"""
-
     def __init__(self, code: str, message: str):
         self.code = code
         self.message = message
@@ -32,21 +30,6 @@ class FileValidationError(Exception):
 
 
 async def validate_file(filename: str, content: bytes) -> dict:
-    """
-    Triple-check file validation: extension, MIME type, magic bytes.
-
-
-    Args:
-        filename: Original filename
-        content: File content bytes
-
-    Returns:
-        dict with validated file info
-
-    Raises:
-        FileValidationError: If validation fails
-    """
-    # Check 1: File extension
     file_ext = Path(filename).suffix.lower()
     if file_ext not in ALLOWED_EXTENSIONS:
         logger.warning(
@@ -59,7 +42,6 @@ async def validate_file(filename: str, content: bytes) -> dict:
             message="File type not supported. Only PDF, DOC, and DOCX files are allowed.",
         )
 
-    # Check 2: File size (5MB limit)
     file_size = len(content)
     if file_size > settings.CV_ANALYZER_MAX_FILE_SIZE:
         logger.warning("file_too_large", filename=filename, size=file_size)
@@ -68,7 +50,6 @@ async def validate_file(filename: str, content: bytes) -> dict:
             message=f"File size exceeds {settings.CV_ANALYZER_MAX_FILE_SIZE // (1024*1024)}MB limit.",
         )
 
-    # Check 3: MIME type detection
     mime = magic.from_buffer(content, mime=True)
     if mime not in ALLOWED_MIME_TYPES:
         logger.warning("invalid_mime_type", filename=filename, mime=mime)
@@ -77,7 +58,6 @@ async def validate_file(filename: str, content: bytes) -> dict:
             message=f"File MIME type {mime} not allowed. File may be corrupted or mislabeled.",
         )
 
-    # Check 4: Magic bytes validation
     magic_byte_valid = False
     for magic_prefix, expected_mime in MAGIC_BYTES.items():
         if content.startswith(magic_prefix) and (

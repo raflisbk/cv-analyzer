@@ -1,9 +1,3 @@
-"""Yjs WebSocket endpoint for CRDT sync.
-
-Uses ASGIServer from pycrdt-websocket as a mounted sub-app.
-Room scoped to URL path (/yjs/{job_id}) for isolation.
-"""
-
 from typing import Any
 
 from pycrdt.websocket import ASGIServer, WebsocketServer
@@ -14,18 +8,12 @@ from app.db.session import async_session_maker
 from app.models.job import Job
 
 
-# Module-level Yjs server instance
 yjs_server = WebsocketServer()
 
 
 async def _on_connect(msg: dict[str, Any], scope: dict[str, Any]) -> bool:
-    """Validate job_id exists before accepting WebSocket connection.
-
-    Returns True to reject the connection, False to accept.
-    Room is scoped by scope["path"] which is /yjs/{job_id}.
-    """
     path = scope.get("path", "")
-    # Extract job_id from path: /yjs/{job_id}
+
     parts = path.rstrip("/").split("/")
     job_id = parts[-1] if len(parts) >= 2 else ""
 
@@ -53,11 +41,9 @@ async def _on_connect(msg: dict[str, Any], scope: dict[str, Any]) -> bool:
 
 
 def _on_disconnect(msg: dict[str, Any]) -> None:
-    """Handle WebSocket disconnection."""
     logger.debug("yjs_disconnected")
 
 
-# ASGI sub-app that handles WebSocket lifecycle
 yjs_asgi_app = ASGIServer(
     websocket_server=yjs_server,
     on_connect=_on_connect,

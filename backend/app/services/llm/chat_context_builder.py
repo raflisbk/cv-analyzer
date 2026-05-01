@@ -1,25 +1,12 @@
-"""Chat system prompt builder with full CV analysis context."""
-
 from app.models.job import Job
 from app.schemas.analysis import ScoreResult
 
 
 def build_chat_system_prompt(job: Job) -> str:
-    """Build LLM system prompt with full analysis context.
-
-    Context includes:
-    - CV scores (overall + 4 dimensions)
-    - Full suggestions array (all sections, all priorities)
-    - Grammar issues list
-    - Skills gap (present, required, missing)
-
-    Returns formatted system prompt string for LLM.
-    """
     context_parts = [
         "## CV Analysis Context",
     ]
 
-    # Scores
     if job.scores:
         scores = (
             ScoreResult(**job.scores) if isinstance(job.scores, dict) else job.scores
@@ -36,7 +23,6 @@ def build_chat_system_prompt(job: Job) -> str:
     else:
         context_parts.append("Overall Score: N/A")
 
-    # Suggestions summary
     suggestions = job.suggestions or []
     if suggestions:
         context_parts.append(f"\n## Suggestions ({len(suggestions)} sections)")
@@ -53,19 +39,16 @@ def build_chat_system_prompt(job: Job) -> str:
             )
             context_parts.append(f"- {section_name}: {count} suggestions")
 
-    # Grammar issues
     grammar_issues = job.grammar_issues or []
     if grammar_issues:
         context_parts.append(f"\n## Grammar Issues ({len(grammar_issues)} found)")
 
-    # Skills from NLP result
     if job.nlp_result:
         skills = job.nlp_result.get("skills", [])
         if skills:
             context_parts.append(f"\n## Skills ({len(skills)} found)")
             context_parts.append(", ".join(skills[:20]))
 
-    # Skills gap from comparison result
     if job.comparison_result:
         context_parts.append("\n## Skills Gap")
         context_parts.append(f"Match: {job.comparison_result.get('match_pct', 'N/A')}%")
@@ -76,7 +59,6 @@ def build_chat_system_prompt(job: Job) -> str:
         if missing:
             context_parts.append(f"Missing: {', '.join(missing[:10])}")
 
-    # cv_document structure if available
     if job.cv_document and "sections" in job.cv_document:
         context_parts.append("\n## CV Document Structure")
         for section in job.cv_document["sections"][:8]:

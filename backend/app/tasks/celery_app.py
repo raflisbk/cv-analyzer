@@ -1,5 +1,3 @@
-"""Celery application configuration."""
-
 import asyncio
 import logging
 import sys

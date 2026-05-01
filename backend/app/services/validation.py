@@ -1,26 +1,14 @@
-"""Extraction quality validation."""
-
 import re
 
 from app.core.logging import structured_logger as logger
 
 
 def validate_extraction_quality(text: str) -> tuple[float, str]:
-    """
-    Validate extraction quality using heuristics
 
-    Args:
-        text: Extracted text
-
-    Returns:
-        tuple of (quality_score 0.0-1.0, status_message)
-    """
-    # Minimum length check
     if len(text.strip()) < 50:
         logger.warning("extraction_too_short", length=len(text))
         return 0.1, "Extracted text too short (< 50 characters)"
 
-    # Check for garbage/mojibake patterns
     mojibake_pattern = re.compile(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]")
     mojibake_count = len(mojibake_pattern.findall(text))
 
@@ -31,13 +19,11 @@ def validate_extraction_quality(text: str) -> tuple[float, str]:
         )
         return 0.2, "Extracted text contains too many invalid characters"
 
-    # Check for reasonable word count
     words = text.split()
     if len(words) < 20:
         logger.warning("word_count_low", word_count=len(words))
         return 0.3, "Extracted text has insufficient word count"
 
-    # Check for common CV keywords
     cv_keywords = [
         "experience",
         "education",
@@ -58,8 +44,7 @@ def validate_extraction_quality(text: str) -> tuple[float, str]:
         logger.warning("few_cv_keywords", keyword_matches=keyword_matches)
         return 0.5, "Extracted text may not be a CV"
 
-    # Calculate quality score
-    length_score = min(len(text) / 1000, 1.0)  # Max at 1000 chars
+    length_score = min(len(text) / 1000, 1.0)
     mojibake_score = 1.0 - (mojibake_count / max(len(text), 1))
     keyword_score = min(keyword_matches / 5, 1.0)
 

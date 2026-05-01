@@ -1,5 +1,3 @@
-"""Job status endpoint"""
-
 import uuid
 from datetime import UTC, datetime
 from io import BytesIO
@@ -21,7 +19,6 @@ router = APIRouter()
 
 @router.get("/jobs/{job_id}", response_model=WrappedResponse[JobResponse])
 async def get_job_status(job_id: str, db: AsyncSession = Depends(get_db)):
-    """Get job status and results."""
     request_id = str(uuid.uuid4())
 
     try:
@@ -65,7 +62,6 @@ async def get_job_file_url(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> WrappedResponse[WorkspaceFileUrl]:
-    """Return short-lived presigned R2 URL for original uploaded PDF. (PDF-02)"""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -126,10 +122,6 @@ async def proxy_job_file(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ):
-    """
-    Stream PDF file directly from R2 to avoid CORS issues with react-pdf.
-    Returns StreamingResponse with proper Content-Type for PDF rendering.
-    """
     try:
         stmt = select(Job).where(Job.id == job_id)
         result = await db.execute(stmt)
@@ -159,10 +151,8 @@ async def proxy_job_file(
                 ),
             )
 
-        # Get file content from R2
         file_content = storage_service.get_file(job.file_id)
 
-        # Stream as PDF with proper headers
         return StreamingResponse(
             BytesIO(file_content),
             media_type="application/pdf",
@@ -194,8 +184,6 @@ async def proxy_job_file(
         )
 
 
-# ── HTML content endpoint ─────────────────────────────────────────────────────
-
 import html as _html_lib  # noqa: E402
 import re as _re  # noqa: E402
 
@@ -224,14 +212,11 @@ def _section_label(stype: str) -> str:
 
 
 def _is_caps_header(line: str) -> bool:
-    """Return True if line looks like an ALL-CAPS CV section title."""
     s = line.strip()
     return bool(s and 3 <= len(s) <= 80 and s == s.upper() and _re.search(r"[A-Z]", s))
 
 
 def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
-    """Convert plain CV section text to HTML.
-    ALL-CAPS lines → <h2>, first line → <h1> if first_line_as_h1."""
     lines = text.split("\n")
     parts: list[str] = []
     i = 0
@@ -242,19 +227,16 @@ def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
         if not raw:
             continue
 
-        # First line of header section → H1 (candidate name)
         if is_first and first_line_as_h1:
             parts.append(f"<h1>{_html_lib.escape(raw)}</h1>")
             is_first = False
             continue
         is_first = False
 
-        # ALL-CAPS line → H2 (actual section title inside the PDF text)
         if _is_caps_header(raw):
             parts.append(f"<h2>{_html_lib.escape(raw)}</h2>")
             continue
 
-        # Explicit bullet markers
         bm = _re.match(r"^[•·▪▸–\-\*→]\s+(.*)", raw)
         if bm:
             items = [_html_lib.escape(bm.group(1))]
@@ -272,7 +254,6 @@ def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
             parts.append("<ul>" + "".join(f"<li>{t}</li>" for t in items) + "</ul>")
             continue
 
-        # "Role | Company [Date]"
         pipe_idx = raw.find(" | ")
         if 2 <= pipe_idx <= 70 and "@" not in raw and not raw.startswith("http"):
             title = _html_lib.escape(raw[:pipe_idx])
@@ -280,7 +261,6 @@ def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
             parts.append(f"<p><strong>{title}</strong> | {rest}</p>")
             continue
 
-        # "Key: Description"
         cm = _re.match(r"^([A-Z][^:]{2,54}):\s+(.+)", raw)
         if cm:
             key = _html_lib.escape(cm.group(1))
@@ -294,8 +274,6 @@ def _text_to_html_body(text: str, first_line_as_h1: bool = False) -> str:
 
 
 def _sections_to_html(sections: list[dict]) -> str:
-    """Render sections WITHOUT NLP type labels as headings (NLP types unreliable).
-    First 'header' section first line → H1 (name). ALL-CAPS lines → H2."""
     parts: list[str] = []
     is_first_section = True
     for sec in sections:
@@ -319,7 +297,6 @@ async def get_job_html(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ):
-    """Convert extracted nlp_result sections into styled HTML for workspace-v2 RichTextEditor."""
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -385,14 +362,13 @@ async def generate_inline_rewrite(
     request: InlineEditRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Rewrite a specific snippet of text from the CV based on user prompt."""
     from app.services.llm.hf_llm_service import HFLLMService
 
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
     try:
-        # Validate job exists
+
         stmt = select(Job).where(Job.id == job_id)
         result = await db.execute(stmt)
         job = result.scalar_one_or_none()

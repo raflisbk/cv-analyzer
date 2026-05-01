@@ -1,5 +1,3 @@
-"""NLP analysis Celery task."""
-
 import asyncio
 
 from celery import Task
@@ -22,8 +20,6 @@ from app.tasks.document_processing import ProgressTask
     default_retry_delay=30,
 )
 def nlp_analyze_task(self: Task, job_id: str) -> dict:
-    """NLP analysis: section detection, skill extraction, entity extraction."""
-
     async def _get_job_text() -> str | None:
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)

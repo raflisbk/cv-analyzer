@@ -1,5 +1,3 @@
-"""File upload endpoint."""
-
 import uuid
 from datetime import UTC, datetime
 
@@ -34,14 +32,12 @@ async def upload_file(
     file: UploadFile,
     db: AsyncSession = Depends(get_db),
 ):
-    """Upload CV file for analysis. Accepts PDF, DOC, DOCX up to 5MB."""
     request_id = str(uuid.uuid4())
 
     try:
-        # Read file content
+
         content = await file.read()
 
-        # Validate file
         file_info = await validate_file(file.filename, content)
 
         logger.info(
@@ -51,12 +47,10 @@ async def upload_file(
             mime_type=file_info["mime_type"],
         )
 
-        # Upload to R2 storage
         file_id = storage_service.upload_file(
             content=content, original_filename=file.filename, metadata=file_info
         )
 
-        # Create job record
         job = Job(
             status=JobStatus.UPLOADING,
             file_id=file_id,
@@ -73,7 +67,6 @@ async def upload_file(
 
         logger.info("job_created", job_id=str(job.id), file_id=file_id)
 
-        # Trigger 5-task analysis pipeline (.si() = immutable signatures)
         pipeline = celery_chain(
             process_document_task.si(
                 str(job.id),
@@ -100,7 +93,7 @@ async def upload_file(
         )
 
     except FileValidationError as e:
-        # Validation failed
+
         logger.warning(
             "file_validation_failed",
             filename=file.filename,

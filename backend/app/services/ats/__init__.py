@@ -1,1 +1,0 @@
-"""ATS checker services package."""

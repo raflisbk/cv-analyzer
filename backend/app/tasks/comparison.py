@@ -1,8 +1,3 @@
-"""CV vs Job Description comparison Celery task.
-
-On failure: sets comparison_status='failed', emits complete — NOT page-level error.
-"""
-
 import asyncio
 import hashlib
 import json
@@ -25,7 +20,6 @@ _redis_client: redis_lib.Redis | None = None
 
 
 def _get_redis_client() -> redis_lib.Redis:
-    """Lazy-init Redis client using Celery broker URL (same Redis as SSE pub/sub)."""
     global _redis_client  # noqa: PLW0603
     if _redis_client is None:
         _redis_client = redis_lib.from_url(celery_app.conf.broker_url)
@@ -44,7 +38,6 @@ def compare_cv_task(  # noqa: PLR0915
     jd_text: str,
     jd_role_id: str | None = None,
 ) -> dict:
-    """Compare CV against a job description via LLM."""
     cache_key = (
         f"comparison:{job_id}:{hashlib.sha256(jd_text.encode()).hexdigest()[:16]}"
     )
@@ -74,7 +67,6 @@ def compare_cv_task(  # noqa: PLR0915
         jd_text_val: str,
         role_id: str | None,
     ) -> None:
-        """Save comparison result + metadata to DB."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)

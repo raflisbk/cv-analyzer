@@ -1,5 +1,3 @@
-"""OCR service using EasyOCR."""
-
 from app.core.logging import structured_logger as logger
 
 
@@ -17,33 +15,21 @@ except ImportError:
 
 
 class OCRService:
-    """
-    OCR service with EasyOCR for scanned document text extraction
-    """
 
     def __init__(self):
         if not EASYOCR_AVAILABLE:
             msg = "EasyOCR not installed. Install with: pip install easyocr pdf2image"
             raise RuntimeError(msg)
-        # Initialize with English and common CV languages
-        self.reader = easyocr.Reader(["en"], gpu=False)  # CPU mode for compatibility
+
+        self.reader = easyocr.Reader(["en"], gpu=False)
 
     def extract_from_pdf_images(self, pdf_content: bytes) -> tuple[str, float]:
-        """
-        Perform OCR on PDF by converting to images
-
-        Args:
-            pdf_content: PDF file bytes
-
-        Returns:
-            tuple of (extracted_text, confidence_score)
-        """
         if not EASYOCR_AVAILABLE:
             logger.error("ocr_not_available")
             return "", 0.0
 
         try:
-            # Convert PDF to images
+
             images = convert_from_bytes(pdf_content, dpi=300)
 
             logger.info("ocr_converting_pages", num_pages=len(images))
@@ -52,7 +38,6 @@ class OCRService:
             total_confidence = 0.0
             num_detections = 0
 
-            # OCR each page
             for i, image in enumerate(images):
                 results = self.reader.readtext(image)
 
@@ -87,15 +72,6 @@ class OCRService:
 
 
 def perform_ocr(pdf_content: bytes) -> tuple[str, float]:
-    """
-    Module-level OCR function for easy import
-
-    Args:
-        pdf_content: PDF file bytes
-
-    Returns:
-        tuple of (extracted_text, confidence_score)
-    """
     if not EASYOCR_AVAILABLE:
         logger.warning("ocr_not_installed")
         return "", 0.0

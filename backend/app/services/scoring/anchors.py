@@ -1,10 +1,3 @@
-"""
-Ideal CV anchor text templates.
-These represent high-quality CV segments used as cosine similarity targets.
-Content is agent's discretion - chosen to maximally differentiate good vs poor CVs.
-"""
-
-# CLARITY: Readable, well-structured, concise bullet points
 CLARITY_ANCHORS: list[str] = [
     (
         "Results-driven software engineer with 5+ years of experience building "
@@ -33,7 +26,7 @@ CLARITY_ANCHORS: list[str] = [
     ),
 ]
 
-# IMPACT: Quantifiable achievements, strong action verbs, measurable results
+
 IMPACT_ANCHORS: list[str] = [
     (
         "Architected and deployed real-time data pipeline processing 10M events/day, "
@@ -61,7 +54,7 @@ IMPACT_ANCHORS: list[str] = [
     ),
 ]
 
-# COMPLETENESS: All required sections present with appropriate depth
+
 COMPLETENESS_ANCHORS: list[str] = [
     (
         "CONTACT INFORMATION\nJohn Doe | john@example.com | +1-555-0100 | "
@@ -95,7 +88,7 @@ COMPLETENESS_ANCHORS: list[str] = [
     ),
 ]
 
-# RELEVANCE: Keyword-rich, ATS-optimized, role-specific terminology
+
 RELEVANCE_ANCHORS: list[str] = [
     (
         "Software engineer experienced in Python, JavaScript, cloud computing, "

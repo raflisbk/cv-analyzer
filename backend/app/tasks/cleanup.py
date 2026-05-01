@@ -1,5 +1,3 @@
-"""Scheduled cleanup tasks."""
-
 from app.core.logging import structured_logger as logger
 from app.services.storage import storage_service
 from app.tasks.celery_app import celery_app
@@ -7,7 +5,6 @@ from app.tasks.celery_app import celery_app
 
 @celery_app.task(name="app.tasks.cleanup.cleanup_expired_files")
 def cleanup_expired_files():
-    """Delete files older than 24 hours from R2 storage."""
     logger.info("cleanup_starting")
 
     try:

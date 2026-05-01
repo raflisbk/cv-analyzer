@@ -1,5 +1,3 @@
-"""SSE streaming endpoint."""
-
 import asyncio
 import json
 
@@ -22,20 +20,6 @@ TERMINAL_STAGES = {JobStatus.COMPLETE, JobStatus.FAILED}
 
 @router.get("/stream/{job_id}")
 async def stream_job_progress(job_id: str):
-    """
-    Stream real-time job progress via Server-Sent Events
-
-    Client connection flow:
-    1. Connect to this endpoint
-    2. Receive "connected" event
-    3. If job already terminal: receive terminal event immediately, then stream closes
-    4. Otherwise receive progress updates as job processes
-    5. Connection closes when job completes or fails
-
-    Note: DB session is created and closed inside the generator — NOT via Depends(get_db).
-    Using Depends with StreamingResponse causes the session to outlive the request and
-    leaks connections on every reconnect, exhausting the pool.
-    """
 
     async def event_generator():
         redis_client = await redis.from_url(settings.CV_ANALYZER_REDIS_URL)
@@ -47,9 +31,6 @@ async def stream_job_progress(job_id: str):
             yield f"data: {json.dumps({'type': 'connected', 'job_id': job_id})}\n\n"
             logger.info("sse_connected", job_id=job_id)
 
-            # Use a scoped session here — open, query, close immediately.
-            # This prevents connection leaks: the session is returned to the pool
-            # before entering the long-lived pubsub listen loop.
             async with async_session_maker() as db:
                 result = await db.execute(select(Job).where(Job.id == job_id))
                 job = result.scalar_one_or_none()
@@ -67,7 +48,6 @@ async def stream_job_progress(job_id: str):
                 )
                 return
 
-            # Listen for progress updates from Redis pubsub
             async for message in pubsub.listen():
                 if message["type"] == "message":
                     data = message["data"].decode("utf-8")
@@ -94,6 +74,6 @@ async def stream_job_progress(job_id: str):
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # Disable Nginx buffering
+            "X-Accel-Buffering": "no",
         },
     )

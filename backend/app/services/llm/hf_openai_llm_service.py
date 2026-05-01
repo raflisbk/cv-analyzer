@@ -1,8 +1,3 @@
-"""
-HF Inference LLM service using huggingface_hub InferenceClient.
-Supports both batch processing and streaming for inline chat.
-"""
-
 import json
 from collections.abc import AsyncGenerator
 
@@ -15,17 +10,16 @@ from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
 
 
-# Model configuration for HF Inference
 HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 
 
 _SYSTEM_PROMPT_TEMPLATE = """You are an expert CV coach and recruitment specialist.
 Analyze the provided CV and generate specific, actionable improvement suggestions.
 
-## CV Best Practices Context
+
 {rag_context}
 
-## Output Format
+
 Respond with ONLY valid JSON matching this exact schema:
 {{
   "suggestions": [
@@ -53,9 +47,6 @@ Rules:
 - "missing_section" = add absent but valuable section
 - Generate 2-4 suggestions per section
 - Be specific: reference actual content from the CV text
-"""
-
-_USER_PROMPT_TEMPLATE = """CV Text:
 {cv_text}
 
 Detected Sections: {sections_json}
@@ -95,7 +86,6 @@ def _build_user_prompt(cv_text: str, sections: list[dict]) -> str:
 
 
 class HFOpenAILLMService:
-    """LLM service using HF Inference via InferenceClient."""
 
     def __init__(self) -> None:
         settings = get_settings()
@@ -106,7 +96,6 @@ class HFOpenAILLMService:
                 "Please set it in your .env file."
             )
 
-        # Use HF Inference client
         self.client = InferenceClient(token=settings.CV_ANALYZER_HF_API_KEY)
         self.model = HF_MODEL
 
@@ -121,17 +110,6 @@ class HFOpenAILLMService:
         sections: list[dict],
         rag_context: str,
     ) -> dict:
-        """
-        Generate CV suggestions using Qwen2.5 via HF Inference.
-
-        Args:
-            cv_text: Full extracted CV text
-            sections: List of detected sections
-            rag_context: RAG context chunks
-
-        Returns:
-            Dict with 'raw_json', 'prompt_tokens', 'completion_tokens'
-        """
         system_prompt = _build_system_prompt(rag_context)
         user_prompt = _build_user_prompt(cv_text, sections)
 
@@ -147,11 +125,9 @@ class HFOpenAILLMService:
 
         raw_json = response.choices[0].message.content
 
-        # Estimate tokens (rough approximation)
         prompt_tokens = len(system_prompt) // 4 + len(user_prompt) // 4
         completion_tokens = len(raw_json) // 4
 
-        # Increment Prometheus counters
         llm_tokens_counter.labels(
             provider="hf",
             model=self.model,
@@ -177,16 +153,6 @@ class HFOpenAILLMService:
         }
 
     def compare_cv(self, cv_text: str, jd_text: str) -> dict:
-        """
-        Compare CV against job description.
-
-        Args:
-            cv_text: Candidate CV text
-            jd_text: Job description text
-
-        Returns:
-            Dict with comparison result and token counts
-        """
         user_prompt = (
             f"Job Description:\n{jd_text[:2000]}\n\n"
             f"=== CANDIDATE CV ===\n{cv_text[:4000]}\n\n"
@@ -208,7 +174,6 @@ class HFOpenAILLMService:
         raw_json = response.choices[0].message.content
         comparison_data = json.loads(raw_json)
 
-        # Estimate tokens
         prompt_tokens = (len(_COMPARISON_SYSTEM_PROMPT) + len(user_prompt)) // 4
         completion_tokens = len(raw_json) // 4
 
@@ -229,47 +194,22 @@ class HFOpenAILLMService:
         self,
         prompt: str,
     ) -> AsyncGenerator[str]:
-        """
-        Generate streaming response for inline editing (future feature).
 
-        Args:
-            prompt: User prompt
-
-        Yields:
-            Text chunks as they arrive
-        """
-        # Note: InferenceClient streaming support is limited
-        # This is a placeholder for future implementation
         raise NotImplementedError("Streaming not yet implemented with InferenceClient")
 
     def validate_output(self, raw_json: str) -> SuggestionsOutput:
-        """
-        Validate LLM JSON output against SuggestionsOutput Pydantic model.
-
-        Args:
-            raw_json: JSON string from LLM response
-
-        Returns:
-            Validated SuggestionsOutput instance
-
-        Raises:
-            ValidationError: If JSON doesn't match schema
-            ValueError: If JSON is invalid or response is empty
-        """
         if not raw_json or not raw_json.strip():
             raise ValueError("Empty JSON response from HF LLM")
 
-        # Extract JSON from markdown code blocks if present
         json_str = raw_json.strip()
         if "```" in json_str:
             import re
 
-            # Find the content between ``` markers
             match = re.search(r"```(?:json)?\s*(.*?)\s*```", json_str, re.DOTALL)
             if match:
                 json_str = match.group(1).strip()
             else:
-                # Fallback: find first { and count braces to find matching }
+
                 start_idx = json_str.find("{")
                 if start_idx != -1:
                     brace_count = 0

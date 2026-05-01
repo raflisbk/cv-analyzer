@@ -1,16 +1,9 @@
-"""
-CV section detection service.
-Strategy: Hybrid — regex/keyword matching on heading lines for section boundaries,
-spaCy NER processes text within each section.
-"""
-
 import re
 from dataclasses import dataclass, field
 
 
-# Canonical section heading keywords (case-insensitive matching).
 SECTION_PATTERNS: dict[str, list[str]] = {
-    "header": [],  # Lines before first heading — implicit
+    "header": [],
     "summary": ["summary", "objective", "profile", "about", "overview", "introduction"],
     "experience": [
         "experience",
@@ -50,7 +43,7 @@ SECTION_PATTERNS: dict[str, list[str]] = {
 
 _MIN_HEADING_LEN = 3
 
-# Pattern for uppercase-heavy heading lines (e.g., "WORK EXPERIENCE", "SKILLS:")
+
 _HEADING_UPPER_RE = re.compile(
     r"^[A-Z][A-Z\s&/\-]+[A-Z][\s:]*$",
     re.MULTILINE,
@@ -59,25 +52,14 @@ _HEADING_UPPER_RE = re.compile(
 
 @dataclass
 class CvSection:
-    """Represents a detected CV section."""
 
     type: str
     text: str
     start_line: int
-    entities: list[dict] = field(default_factory=list)  # filled by entity_extractor
+    entities: list[dict] = field(default_factory=list)
 
 
 def detect_sections(text: str) -> list[CvSection]:
-    """
-    Detect and extract CV sections using hybrid regex + keyword matching.
-
-    Args:
-        text: Raw CV text (from job.result['text'])
-
-    Returns:
-        List of CvSection objects. Always includes at least a 'header' section
-        for content before the first heading.
-    """
     lines = text.splitlines()
     sections: list[CvSection] = []
     current_type = "header"
@@ -92,7 +74,7 @@ def detect_sections(text: str) -> list[CvSection]:
 
         matched_type = _match_heading(stripped)
         if matched_type is not None and matched_type != current_type:
-            # Flush current section
+
             content = "\n".join(current_lines).strip()
             if content:
                 sections.append(
@@ -104,7 +86,6 @@ def detect_sections(text: str) -> list[CvSection]:
         else:
             current_lines.append(line)
 
-    # Flush last section
     content = "\n".join(current_lines).strip()
     if content:
         sections.append(
@@ -115,12 +96,6 @@ def detect_sections(text: str) -> list[CvSection]:
 
 
 def _match_heading(line: str) -> str | None:
-    """
-    Return the section type if line matches a known section heading keyword.
-    Uses word-boundary matching to avoid false positives (e.g. "experienced" != "experience").
-    Falls back to uppercase pattern for unrecognized all-caps headings.
-    Returns None if not a heading.
-    """
     lower = line.lower().rstrip(":-. ")
     for section_type, keywords in SECTION_PATTERNS.items():
         if section_type == "header":
@@ -128,7 +103,6 @@ def _match_heading(line: str) -> str | None:
         if any(re.search(r"\b" + re.escape(kw) + r"\b", lower) for kw in keywords):
             return section_type
 
-    # Fallback: all-caps line that looks like a heading (>= 3 chars, no numbers)
     if _HEADING_UPPER_RE.match(line) and len(line.strip()) >= _MIN_HEADING_LEN:
         return "other"
 

@@ -1,5 +1,3 @@
-"""Document processing Celery task."""
-
 import asyncio
 import json
 
@@ -22,10 +20,7 @@ redis_client = redis.from_url(
 
 
 class ProgressTask(Task):
-    """Base task class with progress update capability"""
-
     def update_progress(self, job_id: str, stage: str, percentage: int, message: str):
-        """Emit progress update to Redis for SSE consumption."""
         progress_data = {
             "stage": stage,
             "percentage": percentage,
@@ -51,8 +46,6 @@ class ProgressTask(Task):
     default_retry_delay=60,
 )
 def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
-    """Process uploaded document with progress updates and retry."""
-
     try:
 
         async def update_job_status(

@@ -1,8 +1,3 @@
-"""
-Inline edit LLM service.
-Generates AI rewrites for selected CV text based on user prompts.
-"""
-
 import json
 from typing import Any
 
@@ -14,14 +9,13 @@ from app.core.logging import structured_logger as logger
 from app.schemas.inline_edit import InlineEditResponse
 
 
-# Model configuration for HF Inference
 HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 
 
 _SYSTEM_PROMPT = """You are an expert CV editor and career coach.
 Rewrite the selected CV text according to the user's prompt.
 
-## Rules
+
 - Maintain professional tone and CV formatting conventions
 - Keep the rewrite concise (same length or shorter than original)
 - Preserve key facts: dates, metrics, company names, technologies
@@ -30,7 +24,7 @@ Rewrite the selected CV text according to the user's prompt.
 - Do not include formatting like markdown or HTML
 - If the prompt is unclear, make a reasonable best effort
 
-## Context
+
 The user is editing their CV to improve it for job applications.
 Your rewrite should help them stand out to recruiters and hiring managers."""
 
@@ -38,18 +32,17 @@ Your rewrite should help them stand out to recruiters and hiring managers."""
 def _build_user_prompt(
     selected_text: str, user_prompt: str, cv_context: dict[str, Any] | None
 ) -> str:
-    """Build user prompt with selected text, user instruction, and optional CV context."""
     parts = [f"Selected text from CV:\n{selected_text}"]
 
     if cv_context:
-        # Add relevant context if available
+
         if cv_context.get("scores"):
             parts.append(
                 f"\nCurrent CV scores: {json.dumps(cv_context['scores'], indent=2)}"
             )
 
         if cv_context.get("skills"):
-            skills_list = cv_context["skills"][:5]  # Top 5 skills
+            skills_list = cv_context["skills"][:5]
             parts.append(f"\nKey skills in CV: {', '.join(skills_list)}")
 
     parts.append(f"\nUser instruction: {user_prompt}")
@@ -59,7 +52,6 @@ def _build_user_prompt(
 
 
 class InlineEditService:
-    """Service for generating inline AI edits for CV text."""
 
     def __init__(self) -> None:
         settings = get_settings()
@@ -73,17 +65,6 @@ class InlineEditService:
     def rewrite(
         self, selected_text: str, prompt: str, cv_context: dict[str, Any] | None
     ) -> InlineEditResponse:
-        """
-        Generate AI rewrite for selected CV text.
-
-        Args:
-            selected_text: Text selected by user in PDF viewer
-            prompt: User's prompt for how to improve the text
-            cv_context: Optional CV context (scores, suggestions, skills)
-
-        Returns:
-            InlineEditResponse with rewritten text
-        """
         if not selected_text or not selected_text.strip():
             return InlineEditResponse(
                 originalText=selected_text,
@@ -106,23 +87,21 @@ class InlineEditService:
                 selected_length=len(selected_text),
             )
 
-            # Call HF Inference API
             response = self.client.chat.completions.create(
                 model=HF_MODEL,
                 messages=[
                     {"role": "system", "content": _SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
                 ],
-                max_tokens=300,  # Keep rewrite concise
+                max_tokens=300,
                 temperature=0.7,
             )
 
             rewritten_text = response.choices[0].message.content or ""
 
-            # Clean up the response (remove markdown formatting if present)
             rewritten_text = rewritten_text.strip()
             if rewritten_text.startswith("```"):
-                # Remove markdown code blocks
+
                 lines = rewritten_text.split("\n")
                 if lines[0].startswith("```"):
                     lines = lines[1:]

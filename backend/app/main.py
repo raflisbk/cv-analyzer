@@ -10,8 +10,6 @@ from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.endpoints.yjs import yjs_asgi_app
 from app.api.v1.router import router as api_v1_router
-
-# Import settings and logging before anything else
 from app.core.config import get_settings
 from app.core.limiter import limiter
 from app.core.logging import structured_logger as logger
@@ -19,7 +17,6 @@ from app.core.logging import structured_logger as logger
 
 settings = get_settings()
 
-# Initialize Sentry if DSN is configured
 if settings.CV_ANALYZER_SENTRY_DSN:
     sentry_sdk.init(
         dsn=settings.CV_ANALYZER_SENTRY_DSN,
@@ -29,18 +26,15 @@ if settings.CV_ANALYZER_SENTRY_DSN:
     )
     logger.info("sentry_initialized", environment=settings.CV_ANALYZER_ENV)
 
-# Create FastAPI application
 app = FastAPI(
     title="CV Analyzer API",
     version="0.1.0",
     description="AI-powered CV analysis and improvement suggestions",
 )
 
-# Attach rate limiter state and exception handler per slowapi docs
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Add CORS middleware
 origins = (
     settings.CV_ANALYZER_CORS_ORIGINS.split(",")
     if settings.CV_ANALYZER_CORS_ORIGINS
@@ -55,14 +49,12 @@ app.add_middleware(
 )
 logger.info("cors_configured", origins=origins)
 
-# Add Prometheus instrumentation
 Instrumentator().instrument(app).expose(app)
 logger.info("prometheus_configured")
 
 
 @app.on_event("startup")
 async def startup_event() -> None:
-    """Application startup event handler"""
     logger.info(
         "app_starting",
         app_name=settings.CV_ANALYZER_APP_NAME,
@@ -73,7 +65,6 @@ async def startup_event() -> None:
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
     return {
         "status": "healthy",
         "timestamp": datetime.now(UTC).isoformat(),
@@ -81,8 +72,6 @@ async def health_check():
     }
 
 
-# Mount API v1 router
 app.include_router(api_v1_router, prefix="/api")
 
-# Mount Yjs CRDT WebSocket sub-app
 app.mount("/yjs", yjs_asgi_app)

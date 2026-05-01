@@ -1,8 +1,3 @@
-"""
-Prometheus metrics for LLM token tracking.
-Counter defined at module level — instantiate ONCE, import the instance.
-"""
-
 from prometheus_client import Counter
 
 
@@ -13,5 +8,5 @@ llm_tokens_counter = Counter(
         "provider",
         "model",
         "type",
-    ],  # labels: provider=openai, model=gpt-4o-mini, type=prompt|completion
+    ],
 )

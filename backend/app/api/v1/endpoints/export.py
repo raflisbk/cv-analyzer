@@ -1,9 +1,3 @@
-"""
-PDF export endpoint.
-GET /jobs/{id}/export/pdf — streams WeasyPrint-rendered PDF of full analysis.
-Uses Jinja2 template: app/templates/cv_analysis_report.html
-"""
-
 import asyncio
 import io
 import uuid
@@ -25,7 +19,7 @@ from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
 router = APIRouter()
 
-# Jinja2 env — resolve deterministically to backend/app/templates regardless of CWD
+
 _TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates"
 _jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
 
@@ -39,16 +33,6 @@ async def export_optimized_cv(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> Response:
-    """
-    Generate and stream PDF of optimized CV per EXPV4-01.
-
-    Renders cv_document JSONB content (header, sections, skills) with score badges
-    and inline suggestion callouts into cv_optimized.html template via WeasyPrint.
-    Streams PDF as attachment with filename cv-optimized-{original_name}-{job_id[:8]}.pdf.
-
-    Note: WeasyPrint.write_pdf() is synchronous (CPU-bound); run_in_executor prevents
-    blocking the async event loop.
-    """
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -67,7 +51,6 @@ async def export_optimized_cv(
             )
             return JSONResponse(status_code=404, content=error_response.model_dump())
 
-        # Build template context from cv_document JSONB column
         cv_document = job.cv_document or {}
         template_context = {
             "cv_document": cv_document,
@@ -81,7 +64,6 @@ async def export_optimized_cv(
             template = _jinja_env.get_template("cv_optimized.html")
             html_content = template.render(**template_context)
 
-            # WeasyPrint is synchronous/CPU-bound; run in thread executor
             loop = asyncio.get_running_loop()
             pdf_bytes = await loop.run_in_executor(
                 None, partial(HTML(string=html_content).write_pdf)
@@ -103,10 +85,9 @@ async def export_optimized_cv(
             pdf_bytes=len(pdf_bytes),
         )
 
-        # Build export filename: sanitize original filename, prefix with "cv-optimized-"
         original_name = (job.file_metadata or {}).get("filename", "")
-        base_name = Path(original_name).stem  # drop .pdf/.docx
-        # Keep only alphanumerics, hyphens, underscores; replace other chars with "_"
+        base_name = Path(original_name).stem
+
         safe_prefix = "".join(
             c if c.isalnum() or c in "-_" else "_" for c in base_name
         ).strip("_")
@@ -145,16 +126,6 @@ async def export_pdf(
     job_id: str,
     db: AsyncSession = Depends(get_db),
 ) -> Response:
-    """
-    Generate and stream PDF of CV analysis.
-
-    Renders all available analysis data (scores, skills, grammar, ATS, suggestions,
-    comparison if present) into cv_analysis_report.html template via WeasyPrint.
-    Streams PDF as attachment with filename cv-analysis-{job_id[:8]}.pdf.
-
-    Note: WeasyPrint.write_pdf() is synchronous (CPU-bound); for production scaling
-    use run_in_executor. For portfolio purposes direct call is acceptable.
-    """
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
 
@@ -173,7 +144,6 @@ async def export_pdf(
             )
             return JSONResponse(status_code=404, content=error_response.model_dump())
 
-        # Build template context from job JSONB columns
         template_context = {
             "job_id": str(job.id),
             "generated_at": datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC"),
@@ -194,8 +164,6 @@ async def export_pdf(
             template = _jinja_env.get_template("cv_analysis_report.html")
             html_content = template.render(**template_context)
 
-            # WeasyPrint is synchronous/CPU-bound; run in thread executor
-            # to avoid blocking the async event loop.
             loop = asyncio.get_running_loop()
             pdf_bytes = await loop.run_in_executor(
                 None, partial(HTML(string=html_content).write_pdf)
@@ -217,11 +185,9 @@ async def export_pdf(
             pdf_bytes=len(pdf_bytes),
         )
 
-        # Build export filename: strip extension from original CV filename,
-        # sanitize, then append short job ID. e.g. "John_Doe_CV-a1b2c3d4.pdf"
         original_name = (job.file_metadata or {}).get("filename", "")
-        base_name = Path(original_name).stem  # drop .pdf/.docx
-        # Keep only alphanumerics, spaces, hyphens, underscores; replace spaces → _
+        base_name = Path(original_name).stem
+
         safe_prefix = "".join(
             c if c.isalnum() or c in "-_" else "_" for c in base_name
         ).strip("_")

@@ -1,7 +1,3 @@
-"""
-Service to generate AI reasoning/explanations for CV scores using HF Inference.
-"""
-
 import json
 
 from app.core.logging import structured_logger as logger
@@ -36,9 +32,6 @@ class ScoreExplainerService:
         self.llm = HFOpenAILLMService()
 
     def explain_scores(self, cv_text: str, scores: dict[str, int]) -> dict[str, str]:
-        """
-        Generate explanations for the provided scores.
-        """
         user_prompt = f"CV Text:\n{cv_text[:4000]}\n\nNumerical Scores:\n{json.dumps(scores, indent=2)}\n\nExplain these scores."
 
         try:
@@ -48,17 +41,15 @@ class ScoreExplainerService:
                     {"role": "system", "content": _SCORE_EXPLAINER_SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt},
                 ],
-                temperature=0.3,  # Lower temperature for consistency
+                temperature=0.3,
                 max_tokens=800,
             )
 
             raw_json = response.choices[0].message.content
 
-            # Use the existing validation logic from HFOpenAILLMService if possible,
-            # but since we have a different schema, we'll do basic extraction.
             json_str = raw_json.strip()
             if "```" in json_str:
-                import re
+                import re  # noqa: PLC0415
 
                 match = re.search(r"```(?:json)?\s*(.*?)\s*```", json_str, re.DOTALL)
                 if match:

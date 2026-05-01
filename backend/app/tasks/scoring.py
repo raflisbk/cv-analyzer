@@ -1,5 +1,3 @@
-"""CV scoring Celery task."""
-
 import asyncio
 
 from celery import Task
@@ -20,8 +18,6 @@ from app.tasks.document_processing import ProgressTask
     default_retry_delay=60,
 )
 def score_cv_task(self: Task, job_id: str) -> dict:
-    """CV scoring via embedding cosine similarity."""
-
     async def _get_cv_text() -> str | None:
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)

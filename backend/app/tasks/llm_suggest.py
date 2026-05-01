@@ -1,8 +1,3 @@
-"""LLM suggestion generation Celery task. Final task in the analysis pipeline.
-
-On LLM failure: saves suggestions=None, still sets COMPLETE. NEVER sets FAILED due to LLM error.
-"""
-
 import asyncio
 import json
 from datetime import UTC, datetime
@@ -28,7 +23,6 @@ _redis_client: redis_lib.Redis | None = None
 
 
 def _get_redis_client() -> redis_lib.Redis:
-    """Lazy-init Redis client using Celery broker URL (same Redis as SSE pub/sub)."""
     global _redis_client  # noqa: PLW0603
     if _redis_client is None:
         _redis_client = redis_lib.from_url(celery_app.conf.broker_url)
@@ -36,7 +30,6 @@ def _get_redis_client() -> redis_lib.Redis:
 
 
 def _repair_llm_output(raw_json: str, cv_text: str) -> str:
-    """Repair incomplete LLM JSON by inferring missing fields."""
     try:
         data = json.loads(raw_json)
     except json.JSONDecodeError:
@@ -86,7 +79,6 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
                 else:
                     suggestion["original_text"] = suggestion_text[:100]
 
-            # Repair missing 'after_text' - None is acceptable per schema
             if "after_text" not in suggestion:
                 suggestion["after_text"] = None
 
@@ -100,7 +92,6 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
     default_retry_delay=30,
 )
 def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
-    """LLM suggestion generation. Final task — sets COMPLETE or partial COMPLETE on failure."""
     cache_key = f"llm_suggestions:{job_id}"
     cache_ttl = 86400
 
@@ -136,7 +127,6 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
         tokens_used: int,
         file_id: str = "",
     ) -> None:
-        """Save suggestions + token count + anchors + cv_document to DB, set COMPLETE status."""
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -271,7 +261,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
             rag_context = asyncio.run(
                 retrieve_relevant_chunks(
                     query_embedding=query_embedding,
-                    section_type=None,  # Broad retrieval across all sections
+                    section_type=None,
                     limit=5,
                 )
             )

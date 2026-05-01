@@ -1,8 +1,3 @@
-"""
-PDF export service.
-Converts Tiptap editor HTML content to formatted PDF.
-"""
-
 from typing import Any
 
 from weasyprint import CSS, HTML
@@ -12,8 +7,6 @@ from app.core.logging import structured_logger as logger
 
 
 class PDFExportService:
-    """Service for exporting editor content to PDF."""
-
     def __init__(self) -> None:
         self.font_config = FontConfiguration()
 
@@ -22,26 +15,13 @@ class PDFExportService:
         html_content: str,
         metadata: dict[str, Any] | None = None,
     ) -> bytes:
-        """
-        Convert HTML content from Tiptap editor to PDF bytes.
-
-        Args:
-            html_content: HTML string from Tiptap editor
-            metadata: Optional document metadata (title, author, etc.)
-
-        Returns:
-            PDF file as bytes
-        """
         try:
             logger.info("pdf_export_starting", content_length=len(html_content))
 
-            # Wrap content in proper HTML structure
             full_html = self._build_html_document(html_content, metadata)
 
-            # CSS styles for professional CV layout
             css_styles = self._get_cv_css()
 
-            # Generate PDF
             html_doc = HTML(
                 string=full_html,
                 base_url="",
@@ -64,7 +44,6 @@ class PDFExportService:
     def _build_html_document(
         self, content: str, metadata: dict[str, Any] | None
     ) -> str:
-        """Wrap content in complete HTML document structure."""
         title = metadata.get("title", "CV Document") if metadata else "CV Document"
         author = metadata.get("author", "") if metadata else ""
 
@@ -84,7 +63,6 @@ class PDFExportService:
 </html>"""
 
     def _get_cv_css(self) -> str:
-        """Return CSS styles for professional CV layout."""
         return """
         @page {
             size: A4;
@@ -110,7 +88,6 @@ class PDFExportService:
             margin: 0 auto;
         }
 
-        /* Headings */
         h1 {
             font-size: 18pt;
             font-weight: 700;
@@ -136,13 +113,11 @@ class PDFExportService:
             color: #444;
         }
 
-        /* Paragraphs */
         p {
             margin-bottom: 0.5em;
             text-align: justify;
         }
 
-        /* Lists */
         ul, ol {
             margin-left: 1.5em;
             margin-bottom: 0.5em;
@@ -152,7 +127,6 @@ class PDFExportService:
             margin-bottom: 0.2em;
         }
 
-        /* Text formatting */
         strong, b {
             font-weight: 600;
         }
@@ -174,30 +148,25 @@ class PDFExportService:
             text-decoration: underline;
         }
 
-        /* Suggestion highlights - remove for export */
         .suggestion-highlight {
             background: none !important;
             border-bottom: none !important;
             padding: 0 !important;
         }
 
-        /* Page breaks */
         .page-break {
             page-break-before: always;
         }
 
-        /* Avoid orphan/widow lines */
         p, li {
             orphans: 3;
             widows: 3;
         }
 
-        /* Keep headings with following content */
         h1, h2, h3 {
             page-break-after: avoid;
         }
 
-        /* Tables if any */
         table {
             width: 100%;
             border-collapse: collapse;

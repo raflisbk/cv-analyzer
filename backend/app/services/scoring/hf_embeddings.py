@@ -1,8 +1,3 @@
-"""
-Hugging Face Inference API embeddings service (fallback).
-Uses BGE-M3 model via HF Inference API with huggingface_hub library.
-"""
-
 import numpy as np
 from huggingface_hub import InferenceClient
 
@@ -14,15 +9,6 @@ HF_MODEL_NAME = "BAAI/bge-m3"
 
 
 def get_client() -> InferenceClient:
-    """
-    Get HuggingFace InferenceClient instance.
-
-    Returns:
-        InferenceClient instance
-
-    Raises:
-        ValueError: If HF API key not configured
-    """
     settings = get_settings()
 
     if not settings.CV_ANALYZER_HF_API_KEY:
@@ -38,19 +24,6 @@ def get_client() -> InferenceClient:
 
 
 def get_embedding(text: str) -> list[float]:
-    """
-    Get embedding vector from Hugging Face Inference API.
-
-    Args:
-        text: Input text to embed
-
-    Returns:
-        List of float values representing the embedding vector
-
-    Raises:
-        ValueError: If HF API key not configured
-        Exception: If API request fails
-    """
     client = get_client()
 
     logger.debug(
@@ -59,18 +32,13 @@ def get_embedding(text: str) -> list[float]:
         model=HF_MODEL_NAME,
     )
 
-    # Use feature_extraction to get embeddings
     result = client.feature_extraction(text, model=HF_MODEL_NAME)
 
-    # HF returns numpy array or list[list[float]]
     if isinstance(result, np.ndarray):
-        # Convert numpy array to list
         embedding = result.tolist()
     elif isinstance(result, list) and len(result) > 0 and isinstance(result[0], list):
-        # Handle nested list [[0.1, 0.2, ...]]
         embedding = result[0]
     elif isinstance(result, list):
-        # Handle flat list [0.1, 0.2, ...]
         embedding = result
     else:
         raise ValueError(f"Unexpected HF API response format: {type(result)}")
@@ -84,16 +52,6 @@ def get_embedding(text: str) -> list[float]:
 
 
 def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
-    """
-    Calculate cosine similarity between two vectors.
-
-    Args:
-        vec1: First vector
-        vec2: Second vector
-
-    Returns:
-        Cosine similarity score (0-1)
-    """
     import math
 
     if len(vec1) != len(vec2):
@@ -110,19 +68,8 @@ def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
 
 
 def score_dimension(text: str, anchors: list[str]) -> int:
-    """
-    Score a CV dimension by comparing text embeddings with anchor embeddings.
-
-    Args:
-        text: Full CV text
-        anchors: List of reference texts for this dimension
-
-    Returns:
-        Integer score 0-100
-    """
     text_embedding = get_embedding(text)
 
-    # Get similarity scores for all anchors
     similarities = []
     for anchor in anchors:
         try:
@@ -140,11 +87,9 @@ def score_dimension(text: str, anchors: list[str]) -> int:
         logger.warning("no_valid_similarities")
         return 50
 
-    # Average similarity and convert to 0-100 scale
     avg_similarity = sum(similarities) / len(similarities)
     score = int(avg_similarity * 100)
 
-    # Clamp to 0-100
     score = max(0, min(100, score))
 
     logger.info(

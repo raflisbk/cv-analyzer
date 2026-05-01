@@ -1,9 +1,3 @@
-"""
-RAG retrieval using pgvector cosine distance.
-Retrieves top-K chunks from knowledge_chunks table by cosine similarity.
-section_type filter improves relevance for specific CV sections.
-"""
-
 from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
@@ -16,19 +10,6 @@ async def retrieve_relevant_chunks(
     section_type: str | None = None,
     limit: int = 5,
 ) -> list[str]:
-    """
-    Retrieve top-K chunks by cosine similarity using pgvector <=> operator.
-
-    Args:
-        query_embedding: 3072-dim vector from get_rag_embedding().
-        section_type: Optional CV section filter (e.g. "experience", "skills").
-                      If provided, only chunks tagged with this section_type are queried.
-        limit: Max chunks to return (default 5).
-
-    Returns:
-        List of content strings for injection into LLM system prompt.
-        Returns [] on retrieval failure (non-fatal).
-    """
     try:
         async with async_session_maker() as session:
             stmt = (
@@ -48,8 +29,7 @@ async def retrieve_relevant_chunks(
             )
             return chunks
     except Exception as e:
-        # D-18: RAG failure is non-fatal — log warning and return empty list
-        # llm_suggest_task will proceed with LLM call without RAG context
+
         logger.warning(
             "rag_retrieval_failed",
             error=str(e),
