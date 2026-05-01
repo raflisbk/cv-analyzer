@@ -136,6 +136,7 @@ ignore = [
     "TRY301",  # abstract raise to an inner function
     "PLW2901", # for loop variable overwritten by assignment target
     "I001",   # import block un-sorted (black handles import formatting)
+    "UP042",  # replace str+Enum with StrEnum (intentional for compatibility)
     "N806",    # non-lowercase variable in function
 ]
 
