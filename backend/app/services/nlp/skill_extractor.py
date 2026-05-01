@@ -2,6 +2,15 @@ from app.core.logging import structured_logger as logger
 from app.services.nlp.model import get_nlp
 
 
+try:
+    from rapidfuzz import fuzz as _fuzz
+
+    _FUZZY_AVAILABLE = True
+except ImportError:
+    _fuzz = None
+    _FUZZY_AVAILABLE = False
+
+
 _SKILLS_WHITELIST: dict[str, str] = {
     # ── Programming Languages ──
     "python": "Python",
@@ -1471,7 +1480,7 @@ _WHITELIST_LOWER: dict[str, str] = {k.lower(): v for k, v in _SKILLS_WHITELIST.i
 _MAX_NGRAM = max(len(k.split()) for k in _SKILLS_WHITELIST)
 
 
-def extract_skills(text: str, score_cutoff: int = 85) -> list[str]:  # noqa: ARG001
+def extract_skills(text: str, score_cutoff: int = 85) -> list[str]:
     nlp = get_nlp()
     doc = nlp(text)
 
@@ -1490,5 +1499,35 @@ def extract_skills(text: str, score_cutoff: int = 85) -> list[str]:  # noqa: ARG
                 for j in range(i, i + ngram_len):
                     covered.add(j)
 
+    if _FUZZY_AVAILABLE and score_cutoff > 0:
+        _fuzzy_match_uncovered(tokens, covered, matched, score_cutoff)
+
     logger.info("skill_extraction_done", count=len(matched))
     return sorted(matched)
+
+
+def _fuzzy_match_uncovered(
+    tokens: list[str],
+    covered: set[int],
+    matched: set[str],
+    score_cutoff: int,
+) -> None:
+    for ngram_len in range(min(_MAX_NGRAM, 3), 1, -1):
+        for i in range(len(tokens) - ngram_len + 1):
+            if any(j in covered for j in range(i, i + ngram_len)):
+                continue
+            phrase = " ".join(tokens[i : i + ngram_len]).lower().strip(".,;:()")
+            best_score = 0.0
+            best_match: str | None = None
+            for key, display in _WHITELIST_LOWER.items():
+                if abs(len(key.split()) - ngram_len) > 1:
+                    continue
+                score = _fuzz.ratio(phrase, key)
+                if score > best_score:
+                    best_score = score
+                    best_match = display
+            if best_score >= score_cutoff and best_match:
+                matched.add(best_match)
+                for j in range(i, i + ngram_len):
+                    covered.add(j)
+                break

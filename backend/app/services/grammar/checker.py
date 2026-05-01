@@ -6,7 +6,7 @@ from app.core.logging import structured_logger as logger
 from app.services.llm.hf_openai_llm_service import HFOpenAILLMService
 
 
-_GRAMMAR_SYSTEM_PROMPT = """You are a professional CV grammar and spelling checker.
+_GRAMMAR_SYSTEM_PROMPT_EN = """You are a professional CV grammar and spelling checker.
 Check the provided CV text for grammar, spelling, punctuation, and style errors.
 
 Respond with ONLY valid JSON matching this exact schema:
@@ -30,6 +30,79 @@ Rules:
 - Return at most 20 issues
 - Return {"issues": []} if no errors found"""
 
+_GRAMMAR_SYSTEM_PROMPT_ID = """Anda adalah pemeriksa tata bahasa dan ejaan CV profesional dalam bahasa Indonesia.
+Periksa teks CV yang diberikan untuk kesalahan tata bahasa, ejaan, tanda baca, dan gaya penulisan.
+
+Balas HANYA dengan JSON valid sesuai skema ini:
+{
+  "issues": [
+    {
+      "text": "<teks bermasalah yang disalin persis dari CV>",
+      "suggestion": "<teks perbaikan>",
+      "rule": "<SPELLING|GRAMMAR|PUNCTUATION|STYLE>"
+    }
+  ]
+}
+
+Aturan:
+- "text" HARUS substring PERSIS dari CV (verbatim, case-sensitive)
+- Hanya tandai kesalahan asli, bukan konvensi CV (bullet point tanpa subjek boleh)
+- SPELLING: kata salah eja
+- GRAMMAR: kesalahan subjek-predikat, inkonsistensi waktu, dsb.
+- PUNCTUATION: tanda baca hilang atau salah
+- STYLE: kapitalisasi tidak konsisten, kata berlebihan, kalimat kaku
+- Maksimal 20 masalah
+- Kembalikan {"issues": []} jika tidak ada kesalahan"""
+
+_MAX_TEXT_LENGTH = 10000
+_MIN_INDONESIAN_WORDS = 4
+
+_INDONESIAN_INDICATORS = {
+    "yang",
+    "dan",
+    "dengan",
+    "untuk",
+    "dari",
+    "ini",
+    "itu",
+    "pada",
+    "dalam",
+    "adalah",
+    "telah",
+    "sudah",
+    "akan",
+    "bisa",
+    "harus",
+    "sebagai",
+    "oleh",
+    "ke",
+    "di",
+    "se",
+    "atau",
+    "juga",
+    "tidak",
+    "ada",
+    "lebih",
+    "satu",
+    "pengalaman",
+    "pendidikan",
+    "keahlian",
+    "kerja",
+    "perusahaan",
+    "manajemen",
+    "pengembangan",
+    "mengelola",
+    "menggunakan",
+    "membuat",
+    "melakukan",
+}
+
+
+def _detect_indonesian(text: str) -> bool:
+    words = set(text.lower().split())
+    matches = words & _INDONESIAN_INDICATORS
+    return len(matches) >= _MIN_INDONESIAN_WORDS
+
 
 def check_grammar(text: str) -> list[dict]:
     try:
@@ -41,12 +114,18 @@ def check_grammar(text: str) -> list[dict]:
 
         llm_service = HFOpenAILLMService()
 
-        user_prompt = f"CV Text:\n{text[:5000]}"
+        is_indonesian = _detect_indonesian(text[:2000])
+        system_prompt = (
+            _GRAMMAR_SYSTEM_PROMPT_ID if is_indonesian else _GRAMMAR_SYSTEM_PROMPT_EN
+        )
+        truncated = text[:_MAX_TEXT_LENGTH]
+
+        user_prompt = f"CV Text:\n{truncated}"
 
         response = llm_service.client.chat.completions.create(
             model=llm_service.model,
             messages=[
-                {"role": "system", "content": _GRAMMAR_SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0.3,
@@ -81,6 +160,7 @@ def check_grammar(text: str) -> list[dict]:
         logger.info(
             "grammar_check_done",
             issue_count=len(issues),
+            language="id" if is_indonesian else "en",
         )
     except Exception as exc:
         logger.warning(

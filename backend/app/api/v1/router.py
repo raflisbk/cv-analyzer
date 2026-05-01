@@ -6,7 +6,6 @@ from app.api.v1.endpoints import (
     export,
     inline_edit,
     jobs,
-    provider_status,
     results,
     stream,
     upload,
@@ -25,4 +24,3 @@ router.include_router(inline_edit.router, tags=["inline-edit"])
 router.include_router(export.router, tags=["export"])
 router.include_router(compare.router, tags=["comparison"])
 router.include_router(chat.router, tags=["chat"])
-router.include_router(provider_status.router, prefix="/provider", tags=["provider"])

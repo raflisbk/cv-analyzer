@@ -117,12 +117,6 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         isVisible: true,
       });
 
-      console.log("[useInlineEdit] Text selected:", {
-        length: selectedText.length,
-        preview: selectedText.slice(0, 30),
-        rect: { top: rect.top, left: rect.left, width: rect.width },
-        rectPercent,
-      });
     }, SELECTION_DEBOUNCE_MS);
   }, []);
 
@@ -146,10 +140,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
   const applyRewrite = useCallback(
     (editId: string, originalText: string, rewrittenText: string) => {
-      if (!inlineEditsMapRef.current) {
-        console.warn("[useInlineEdit] Yjs map not initialized");
-        return;
-      }
+      if (!inlineEditsMapRef.current) return;
 
         const editRecord = {
         editId,
@@ -159,12 +150,6 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
       };
 
       inlineEditsMapRef.current.set(editId, editRecord);
-
-      console.log("[useInlineEdit] Rewrite applied:", {
-        editId,
-        originalLength: originalText.length,
-        rewrittenLength: rewrittenText.length,
-      });
 
         closePopover();
     },
