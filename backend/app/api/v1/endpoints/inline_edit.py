@@ -37,7 +37,7 @@ async def inline_edit(
     request_id = f"inline-edit-{uuid.uuid4().hex[:16]}"
     timestamp = datetime.now(UTC).isoformat()
 
-    result = await db.execute(select(Job).where(Job.job_id == job_id))
+    result = await db.execute(select(Job).where(Job.id == job_id))
     job = result.scalar_one_or_none()
 
     if not job:
