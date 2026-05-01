@@ -19,7 +19,6 @@ export function ChatPanel({ className }: { className?: string }) {
     setChatStreaming,
   } = useWorkspaceV2Store();
 
-  // Hydrate chat messages from server on mount
   useEffect(() => {
     if (hydration?.messages && hydration.messages.length > 0) {
       // Only hydrate if store is empty (initial load)
@@ -100,7 +99,6 @@ export function ChatPanel({ className }: { className?: string }) {
 
   return (
     <div className={cn("flex h-full flex-col overflow-hidden", className)}>
-      {/* Panel header */}
       <div
         className="flex-none rounded-t-2xl border-b px-4 py-3.5"
         style={{
@@ -143,12 +141,10 @@ export function ChatPanel({ className }: { className?: string }) {
         )}
       </div>
 
-      {/* Messages list */}
       <div className="min-h-0 flex-1">
         <ChatMessageList messages={chatMessages} isStreaming={isStreaming} />
       </div>
 
-      {/* Input area */}
       <div
         className="flex-none rounded-b-2xl border-t p-3"
         style={{ borderColor: "rgba(139,92,246,0.08)" }}

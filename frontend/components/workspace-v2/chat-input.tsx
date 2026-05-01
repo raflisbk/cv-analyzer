@@ -13,7 +13,6 @@ interface ChatInputProps {
 export function ChatInput({ onSend, disabled, className }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea between 2 and 6 rows
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) {

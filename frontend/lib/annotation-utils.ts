@@ -1,38 +1,19 @@
-/**
- * annotation-utils.ts - Annotation coordinate mapping utilities.
- *
- * Maps text substrings to PDF bounding rects using pdfjs TextItem positions.
- */
 
-/** Data structure untuk anchor koordinat saran ke PDF */
+
 export interface SuggestionAnchor {
-  section: string; // nama section, e.g. "experience"
-  searchText: string; // substring yang dipakai untuk locate rect
-  charOffset: number; // character offset dari section start (untuk future use)
-  length: number; // jumlah karakter
-  pageIndex: number; // 0-indexed page number
+  section: string;
+  searchText: string;
+  charOffset: number;
+  length: number;
+  pageIndex: number;
   rect: {
-    x: number; // viewport x (pixels, dari kiri)
-    y: number; // viewport y (pixels, dari atas)
-    w: number; // lebar dalam viewport pixels
-    h: number; // tinggi dalam viewport pixels
+    x: number;
+    y: number;
+    w: number;
+    h: number;
   };
 }
 
-/**
- * Cari bounding rect untuk text substring pada PDF page.
- *
- * @param page - PDFPageProxy dari react-pdf onLoadSuccess callback
- * @param searchText - text substring yang dicari (case-sensitive)
- * @param pageIndex - 0-indexed page number (untuk SuggestionAnchor)
- * @param section - nama section (untuk SuggestionAnchor)
- * @returns SuggestionAnchor jika ditemukan, null jika tidak ada match
- *
- * @example
- * // Dalam PdfViewerInner onPageLoadSuccess callback:
- * const anchor = await findTextRect(page, "Software Engineer", 0, "experience");
- * if (anchor) console.log("[Annotation Spike] rect:", anchor.rect);
- */
 export async function findTextRect(
   page: unknown,
   searchText: string,
@@ -69,12 +50,12 @@ export async function findTextRect(
         return {
           section,
           searchText,
-          charOffset: 0, // Untuk future use — exact char offset computation
+          charOffset: 0,
           length: searchText.length,
           pageIndex,
           rect: {
             x: viewportX,
-            y: viewportY - textItem.height, // Adjust ke top-left dari text item
+            y: viewportY - textItem.height,
             w: textItem.width,
             h: textItem.height,
           },

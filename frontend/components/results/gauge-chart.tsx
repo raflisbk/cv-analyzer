@@ -1,7 +1,4 @@
-/**
- * Single radial gauge chart — Mathical design system.
- * Lime/orange/pink fill per score range, cream track on dark bg, Bricolage numerals.
- */
+
 
 "use client";
 
@@ -10,17 +7,17 @@ import { Arc } from "@visx/shape";
 import { Group } from "@visx/group";
 
 interface GaugeChartProps {
-  value: number;        // 0-100
+  value: number;
   label: string;
   size?: number;
-  accentColor?: string; // override — used when card already sets the color
+  accentColor?: string;
 }
 
 function getArcColor(value: number, accentColor?: string): string {
   if (accentColor) { return accentColor; }
-  if (value >= 80) { return "#CAFF43"; }  // lime
-  if (value >= 60) { return "#FF8C42"; }  // orange
-  return "#FF4FCB";                        // pink
+  if (value >= 70) return "#CAFF43";
+  if (value >= 40) return "#FF8C42";
+  return "#FF4FCB";
 }
 
 export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChartProps) {
@@ -53,7 +50,6 @@ export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChart
   return (
     <svg width={size} height={size} aria-label={`${label} score: ${value} out of 100`}>
       <Group top={cy} left={cx}>
-        {/* Track — cream/15 on dark */}
         <Arc
           innerRadius={r - strokeWidth}
           outerRadius={r}
@@ -61,7 +57,6 @@ export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChart
           endAngle={endAngle}
           fill="rgba(245,242,216,0.12)"
         />
-        {/* Filled value arc */}
         <Arc
           innerRadius={r - strokeWidth}
           outerRadius={r}
@@ -69,7 +64,6 @@ export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChart
           endAngle={valueAngle}
           fill={arcColor}
         />
-        {/* Glow dot at arc tip */}
         {animatedValue > 1 && (() => {
           const tipAngle = valueAngle - Math.PI / 2;
           const tipR = r - strokeWidth / 2;
@@ -83,7 +77,6 @@ export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChart
             />
           );
         })()}
-        {/* Score number */}
         <text
           textAnchor="middle"
           dy="-0.1em"
@@ -95,7 +88,6 @@ export function GaugeChart({ value, label, size = 160, accentColor }: GaugeChart
         >
           {animatedValue}
         </text>
-        {/* /100 sub-label */}
         <text
           textAnchor="middle"
           dy={size * 0.14}

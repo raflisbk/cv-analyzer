@@ -1,10 +1,4 @@
-/**
- * Zustand store untuk workspace-v2.
- * Grid-based layout state for workspace.
- * null = PDF-first mode (left compact), string = detail tab active (PDF hidden).
- * activeSuggestionId tracks which suggestion card is highlighted.
- * Jangan gunakan persist middleware - Yjs menangani persistence.
- */
+
 "use client";
 import { create } from "zustand";
 import type { WorkspaceHydration } from "@/lib/workspace";
@@ -19,9 +13,8 @@ export type ChatMessage = {
 };
 
 interface WorkspaceV2State {
-  // PDF state
   pdfUrl: string | null;
-  viewMode: "optimized" | "original"; // PDF-03: default optimized
+  viewMode: "optimized" | "original";
 
   // Layout state - null = PDF-first, string = detail focus on that tab
   activeDetailTab: string | null;
@@ -66,8 +59,8 @@ interface WorkspaceV2State {
 
 export const useWorkspaceV2Store = create<WorkspaceV2State>((set) => ({
   pdfUrl: null,
-  viewMode: "optimized",      // PDF-03: workspace defaults to optimized PDF view
-  activeDetailTab: null,      // default PDF-first mode
+  viewMode: "optimized",
+  activeDetailTab: null,
   activeSuggestionId: null,
   suggestionStatuses: {},
   cvDocument: null,

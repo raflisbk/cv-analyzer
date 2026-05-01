@@ -10,19 +10,18 @@ import type {
 } from "@/lib/types";
 import type { ChatMessage } from "@/lib/stores/workspace-v2-store";
 
-// Suggestion anchor coordinate types
 export interface AnchorRect {
-  x: number;  // PDF points, left edge (top-left origin, y-down - CSS-compatible)
-  y: number;  // PDF points, top edge
-  w: number;  // width in PDF points
-  h: number;  // height in PDF points
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
 export interface SuggestionAnchorRecord {
-  suggestion_id: string;  // deterministic: "{section}_{item_idx}_{card_idx}"
+  suggestion_id: string;
   section: string;
   text_anchor: string;
-  page_index: number;   // 0-indexed
+  page_index: number;
   rect: AnchorRect;
   priority: "high_impact" | "quick_win";
 }

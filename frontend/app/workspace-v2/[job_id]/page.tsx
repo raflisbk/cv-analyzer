@@ -13,7 +13,6 @@ export const metadata: Metadata = {
 export default async function WorkspaceV2Page({ params }: WorkspaceV2PageProps) {
   const { job_id } = await params;
 
-  // Fetch hydration data on server
   const hydration = await getWorkspaceHydration(job_id);
 
   // Use proxy endpoint for PDF to avoid CORS issues with R2 presigned URLs

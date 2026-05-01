@@ -51,7 +51,6 @@ function _UnsavedIndicator({ saveState }: { saveState: SaveState }) {
 }
 
 export function CanvasEditor({ data }: CanvasEditorProps) {
-  // Resolve sections from sections[] (fallback to source_text if no sections)
   const rawSections =
     data.document.sections.length > 0
       ? data.document.sections
@@ -115,7 +114,6 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
 
   return (
     <section className="p-4">
-      {/* Editor pane header */}
       <div className="mb-4">
         <p className="text-xs uppercase tracking-[0.18em] text-[#141414]/45">
           Editor
@@ -125,7 +123,6 @@ export function CanvasEditor({ data }: CanvasEditorProps) {
         </h2>
       </div>
 
-      {/* Split panel — editor left, original PDF right */}
       <CanvasSplitPanel
         sections={sections}
         fileName={data.file.filename ?? ""}

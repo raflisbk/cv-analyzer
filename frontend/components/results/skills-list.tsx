@@ -1,12 +1,9 @@
-/**
- * Skills badge cloud — Mathical cycling accent colors.
- */
+
 
 interface SkillsListProps {
   skills: string[];
 }
 
-// Solid fill pills — readable on both cream and dark backgrounds
 const PILL_STYLES = [
   "bg-[#CAFF43] text-[#141414]",
   "bg-[#FF4FCB] text-white",

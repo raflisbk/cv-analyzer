@@ -20,7 +20,6 @@ interface CanvasSplitPanelProps {
 export function CanvasSplitPanel({ editorSlot, fileName, saveState, jobId }: CanvasSplitPanelProps) {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-      {/* Left pane — Editor (55% on desktop) */}
       <div className="min-w-0 flex-1 lg:basis-[55%]">
         <div className="mb-2 flex items-center justify-between px-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#141414]/40">
@@ -31,7 +30,6 @@ export function CanvasSplitPanel({ editorSlot, fileName, saveState, jobId }: Can
         <div className="space-y-4">{editorSlot}</div>
       </div>
 
-      {/* Right pane — Original PDF Preview (45% on desktop) */}
       <div className="min-w-0 lg:basis-[45%]">
         <div className="mb-2 flex items-center px-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#141414]/40">

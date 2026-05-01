@@ -30,7 +30,6 @@ export function WorkspaceV2Header({
   const isReady = jobStatus === "ready";
   const isPreparing = jobStatus === "preparing";
 
-  // Score grade for color
   const scoreColor =
     overallScore === null
       ? null
@@ -56,7 +55,6 @@ export function WorkspaceV2Header({
           "0 1px 0 rgba(255,255,255,0.9) inset, 0 4px 24px rgba(17,17,17,0.06)",
       }}
     >
-      {/* Lime accent hairline at very bottom */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
@@ -66,22 +64,18 @@ export function WorkspaceV2Header({
         }}
       />
 
-      {/* ── Left: Logo + divider + breadcrumb/title ── */}
       <div className="relative flex min-w-0 flex-1 items-center gap-3">
         <Link href="/" className="hover:opacity-80 transition-opacity">
           <PathkrLogo size="md" variant="light" className="flex-none" />
         </Link>
 
-        {/* Divider */}
         <div
           className="h-5 w-px flex-none"
           style={{ background: "rgba(17,17,17,0.15)" }}
           aria-hidden="true"
         />
 
-        {/* Title block */}
         <div className="min-w-0">
-          {/* Breadcrumb */}
           <p
             className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px]"
             style={{ color: "rgba(17,17,17,0.38)" }}
@@ -91,7 +85,6 @@ export function WorkspaceV2Header({
             {uploadMode ? "Upload" : "CV Analysis"}
           </p>
 
-          {/* Document title */}
           <h1
             className="flex items-center gap-1.5 font-display font-black leading-none tracking-[-0.035em] truncate"
             style={{
@@ -135,7 +128,6 @@ export function WorkspaceV2Header({
         </div>
       </div>
 
-      {/* ── Center: Status + Score (workspace mode only) ── */}
       {!uploadMode && (
         <div className="relative flex flex-none items-center gap-2">
           {isPreparing && (
@@ -174,7 +166,6 @@ export function WorkspaceV2Header({
             </span>
           )}
 
-          {/* Score badge */}
           {overallScore !== null && (
             <div
               className="flex items-baseline gap-0.5 rounded-full px-3 py-1.5"
@@ -201,7 +192,6 @@ export function WorkspaceV2Header({
         </div>
       )}
 
-      {/* ── Right: CTAs ── */}
       <div className="relative flex flex-none items-center gap-1.5">
         {!uploadMode && (
           <button
@@ -219,7 +209,6 @@ export function WorkspaceV2Header({
           </button>
         )}
 
-        {/* Back */}
         <button
           onClick={() => router.push(uploadMode ? "/" : `/results/${jobId}`)}
           className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97]"

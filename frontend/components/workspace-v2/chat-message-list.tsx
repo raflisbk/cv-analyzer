@@ -15,7 +15,6 @@ interface ChatMessageListProps {
 export function ChatMessageList({ messages, isStreaming, className }: ChatMessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;

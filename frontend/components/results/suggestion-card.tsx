@@ -1,7 +1,4 @@
-/**
- * SuggestionCardItem — renders one suggestion card for a CV section.
- * SuggestionItemRow — internal component for a single suggestion row.
- */
+
 "use client";
 
 import { useState } from "react";
@@ -148,11 +145,6 @@ export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
         {card.suggestions.map((item, i) => (
           <div key={i}>
             <SuggestionItemRow item={item} />
-            {/*
-              Before/after toggle per D-C19, UX-02.
-              Regression guard: this component intentionally reads normalized
-              camelCase `originalText` only.
-            */}
             <SuggestionBeforeAfter
               beforeText={getNormalizedBeforeText(item)}
               afterText={item.afterText}

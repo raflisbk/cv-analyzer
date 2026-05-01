@@ -59,7 +59,6 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
                 const data = JSON.parse(line.slice(6));
 
                 if (data.type === "connected") {
-                  // Connection established
                 } else if (data.token) {
                   options.onToken?.(data.token);
                 } else if (data.type === "complete") {

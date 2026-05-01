@@ -1,6 +1,4 @@
-/**
- * API client utilities for backend communication
- */
+
 
 import { WrappedResponse } from "./types";
 import type { AnalysisResult } from "./types";
@@ -18,9 +16,6 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Fetch wrapper that handles wrapped response format
- */
 export async function apiFetch<T>(
   endpoint: string,
   options?: RequestInit
@@ -32,7 +27,7 @@ export async function apiFetch<T>(
     const response = await fetch(url, {
       ...options,
       headers: isFormData
-        ? options?.headers // Let browser set Content-Type + boundary for FormData
+        ? undefined
         : {
             "Content-Type": "application/json",
             ...options?.headers,
@@ -62,7 +57,6 @@ export async function apiFetch<T>(
       throw error;
     }
     
-    // Network or parsing error
     throw new ApiError(
       "NETWORK_ERROR",
       error instanceof Error ? error.message : "Unknown network error"
@@ -70,23 +64,16 @@ export async function apiFetch<T>(
   }
 }
 
-/**
- * Upload file to backend
- */
 export async function uploadFile(file: File): Promise<{ job_id: string }> {
   const formData = new FormData();
   formData.append("file", file);
   
   return apiFetch<{ job_id: string }>("/upload", {
     method: "POST",
-    headers: {}, // Let browser set Content-Type for FormData
     body: formData,
   });
 }
 
-/**
- * Get full analysis results for a completed job per D-23
- */
 export async function getJobResults(jobId: string): Promise<AnalysisResult> {
   return apiFetch<AnalysisResult>(`/jobs/${jobId}/results`);
 }

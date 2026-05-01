@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * CompareTab — CV vs Job Description comparison input + results display.
- * States: idle (textarea + CTA) | loading (skeleton) | complete (children) | error
- * Per UI-SPEC §7.1, D-C17, D-C20, UX-04, UX-05.
- * Mathical design system: dark cards, lime CTAs, no shadcn Card/Button.
- */
-
 import { useEffect, useRef, useState } from "react";
 import { SSEConnection } from "@/lib/sse";
 import type { ComparisonResult, JobRole } from "@/lib/types";
@@ -16,9 +9,7 @@ interface CompareTabProps {
   jobRoles?: JobRole[];
   comparisonResult?: ComparisonResult | null;
   comparisonStatus?: string | null;
-  /** Called when SSE emits complete/failed — triggers parent refetch per STREAM-04 */
   onCompareComplete?: () => void;
-  /** Render slots — filled with SkillsGapDisplay etc. in 04-05/04-06 */
   children?: React.ReactNode;
 }
 
@@ -92,7 +83,6 @@ export function CompareTab({
     }
   }
 
-  // ─── Error state ──────────────────────────────────────────────────────────
   if (isFailed || error) {
     return (
       <div className="bg-[#1C1C1C] rounded-2xl border border-[#FF4FCB]/20 p-6 md:p-8 text-center space-y-4">
@@ -115,7 +105,6 @@ export function CompareTab({
     );
   }
 
-  // ─── Loading state ────────────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-6 md:p-8 space-y-6">
@@ -134,7 +123,6 @@ export function CompareTab({
     );
   }
 
-  // ─── Input form (idle state) ──────────────────────────────────────────────
   return (
     <div className="space-y-6">
       <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-6 md:p-8">

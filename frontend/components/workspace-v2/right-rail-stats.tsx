@@ -1,11 +1,5 @@
 "use client";
-/**
- * RightRailStats — right summary rail for workspace-v2.
- * ONE-WAY SYNC: left panel → right rail (not the reverse).
- * - Left panel sets activeDetailTab → right rail accordion auto-expands.
- * - Right rail accordion toggle → local open state only, does NOT open left panel.
- * - "View details →" button explicitly opens left panel via setActiveDetailTab.
- */
+
 import { useEffect, useState } from "react";
 import { ChevronDown, Send, Bot, BarChart2, Lightbulb, LayoutDashboard, CheckCircle2, Layers, ExternalLink } from "lucide-react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -17,7 +11,6 @@ interface RightRailStatsProps {
 
 type TabId = "overview" | "scores" | "suggestions" | "grammar" | "skills";
 
-/** Animated score bar — grows from 0 on mount */
 function ScoreBar({
   score,
   color,
@@ -28,7 +21,6 @@ function ScoreBar({
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    // Small delay to ensure mount transition works
     const frame = requestAnimationFrame(() => {
       setWidth(score ?? 0);
     });
@@ -94,7 +86,6 @@ function AccordionSection({
         onClick={handleToggle}
         className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-[rgba(245,242,216,0.03)]"
       >
-        {/* Icon */}
         <div
           className="flex h-7 w-7 flex-none items-center justify-center rounded-xl transition-colors"
           style={{
@@ -196,7 +187,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
   return (
     <div className={cn("flex h-full flex-col overflow-hidden", className)}>
 
-      {/* ── Panel header: score hero ── */}
       <div
         className="flex-none border-b px-4 py-3.5 rounded-t-2xl"
         style={{
@@ -236,7 +226,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
             )}
           </div>
 
-          {/* AI confidence */}
           <div
             className="flex items-center gap-1 rounded-xl px-2.5 py-1.5"
             style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.15)" }}
@@ -247,10 +236,8 @@ export function RightRailStats({ className }: RightRailStatsProps) {
         </div>
       </div>
 
-      {/* ── Scrollable content ── */}
       <div className="flex-1 min-h-0 overflow-y-auto">
 
-        {/* Accordion stack */}
         <div className="flex flex-col gap-1.5 p-2.5">
 
           <AccordionSection
@@ -366,7 +353,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
           </AccordionSection>
         </div>
 
-        {/* ── Live Chat stub ── */}
         <div
           className="mx-2.5 mb-2.5 overflow-hidden rounded-2xl border mt-2"
           style={{
@@ -374,7 +360,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
             borderColor: "rgba(139,92,246,0.12)",
           }}
         >
-          {/* Chat header */}
           <div
             className="flex items-center gap-2.5 border-b px-3.5 py-2.5"
             style={{
@@ -406,7 +391,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
             </div>
           </div>
 
-          {/* Bot message bubble */}
           <div className="px-3.5 pt-3 pb-2">
             <div
               className="rounded-xl px-3 py-2.5"
@@ -418,7 +402,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
             </div>
           </div>
 
-          {/* Quick prompts */}
           <div className="flex flex-wrap gap-1.5 px-3.5 pb-3">
             {["Rewrite summary", "Improve bullets", "Explain score"].map((preset) => (
               <button
@@ -436,7 +419,6 @@ export function RightRailStats({ className }: RightRailStatsProps) {
             ))}
           </div>
 
-          {/* Input row */}
           <div
             className="flex items-center gap-2 border-t px-3 py-2.5"
             style={{ borderColor: "rgba(139,92,246,0.08)" }}

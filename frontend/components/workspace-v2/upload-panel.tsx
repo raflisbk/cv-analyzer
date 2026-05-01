@@ -99,7 +99,6 @@ export function UploadPanel() {
     onDragLeave: () => setIsDragOver(false),
   });
 
-  // Processing / complete / failed states
   if (state === "processing") {
     return (
       <div className="flex h-full w-full items-center justify-center p-6">
@@ -214,7 +213,6 @@ export function UploadPanel() {
         "flex flex-col items-center justify-center text-center px-8 py-10",
         "w-full max-w-sm"
       )}>
-        {/* Icon */}
         <div className={cn(
           "w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-200",
           isDragOver || isDragActive

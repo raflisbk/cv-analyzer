@@ -1,10 +1,4 @@
-/**
- * Shared workspace utility functions.
- * Workspace layout and annotation coordinate utilities
- * agar dapat dibagikan antara workspace-v1 (canvas) dan workspace-v2.
- *
- * PENTING: Jangan ubah behavior function ini — canvas editor bergantung padanya.
- */
+
 import type { JSONContent } from "@tiptap/core";
 import type { WorkspaceHydration } from "@/lib/workspace";
 import type { SuggestionItem } from "@/lib/types";
@@ -16,8 +10,6 @@ export interface SectionState {
   json: JSONContent;
   spacing: SpacingValue;
 }
-
-// ─── Tiptap mark helpers ─────────────────────────────────────────────────────
 
 function boldText(text: string): JSONContent {
   return { type: "text", text, marks: [{ type: "bold" }] };
@@ -38,19 +30,10 @@ function makeBulletItem(text: string): JSONContent {
   };
 }
 
-// ─── Line-level pattern detectors ───────────────────────────────────────────
-
-/** Lines starting with common bullet markers: •, -, –, *, → etc. */
 const BULLET_RE = /^([•·▪▸–\-]|\*{1,2}|→)\s+(.*)/;
 
-/** "Numbered list" patterns: "1. text", "1) text" */
 const NUMBERED_RE = /^\d+[.)]\s+(.*)/;
 
-/**
- * "Title | Company [Date]" — job title / org line.
- * Must NOT contain @ (email) or http (URL) to avoid false positives.
- * Pipe must appear in first 70 chars so it's a short role title.
- */
 function isPipeTitleLine(line: string): false | { title: string; rest: string } {
   const pipeIdx = line.indexOf(" | ");
   if (pipeIdx < 2 || pipeIdx > 70) {
@@ -65,11 +48,6 @@ function isPipeTitleLine(line: string): false | { title: string; rest: string } 
   return { title: line.slice(0, pipeIdx), rest: line.slice(pipeIdx + 3) };
 }
 
-/**
- * "Bold Key: description" — lines like "Process Automation: Developed..."
- * Key must be 3–55 chars, start with capital, and contain no `:` itself.
- * Description must follow after the colon.
- */
 function isKeyColonLine(line: string): false | { key: string; desc: string } {
   const match = line.match(/^([A-Z][^:]{2,54}):\s+(.+)/);
   if (!match) {
@@ -83,47 +61,28 @@ function isKeyColonLine(line: string): false | { key: string; desc: string } {
   return { key, desc: match[2] };
 }
 
-/**
- * Short sub-section header — short line (< 60 chars), no terminal punctuation,
- * starts with capital. Used for skill categories like "Programming & Frameworks".
- * Only applied when the next line is non-empty (i.e., there's content below).
- */
 function isSubHeader(line: string, nextLine: string | undefined): boolean {
   if (line.length < 3 || line.length > 60) {
     return false;
   }
   if (/[.,;]$/.test(line)) {
     return false;
-  }           // ends with punctuation → not a header
+  }
   if (!/^[A-Z\u00C0-\u024F]/.test(line)) {
     return false;
-  } // must start with capital
+  }
   if (line.includes("@")) {
     return false;
-  }              // email → skip
+  }
   if (/^https?:\/\//i.test(line)) {
     return false;
-  }     // URL → skip
+  }
   if (nextLine !== undefined && nextLine.trim().length === 0) {
     return false;
-  } // nothing below
+  }
   return true;
 }
 
-// ─── Main converter ──────────────────────────────────────────────────────────
-
-/**
- * Convert plain extracted text to Tiptap JSONContent.
- *
- * Detects common CV patterns:
- * - Explicit bullet markers → bulletList node
- * - "Role | Company Date" → bold title + rest
- * - "Key: Long description" → bold key + rest
- * - Short header lines (skill categories, section sub-titles) → bold paragraph
- * - Everything else → regular paragraph
- *
- * Applied only when no draft_content exists (new upload, not edited yet).
- */
 export function plainTextToTiptapDoc(text: string): JSONContent {
   const lines = text.split("\n").map((l) => l.trimEnd());
   const content: JSONContent[] = [];
@@ -152,7 +111,7 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
         if (!next) {
           i++;
           break;
-        } // blank line ends the list
+        }
         const bm = next.match(BULLET_RE);
         const nm = next.match(NUMBERED_RE);
         if (bm || nm) {
@@ -204,7 +163,6 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
   return { type: "doc", content };
 }
 
-/** Normalisasi raw API suggestion item — backend mengirim snake_case, frontend mengharapkan camelCase */
 export function normalizeSuggestion(raw: Record<string, unknown>): SuggestionItem {
   return {
     priority: (raw.priority as SuggestionItem["priority"]) ?? "quick_win",
@@ -219,7 +177,6 @@ export function normalizeSuggestion(raw: Record<string, unknown>): SuggestionIte
   };
 }
 
-/** Bangun initial sections state dari workspace hydration data, merge duplicate section types */
 export function buildInitialSections(
   sections: WorkspaceHydration["document"]["sections"],
   draftContent?: Record<string, JSONContent> | null

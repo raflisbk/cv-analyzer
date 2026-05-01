@@ -1,16 +1,4 @@
-/**
- * inline-edit-popover.tsx — Portal-based popover for inline AI editing.
- *
- * Popover UI for inline editing with API integration.
- * Renders above text selection with prompt input, loading, preview, error, and warning states.
- *
- * Key patterns:
- * - React Portal rendering to document.body (avoids z-index issues)
- * - Fixed positioning with coordinate calculation from selection
- * - 5 UI states: prompt input, loading, preview, error, selection too long
- * - Backdrop blur with Mathical-inspired styling
- * - Fade-in + slide-up animation (200ms)
- */
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -36,12 +24,6 @@ interface RewritePreview {
   rewritten: string;
 }
 
-/**
- * InlineEditPopover — Portal-based popover for AI inline editing
- *
- * Renders above text selection with prompt input, AI rewrite preview, and apply/cancel actions.
- * Uses Portal to avoid z-index issues with PDF viewer overlay.
- */
 export function InlineEditPopover({
   rect,
   rectPercent,
@@ -52,24 +34,20 @@ export function InlineEditPopover({
   const popoverRef = useRef<HTMLDivElement>(null);
   const { applyInlineEdit, hydration } = useWorkspaceV2Store();
 
-  // State management
   const [popoverState, setPopoverState] = useState<PopoverState>("prompt");
   const [prompt, setPrompt] = useState("");
   const [preview, setPreview] = useState<RewritePreview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editId] = useState(() => `${EDIT_ID_PREFIX}${Date.now()}`);
 
-  // Check if selection is too long
   const isTooLong = selectedText.length > MAX_SELECTION_LENGTH;
 
-  // Set initial state based on selection length
   useEffect(() => {
     if (isTooLong) {
       setPopoverState("too_long");
     }
   }, [isTooLong]);
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
@@ -80,7 +58,6 @@ export function InlineEditPopover({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [onClose]);
 
-  // Close on Escape key
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -91,10 +68,6 @@ export function InlineEditPopover({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  /**
-   * Generate AI rewrite
-   * Calls backend endpoint and handles loading/error states
-   */
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       return;
@@ -104,7 +77,6 @@ export function InlineEditPopover({
     setError(null);
 
     try {
-      // Fetch cvContext from store hydration
       const cvContext = hydration?.analysis ? {
         scores: hydration.analysis.scores,
         skills: hydration.analysis.skills,
@@ -142,10 +114,6 @@ export function InlineEditPopover({
     }
   };
 
-  /**
-   * Apply rewrite to document state
-   * Calls store action and closes popover
-   */
   const handleApply = () => {
     if (!preview) {
       return;
@@ -155,17 +123,13 @@ export function InlineEditPopover({
     onClose();
   };
 
-  /**
-   * Reset to prompt state
-   */
   const handleReset = () => {
     setPopoverState("prompt");
     setError(null);
   };
 
-  // Positioning: Fixed positioning above selection
-  const top = rect.top - 8; // 8px gap above selection
-  const left = rect.left + rect.width / 2; // Center horizontally
+  const top = rect.top - 8;
+  const left = rect.left + rect.width / 2;
 
   return createPortal(
     <div
@@ -179,7 +143,6 @@ export function InlineEditPopover({
         transform: "translateX(-50%)",
       }}
     >
-      {/* Header */}
       <div className="flex items-center justify-between border-b-2 border-[#111111] px-4 py-3 bg-white">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-[#111111]" />
@@ -194,7 +157,6 @@ export function InlineEditPopover({
         </button>
       </div>
 
-      {/* Content */}
       <div className="p-4 bg-[#F5F2D8]">
         {popoverState === "too_long" && (
           <div className="space-y-3">
@@ -257,7 +219,6 @@ export function InlineEditPopover({
         {popoverState === "preview" && preview && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-3">
-              {/* Before */}
               <div className="bg-white border-2 border-[#111111] p-3 shadow-[2px_2px_0px_#111111] relative">
                 <div className="absolute -top-2.5 left-2 bg-[#ff5555] border-2 border-[#111111] px-2 py-0.5">
                   <p className="text-[9px] font-black uppercase tracking-widest text-white">Before</p>
@@ -265,7 +226,6 @@ export function InlineEditPopover({
                 <p className="text-xs text-[#111111] line-clamp-4 mt-2 font-serif italic line-through decoration-[#ff5555]/50">{preview.original}</p>
               </div>
 
-              {/* After */}
               <div className="bg-white border-2 border-[#111111] p-3 shadow-[2px_2px_0px_#111111] relative">
                 <div className="absolute -top-2.5 left-2 bg-[#CAFF43] border-2 border-[#111111] px-2 py-0.5">
                   <p className="text-[9px] font-black uppercase tracking-widest text-[#111111]">After</p>

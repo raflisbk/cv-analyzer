@@ -1,22 +1,15 @@
-/**
- * SuggestionCards — orchestrator component for AI improvement suggestions.
- * Handles all render states: loading skeleton, unavailable, empty, populated.
- */
+
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SuggestionCard } from "@/lib/types";
 import { SuggestionCardItem } from "./suggestion-card";
 
-// ─── Internal: Skeleton loading state (UI-SPEC §6 section D) ──────────────────
-
 function SuggestionsSkeleton() {
   return (
     <div className="mt-8 space-y-4" aria-hidden="true">
-      {/* Heading skeleton */}
       <Skeleton className="h-7 w-56" />
 
-      {/* Card 1 skeleton */}
       <div className="border border-border rounded-lg p-4 space-y-3">
         <Skeleton className="h-5 w-32" />
         <div className="space-y-3">
@@ -38,7 +31,6 @@ function SuggestionsSkeleton() {
         </div>
       </div>
 
-      {/* Card 2 skeleton — same structure */}
       <div className="border border-border rounded-lg p-4 space-y-3">
         <Skeleton className="h-5 w-32" />
         <div className="space-y-3">
@@ -67,8 +59,6 @@ function SuggestionsSkeleton() {
   );
 }
 
-// ─── Internal: Empty / unavailable state (UI-SPEC §6 section E) ───────────────
-
 interface SuggestionsEmptyProps {
   variant: "empty" | "unavailable";
 }
@@ -89,35 +79,28 @@ function SuggestionsEmpty({ variant }: SuggestionsEmptyProps) {
   );
 }
 
-// ─── Public: SuggestionCards orchestrator (UI-SPEC §6 section A) ──────────────
-
 interface SuggestionCardsProps {
   cards: SuggestionCard[] | null | undefined;
   isLoading: boolean;
 }
 
 export function SuggestionCards({ cards, isLoading }: SuggestionCardsProps) {
-  // Loading: LLM task is in progress — show skeleton
   if (isLoading) {
     return <SuggestionsSkeleton />;
   }
 
-  // Undefined: suggestions field absent - render nothing
   if (cards === undefined) {
     return null;
   }
 
-  // Null: LLM failed all retries (ERROR-02, D-17) — show "unavailable" state
   if (cards === null) {
     return <SuggestionsEmpty variant="unavailable" />;
   }
 
-  // Empty array: LLM succeeded but found nothing to suggest
   if (cards.length === 0) {
     return <SuggestionsEmpty variant="empty" />;
   }
 
-  // Populated: render suggestion cards with heading + count summary
   const totalSuggestions = cards.reduce((sum, card) => sum + card.suggestions.length, 0);
   const totalSections = cards.length;
   const suggestionText = totalSuggestions === 1 ? "suggestion" : "suggestions";

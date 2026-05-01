@@ -18,7 +18,6 @@ const stages = [
   { id: "complete",    label: "Complete",                     color: "#CAFF43" },
 ];
 
-// Map all backend stage names → UI stage id
 const STAGE_MAP: Record<string, string> = {
   uploading: "uploading",
   extracting: "extracting",
@@ -44,7 +43,6 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
 
   return (
     <div className="w-full space-y-6">
-      {/* Header */}
       <div>
         <h2 className="font-display font-extrabold text-xl text-[#F5F2D8] mb-1">
           Analyzing your CV
@@ -52,7 +50,6 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
         <p className="text-sm text-[#F5F2D8]/40">{message}</p>
       </div>
 
-      {/* Progress bar — color matches active stage */}
       <div className="w-full h-2.5 rounded-full bg-[#F5F2D8]/8 overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
@@ -60,7 +57,6 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
         />
       </div>
 
-      {/* Stage list */}
       <div className="space-y-3">
         {stages.map((stage, index) => {
           const isActive = stage.id === uiStage;
@@ -110,5 +106,4 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
     </div>
   );
 }
-
 

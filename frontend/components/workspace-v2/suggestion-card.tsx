@@ -1,8 +1,5 @@
 "use client";
-/**
- * SuggestionCard — Floating card showing suggestion details.
- * Displayed when hovering over text highlights in Tiptap editor.
- */
+
 import { useMemo } from "react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionCard as SuggestionCardType } from "@/lib/types";
@@ -21,7 +18,6 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
   const _isApplied = _status === "applied";
   const _isDismissed = _status === "dismissed";
 
-  // Find the suggestion item
   const { item, card } = useMemo(() => {
     const [section, itemIdx, _cardIdx] = suggestionId.split("_");
     const foundCard = suggestions.find((c) => c.section === section);
@@ -51,7 +47,6 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
         padding: "14px 18px",
       }}
     >
-      {/* Header with priority and section */}
       <div style={{ marginBottom: "12px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
           <span
@@ -69,7 +64,6 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
         </div>
       </div>
 
-      {/* Suggestion text */}
       <p
         className="text-[13px] leading-snug"
         style={{
@@ -82,7 +76,6 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
         {item.afterText || item.explanation || item.text}
       </p>
 
-      {/* Original text for reference */}
       {item.text && item.text !== (item.afterText || item.explanation) && (
         <div
           style={{
@@ -111,7 +104,6 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
         </div>
       )}
 
-      {/* Action buttons */}
       <div className="flex gap-2">
         <button
           type="button"

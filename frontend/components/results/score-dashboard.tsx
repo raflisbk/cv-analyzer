@@ -1,6 +1,4 @@
-/**
- * Score dashboard: 4 gauge charts in Mathical dark accent cards + overall hero.
- */
+
 
 import type { ScoreResult } from "@/lib/types";
 import { GaugeChart } from "./gauge-chart";
@@ -45,14 +43,12 @@ const DIMENSIONS: Array<{
 export function ScoreDashboard({ scores }: ScoreDashboardProps) {
   return (
     <div className="space-y-6">
-      {/* Overall gauge hero */}
       <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-[#F5F2D8]/[0.08]">
         <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">Overall Score</span>
         <GaugeChart value={scores.overall} label="Overall" size={180} />
         <ScoreRangeBadge score={scores.overall} />
       </div>
 
-      {/* 2×2 dimension cards */}
       <div className="grid grid-cols-2 gap-4">
         {DIMENSIONS.map(({ key, label, description, accentColor }) => {
           const scoreVal = scores[key] ?? 0;
@@ -64,7 +60,6 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
               className="rounded-2xl p-5 flex flex-col items-center gap-2 border border-[#F5F2D8]/[0.08] backdrop-blur-sm"
               style={{ backgroundColor: `color-mix(in srgb, ${accentColor} 8%, transparent)` }}
             >
-              {/* Accent label pill */}
               <span
                 className="text-xs font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full mb-1"
                 style={{ color: accentColor, backgroundColor: `${accentColor}18` }}
@@ -91,7 +86,6 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
         })}
       </div>
 
-      {/* Calculation Formula Legend */}
       <div className="rounded-2xl bg-[#CAFF43]/5 border border-[#CAFF43]/10 p-5 space-y-3">
         <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#CAFF43]">Overall Calculation Breakdown</h4>
         <p className="text-xs text-[#F5F2D8]/60 leading-relaxed">

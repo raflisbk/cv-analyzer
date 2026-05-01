@@ -1,6 +1,4 @@
-/**
- * ATS compatibility checklist — Mathical design system.
- */
+
 
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import type { AtsCheck } from "@/lib/types";
@@ -61,7 +59,6 @@ export function AtsChecklist({ checks }: AtsChecklistProps) {
 
   return (
     <div className="space-y-4">
-      {/* Summary strip — solid fill for readability on cream background */}
       <div className="flex gap-3 flex-wrap">
         <span className="rounded-full bg-[#CAFF43] text-[#141414] text-xs font-extrabold px-3 py-1">
           ✓ {passed} passed
@@ -78,7 +75,6 @@ export function AtsChecklist({ checks }: AtsChecklistProps) {
         )}
       </div>
 
-      {/* Check rows */}
       <div className="space-y-2">
         {checks.map((check, index) => {
           const style = getStatusStyle(check.status);

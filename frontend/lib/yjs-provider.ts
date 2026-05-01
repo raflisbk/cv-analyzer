@@ -1,19 +1,12 @@
-/**
- * Yjs WebSocket Provider.
- * Enables real-time CRDT sync for Tiptap editor.
- *
- * Uses WebsocketProvider from y-websocket for real-time collaboration.
- * Documents are keyed by job_id for isolation.
- */
+
 
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { Awareness } from "y-protocols/awareness";
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/yjs";
 
 export function createYjsProvider(documentId: string) {
-  // Create Y.js document
   const ydoc = new Y.Doc();
 
   // Create awareness for cursor/selection sharing

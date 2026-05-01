@@ -57,7 +57,6 @@ export default function FeaturesSection() {
                 border: "1px solid rgba(20,20,20,0.02)"
               }}
             >
-              {/* Icon */}
               <div 
                 className={`mb-8 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${iconContainer.split(' ')[0]}`}
               >

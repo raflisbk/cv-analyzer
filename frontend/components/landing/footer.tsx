@@ -6,7 +6,6 @@ export default function Footer() {
     <footer className="bg-[#141414] pt-20 pb-10 border-t border-white/5">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-16">
-          {/* Brand Col */}
           <div className="md:col-span-2">
             <Link href="/" className="inline-block mb-6">
               <span className="font-display text-xl font-extrabold tracking-tight text-[#F5F2D8]">
@@ -22,7 +21,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Product Links */}
           <div>
             <h4 className="font-display font-bold text-sm tracking-wider uppercase text-[#F5F2D8]/30 mb-6">
               Products
@@ -48,7 +46,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal / Social Links */}
           <div>
             <h4 className="font-display font-bold text-sm tracking-wider uppercase text-[#F5F2D8]/30 mb-6">
               Resources
@@ -73,13 +70,11 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Banner */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between border-t border-white/5">
           <p className="text-xs text-[#F5F2D8]/40 font-medium">
             © {new Date().getFullYear()} Pathkr Inc. All rights reserved.
           </p>
           <div className="mt-4 md:mt-0 flex gap-4">
-            {/* Social Icons Placeholder */}
             <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
             </a>

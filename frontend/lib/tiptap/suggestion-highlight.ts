@@ -4,7 +4,6 @@ import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 export const SuggestionHighlight = Mark.create({
   name: "suggestionHighlight",
 
-  // Allow coexistence with bold/italic marks
   excludes: "",
 
   addAttributes() {
@@ -43,7 +42,7 @@ export const SuggestionHighlight = Mark.create({
         role: "mark",
         "aria-label": `AI suggestion`,
       },
-      0, // 0 = render child content here
+      0,
     ];
   },
 

@@ -17,14 +17,11 @@ export function DocumentPreview({ file, onAnalyze, isAnalyzing }: DocumentPrevie
 
   return (
     <div className="w-full space-y-4">
-      {/* File card */}
       <div className="flex items-center gap-4 p-5 rounded-2xl border border-[#F5F2D8]/10 bg-[#141414]">
-        {/* Icon */}
         <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-[#FF8C42]/15 border border-[#FF8C42]/20 flex items-center justify-center">
           <FileText className="w-7 h-7 text-[#FF8C42]" />
         </div>
 
-        {/* File info */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-extrabold text-[#F5F2D8] truncate mb-1.5">
             {file.name}
@@ -41,7 +38,6 @@ export function DocumentPreview({ file, onAnalyze, isAnalyzing }: DocumentPrevie
         </div>
       </div>
 
-      {/* Score preview pills — what they'll get */}
       <div className="flex flex-wrap gap-2">
         {[
           { label: "Clarity Score", color: "bg-[#CAFF43]/12 text-[#CAFF43]" },
@@ -55,7 +51,6 @@ export function DocumentPreview({ file, onAnalyze, isAnalyzing }: DocumentPrevie
         ))}
       </div>
 
-      {/* CTA */}
       <button
         onClick={onAnalyze}
         disabled={isAnalyzing}

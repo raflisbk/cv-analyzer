@@ -1,15 +1,5 @@
 "use client";
-/**
- * RichTextEditor — Tiptap-based editor with PDF layout preservation.
- * Editable rich text editor replacing PDF canvas viewer.
- *
- * Features:
- * - Exact PDF positioning via absolute positioned blocks
- * - WYSIWYG editing with formatting toolbar
- * - Suggestion highlights integration (text-based marks)
- * - Inline AI improvement popup
- * - Export to PDF
- */
+
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -48,7 +38,6 @@ export function RichTextEditor({
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const _suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
 
-  // Memoize extensions to prevent Tiptap duplicate warning on re-renders
   const extensions = useMemo(() => [
     StarterKit.configure({
       heading: { levels: [1, 2, 3] },
@@ -77,7 +66,6 @@ export function RichTextEditor({
     },
   });
 
-  // Apply suggestion highlights to HTML content and update editor
   useEffect(() => {
     let highlighted = content;
 
@@ -121,7 +109,6 @@ export function RichTextEditor({
     setHtmlWithHighlights(highlighted);
   }, [content, anchors, suggestions, editor]);
 
-  // Handle hover on suggestion highlights
   const handleHighlightMouseEnter = useCallback((e: MouseEvent) => {
     const target = e.target as HTMLElement;
     const suggestionId = target.getAttribute('data-suggestion-id');
@@ -134,7 +121,6 @@ export function RichTextEditor({
     setActiveSuggestionId(null);
   }, [setActiveSuggestionId]);
 
-  // Handle AI improvement - replace selected text with improved version
   const handleApplyImprovement = useCallback((originalText: string, improvedText: string) => {
     if (!editor) {
       return;
@@ -146,7 +132,6 @@ export function RichTextEditor({
     if (currentText === originalText) {
       editor.chain().focus().deleteSelection().insertContent(improvedText).run();
     } else {
-      // Fallback: search for the text and replace first occurrence
       const docText = editor.getText();
       const index = docText.indexOf(originalText);
       if (index !== -1) {
@@ -159,7 +144,6 @@ export function RichTextEditor({
     }
   }, [editor]);
 
-  // Handle PDF export
   const handleExportPdf = useCallback(async () => {
     if (!editor || isExporting) {
       return;
@@ -201,7 +185,6 @@ export function RichTextEditor({
     }
   }, [editor, isExporting, onExportPdf]);
 
-  // Attach event listeners for suggestion highlights
   useEffect(() => {
     if (!editor) {
       return;
@@ -227,7 +210,6 @@ export function RichTextEditor({
 
   return (
     <div className={`rich-text-editor ${className}`}>
-      {/* Formatting Toolbar */}
       <div className="sticky top-0 z-10 flex items-center gap-1 p-2 bg-white border-b border-[rgba(17,17,17,0.08)]">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -308,7 +290,6 @@ export function RichTextEditor({
         </button>
       </div>
 
-      {/* Editor Content Area */}
       <div className="relative min-h-[800px] bg-[#FFFDF4]">
         <EditorContent
           editor={editor}
@@ -344,7 +325,6 @@ export function RichTextEditor({
           ].join(" ")}
         />
 
-        {/* Suggestion Card Popup */}
         {activeSuggestionId && (
           <div className="absolute z-50 pointer-events-none">
             <SuggestionCard
@@ -355,7 +335,6 @@ export function RichTextEditor({
           </div>
         )}
 
-        {/* Inline AI Improvement Popup */}
         <InlineAIPopup onApplyImprovement={handleApplyImprovement} />
       </div>
     </div>

@@ -1,11 +1,5 @@
 "use client";
-/**
- * PdfViewerPanel — Mathical-style outer container for the PDF viewer.
- * Dark hero-card banner (matching landing page hero card: #141414 + accent dots + cream text)
- * sits above the cream paper card. Page navigation and view mode live in the banner.
- * Ambient decorative dots float in the cream scroll area background.
- * Toggle between Edit Mode (Tiptap) and Preview Mode (PDF canvas).
- */
+
 import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";
 import { PdfViewer } from "./pdf-viewer";
@@ -63,7 +57,6 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
 
   const isZoomed = zoomScale > 1.05;
 
-  // Pan handlers — drag to scroll when zoomed in
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isZoomed) { return; }
     const card = paperCardRef.current;
@@ -96,9 +89,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   return (
     <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-[--ws-bg]">
 
-      {/* Layered background decoration — arcs + blurred orbs + cross-hatch */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        {/* Large frosted arc behind viewer */}
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
@@ -115,7 +106,6 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             border: "1px solid rgba(17,17,17,0.04)",
           }}
         />
-        {/* Blurred colour orbs */}
         <div className="absolute top-8 right-10 h-4 w-4 rounded-full bg-[#CAFF43] opacity-50" />
         <div className="absolute top-16 right-24 h-2.5 w-2.5 rounded-full bg-[#FF4FCB] opacity-38" />
         <div className="absolute top-5 right-44 h-7 w-7 rounded-full bg-[#FF8C42] opacity-22" />
@@ -137,18 +127,14 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
         />
       </div>
 
-      {/* Document area */}
       <div className="relative mx-auto max-w-[820px] px-6 py-8">
 
-        {/* ── Dark hero-card banner — same visual language as landing page hero ── */}
         <div className="relative overflow-hidden rounded-t-2xl bg-[#141414] px-5 py-3.5 flex items-center justify-between">
-          {/* Decorative dots inside banner */}
           <div aria-hidden="true" className="absolute right-5 top-2 h-3 w-3 rounded-full bg-[#CAFF43] opacity-72" />
           <div aria-hidden="true" className="absolute right-12 top-5 h-1.5 w-1.5 rounded-full bg-[#FF4FCB] opacity-55" />
           <div aria-hidden="true" className="absolute right-20 top-1 h-5 w-5 rounded-full bg-[#FF8C42] opacity-32" />
           <div aria-hidden="true" className="absolute bottom-1 right-4 h-1.5 w-1.5 rounded-full bg-[#8B5CF6] opacity-42" />
 
-          {/* Filename + view mode */}
           <div className="min-w-0 flex-1 pr-4">
             <p className="font-display text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#F5F2D8]/35">
               path karir / cv analysis
@@ -170,9 +156,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             )}
           </div>
 
-          {/* Mode Toggle + Page navigation + Zoom controls */}
           <div className="flex flex-none items-center gap-2">
-            {/* Zoom controls - only show in preview mode */}
             <div className="flex items-center gap-1 border-r border-white/10 pr-2 mr-1">
               <button
                 onClick={() => setZoomScale((s) => Math.max(0.5, s - 0.1))}
@@ -200,7 +184,6 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
               </span>
             </div>
 
-            {/* Page navigation - only show in preview mode */}
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -225,7 +208,6 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
           </div>
         </div>
 
-        {/* ── Cream paper card — scrollable when zoomed, pannable via drag ── */}
         <div
           ref={(node) => {
             (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
@@ -261,5 +243,4 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
     </div>
   );
 }
-
 

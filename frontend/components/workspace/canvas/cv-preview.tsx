@@ -5,7 +5,6 @@ import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 import type { JSONContent } from "@tiptap/core";
 
-// IMPORTANT: Do NOT include SuggestionHighlight — preview must be mark-free (clean CV view)
 const PREVIEW_EXTENSIONS = [StarterKit];
 
 interface PreviewSection {
@@ -17,8 +16,6 @@ interface CVPreviewProps {
   sections: PreviewSection[];
   fileName: string;
 }
-
-// ─── Section type classification ────────────────────────────────────────────
 
 type SectionRole =
   | "header"
@@ -60,15 +57,11 @@ function getSectionRole(type: string): SectionRole {
   return "generic";
 }
 
-// ─── Section label formatter ─────────────────────────────────────────────────
-
 function formatSectionLabel(type: string): string {
   return type
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
-
-// ─── HTML post-processor — clean up Tiptap's empty paragraphs ───────────────
 
 function cleanPreviewHTML(html: string): string {
   // Replace empty <p></p> or <p><br></p> with minimal spacer
@@ -77,8 +70,6 @@ function cleanPreviewHTML(html: string): string {
     .replace(/<p><br\/?><\/p>/g, "")
     .trim();
 }
-
-// ─── Role-specific section renderers ────────────────────────────────────────
 
 function SectionDivider({ label, role }: { label: string; role: SectionRole }) {
   if (role === "header") {
@@ -121,8 +112,6 @@ function SectionContent({ html, role }: { html: string; role: SectionRole }) {
   );
 }
 
-// ─── Individual section renderer ─────────────────────────────────────────────
-
 function SectionPreview({ type, json }: PreviewSection) {
   const role = getSectionRole(type);
   const label = formatSectionLabel(type);
@@ -148,8 +137,6 @@ function SectionPreview({ type, json }: PreviewSection) {
   );
 }
 
-// ─── Main CVPreview component ────────────────────────────────────────────────
-
 export function CVPreview({ sections, fileName }: CVPreviewProps) {
   const displayName = fileName.replace(/\.[^.]+$/, "") || "Your CV";
 
@@ -165,7 +152,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
 
   return (
     <>
-      {/* Scoped CSS for CV document styling */}
       <style>{`
         /* ── Container ── */
         .cv-document {
@@ -334,7 +320,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
         }
       `}</style>
 
-      {/* Paper-like CV document */}
       <div
         className="cv-document rounded-xl px-8 py-9 shadow-sm"
         style={{
@@ -343,7 +328,6 @@ export function CVPreview({ sections, fileName }: CVPreviewProps) {
           minHeight: "320px",
         }}
       >
-        {/* Document name fallback header (shown when no header section exists) */}
         {!sections.some((s) => getSectionRole(s.type) === "header") && (
           <h1
             style={{

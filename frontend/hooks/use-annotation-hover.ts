@@ -1,7 +1,5 @@
 "use client";
-/**
- * useAnnotationHover - Floating UI popover with 1.5s hover delay for annotation highlights.
- */
+
 import { useState } from "react";
 import {
   useFloating,

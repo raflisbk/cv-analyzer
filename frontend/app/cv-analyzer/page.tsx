@@ -54,17 +54,14 @@ export default function CVAnalyzerPage() {
     <>
       <Navbar />
       <main>
-        {/* ── Hero ── */}
         <section className="bg-[#F5F2D8] px-4 md:px-8 py-6 md:py-8">
           <div className="bg-[#141414] rounded-[2rem] max-w-6xl mx-auto px-8 md:px-16 py-16 md:py-24 overflow-hidden relative">
 
-            {/* Decorative circles */}
             <div className="absolute top-8 right-12 w-5 h-5 rounded-full bg-[#CAFF43] opacity-80" aria-hidden="true" />
             <div className="absolute top-16 right-24 w-3 h-3 rounded-full bg-[#FF4FCB] opacity-60" aria-hidden="true" />
             <div className="absolute top-6 right-40 w-8 h-8 rounded-full bg-[#FF8C42] opacity-40" aria-hidden="true" />
             <div className="absolute bottom-10 left-8 w-4 h-4 rounded-full bg-[#8B5CF6] opacity-50" aria-hidden="true" />
 
-            {/* Headline */}
             <h1 className="font-display font-extrabold text-[#F5F2D8] leading-[1.1] text-5xl md:text-6xl lg:text-7xl tracking-tight">
               Your CV{" "}
               <AccentPill color="lime" size="hero">deserves</AccentPill>
@@ -73,21 +70,18 @@ export default function CVAnalyzerPage() {
               {" "}results
             </h1>
 
-            {/* Sub-headline */}
             <p className="font-sans text-base md:text-lg text-[#F5F2D8]/70 mt-6 max-w-lg leading-relaxed">
               AI-powered CV scoring. Skill gap detection. Job match comparison.
               Get actionable feedback instantly.
             </p>
             <p className="font-sans text-sm text-[#F5F2D8]/50 mt-2">Free · Instant · No sign-up required</p>
 
-            {/* Upload CTA — client component */}
             <div className="mt-10">
               <UploadZoneCTA />
             </div>
           </div>
         </section>
 
-        {/* ── Features ── */}
         <section aria-labelledby="cva-features-heading" className="bg-[#F5F2D8] py-16 md:py-24 border-t border-[#141414]/10">
           <div className="max-w-6xl mx-auto px-4 md:px-8">
             <h2
@@ -118,7 +112,6 @@ export default function CVAnalyzerPage() {
           </div>
         </section>
 
-        {/* ── How It Works ── */}
         <section aria-labelledby="cva-hiw-heading" className="bg-[#141414] py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-4 md:px-8">
             <h2
@@ -148,7 +141,6 @@ export default function CVAnalyzerPage() {
           </div>
         </section>
 
-        {/* ── Back to Path Karir ── */}
         <section className="bg-[#F5F2D8] py-8 text-center">
           <Link
             href="/"

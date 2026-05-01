@@ -9,7 +9,6 @@ function getJobRouteSegment(jobId: string): string {
 }
 
 export function getWorkspaceRoute(jobId: string): string {
-  // Redirect to /workspace-v2
   // Old route: return `/workspace/${getJobRouteSegment(jobId)}`;
   return `/workspace-v2/${getJobRouteSegment(jobId)}`;
 }

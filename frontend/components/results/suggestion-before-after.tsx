@@ -1,20 +1,11 @@
 "use client";
 
-/**
- * SuggestionBeforeAfter — Expandable toggle showing original CV text context.
- * Per UI-SPEC §7.6, UX-02. Collapses with max-h CSS transition.
- * Accessibility: aria-expanded + aria-controls on button; role="region" on collapsible div.
- * Will be embedded in SuggestionCard in Wave 4 (04-06).
- */
-
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SuggestionBeforeAfterProps {
-  /** The original CV text context */
   beforeText: string;
-  /** Unique id for ARIA linking — should be unique per suggestion card */
   id: string;
 }
 
@@ -25,7 +16,6 @@ export function SuggestionBeforeAfter({ beforeText, id }: SuggestionBeforeAfterP
 
   return (
     <div className="mt-4 pt-4 border-t border-border">
-      {/* Toggle button per UI-SPEC §7.6 */}
       <Button
         id={triggerId}
         variant="ghost"
@@ -42,7 +32,6 @@ export function SuggestionBeforeAfter({ beforeText, id }: SuggestionBeforeAfterP
         }
       </Button>
 
-      {/* Collapsible content per UI-SPEC §7.6 max-h transition */}
       <div
         id={contentId}
         role="region"

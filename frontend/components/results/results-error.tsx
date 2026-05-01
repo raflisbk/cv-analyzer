@@ -1,7 +1,4 @@
-/**
- * Unified error state display for results page per UI-SPEC §5 "Error states", §7 D
- * Mathical dark card treatment — dark bg, pink icon, cream text, two-part retry CTA.
- */
+
 
 "use client";
 
@@ -10,7 +7,7 @@ import { AlertCircle, ArrowRight } from "lucide-react";
 
 interface ResultsErrorProps {
   type: "failed" | "not-found" | "network" | "rate-limit";
-  retryAfter?: number; // seconds, for rate-limit type
+  retryAfter?: number;
 }
 
 const ERROR_CONTENT: Record<
@@ -54,17 +51,14 @@ export function ResultsError({ type, retryAfter }: ResultsErrorProps) {
 
   return (
     <div className="bg-[#141414] rounded-[2rem] max-w-md mx-auto px-8 py-12 text-center">
-      {/* Error icon — pink per Mathical design */}
       <div className="text-[#FF4FCB] mb-4 flex justify-center">
         <AlertCircle className="w-10 h-10" />
       </div>
 
-      {/* Error heading */}
       <h2 className="font-display font-extrabold text-xl text-[#F5F2D8] mb-2">
         {content.heading}
       </h2>
 
-      {/* Error body */}
       <p className="text-sm text-[#F5F2D8]/60 mb-2">
         {content.subtext}
       </p>
@@ -74,7 +68,6 @@ export function ResultsError({ type, retryAfter }: ResultsErrorProps) {
         </p>
       )}
 
-      {/* Two-part retry CTA — only when action exists */}
       {content.action && (
         <div className="flex items-center justify-center gap-3 mt-6">
           <button

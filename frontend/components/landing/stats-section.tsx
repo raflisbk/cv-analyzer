@@ -17,7 +17,6 @@ export default function StatsSection() {
         <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-0">
           {stats.map((stat, i) => (
             <div key={stat.label} className="group flex items-center">
-              {/* Stat item */}
               <div className="text-center px-8 transition-transform duration-300 group-hover:-translate-y-1">
                 <p 
                   className={`font-display font-extrabold text-4xl md:text-5xl leading-none tracking-tight mb-2 ${
@@ -34,7 +33,6 @@ export default function StatsSection() {
                 </p>
               </div>
               
-              {/* Vertical divider between items — desktop only, not after last item */}
               {i < stats.length - 1 && (
                 <div 
                   className="hidden md:block w-px h-16 mx-0 bg-gradient-to-b from-transparent via-[#F5F2D8]/10 to-transparent" 

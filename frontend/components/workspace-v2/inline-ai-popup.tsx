@@ -1,11 +1,5 @@
 "use client";
-/**
- * InlineAIPopup — Floating "Improve" button on text selection.
- * AI-powered text improvement in Tiptap editor.
- *
- * Shows popup when user selects text in editor.
- * On click, calls AI API to improve selected text.
- */
+
 import { useState, useCallback, useEffect } from "react";
 import { Wand2, Loader2 } from "lucide-react";
 
@@ -19,7 +13,6 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
   const [selectedText, setSelectedText] = useState("");
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
 
-  // Handle text selection
   const handleSelectionChange = useCallback(() => {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
@@ -40,7 +33,6 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
-    // Only show if selection is within editor
     const editorElement = document.querySelector(".ProseMirror");
     if (!editorElement || !editorElement.contains(range.commonAncestorContainer)) {
       setIsVisible(false);
@@ -54,7 +46,6 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
     setIsVisible(true);
   }, []);
 
-  // Listen for selection changes
   useEffect(() => {
     document.addEventListener("selectionchange", handleSelectionChange);
     document.addEventListener("mouseup", handleSelectionChange);
@@ -64,7 +55,6 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
     };
   }, [handleSelectionChange]);
 
-  // Call AI API to improve text
   const handleImprove = async () => {
     if (!selectedText || isLoading) {
       return;
@@ -102,7 +92,6 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
     }
   };
 
-  // Hide popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;

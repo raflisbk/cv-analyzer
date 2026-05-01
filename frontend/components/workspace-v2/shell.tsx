@@ -56,7 +56,6 @@ export function WorkspaceV2Shell({
     }
   }, [applyAllSuggestions, storeHydration, statusMapRef]);
 
-  // Fetch hydration data client-side to avoid SSR network issues
   const fetchHydration = useCallback(async () => {
     if (!jobId) { return; }
     try {
@@ -69,7 +68,6 @@ export function WorkspaceV2Shell({
     }
   }, [jobId, setHydration]);
 
-  // Fetch pdfUrl client-side so it's visible in DevTools and not dependent on SSR
   const fetchPdfUrl = useCallback(async () => {
     if (!jobId || pdfUrl) { return; }
     try {
@@ -97,7 +95,6 @@ export function WorkspaceV2Shell({
     }
   }, [isUpload, jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl, fetchPdfUrl, fetchHydration, storeHydration]);
 
-  // Grid columns: upload mode shows centered panel, workspace mode has 3-panel layout
   const gridStyle: CSSProperties = isUpload
     ? { gridTemplateColumns: "210px minmax(0, 1.18fr) 280px" }
     : {
@@ -120,7 +117,6 @@ export function WorkspaceV2Shell({
         ].join(", "),
       }}
     >
-      {/* Dot grid decoration — editorial background texture */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0"
@@ -133,9 +129,7 @@ export function WorkspaceV2Shell({
         }}
       />
 
-      {/* Frosted glass floating panels — depth layer */}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        {/* Large frosted orb — top left */}
         <div
           style={{
             position: "absolute", top: "-80px", left: "-60px",
@@ -144,7 +138,6 @@ export function WorkspaceV2Shell({
             filter: "blur(32px)",
           }}
         />
-        {/* Medium orb — bottom right */}
         <div
           style={{
             position: "absolute", bottom: "-60px", right: "-40px",
@@ -153,7 +146,6 @@ export function WorkspaceV2Shell({
             filter: "blur(28px)",
           }}
         />
-        {/* Thin glass card — floats in the center-right quadrant */}
         <div
           style={{
             position: "absolute", top: "30%", right: "22%",
@@ -165,7 +157,6 @@ export function WorkspaceV2Shell({
             transform: "rotate(6deg)",
           }}
         />
-        {/* Small accent ring — center-left */}
         <div
           style={{
             position: "absolute", top: "55%", left: "15%",
@@ -173,7 +164,6 @@ export function WorkspaceV2Shell({
             border: "1.5px solid rgba(202,255,67,0.22)",
           }}
         />
-        {/* Lime smear glow — center */}
         <div
           style={{
             position: "absolute", top: "40%", left: "45%",
@@ -184,7 +174,6 @@ export function WorkspaceV2Shell({
         />
       </div>
 
-      {/* Header — masthead style, height auto */}
       <WorkspaceV2Header
         filename={isUpload ? null : (hydration?.file.filename ?? null)}
         jobId={jobId ?? ""}
@@ -193,12 +182,10 @@ export function WorkspaceV2Shell({
         className="relative z-10 flex-none"
       />
 
-      {/* Body — 3-panel grid with padding so panels float */}
       <div
         className="relative z-10 flex-1 overflow-hidden grid p-2 gap-2"
         style={gridStyle}
       >
-        {/* Left detail panel — floating warm-dark card */}
         <aside
           className="hidden lg:flex flex-col overflow-hidden rounded-2xl"
           style={{
@@ -210,7 +197,6 @@ export function WorkspaceV2Shell({
           <LeftDetailPanel className="h-full" />
         </aside>
 
-        {/* Center panel — PDF viewer or upload flow */}
         <main
           className={cn(
             "relative flex flex-col overflow-hidden rounded-2xl",
@@ -227,7 +213,6 @@ export function WorkspaceV2Shell({
           {isUpload ? <UploadPanel /> : <PdfViewerPanel pdfUrl={pdfUrl} />}
         </main>
 
-        {/* Right rail — floating warm-dark card */}
         <aside
           className="hidden lg:flex flex-col overflow-hidden min-h-0 rounded-2xl"
           style={{
@@ -240,7 +225,6 @@ export function WorkspaceV2Shell({
         </aside>
       </div>
 
-      {/* Action footer */}
       {isUpload ? (
         <footer
           className="relative z-20 flex-none px-5 py-2.5"
@@ -281,7 +265,6 @@ export function WorkspaceV2Shell({
           }}
           aria-label="Workspace actions"
         >
-          {/* Toggle Button */}
           <button
             onClick={() => setIsFooterExpanded(!isFooterExpanded)}
             className={cn(
@@ -297,9 +280,7 @@ export function WorkspaceV2Shell({
 
           {isFooterExpanded && (
             <div className="flex justify-between items-center gap-3 w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
-              {/* Left group: Apply + Diff */}
               <div className="flex items-center gap-1.5">
-                {/* Apply all */}
                 <button
                   type="button"
                   onClick={handleApplyAll}
@@ -323,10 +304,8 @@ export function WorkspaceV2Shell({
                   )}
                 </button>
 
-                {/* Visual separator */}
                 <div className="h-4 w-px bg-[rgba(17,17,17,0.15)] mx-1" aria-hidden="true" />
 
-                {/* Diff toggle */}
                 <button
                   type="button"
                   onClick={() => setViewMode(isDiffActive ? "optimized" : "original")}
@@ -357,9 +336,7 @@ export function WorkspaceV2Shell({
                 </button>
               </div>
 
-              {/* Right group: Save actions */}
               <div className="flex items-center gap-1.5">
-                {/* Save optimized PDF */}
                 <button
                   type="button"
                   className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:brightness-95 active:scale-[0.97]"
@@ -373,7 +350,6 @@ export function WorkspaceV2Shell({
                   Export PDF
                 </button>
 
-                {/* Save report */}
                 <button
                   type="button"
                   className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:bg-[rgba(17,17,17,0.08)] active:scale-[0.97]"

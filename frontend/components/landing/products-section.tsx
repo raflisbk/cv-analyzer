@@ -49,7 +49,6 @@ export default function ProductsSection() {
       }}
     >
       <div className="mx-auto max-w-6xl px-4 md:px-8">
-        {/* Section heading */}
         <div className="mb-16 text-center">
           <h2 className="mb-5 font-display text-3xl md:text-5xl font-extrabold tracking-tight text-[#F5F2D8]">
             What <PathkrInline variant="dark" /> Offers
@@ -59,7 +58,6 @@ export default function ProductsSection() {
           </p>
         </div>
 
-        {/* Product card grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {products.map((product) => {
             return (
@@ -72,7 +70,6 @@ export default function ProductsSection() {
                   boxShadow: "0 8px 32px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.03)",
                 }}
               >
-                {/* Subtle top gradient glow on hover */}
                 <div 
                   className="absolute inset-x-0 top-0 h-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   style={{
@@ -82,9 +79,7 @@ export default function ProductsSection() {
                 />
 
                 <div className="relative z-10">
-                  {/* Header: Icon + Status */}
                   <div className="flex items-start justify-between mb-8">
-                    {/* Icon container */}
                     <div 
                       className={`inline-flex items-center justify-center h-14 w-14 rounded-2xl ${product.iconContainer.split(' ')[0]}`}
                       style={{ border: "1px solid rgba(255,255,255,0.05)" }}
@@ -92,7 +87,6 @@ export default function ProductsSection() {
                       <product.Icon size={28} className={product.iconColor} />
                     </div>
 
-                    {/* Status badge */}
                     <div>
                       {product.status === "active" ? (
                         <AccentPill color="lime" size="sm">Active</AccentPill>
@@ -113,7 +107,6 @@ export default function ProductsSection() {
                     {product.description}
                   </p>
 
-                  {/* CTA */}
                   <div>
                     <Link
                       href={product.href!}

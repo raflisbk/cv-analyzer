@@ -1,9 +1,4 @@
-/**
- * MatchScoreCard — displays overall match percentage with threshold colors,
- * a text label, and breakdown bars for Skills / Experience / Education.
- * Per UI-SPEC §7.2, §4 (threshold colors), §5 (match score display).
- * Mathical design system: dark cards, lime/orange/pink thresholds.
- */
+
 
 import type { ComparisonResult } from "@/lib/types";
 
@@ -51,10 +46,8 @@ export function MatchScoreCard({ result }: MatchScoreCardProps) {
 
   return (
     <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-6 md:p-8">
-      {/* Section title */}
       <h2 className="font-display font-extrabold text-lg text-[#F5F2D8] mb-6">Match Score</h2>
 
-      {/* Large score + label */}
       <div className="flex items-end gap-3 mb-6">
         <span className="font-display font-extrabold text-5xl leading-none" style={{ color }}>
           {result.match_pct}%
@@ -67,7 +60,6 @@ export function MatchScoreCard({ result }: MatchScoreCardProps) {
         </span>
       </div>
 
-      {/* Score breakdown bars */}
       <p className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest mb-4">Score Breakdown</p>
       <div className="space-y-3">
         {BREAKDOWN.map(({ label: lbl, value, color: barColor }) => (
@@ -86,7 +78,6 @@ export function MatchScoreCard({ result }: MatchScoreCardProps) {
         ))}
       </div>
 
-      {/* Overall recommendation */}
       {result.overall_recommendation && (
         <div className="mt-6 pt-5 border-t border-white/8">
           <p className="text-sm text-[#F5F2D8]/70 leading-relaxed">{result.overall_recommendation}</p>

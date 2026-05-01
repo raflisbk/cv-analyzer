@@ -17,7 +17,6 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        onFileSelected(acceptedFiles[0]); // Per D-03: single file upload only
       }
       setIsDragOver(false);
     },
@@ -39,10 +38,10 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
       "application/msword": [".doc"],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     },
-    maxSize: 5 * 1024 * 1024, // 5MB per D-02
-    multiple: false, // Per D-03
+    maxSize: 5 * 1024 * 1024,
+    multiple: false,
     disabled,
-    noClick: true, // Prevent double-open; button uses explicit open()
+    noClick: true,
     onDragEnter: () => setIsDragOver(true),
     onDragLeave: () => setIsDragOver(false),
   });
@@ -63,7 +62,6 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
     >
       <input {...getInputProps()} />
 
-      {/* Big centered icon circle */}
       <div className={cn(
         "w-20 h-20 rounded-full flex items-center justify-center mb-5 transition-colors duration-200",
         isDragOver || isDragActive
@@ -80,7 +78,6 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
         AI scores your CV on clarity, keywords, impact & ATS compatibility
       </p>
 
-      {/* Feature mini-pills */}
       <div className="flex items-center gap-2 mb-6 flex-wrap justify-center">
         <span className="rounded-full bg-[#CAFF43]/15 text-[#CAFF43] text-xs font-bold px-3 py-1">
           ✦ AI Scoring

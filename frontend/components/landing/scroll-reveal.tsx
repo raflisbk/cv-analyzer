@@ -4,7 +4,7 @@ import { useEffect, useRef, ReactNode } from "react";
 interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
-  delay?: number; // ms delay before transition starts
+  delay?: number;
 }
 
 export default function ScrollReveal({

@@ -1,7 +1,4 @@
-/**
- * API response types matching backend wrapped response format
- * from RESEARCH.md Pattern 1: Wrapped Response Format
- */
+
 
 export interface ErrorDetail {
   code: string;
@@ -91,14 +88,10 @@ export interface SuggestionItem {
   text: string;
   explanation?: string;
   type: SuggestionType;
-  originalText?: string;  // Original CV text for before/after comparison
-  afterText?: string;     // Rewritten example implementing the suggestion
+  originalText?: string;
+  afterText?: string;
 }
 
-/**
- * API-facing suggestion item shape before UI normalization.
- * Backend may emit `original_text`/`after_text` while frontend components consume camelCase.
- */
 export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText" | "afterText"> {
   originalText?: string;
   original_text?: string;
@@ -107,14 +100,13 @@ export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText" |
   explanation?: string;
 }
 
-/** API-facing suggestion card shape before UI normalization. */
 export interface ApiSuggestionCard {
   section: string;
   suggestions: ApiSuggestionItem[];
 }
 
 export interface SuggestionCard {
-  section: string; // e.g. "Experience", "Skills", "Summary"
+  section: string;
   suggestions: SuggestionItem[];
 }
 
@@ -153,9 +145,8 @@ export interface AnalysisResult {
 // Comparison types
 // ============================================================
 
-/** LLM comparison output per D-C6. Fields match backend ComparisonResult Pydantic schema. */
 export interface ComparisonResult {
-  match_pct: number;              // 0–100 integer
+  match_pct: number;
   matched_skills: string[];
   missing_skills: string[];
   matched_experience: string[];
@@ -163,14 +154,12 @@ export interface ComparisonResult {
   overall_recommendation: string;
 }
 
-/** Skills grouped by gap status for SkillsGapDisplay per COMPARE-05, UX-01. */
 export interface SkillGapGroup {
-  present: string[];    // from matched_skills
-  missing: string[];    // from missing_skills
-  partial: string[];    // optional partial matches
+  present: string[];
+  missing: string[];
+  partial: string[];
 }
 
-/** Job role summary for comparison dropdown per D-C5, COMPARE-02. */
 export interface JobRole {
   id: string;
   title: string;
@@ -178,8 +167,7 @@ export interface JobRole {
   industry: string;
 }
 
-/** Export options for ExportStickyBar per D-C12, EXPORT-01, EXPORT-02. */
 export interface ExportOptions {
   jobId: string;
-  topSuggestionText?: string;  // For clipboard copy via navigator.clipboard.writeText()
+  topSuggestionText?: string;
 }

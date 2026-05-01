@@ -28,7 +28,6 @@ export function SuggestionTooltip({
 }: SuggestionTooltipProps) {
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target as Node)) {
@@ -76,7 +75,7 @@ export function SuggestionTooltip({
   // Position above the mark, centered horizontally
   // getBoundingClientRect() is viewport-relative; fixed elements are also viewport-relative
   // — do NOT add window.scrollY here
-  const top = anchorRect.top - 8; // 8px gap above mark
+  const top = anchorRect.top - 8;
   const left = anchorRect.left + anchorRect.width / 2;
 
   return createPortal(

@@ -1,9 +1,4 @@
-/**
- * SSE job progress streaming hook
- * Implements D-13: Real-time progress updates via SSE
- * Implements D-15: Auto-reconnect with resume from last stage
- * Implements D-21 fallback: poll REST API when SSE fails to receive complete
- */
+
 
 "use client";
 
@@ -36,7 +31,6 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
     }
   }, []);
 
-  /** Fallback: poll REST endpoint every 4s to detect completion when SSE drops */
   const startFallbackPoll = useCallback(
     (id: string, onComplete: (jobId: string) => void) => {
       if (completedRef.current) return;

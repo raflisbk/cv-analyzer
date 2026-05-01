@@ -1,7 +1,4 @@
-/**
- * React Query hook for polling GET /api/v1/jobs/{id}/results per D-21.
- * Polls every 3 seconds while status is processing, stops when complete/failed.
- */
+
 
 "use client";
 
@@ -17,14 +14,13 @@ export function useJobResults(jobId: string | null) {
       if (!jobId) throw new Error("No jobId provided");
       return getJobResults(jobId);
     },
-    // Stop polling when complete or failed per D-21
     refetchInterval: (query) => {
       const status = query.state.data?.status;
       if (status === "complete" || status === "failed") return false;
-      return 3000; // Poll every 3 seconds while processing
+      return 3000;
     },
-    staleTime: 0, // Always fresh while polling
-    retry: 3, // Retry on network errors
+    staleTime: 0,
+    retry: 3,
     enabled: !!jobId,
   });
 }

@@ -1,8 +1,4 @@
-/**
- * PdfViewerError — error state untuk PDF viewer.
- * role="alert" untuk accessibility. Tombol "Muat Ulang" untuk retry.
- * (UI-SPEC Section 4 — Error State)
- */
+
 import { AlertTriangle } from "lucide-react";
 
 type ErrorType = "no-file" | "network" | "generic";
@@ -34,23 +30,19 @@ export function PdfViewerError({
         p-8
       "
     >
-      {/* Error icon */}
       <AlertTriangle
         className="h-8 w-8 text-[--ws-destructive]"
         aria-hidden="true"
       />
 
-      {/* Error heading */}
       <h2 className="text-[15px] font-bold text-[rgba(17,17,17,0.9)] text-center">
         Dokumen Tidak Tersedia
       </h2>
 
-      {/* Error body */}
       <p className="max-w-[280px] text-center text-sm text-[rgba(17,17,17,0.55)]">
         {ERROR_MESSAGES[errorType]}
       </p>
 
-      {/* Retry button */}
       {onRetry && (
         <button
           onClick={onRetry}

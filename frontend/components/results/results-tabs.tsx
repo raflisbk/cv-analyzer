@@ -1,7 +1,4 @@
-/**
- * Tab navigation wrapper for results page per D-20, UI-SPEC §8
- * Uses shadcn Tabs (Radix Tabs wrapper).
- */
+
 
 import { ArrowLeftRight, BarChart3, LayoutDashboard, SpellCheck, Sparkles } from "lucide-react";
 import {
@@ -25,16 +22,13 @@ import { SuggestionCards } from "./suggestion-cards";
 interface ResultsTabsProps {
   result: AnalysisResult;
   jobRoles?: JobRole[];
-  /** Forwarded to CompareTab — triggers parent refetch when SSE comparison completes */
   onCompareComplete?: () => void;
 }
 
 export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: ResultsTabsProps) {
   return (
-    // overflow-x-auto for mobile tab scrolling per UI-SPEC §11
     <Tabs defaultValue="overview" className="w-full">
       <TabsList className="overflow-x-auto flex w-full bg-[#F5F2D8] border-b border-[#141414]/10 mb-2">
-        {/* min-h-[44px] for touch target per UI-SPEC §2 */}
         <TabsTrigger
           value="overview"
           className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
@@ -63,7 +57,6 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
           <SpellCheck className="h-4 w-4" />
           Grammar
         </TabsTrigger>
-        {/* Tab 5: Compare */}
         <TabsTrigger
           value="compare"
           className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
@@ -73,20 +66,15 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
         </TabsTrigger>
       </TabsList>
 
-      {/* Overview tab - ATS Checklist + AI Suggestions */}
       <TabsContent value="overview" className="pt-6 space-y-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">ATS Compatibility Check</h2>
         <AtsChecklist checks={result.ats_checks} />
-        {/* AI suggestions below ATS checklist.
-            Show skeleton while job is processing (any non-terminal status);
-            only show null/"unavailable" when status=complete and LLM genuinely failed. */}
         <SuggestionCards
           cards={result.suggestions}
           isLoading={result.status !== "complete" && result.status !== "failed"}
         />
       </TabsContent>
 
-      {/* Scores tab — 4 gauge charts per UI-SPEC §7 C2 */}
       <TabsContent value="scores" className="pt-6 space-y-4 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">Score Breakdown</h2>
         {result.scores ? (
@@ -98,19 +86,16 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
         )}
       </TabsContent>
 
-      {/* Skills tab — badge cloud per UI-SPEC §7 C3 */}
       <TabsContent value="skills" className="pt-6 space-y-4 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">Extracted Skills</h2>
         <SkillsList skills={result.skills} />
       </TabsContent>
 
-      {/* Grammar tab — issues list per UI-SPEC §7 C4 */}
       <TabsContent value="grammar" className="pt-6 space-y-4 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <h2 className="font-display font-extrabold text-lg text-[#141414]">Grammar &amp; Spelling</h2>
         <GrammarIssuesList issues={result.grammar_issues} />
       </TabsContent>
 
-      {/* Compare tab per D-C17 */}
       <TabsContent value="compare" className="pt-6 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-200">
         <CompareTab
           jobId={result.job_id}
@@ -119,7 +104,6 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
           comparisonStatus={result.comparison_status}
           onCompareComplete={onCompareComplete}
         >
-          {/* Render comparison results as CompareTab children when complete */}
           {result.comparison_status === "pending" || result.comparison_status === "comparing" ? (
             <ComparisonSkeleton />
           ) : result.comparison_status === "complete" && result.comparison_result ? (

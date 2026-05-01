@@ -1,7 +1,4 @@
-/**
- * Upload file mutation hook
- * Implements file upload with React Query
- */
+
 
 "use client";
 
@@ -12,8 +9,7 @@ import { toast } from "sonner";
 export function useUpload() {
   return useMutation<{ job_id: string }, ApiError, File>({
     mutationFn: async (file: File) => {
-      // Client-side validation before upload per ERROR-01
-      const maxSize = 5 * 1024 * 1024; // 5MB per D-02
+      const maxSize = 5 * 1024 * 1024;
       const allowedTypes = [
         "application/pdf",
         "application/msword",

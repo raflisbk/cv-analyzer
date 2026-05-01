@@ -32,7 +32,6 @@ function buildSuggestionsClipboardText(
     return undefined;
   }
 
-  // Regression guard: always build clipboard text from the full rendered suggestions list.
   const cardsWithSuggestions = cards.filter((card) => card.suggestions.length > 0);
   const sections = cardsWithSuggestions
     .map((card) => {
@@ -78,7 +77,7 @@ export default function ResultsPage() {
       const json = await res.json();
       return json.data as JobRole[];
     },
-    staleTime: Infinity, // Job roles don't change
+    staleTime: Infinity,
   });
 
   // Error state — network error or API error per UI-SPEC §5 "Error states"
@@ -118,17 +117,16 @@ export default function ResultsPage() {
   // Mathical score colors: lime (high >=80), orange (medium 60-79), pink (low <60) per VIS-03, D-02
   const scoreColor = normalizedResult?.scores
     ? normalizedResult.scores.overall >= 80
-      ? "#CAFF43"   // lime — High
+      ? "#CAFF43"
       : normalizedResult.scores.overall >= 60
-        ? "#FF8C42" // orange — Medium
-        : "#FF4FCB" // pink — Low
+        ? "#FF8C42"
+        : "#FF4FCB"
     : "#CAFF43";
 
   return (
     <>
       <main className={`min-h-screen bg-[#F5F2D8]${isComplete ? " pb-16" : ""}`}>
         <div className="max-w-4xl mx-auto px-4 py-12">
-          {/* Page header per UI-SPEC §7 B */}
           <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <Link
@@ -149,7 +147,6 @@ export default function ResultsPage() {
               >
                 Open workspace
               </Link>
-              {/* Polling indicator per UI-SPEC §8 */}
               {isProcessing && (
                 <div
                   className="flex items-center gap-2 text-sm text-[#141414]/50"
@@ -163,7 +160,6 @@ export default function ResultsPage() {
             </div>
           </div>
 
-          {/* Loading/Processing state per UI-SPEC §7 B */}
           {isProcessing ? (
             <div className="space-y-4">
               <div className="bg-[#141414] rounded-[2rem] p-10 text-center space-y-4 border border-[#CAFF43]/10 animate-pulse">
@@ -184,7 +180,6 @@ export default function ResultsPage() {
           ) : (
             /* Complete state per UI-SPEC §7 C */
             <div className="space-y-8">
-              {/* Score overview dark card per VIS-03, D-03 */}
               {normalizedResult.scores && (
                 <div className="bg-[#141414] rounded-[2rem] px-8 py-10 flex flex-col items-center gap-2">
                   <span
@@ -198,14 +193,12 @@ export default function ResultsPage() {
                 </div>
               )}
 
-              {/* Tabs: Overview | Scores | Skills | Grammar | Compare */}
                 <ResultsTabs
                   result={normalizedResult}
                   jobRoles={jobRolesData ?? []}
                   onCompareComplete={() => { void refetch(); }}
                 />
 
-              {/* Analyze Another CV button per UI-SPEC §5 */}
               <div className="flex justify-center pt-4">
                 <button
                   onClick={() => router.push("/")}
@@ -220,7 +213,6 @@ export default function ResultsPage() {
           )}
         </div>
       </main>
-      {/* ExportStickyBar — slides up when analysis complete per UI-SPEC §7.5, D-C12 */}
       {normalizedResult && (
         <ExportStickyBar
           jobId={jobId}

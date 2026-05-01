@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-// CSS react-pdf diperlukan untuk text layer rendering (PDF-01)
 // Diimport di layout supaya berlaku untuk seluruh workspace-v2 route
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";

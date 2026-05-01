@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * ExportStickyBar — Fixed bottom export toolbar.
- * Slides up with translate-y animation when analysisStatus === "complete".
- * Per UI-SPEC §7.5, D-C12, EXPORT-01, EXPORT-02.
- */
-
 import { useEffect, useState } from "react";
 import { Check, Clipboard, Download } from "lucide-react";
 import { toast } from "sonner";
@@ -14,7 +8,6 @@ import { Button } from "@/components/ui/button";
 interface ExportStickyBarProps {
   jobId: string;
   analysisStatus: string;
-  /** Preformatted suggestions payload for clipboard copy per EXPORT-02 */
   suggestionsClipboardText?: string;
 }
 
@@ -26,7 +19,6 @@ export function ExportStickyBar({
   const [isVisible, setIsVisible] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  // Slide-up animation: delay 100ms after paint per UI-SPEC §7.5
   useEffect(() => {
     if (analysisStatus === "complete") {
       const timer = setTimeout(() => setIsVisible(true), 100);
@@ -42,7 +34,6 @@ export function ExportStickyBar({
       await navigator.clipboard.writeText(text);
       setCopySuccess(true);
       toast("Suggestions copied to clipboard");
-      // Revert icon after 2000ms per UI-SPEC §8
       setTimeout(() => setCopySuccess(false), 2000);
     } catch {
       toast("Failed to copy to clipboard");
@@ -84,7 +75,6 @@ export function ExportStickyBar({
     }
   }
 
-  // Always render the wrapper div to enable CSS transitions
   // Element is hidden below viewport (translate-y-full) when not complete
   return (
     /* h-14=56px, fixed bottom-0, z-50, slide-up animation per UI-SPEC §7.5 */
@@ -96,10 +86,8 @@ export function ExportStickyBar({
       role="toolbar"
       aria-label="Export options"
     >
-      {/* Only render content when analysis is complete */}
       {analysisStatus === "complete" && (
         <>
-          {/* Copy Suggestion — Mathical dark surface button per UI-SPEC §7.5 */}
           <Button
             onClick={handleCopySuggestion}
             aria-label="Copy all suggestions to clipboard"
@@ -112,7 +100,6 @@ export function ExportStickyBar({
             Copy Suggestions
           </Button>
 
-          {/* Download PDF — lime accent button per UI-SPEC §7.5 */}
           <Button
             onClick={handleDownloadPdf}
             aria-label="Download analysis as PDF"

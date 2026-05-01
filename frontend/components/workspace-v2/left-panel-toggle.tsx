@@ -1,9 +1,5 @@
 "use client";
-/**
- * LeftPanelToggle — kept for compatibility; not mounted in the current shell.
- * Grid-based layout uses tab clicks in LeftDetailPanel to drive
- * activeDetailTab state instead of a separate toggle button.
- */
+
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { cn } from "@/lib/utils";
 

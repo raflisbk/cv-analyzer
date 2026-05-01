@@ -1,7 +1,4 @@
-/**
- * Server-Sent Events (SSE) connection management
- * Implements D-15: Auto-reconnect SSE with resume from last stage
- */
+
 
 export interface SSEMessage {
   type: "connected" | "progress" | "error";
@@ -15,9 +12,9 @@ export class SSEConnection {
   private eventSource: EventSource | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000; // Start with 1 second
   private isClosed = false;
-  private completedReceived = false; // Guard: stop reconnecting once complete/failed arrives
+  private completedReceived = false;
+  private reconnectDelay = 1000;
 
   constructor(
     private url: string,

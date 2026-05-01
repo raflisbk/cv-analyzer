@@ -1,15 +1,5 @@
 "use client";
-/**
- * AnnotationOverlay — renders absolute-positioned hit-test divs at anchor rects.
- * Annotation overlay for PDF highlights.
- *
- * Two-layer approach:
- * 1. customTextRenderer (in pdf-viewer-inner.tsx) injects colored spans in text layer for visual highlights.
- * 2. AnnotationHitArea renders transparent absolute divs at the same rects for mouse event capture.
- *
- * Coordinate conversion: PyMuPDF rects are in PDF points (top-left origin, y-down = CSS-compatible).
- * Scale by containerWidth / pageWidth to get CSS pixels.
- */
+
 import { useCallback, useMemo } from "react";
 import { FloatingPortal, useFloating, shift, offset, flip } from "@floating-ui/react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -55,7 +45,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   const isApplied = status === "applied";
   const isDismissed = status === "dismissed";
 
-  // Hide patches/highlights if viewMode is original
   const isOriginalMode = viewMode === "original";
   const showHighlight = !isApplied && !isOriginalMode;
   const showPatch = isApplied && !isOriginalMode;
@@ -71,11 +60,9 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
     height: anchor.rect.h * scale,
   };
 
-  // Get suggestion text from map
   const suggestion = suggestions.get(anchor.suggestion_id);
   const suggestionText = suggestion?.afterText || suggestion?.text || anchor.text_anchor;
 
-  // Set up floating UI with proper positioning
   const { refs, floatingStyles } = useFloating({
     placement: "top",
     middleware: [
@@ -92,7 +79,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   }, [anchor.suggestion_id, setActiveSuggestionId]);
 
   const handleMouseLeave = useCallback(() => {
-    // Add small delay before hiding to prevent flickering
     setTimeout(() => {
       setActiveSuggestionId(null);
     }, 100);
@@ -100,7 +86,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
 
   return (
     <>
-      {/* Visual highlight — shows colored background */}
       {showHighlight && (
         <div
           style={{
@@ -122,24 +107,18 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
         />
       )}
 
-      {/* Visual Patch — covers original text and shows new text instantly */}
       {showPatch && (
         <div
           style={{
             position: "absolute",
             left: cssRect.left,
-            top: cssRect.top - 2, // slight nudge to cover ascenders
-            width: cssRect.width + 4, // slight nudge to cover full width
             minHeight: cssRect.height + 4,
-            height: "max-content", // Allow multi-line to grow
             zIndex: 10,
             background: "#ffffff",
             padding: "2px 4px",
             color: "#111111",
             fontFamily: "var(--font-sans), sans-serif",
-            fontSize: "11px", // typical CV font size in pixels at scale 1
             lineHeight: "1.4",
-            border: `1px solid ${color.border}`, // subtle border to show it's patched
             boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
             borderRadius: "3px",
             pointerEvents: "none",
@@ -151,7 +130,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
         </div>
       )}
 
-      {/* Hit area — transparent div for mouse events */}
       {(!isOriginalMode) && (
         <div
           ref={refs.setReference}
@@ -191,7 +169,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
               color: "#1a1a1a",
             }}
           >
-            {/* Header with priority and section */}
             <div style={{ marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                 <span
@@ -209,7 +186,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
               </div>
             </div>
 
-            {/* Suggestion text - full content not truncated */}
             <p
               className="text-[13px] leading-snug"
               style={{
@@ -222,7 +198,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
               {suggestionText}
             </p>
 
-            {/* Original text for reference */}
             {suggestion?.text && suggestion.text !== suggestionText && (
               <div
                 style={{
@@ -251,7 +226,6 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
               </div>
             )}
 
-            {/* Action buttons */}
             <div className="flex gap-2">
               <button
                 type="button"
@@ -334,13 +308,11 @@ export function AnnotationOverlay({
     return null;
   }
 
-  // Build suggestions map for quick lookup by suggestion_id
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const suggestionsMap = useMemo(() => {
     const map = new Map<string, { text: string; afterText?: string }>();
     for (const card of suggestions) {
       card.suggestions.forEach((item, itemIdx) => {
-        // Generate suggestion_id matching backend format: {section}_{item_idx}_{card_idx}
         const suggestionId = `${card.section}_${itemIdx}_0`;
         map.set(suggestionId, {
           text: item.text,

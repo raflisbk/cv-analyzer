@@ -67,7 +67,6 @@ function ToolbarButton({
 }
 
 export function EditorToolbar({ editor, isFocused }: EditorToolbarProps) {
-  // useEditorState for selective re-renders — NOT shouldRerenderOnTransaction (v3 API per RESEARCH.md)
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => ({

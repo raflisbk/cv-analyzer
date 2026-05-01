@@ -68,7 +68,6 @@ export function PDFPreview({ jobId, fileName }: PDFPreviewProps) {
   if (isPDF) {
     return (
       <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
-        {/* Toolbar strip */}
         <div className="flex items-center gap-2 border-b border-border bg-[#fafafa] px-4 py-2">
           <FileText className="h-3.5 w-3.5 text-[#141414]/40" />
           <span className="truncate text-[11px] text-[#141414]/50">{fileName}</span>
@@ -82,7 +81,6 @@ export function PDFPreview({ jobId, fileName }: PDFPreviewProps) {
           </a>
         </div>
 
-        {/* PDF embed */}
         <iframe
           src={`${fileUrl}#toolbar=0&navpanes=0&scrollbar=1`}
           title={`PDF preview: ${fileName}`}

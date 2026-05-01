@@ -33,8 +33,6 @@ const SPACING_PADDING: Record<SpacingValue, string> = {
   normal: "py-3",
   spacious: "py-6",
 };
-
-// ─── Stabilo highlight utilities ────────────────────────────────────────────
 
 function findTextRange(
   doc: ProseMirrorNode,
@@ -56,21 +54,21 @@ function findTextRange(
 function getSuggestionColor(item: SuggestionItem): string {
   if (item.priority === "high_impact") { return "#FF4FCB"; }
   if (item.type === "action_verb" || item.type === "impact_metric") { return "#FF8C42"; }
-  return "#CAFF43"; // quick_win default
+  return "#CAFF43";
 }
 
 function applyHighlights(editor: Editor, suggestions: SuggestionItem[]) {
   suggestions.forEach((suggestion) => {
-    if (!suggestion.originalText) { return; } // no anchor phrase — skip silently
+    if (!suggestion.originalText) { return; }
     const range = findTextRange(editor.state.doc, suggestion.originalText);
-    if (!range) { return; } // phrase not found in this section — skip gracefully
+    if (!range) { return; }
 
     const color = getSuggestionColor(suggestion);
     editor
       .chain()
       .setTextSelection(range)
       .setSuggestionHighlight({
-        suggestionId: suggestion.text, // use suggestion text as unique ID
+        suggestionId: suggestion.text,
         color,
       })
       .run();
@@ -79,15 +77,11 @@ function applyHighlights(editor: Editor, suggestions: SuggestionItem[]) {
   editor.commands.setTextSelection(0);
 }
 
-// ─── ActiveTooltip state shape ───────────────────────────────────────────────
-
 interface ActiveTooltip {
   suggestionId: string;
   item: SuggestionItem;
   anchorRect: DOMRect;
 }
-
-// ─── SectionBlock component ──────────────────────────────────────────────────
 
 export function SectionBlock({
   sectionType,
@@ -118,7 +112,7 @@ export function SectionBlock({
   }
 
   const editor = useEditor({
-    immediatelyRender: false, // CRITICAL: prevents Next.js 15 SSR throw
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Placeholder.configure({
@@ -203,14 +197,12 @@ export function SectionBlock({
           : "border-border bg-white/80"
       }`}
     >
-      {/* Section header row — reorder buttons + spacing toggle */}
       <header className="flex items-center gap-2 border-b border-border px-4 py-2">
         <span className="rounded-full bg-[#141414] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-[#F5F2D8]">
           {sectionType}
         </span>
 
         <div className="ml-auto flex items-center gap-1">
-          {/* Spacing selector */}
           <select
             aria-label="Section spacing"
             value={spacing}
@@ -224,7 +216,6 @@ export function SectionBlock({
             <option value="spacious">Spacious</option>
           </select>
 
-          {/* Move up */}
           <button
             type="button"
             aria-label="Move section up"
@@ -237,7 +228,6 @@ export function SectionBlock({
             <ChevronUp className="h-4 w-4" />
           </button>
 
-          {/* Move down */}
           <button
             type="button"
             aria-label="Move section down"
@@ -252,12 +242,9 @@ export function SectionBlock({
         </div>
       </header>
 
-      {/* Formatting toolbar — visible on focus, hidden when unfocused */}
       <EditorToolbar editor={editor} isFocused={isFocused} />
 
-      {/* Tiptap content area — spacing controlled by prop */}
       <div className={`px-4 ${SPACING_PADDING[spacing]}`}>
-        {/* Wrap EditorContent with ref for event delegation */}
         <div ref={editorContainerRef} className="relative">
           <EditorContent
             editor={editor}

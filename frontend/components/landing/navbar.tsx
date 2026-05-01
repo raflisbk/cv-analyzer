@@ -23,7 +23,6 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Add scroll shadow when user scrolls
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", handler, { passive: true });
@@ -46,7 +45,6 @@ export default function Navbar() {
         transition: "box-shadow 250ms ease",
       }}
     >
-      {/* Lime accent hairline at bottom — brand signature identical to workspace header */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
@@ -60,14 +58,12 @@ export default function Navbar() {
         aria-label="Main navigation"
         className="relative mx-auto flex h-[60px] max-w-6xl items-center justify-between px-4 md:px-8"
       >
-        {/* ── Logo ── */}
         <Link href="/" aria-label="Path Karir home" className="group flex-none">
           <div className="transition-transform duration-200 group-hover:scale-[1.04]">
             <PathkrLogo size="md" variant="light" />
           </div>
         </Link>
 
-        {/* ── Desktop centre nav links ── */}
         <div className="hidden md:flex items-center gap-0.5">
           {NAV_LINKS.map((link) => (
             <Link
@@ -76,7 +72,6 @@ export default function Navbar() {
               className="group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-200"
               style={{ color: "rgba(17,17,17,0.55)" }}
             >
-              {/* Hover pill bg */}
               <span
                 className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 style={{ background: "rgba(17,17,17,0.06)" }}
@@ -85,7 +80,6 @@ export default function Navbar() {
 
               <span className="relative">{link.label}</span>
 
-              {/* Free badge */}
               {link.badge && (
                 <span
                   className="relative rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide"
@@ -95,7 +89,6 @@ export default function Navbar() {
                 </span>
               )}
 
-              {/* Active underline dot — lime */}
               <span
                 className="absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 w-0 rounded-full bg-[#CAFF43] opacity-0 group-hover:w-5 group-hover:opacity-100 transition-all duration-200"
                 aria-hidden="true"
@@ -104,9 +97,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* ── Desktop CTAs ── */}
         <div className="hidden md:flex items-center gap-2">
-          {/* Ghost "Sign in" link */}
           <button
             type="button"
             className="rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-150"
@@ -124,14 +115,12 @@ export default function Navbar() {
             Sign in
           </button>
 
-          {/* Divider */}
           <div
             className="h-5 w-px"
             style={{ background: "rgba(17,17,17,0.13)" }}
             aria-hidden="true"
           />
 
-          {/* Primary CTA — warm dark pill */}
           <button
             onClick={() => router.push("/workspace-v2/new")}
             className="group relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-2 text-[13px] font-black tracking-wide transition-all duration-200 hover:opacity-92 active:scale-[0.97]"
@@ -144,7 +133,6 @@ export default function Navbar() {
                 "0 2px 12px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08)",
             }}
           >
-            {/* Shimmer on hover */}
             <span
               className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-[shimmer_1.2s_ease_1]"
               aria-hidden="true"
@@ -163,7 +151,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* ── Mobile hamburger ── */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <button
@@ -180,7 +167,6 @@ export default function Navbar() {
             </button>
           </SheetTrigger>
 
-          {/* Mobile drawer */}
           <SheetContent
             side="right"
             className="flex flex-col gap-0 pt-0 outline-none"
@@ -191,7 +177,6 @@ export default function Navbar() {
               boxShadow: "-8px 0 40px rgba(17,17,17,0.12)",
             }}
           >
-            {/* Drawer header */}
             <div
               className="flex items-center justify-between px-5 py-4 border-b"
               style={{ borderColor: "rgba(17,17,17,0.08)" }}
@@ -211,7 +196,6 @@ export default function Navbar() {
               </SheetClose>
             </div>
 
-            {/* Mobile links */}
             <nav className="flex flex-col gap-0.5 px-3 py-4">
               {NAV_LINKS.map((link) => (
                 <SheetClose key={link.href} asChild>
@@ -242,12 +226,10 @@ export default function Navbar() {
               ))}
             </nav>
 
-            {/* Mobile CTA */}
             <div
               className="mt-auto border-t px-4 py-5"
               style={{ borderColor: "rgba(17,17,17,0.08)" }}
             >
-              {/* Lime accent hairline above CTA */}
               <div
                 className="mb-4 h-px w-full rounded-full"
                 style={{

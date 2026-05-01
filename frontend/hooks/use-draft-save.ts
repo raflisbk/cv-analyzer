@@ -9,7 +9,6 @@ import type { JSONContent } from "@tiptap/core";
 export type SaveState = "idle" | "unsaved" | "saving" | "saved" | "error";
 
 interface DraftContent {
-  sections: Record<string, JSONContent>; // sectionType → Tiptap JSONContent
 }
 
 async function patchWorkspaceContent(
