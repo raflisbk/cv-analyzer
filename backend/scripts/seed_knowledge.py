@@ -13,7 +13,6 @@ import sys
 import time
 from pathlib import Path
 
-
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import requests
@@ -24,7 +23,6 @@ from app.db.session import async_session_maker
 from app.models.knowledge_chunk import KnowledgeChunk
 from app.services.rag.chunker import chunk_text
 from app.services.rag.embeddings import get_rag_embedding
-
 
 HARDCODED_KNOWLEDGE = [
     {

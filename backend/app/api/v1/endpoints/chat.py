@@ -12,7 +12,6 @@ from app.db.session import async_session_maker
 from app.models.job import Job
 from app.services.llm.chat_context_builder import build_chat_system_prompt
 
-
 router = APIRouter()
 
 

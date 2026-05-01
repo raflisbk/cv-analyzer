@@ -5,7 +5,6 @@ Wave 0 stub: FAILS until ComparisonResult added to backend/app/schemas/analysis.
 # This import will fail until ComparisonResult is added to analysis.py (Wave 1)
 from app.schemas.analysis import ComparisonResult
 
-
 VALID_COMPARISON = {
     "match_pct": 78,
     "matched_skills": ["Python", "FastAPI", "PostgreSQL"],

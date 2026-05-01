@@ -13,7 +13,6 @@ from app.schemas.analysis import JobRole
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.tasks.comparison import compare_cv_task
 
-
 router = APIRouter()
 
 _JD_MIN_LENGTH = 50

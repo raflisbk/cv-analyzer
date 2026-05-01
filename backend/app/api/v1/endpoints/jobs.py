@@ -12,7 +12,6 @@ from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.job import JobResponse
 from app.services.storage import StorageError, storage_service
 
-
 router = APIRouter()
 
 

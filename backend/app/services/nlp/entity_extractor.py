@@ -1,7 +1,6 @@
 from app.services.nlp.model import get_nlp
 from app.services.nlp.section_detector import CvSection
 
-
 _LABEL_MAP: dict[str, str] = {
     "ORG": "organizations",
     "DATE": "dates",

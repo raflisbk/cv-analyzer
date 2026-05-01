@@ -19,7 +19,6 @@ from app.schemas.analysis import (
 )
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
-
 router = APIRouter()
 
 

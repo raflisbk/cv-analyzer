@@ -14,7 +14,6 @@ from app.core.config import get_settings
 from app.core.limiter import limiter
 from app.core.logging import structured_logger as logger
 
-
 settings = get_settings()
 
 if settings.CV_ANALYZER_SENTRY_DSN:

@@ -14,7 +14,6 @@ from app.services.llm.hf_llm_service import HFLLMService
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
-
 _llm_service = HFLLMService()
 _redis_client: redis_lib.Redis | None = None
 

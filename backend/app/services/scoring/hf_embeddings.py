@@ -4,7 +4,6 @@ from huggingface_hub import InferenceClient
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 
-
 HF_MODEL_NAME = "BAAI/bge-m3"
 
 

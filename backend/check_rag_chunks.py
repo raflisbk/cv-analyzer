@@ -6,7 +6,6 @@ import sys
 # Add backend to path
 from pathlib import Path
 
-
 sys.path.insert(0, str(Path(__file__).parent))
 
 from sqlalchemy import select

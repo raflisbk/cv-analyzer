@@ -11,7 +11,6 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus
 
-
 router = APIRouter()
 settings = get_settings()
 

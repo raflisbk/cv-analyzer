@@ -11,7 +11,6 @@ from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
 from app.services.llm.inline_edit_service import InlineEditService
 
-
 router = APIRouter()
 
 

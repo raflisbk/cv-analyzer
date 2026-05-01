@@ -3,7 +3,6 @@ import json
 from app.core.logging import structured_logger as logger
 from app.services.llm.hf_llm_service import HFLLMService, _extract_json
 
-
 _SCORE_EXPLAINER_SYSTEM_PROMPT = """You are an expert CV reviewer.
 Given a CV's text and its numerical scores (0-100) across four dimensions, provide a concise explanation (summarization) for WHY each score was given.
 

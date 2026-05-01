@@ -2,7 +2,6 @@ import re
 
 from app.services.nlp.section_detector import CvSection
 
-
 _ACTION_VERBS: set[str] = {
     "accelerated",
     "achieved",

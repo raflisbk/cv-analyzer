@@ -1,6 +1,5 @@
 from io import BytesIO
 
-
 try:
     import fitz
 

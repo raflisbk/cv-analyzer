@@ -5,7 +5,6 @@ from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.services.llm.hf_llm_service import HFLLMService
 
-
 _GRAMMAR_SYSTEM_PROMPT_EN = """You are a professional CV grammar and spelling checker.
 Check the provided CV text for grammar, spelling, punctuation, and style errors.
 

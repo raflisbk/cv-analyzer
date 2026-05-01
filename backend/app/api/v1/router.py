@@ -12,7 +12,6 @@ from app.api.v1.endpoints import (
     workspace,
 )
 
-
 router = APIRouter(prefix="/v1")
 
 router.include_router(upload.router, tags=["upload"])

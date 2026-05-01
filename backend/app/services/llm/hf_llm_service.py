@@ -10,7 +10,6 @@ from app.core.logging import structured_logger as logger
 from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
 
-
 _SYSTEM_PROMPT_TEMPLATE = """You are an expert CV coach and recruitment specialist.
 Analyze the provided CV and generate specific, actionable improvement suggestions.
 

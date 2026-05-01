@@ -19,7 +19,6 @@ from app.tasks.llm_suggest import llm_suggest_task
 from app.tasks.nlp_analysis import nlp_analyze_task
 from app.tasks.scoring import score_cv_task
 
-
 settings = get_settings()
 
 router = APIRouter()

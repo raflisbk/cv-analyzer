@@ -1,7 +1,6 @@
 import re
 from dataclasses import dataclass, field
 
-
 SECTION_PATTERNS: dict[str, list[str]] = {
     "header": [],
     "summary": [

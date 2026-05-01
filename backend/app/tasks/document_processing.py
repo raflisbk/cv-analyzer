@@ -13,7 +13,6 @@ from app.services.parser import ParsingError, parse_document
 from app.services.storage import storage_service
 from app.tasks.celery_app import celery_app
 
-
 redis_client = redis.from_url(
     celery_app.conf.broker_url.replace("redis://", "redis://")
 )

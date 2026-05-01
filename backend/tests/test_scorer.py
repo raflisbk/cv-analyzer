@@ -11,7 +11,6 @@ from app.services.scoring.anchors import (
 from app.services.scoring.hf_embeddings import cosine_similarity, score_dimension
 from app.services.scoring.scorer import score_cv
 
-
 # Fake embedding — same vector = cosine similarity of 1.0 -> score = 100
 _FAKE_EMBEDDING = [0.1] * 1536
 
@@ -21,7 +20,8 @@ def test_score_cv_returns_dict_with_all_keys() -> None:
     with patch("app.core.config.get_settings") as mock_settings:
         mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
         with patch(
-            "app.services.scoring.hf_embeddings.get_embedding", return_value=_FAKE_EMBEDDING
+            "app.services.scoring.hf_embeddings.get_embedding",
+            return_value=_FAKE_EMBEDDING,
         ):
             result = score_cv("Sample CV text for testing")
 
@@ -40,7 +40,8 @@ def test_score_cv_all_values_are_int_0_to_100() -> None:
     with patch("app.core.config.get_settings") as mock_settings:
         mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
         with patch(
-            "app.services.scoring.hf_embeddings.get_embedding", return_value=_FAKE_EMBEDDING
+            "app.services.scoring.hf_embeddings.get_embedding",
+            return_value=_FAKE_EMBEDDING,
         ):
             result = score_cv("Sample CV text")
 
@@ -58,7 +59,8 @@ def test_score_cv_overall_is_weighted_average() -> None:
     with patch("app.core.config.get_settings") as mock_settings:
         mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
         with patch(
-            "app.services.scoring.hf_embeddings.get_embedding", return_value=_FAKE_EMBEDDING
+            "app.services.scoring.hf_embeddings.get_embedding",
+            return_value=_FAKE_EMBEDDING,
         ):
             result = score_cv("Sample CV text")
 

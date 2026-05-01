@@ -1,6 +1,5 @@
 from app.core.logging import structured_logger as logger
 
-
 try:
     import easyocr
     from pdf2image import convert_from_bytes

@@ -6,7 +6,6 @@ from loguru import logger
 
 from app.core.config import get_settings
 
-
 _EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b")
 _PHONE_RE = re.compile(r"\b(\+?[\d][\d\s\-\(\)\.]{6,14}[\d])\b")
 _NAME_RE = re.compile(r"\b([A-Z][a-z]{1,20}\s){1,2}[A-Z][a-z]{1,20}\b")

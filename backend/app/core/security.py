@@ -5,7 +5,6 @@ import magic
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 
-
 settings = get_settings()
 
 ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx"}

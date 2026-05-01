@@ -8,7 +8,6 @@ from celery.signals import worker_init
 
 from app.core.config import get_settings
 
-
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 

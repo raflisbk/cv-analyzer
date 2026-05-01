@@ -2,7 +2,6 @@
 
 from app.services.nlp.section_detector import CvSection, detect_sections
 
-
 # Sample CV with clear section headings
 _CV_WITH_SECTIONS = """
 John Doe

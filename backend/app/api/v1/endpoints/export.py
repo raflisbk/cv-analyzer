@@ -16,7 +16,6 @@ from app.db.session import AsyncSession, get_db
 from app.models.job import Job
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
-
 router = APIRouter()
 
 

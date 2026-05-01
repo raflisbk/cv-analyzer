@@ -8,7 +8,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Stub out optional heavy dependencies that may not be installed in the
 # test runner environment (e.g. base conda env without spacy/easyocr).

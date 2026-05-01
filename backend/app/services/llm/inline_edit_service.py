@@ -7,7 +7,6 @@ from app.core.logging import structured_logger as logger
 from app.schemas.inline_edit import InlineEditResponse
 from app.services.llm.hf_llm_service import HFLLMService
 
-
 _SYSTEM_PROMPT = """You are an expert CV editor and career coach.
 Rewrite the selected CV text according to the user's prompt.
 

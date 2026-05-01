@@ -7,7 +7,6 @@ from app.services.scoring.anchors import (
 )
 from app.services.scoring.hf_embeddings import score_dimension as hf_score_dimension
 
-
 _DIMENSION_WEIGHTS: dict[str, float] = {
     "clarity": 0.40,
     "impact": 0.25,

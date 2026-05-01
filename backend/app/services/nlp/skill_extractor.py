@@ -1,7 +1,6 @@
 from app.core.logging import structured_logger as logger
 from app.services.nlp.model import get_nlp
 
-
 try:
     from rapidfuzz import fuzz as _fuzz
 

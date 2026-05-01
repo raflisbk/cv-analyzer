@@ -37,7 +37,6 @@ from app.services.pdf_export import PDFExportService
 from app.services.pdf_to_html import PDFToHTMLConverter
 from app.services.storage import StorageError, storage_service
 
-
 router = APIRouter()
 inline_edit_service = InlineEditService()
 pdf_export_service = PDFExportService()

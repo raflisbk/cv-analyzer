@@ -2,7 +2,6 @@ import spacy
 
 from app.core.logging import structured_logger as logger
 
-
 _nlp: spacy.Language | None = None
 
 
