@@ -28,7 +28,7 @@ router = APIRouter()
 @router.post("/upload", response_model=WrappedResponse[UploadResponse])
 @limiter.limit(settings.CV_ANALYZER_UPLOAD_RATE_LIMIT)
 async def upload_file(
-    request: Request,  # noqa: ARG001 — required by slowapi for rate limiting
+    request: Request,
     file: UploadFile,
     db: AsyncSession = Depends(get_db),
 ):

@@ -75,7 +75,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             job_id=job_id,
             overall_score=scores.get("overall"),
         )
-        return {"status": "scoring_complete", "job_id": job_id}  # noqa: TRY300
+        return {"status": "scoring_complete", "job_id": job_id}
 
     except Exception as e:
         error_msg = f"CV scoring failed: {e!s}"

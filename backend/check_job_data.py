@@ -1,9 +1,11 @@
 """Quick script to check job suggestions and anchors"""
+
 import asyncio
-import sys
+
+from sqlalchemy import select
+
 from app.db.session import async_session_maker
 from app.models.job import Job
-from sqlalchemy import select
 
 
 async def check_job():
@@ -30,7 +32,9 @@ async def check_job():
         for i, card in enumerate(suggestions):
             card_suggestions = card.get("suggestions", [])
             total_items += len(card_suggestions)
-            print(f"\n  Card {i+1}: {card.get('section')} ({len(card_suggestions)} items)")
+            print(
+                f"\n  Card {i+1}: {card.get('section')} ({len(card_suggestions)} items)"
+            )
 
             for j, item in enumerate(card_suggestions[:3]):  # Show first 3
                 has_orig = "Y" if item.get("original_text") else "N"
@@ -45,15 +49,19 @@ async def check_job():
 
         print(f"\nAnchors: {len(anchors)}")
         for i, anchor in enumerate(anchors):
-            print(f"  [{i+1}] {anchor.get('suggestion_id')} on page {anchor.get('page_index')}")
+            print(
+                f"  [{i+1}] {anchor.get('suggestion_id')} on page {anchor.get('page_index')}"
+            )
             print(f"      text: {anchor.get('text_anchor', '')[:50]}...")
 
-        print(f"\n=== Summary ===")
+        print("\n=== Summary ===")
         print(f"Total suggestion items: {total_items}")
         print(f"Items with original_text: {items_with_original_text}")
         print(f"Items without original_text: {total_items - items_with_original_text}")
         print(f"Anchors created: {len(anchors)}")
-        print(f"Coverage: {len(anchors)}/{total_items} = {100*len(anchors)/total_items if total_items > 0 else 0:.1f}%")
+        print(
+            f"Coverage: {len(anchors)}/{total_items} = {100*len(anchors)/total_items if total_items > 0 else 0:.1f}%"
+        )
 
 
 if __name__ == "__main__":

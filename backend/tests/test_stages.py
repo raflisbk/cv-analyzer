@@ -14,7 +14,7 @@ EXPECTED_UI_LABEL = "Comparing against job description"
 def test_comparing_stage_name_convention():
     """compare_cv_task must emit 'comparing_job' (not 'comparing') per D-C13."""
     # Wave 0 stub: fails until comparison.py task is created in Wave 2
-    from app.tasks import comparison  # noqa: PLC0415
+    from app.tasks import comparison
 
     # Verify module exists and exposes compare_cv_task
     assert hasattr(

@@ -54,7 +54,7 @@ celery_app.conf.beat_schedule = {
 
 @worker_init.connect
 def _on_worker_init(**_kwargs):
-    from app.core.logging import InterceptHandler, setup_logging  # noqa: PLC0415
+    from app.core.logging import InterceptHandler, setup_logging
 
     setup_logging()
 

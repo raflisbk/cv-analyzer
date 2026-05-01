@@ -88,7 +88,7 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
             section_count=len(sections),
             skill_count=len(skills),
         )
-        return {"status": "nlp_complete", "job_id": job_id}  # noqa: TRY300
+        return {"status": "nlp_complete", "job_id": job_id}
 
     except Exception as e:
         error_msg = f"NLP analysis failed: {e!s}"

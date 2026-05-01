@@ -116,20 +116,25 @@ class HFLLMService:
 
     def __init__(self) -> None:
         settings = get_settings()
-
-        if not settings.CV_ANALYZER_HF_API_KEY:
-            msg = (
-                "CV_ANALYZER_HF_API_KEY not configured. "
-                "Please set it in your .env file."
-            )
-            raise ValueError(msg)
-
-        self.client = InferenceClient(
-            provider="hf-inference",
-            api_key=settings.CV_ANALYZER_HF_API_KEY,
-        )
+        self._api_key = settings.CV_ANALYZER_HF_API_KEY
         self.model = settings.CV_ANALYZER_LLM_MODEL
         self.max_tokens = settings.CV_ANALYZER_LLM_MAX_TOKENS
+        self._client: InferenceClient | None = None
+
+    @property
+    def client(self) -> InferenceClient:
+        if self._client is None:
+            if not self._api_key:
+                msg = (
+                    "CV_ANALYZER_HF_API_KEY not configured. "
+                    "Please set it in your .env file."
+                )
+                raise ValueError(msg)
+            self._client = InferenceClient(
+                provider="hf-inference",
+                api_key=self._api_key,
+            )
+        return self._client
 
     def _chat(
         self,

@@ -1,9 +1,12 @@
 """Test that SuggestionItem has original_text field for before/after comparison."""
+
 import sys
-sys.path.insert(0, '.')
+
+
+sys.path.insert(0, ".")
+
 
 from app.schemas.analysis import SuggestionItem
-import pytest
 
 
 def test_suggestion_item_accepts_original_text():
@@ -12,7 +15,7 @@ def test_suggestion_item_accepts_original_text():
         priority="high_impact",
         text="Add quantified metrics",
         type="action_verb",
-        original_text="Responsible for managing team"
+        original_text="Responsible for managing team",
     )
     assert item.original_text == "Responsible for managing team"
 
@@ -23,7 +26,7 @@ def test_suggestion_item_serializes_original_text():
         priority="quick_win",
         text="Improved customer satisfaction by 25%",
         type="impact_metric",
-        original_text="Helped customers with issues"
+        original_text="Helped customers with issues",
     )
     json_dict = item.model_dump()
     assert "original_text" in json_dict
@@ -33,17 +36,13 @@ def test_suggestion_item_serializes_original_text():
 def test_suggestion_item_backward_compatible():
     """Test 3: Backward compatibility: SuggestionItem works when original_text is None."""
     item = SuggestionItem(
-        priority="quick_win",
-        text="Add leadership skills",
-        type="missing_section"
+        priority="quick_win", text="Add leadership skills", type="missing_section"
     )
     assert item.original_text is None
 
     # Should also work without explicitly setting original_text
     item2 = SuggestionItem(
-        priority="high_impact",
-        text="Use action verbs",
-        type="action_verb"
+        priority="high_impact", text="Use action verbs", type="action_verb"
     )
     assert item2.original_text is None
 

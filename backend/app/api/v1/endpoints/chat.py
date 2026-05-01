@@ -53,7 +53,7 @@ async def chat_stream(job_id: str, message: str):
             yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"
             return
 
-        system_prompt = build_chat_system_prompt(job)
+        _system_prompt = build_chat_system_prompt(job)
 
         messages = list(job.messages) if job.messages else []
 

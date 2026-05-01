@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def app():
-    from app.main import app as fastapi_app  # noqa: PLC0415
+    from app.main import app as fastapi_app
 
     saved_overrides = dict(fastapi_app.dependency_overrides)
 
@@ -34,7 +34,7 @@ def _make_mock_session(job):
 
 @pytest.fixture
 def mock_ready_job():
-    from app.models.job import JobStatus  # noqa: PLC0415
+    from app.models.job import JobStatus
 
     job = MagicMock()
     job.id = uuid.uuid4()
@@ -94,7 +94,7 @@ def mock_ready_job():
 
 @pytest.fixture
 def mock_preparing_job():
-    from app.models.job import JobStatus  # noqa: PLC0415
+    from app.models.job import JobStatus
 
     job = MagicMock()
     job.id = uuid.uuid4()
@@ -118,7 +118,7 @@ def mock_preparing_job():
 
 @pytest.fixture
 def mock_failed_job():
-    from app.models.job import JobStatus  # noqa: PLC0415
+    from app.models.job import JobStatus
 
     job = MagicMock()
     job.id = uuid.uuid4()
@@ -143,7 +143,7 @@ def mock_failed_job():
 def test_get_workspace_returns_ready_hydration_for_complete_job(
     app, client, mock_ready_job
 ):
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_ready_job)
@@ -163,7 +163,10 @@ def test_get_workspace_returns_ready_hydration_for_complete_job(
         "size": 2048,
         "extension": ".pdf",
     }
-    assert payload["data"]["document"]["source_text"] == "Jane Doe\nSenior Backend Engineer"
+    assert (
+        payload["data"]["document"]["source_text"]
+        == "Jane Doe\nSenior Backend Engineer"
+    )
     assert payload["data"]["document"]["sections"][0]["type"] == "experience"
     assert payload["data"]["analysis"]["scores"]["overall"] == 88
     assert payload["data"]["analysis"]["ats_checks"][0]["status"] == "pass"
@@ -176,7 +179,7 @@ def test_get_workspace_returns_ready_hydration_for_complete_job(
 def test_get_workspace_returns_preparing_without_auth_for_in_progress_job(
     app, client, mock_preparing_job
 ):
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_preparing_job)
@@ -196,7 +199,7 @@ def test_get_workspace_returns_preparing_without_auth_for_in_progress_job(
 
 
 def test_get_workspace_returns_job_not_found(app, client):
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(None)
@@ -214,7 +217,7 @@ def test_get_workspace_returns_job_not_found(app, client):
 def test_get_workspace_returns_failed_state_with_error_and_navigation(
     app, client, mock_failed_job
 ):
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_failed_job)
@@ -235,7 +238,7 @@ def test_get_workspace_returns_failed_state_with_error_and_navigation(
 
 
 def test_workspace_schemas_are_importable() -> None:
-    from app.schemas.workspace import (  # noqa: PLC0415
+    from app.schemas.workspace import (
         WorkspaceAnalysisContext,
         WorkspaceDocumentPayload,
         WorkspaceFileInfo,

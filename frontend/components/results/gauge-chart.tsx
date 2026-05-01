@@ -15,8 +15,8 @@ interface GaugeChartProps {
 
 function getArcColor(value: number, accentColor?: string): string {
   if (accentColor) { return accentColor; }
-  if (value >= 70) return "#CAFF43";
-  if (value >= 40) return "#FF8C42";
+  if (value >= 70) { return "#CAFF43"; }
+  if (value >= 40) { return "#FF8C42"; }
   return "#FF4FCB";
 }
 

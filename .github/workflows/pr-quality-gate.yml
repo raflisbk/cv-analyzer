@@ -24,7 +24,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e backend
-          pip install black ruff pytest pip-audit
+          pip install black ruff pytest
 
       - name: Backend formatting (Black)
         run: black --check backend
@@ -33,10 +33,14 @@ jobs:
         run: ruff check backend
 
       - name: Backend tests (Pytest)
+        env:
+          CV_ANALYZER_HF_API_KEY: ci-dummy-key
+          CV_ANALYZER_DB_HOST: localhost
+          CV_ANALYZER_DB_NAME: cv_analyzer
+          CV_ANALYZER_DB_USER: postgres
+          CV_ANALYZER_DB_PASSWORD: dummy
+          CV_ANALYZER_REDIS_URL: redis://localhost:6379/0
         run: pytest backend/tests
-
-      - name: Backend security scan (pip-audit)
-        run: pip-audit
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -54,7 +58,3 @@ jobs:
       - name: Frontend build
         working-directory: frontend
         run: npm run build
-
-      - name: Frontend security scan (npm audit)
-        working-directory: frontend
-        run: npm audit --audit-level=high

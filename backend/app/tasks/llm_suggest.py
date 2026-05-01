@@ -38,7 +38,7 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
     suggestions_list = data.get("suggestions", [])
 
     for card in suggestions_list:
-        section = card.get("section", "unknown")
+        _section = card.get("section", "unknown")
         card_suggestions = card.get("suggestions", [])
 
         for idx, suggestion in enumerate(card_suggestions):
@@ -91,7 +91,7 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
     max_retries=1,
     default_retry_delay=30,
 )
-def llm_suggest_task(self: Task, job_id: str) -> dict:  # noqa: PLR0915
+def llm_suggest_task(self: Task, job_id: str) -> dict:
     cache_key = f"llm_suggestions:{job_id}"
     cache_ttl = 86400
 

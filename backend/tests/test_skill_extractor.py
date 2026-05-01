@@ -24,7 +24,10 @@ def _make_mock_nlp(tokens: list[str]):
 
 def test_extract_skills_returns_list() -> None:
     """extract_skills always returns a list per NLP-04"""
-    with patch("app.services.nlp.skill_extractor.get_nlp", return_value=_make_mock_nlp(["Python"])):
+    with patch(
+        "app.services.nlp.skill_extractor.get_nlp",
+        return_value=_make_mock_nlp(["Python"]),
+    ):
         result = extract_skills("Python developer")
 
     assert isinstance(result, list)
@@ -32,7 +35,10 @@ def test_extract_skills_returns_list() -> None:
 
 def test_extract_skills_matches_whitelist_skill() -> None:
     """extract_skills returns skills present in the curated whitelist"""
-    with patch("app.services.nlp.skill_extractor.get_nlp", return_value=_make_mock_nlp(["Python"])):
+    with patch(
+        "app.services.nlp.skill_extractor.get_nlp",
+        return_value=_make_mock_nlp(["Python"]),
+    ):
         result = extract_skills("Python developer")
 
     assert "Python" in result
@@ -84,7 +90,7 @@ def test_extract_skills_multi_word_phrase() -> None:
 
 def test_extract_skills_whitelist_covers_common_tech() -> None:
     """Whitelist includes common tech skills (Python, Docker, AWS, etc.)"""
-    from app.services.nlp.skill_extractor import _SKILLS_WHITELIST  # noqa: PLC0415
+    from app.services.nlp.skill_extractor import _SKILLS_WHITELIST
 
     for skill in ("python", "docker", "aws", "kubernetes", "postgresql"):
         assert skill in _SKILLS_WHITELIST, f"Expected '{skill}' in whitelist"

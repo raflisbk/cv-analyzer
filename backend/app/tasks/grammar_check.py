@@ -94,7 +94,7 @@ def grammar_check_task(self: Task, job_id: str) -> dict:
             grammar_issues=len(grammar_issues),
             ats_checks=len(ats_checks),
         )
-        return {"status": "complete", "job_id": job_id}  # noqa: TRY300
+        return {"status": "complete", "job_id": job_id}
 
     except Exception as e:
         error_msg = f"Grammar/ATS check failed: {e!s}"

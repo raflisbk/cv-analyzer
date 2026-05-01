@@ -68,11 +68,23 @@ extend-exclude = '''
 '''
 
 [tool.ruff]
-# Same line length as Black
 line-length = 88
 target-version = "py313"
 
-# Enable specific rule sets
+exclude = [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "alembic/versions",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -103,27 +115,27 @@ select = [
     "RUF", # ruff-specific rules
 ]
 
-# Ignore specific rules
 ignore = [
-    "E501",   # line too long (handled by black)
-    "B008",   # do not perform function call in argument defaults
+    "E501",    # line too long (handled by black)
+    "B008",    # do not perform function call in argument defaults
     "PLR0913", # too many arguments
     "TRY003",  # avoid specifying long messages outside exception class
     "UP046",   # Generic[T] syntax required for Python 3.11 compatibility
-]
-
-# Exclude paths
-exclude = [
-    ".eggs",
-    ".git",
-    ".mypy_cache",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".venv",
-    "__pycache__",
-    "alembic/versions",
-    "build",
-    "dist",
+    "PLR2004", # magic value used in comparison
+    "TRY300",  # consider moving this statement to an else block
+    "PLR0912", # too many branches
+    "PLR0915", # too many statements
+    "PLC0415", # import should be at the top-level of a file
+    "N815",    # mixedCase variable in class scope (API contract fields)
+    "ARG001",  # unused function argument (interface contracts)
+    "ARG002",  # unused method argument (interface contracts)
+    "RUF012",  # mutable class attributes should be annotated with ClassVar
+    "RUF001",  # ambiguous unicode character (intentional en-dashes etc.)
+    "EM101",   # exception must not use a string literal
+    "EM102",   # exception must not use an f-string literal
+    "TRY301",  # abstract raise to an inner function
+    "PLW2901", # for loop variable overwritten by assignment target
+    "N806",    # non-lowercase variable in function
 ]
 
 [tool.ruff.lint.per-file-ignores]

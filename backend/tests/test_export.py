@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def app():
-    from app.main import app as fastapi_app  # noqa: PLC0415
+    from app.main import app as fastapi_app
 
     saved_overrides = dict(fastapi_app.dependency_overrides)
     yield fastapi_app
@@ -77,7 +77,7 @@ def _make_completed_job(*, full: bool = True):
 
 def test_export_template_path_resolves_to_backend_app_templates() -> None:
     """Template directory must resolve to backend/app/templates and find report template."""
-    from app.api.v1.endpoints import export as export_endpoint  # noqa: PLC0415
+    from app.api.v1.endpoints import export as export_endpoint
 
     expected_template_dir = (
         Path(export_endpoint.__file__).resolve().parents[3] / "templates"
@@ -96,7 +96,7 @@ def test_export_template_path_resolves_to_backend_app_templates() -> None:
 
 def test_export_returns_404_when_job_not_found(app, client):
     """Missing job must return 404 with JOB_NOT_FOUND error code."""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         mock_session = AsyncMock()
@@ -121,7 +121,7 @@ def test_export_returns_404_when_job_not_found(app, client):
 
 def test_export_returns_pdf_bytes_with_correct_headers(app, client):
     """Export must return application/pdf with Content-Disposition attachment."""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     job = _make_completed_job(full=True)
 
@@ -142,7 +142,7 @@ def test_export_returns_pdf_bytes_with_correct_headers(app, client):
 
 def test_export_pdf_content_is_valid_pdf(app, client):
     """Response body must start with PDF magic bytes %PDF."""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     job = _make_completed_job(full=True)
 
@@ -160,7 +160,7 @@ def test_export_pdf_content_is_valid_pdf(app, client):
 
 def test_export_pdf_with_partial_data(app, client):
     """Export must succeed when grammar, ATS, and suggestions are all empty."""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     job = _make_completed_job(full=False)
 
@@ -177,7 +177,7 @@ def test_export_pdf_with_partial_data(app, client):
 
 def test_export_pdf_with_comparison_result(app, client):
     """Export must include comparison section when comparison_result is present."""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     job = _make_completed_job(full=True)
     job.comparison_result = {
@@ -206,7 +206,7 @@ def test_export_pdf_with_comparison_result(app, client):
 
 def test_export_returns_safe_json_error_when_pdf_render_fails(app, client, monkeypatch):
     """Render failures must return non-200 JSON error, not fallback PDF bytes."""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     job = _make_completed_job()
 

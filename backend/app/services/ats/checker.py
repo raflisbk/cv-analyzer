@@ -247,7 +247,7 @@ _MAX_SPECIAL_RATIO_FAIL = 0.15
 _MAX_URLS_WARN = 10
 
 
-def check_ats_compatibility(  # noqa: PLR0912, PLR0915
+def check_ats_compatibility(
     text: str,
     sections: list[CvSection] | None = None,
 ) -> list[dict]:

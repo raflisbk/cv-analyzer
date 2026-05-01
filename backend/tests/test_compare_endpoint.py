@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def client():
-    from app.main import app  # noqa: PLC0415
+    from app.main import app
 
     return TestClient(app)
 

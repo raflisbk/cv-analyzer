@@ -32,7 +32,7 @@ def _get_redis_client() -> redis_lib.Redis:
     max_retries=1,
     default_retry_delay=30,
 )
-def compare_cv_task(  # noqa: PLR0915
+def compare_cv_task(
     self: Task,
     job_id: str,
     jd_text: str,

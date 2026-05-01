@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture
 def app():
-    from app.main import app as fastapi_app  # noqa: PLC0415
+    from app.main import app as fastapi_app
 
     # Save existing overrides so module-level overrides from other test files are preserved
     saved_overrides = dict(fastapi_app.dependency_overrides)
@@ -38,7 +38,7 @@ def _make_mock_session(job):
 @pytest.fixture
 def mock_complete_job():
     """Mock Job with all JSONB columns populated (status=COMPLETE)"""
-    from app.models.job import JobStatus  # noqa: PLC0415
+    from app.models.job import JobStatus
 
     job = MagicMock()
     job.id = uuid.uuid4()
@@ -75,7 +75,7 @@ def mock_complete_job():
 @pytest.fixture
 def mock_processing_job():
     """Mock Job still processing (status=ANALYZING)"""
-    from app.models.job import JobStatus  # noqa: PLC0415
+    from app.models.job import JobStatus
 
     job = MagicMock()
     job.id = uuid.uuid4()
@@ -90,7 +90,7 @@ def mock_processing_job():
 
 def test_get_results_returns_200_for_complete_job(app, client, mock_complete_job):
     """GET /jobs/{id}/results returns 200 with full data for complete job per D-23"""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_complete_job)
@@ -106,7 +106,7 @@ def test_get_results_returns_200_for_complete_job(app, client, mock_complete_job
 
 def test_get_results_response_has_correct_shape(app, client, mock_complete_job):
     """Response data has all required fields per D-23"""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_complete_job)
@@ -129,7 +129,7 @@ def test_get_results_response_has_correct_shape(app, client, mock_complete_job):
 
 def test_get_results_scores_have_all_dimensions(app, client, mock_complete_job):
     """Scores contain all 5 dimensions per SCORE-01..05"""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_complete_job)
@@ -147,7 +147,7 @@ def test_get_results_scores_have_all_dimensions(app, client, mock_complete_job):
 
 def test_get_results_returns_error_for_unknown_job(app, client):
     """GET /jobs/{id}/results returns JOB_NOT_FOUND for non-existent job"""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(None)
@@ -164,7 +164,7 @@ def test_get_results_processing_job_returns_200_with_empty_fields(
     app, client, mock_processing_job
 ):
     """Processing job returns 200 with status=analyzing and empty data fields"""
-    from app.db.session import get_db  # noqa: PLC0415
+    from app.db.session import get_db
 
     async def override_get_db():
         yield _make_mock_session(mock_processing_job)
@@ -181,7 +181,7 @@ def test_get_results_processing_job_returns_200_with_empty_fields(
 
 def test_analysis_schemas_are_importable() -> None:
     """All analysis schemas are importable per D-23"""
-    from app.schemas.analysis import (  # noqa: PLC0415
+    from app.schemas.analysis import (
         AnalysisResult,
         AtsCheck,
         GrammarIssue,
