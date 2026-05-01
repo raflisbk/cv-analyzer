@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
-    CV_ANALYZER_LLM_MODEL: str = "Qwen/Qwen2-7B-Instruct"
+    CV_ANALYZER_LLM_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
     CV_ANALYZER_LLM_MAX_TOKENS: int = 1500
     CV_ANALYZER_LLM_CACHE_TTL: int = 86400
     CV_ANALYZER_RAG_TOP_K: int = 5

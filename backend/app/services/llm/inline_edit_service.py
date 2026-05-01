@@ -1,15 +1,11 @@
 import json
 from typing import Any
 
-from huggingface_hub import InferenceClient
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.schemas.inline_edit import InlineEditResponse
-
-
-HF_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+from app.services.llm.hf_llm_service import HFLLMService
 
 
 _SYSTEM_PROMPT = """You are an expert CV editor and career coach.
@@ -54,12 +50,8 @@ def _build_user_prompt(
 class InlineEditService:
 
     def __init__(self) -> None:
-        settings = get_settings()
-        self.client = InferenceClient(
-            model=HF_MODEL,
-            token=settings.CV_ANALYZER_HF_API_KEY,
-        )
-        logger.info("inline_edit_service_initialized", model=HF_MODEL)
+        self._llm = HFLLMService()
+        logger.info("inline_edit_service_initialized", model=self._llm.model)
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=1, max=4))
     def rewrite(
@@ -87,17 +79,12 @@ class InlineEditService:
                 selected_length=len(selected_text),
             )
 
-            response = self.client.chat.completions.create(
-                model=HF_MODEL,
-                messages=[
-                    {"role": "system", "content": _SYSTEM_PROMPT},
-                    {"role": "user", "content": user_prompt},
-                ],
-                max_tokens=300,
+            rewritten_text = self._llm._chat(
+                system_prompt=_SYSTEM_PROMPT,
+                user_prompt=user_prompt,
                 temperature=0.7,
+                max_tokens=300,
             )
-
-            rewritten_text = response.choices[0].message.content or ""
 
             rewritten_text = rewritten_text.strip()
             if rewritten_text.startswith("```"):

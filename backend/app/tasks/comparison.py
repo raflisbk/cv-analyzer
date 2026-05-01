@@ -10,12 +10,12 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus  # noqa: F401
 from app.schemas.analysis import ComparisonResult
-from app.services.llm.hf_openai_llm_service import HFOpenAILLMService
+from app.services.llm.hf_llm_service import HFLLMService
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
 
-_llm_service = HFOpenAILLMService()
+_llm_service = HFLLMService()
 _redis_client: redis_lib.Redis | None = None
 
 

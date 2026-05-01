@@ -3,7 +3,7 @@ import re
 
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.services.llm.hf_openai_llm_service import HFOpenAILLMService
+from app.services.llm.hf_llm_service import HFLLMService
 
 
 _GRAMMAR_SYSTEM_PROMPT_EN = """You are a professional CV grammar and spelling checker.
@@ -112,7 +112,7 @@ def check_grammar(text: str) -> list[dict]:
             logger.warning("grammar_skipped_no_api_key")
             return []
 
-        llm_service = HFOpenAILLMService()
+        llm_service = HFLLMService()
 
         is_indonesian = _detect_indonesian(text[:2000])
         system_prompt = (
@@ -122,17 +122,12 @@ def check_grammar(text: str) -> list[dict]:
 
         user_prompt = f"CV Text:\n{truncated}"
 
-        response = llm_service.client.chat.completions.create(
-            model=llm_service.model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
+        raw = llm_service._chat(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
             temperature=0.3,
             max_tokens=1000,
-        )
-
-        raw = response.choices[0].message.content.strip()
+        ).strip()
 
         if "```" in raw:
             json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
