@@ -75,17 +75,16 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Find or create PR via API
+      - name: Find or create PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           REPO="${{ github.repository }}"
-
           OPEN_PR=$(gh api "repos/$REPO/pulls?base=main&head=dev&state=open" --jq '.[0].number // empty')
 
           if [ -n "$OPEN_PR" ]; then
-            echo "Using existing PR #$OPEN_PR"
             echo "PR_NUMBER=$OPEN_PR" >> "$GITHUB_ENV"
+            echo "Using existing PR #$OPEN_PR"
           else
             PR_NUMBER=$(gh api "repos/$REPO/pulls" \
               --method POST \
@@ -94,23 +93,16 @@ jobs:
               --field head="dev" \
               --field base="main" \
               --jq '.number')
-            echo "Created PR #$PR_NUMBER"
             echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
+            echo "Created PR #$PR_NUMBER"
           fi
 
-      - name: Enable auto-merge
+      - name: Merge PR (squash)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          REPO="${{ github.repository }}"
-          PR_ID=$(gh api "repos/$REPO/pulls/${{ env.PR_NUMBER }}" --jq '.node_id')
-
-          gh api "repos/$REPO/pulls/${{ env.PR_NUMBER }}/update-branch" --method PUT || true
-
-          gh api graphql --method POST --field query="
-            mutation {
-              enablePullRequestAutoMerge(input: {pullRequestId: \"$PR_ID\", mergeMethod: SQUASH}) {
-                pullRequest { autoMergeRequest { enabledAt } }
-              }
-            }
-          "
+          gh api "repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }}/merge" \
+            --method PUT \
+            --field commit_title="auto: merge dev → main (${{ github.sha }})" \
+            --field commit_message="" \
+            --field merge_method="squash"
