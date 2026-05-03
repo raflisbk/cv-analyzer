@@ -76,52 +76,37 @@ jobs:
       checks: read
 
     steps:
-      - name: Find or create PR
+      - name: Merge PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Close conflicting PRs first
           REPO="${{ github.repository }}"
-          OPEN_PR=$(gh api "repos/$REPO/pulls?base=main&head=dev&state=open" --jq '.[0].number // empty')
+          gh pr list --repo $REPO --base main --head dev --state open --json number --jq '.[].number' | while read pr; do
+            MERGEABLE=$(gh pr view $pr --repo $REPO --json mergeable --jq '.mergeable')
+            if [ "$MERGEABLE" = "CONFLICTING" ]; then
+              echo "Closing conflicting PR #$pr"
+              gh pr close $pr --repo $REPO --delete-branch=false
+            fi
+          done
 
-          if [ -n "$OPEN_PR" ]; then
-            echo "PR_NUMBER=$OPEN_PR" >> "$GITHUB_ENV"
-            echo "Using existing PR #$OPEN_PR"
-          else
-            PR_NUMBER=$(gh api "repos/$REPO/pulls" \
+          # Find or create a clean PR
+          OPEN_PR=$(gh api "repos/$REPO/pulls?base=main&head=dev&state=open" --jq '.[0].number // empty')
+          if [ -z "$OPEN_PR" ]; then
+            OPEN_PR=$(gh api "repos/$REPO/pulls" \
               --method POST \
               --field title="auto: merge dev → main" \
               --field body="Auto-generated PR from push to dev. CI passed." \
               --field head="dev" \
               --field base="main" \
               --jq '.number')
-            echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
-            echo "Created PR #$PR_NUMBER"
+            echo "Created PR #$OPEN_PR"
+            # Wait briefly for GitHub to compute mergeability
+            sleep 5
           fi
 
-      - name: Wait for PR quality-gate check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Waiting for quality-gate to pass on PR #${{ env.PR_NUMBER }}..."
-          for i in $(seq 1 20); do
-            PASSED=$(gh pr checks ${{ env.PR_NUMBER }} 2>/dev/null | grep "quality-gate" | grep -c "pass" || true)
-            echo "Attempt $i/20: passed checks = $PASSED"
-            if [ "$PASSED" -ge 1 ]; then
-              echo "quality-gate passed!"
-              sleep 3
-              exit 0
-            fi
-            sleep 10
-          done
-          echo "Timeout — attempting merge anyway"
-          exit 0
-
-      - name: Merge PR (squash)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api "repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }}/merge" \
+          gh api "repos/$REPO/pulls/$OPEN_PR/merge" \
             --method PUT \
             --field commit_title="auto: merge dev → main (${{ github.sha }})" \
             --field commit_message="" \
-            --field merge_method="squash"
+            --field merge_method="merge"
