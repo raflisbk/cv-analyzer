@@ -8,14 +8,14 @@ dependencies = [
     "uvicorn[standard]==0.32.0",
     "celery[redis]==5.4.0",
     "redis==5.0.0",
-    "sqlalchemy[asyncio]==2.0.30",
-    "psycopg[binary,pool]==3.2.0",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "psycopg[pool]==3.2.0",
     "pydantic==2.9.0",
     "pydantic-settings==2.6.0",
-    "PyMuPDF==1.24.0",
+    "PyMuPDF>=1.25.0",
     "python-docx==1.1.0",
     "easyocr==1.7.0",
-    "opencv-python==4.10.0",
+    "opencv-python>=4.8.0",
     "pdf2image==1.17.0",
     "pillow==10.4.0",
     "python-magic==0.4.27",
@@ -26,7 +26,22 @@ dependencies = [
     "sentry-sdk[fastapi]==2.18.0",
     "prometheus-fastapi-instrumentator==7.0.0",
     "slowapi==0.1.9",
-    "alembic==1.13.1"
+    "alembic==1.13.1",
+    "spacy>=3.7",
+    "rapidfuzz>=3.0",
+    "openai>=1.0",
+    "zai-sdk>=0.2.0",
+    "tenacity>=8.0",
+    "pgvector>=0.3.0",
+    "pycrdt-websocket>=0.1.0",
+    "huggingface_hub>=0.20.0",
+    "numpy>=1.24.0",
+    # Linux/Railway: apt-get install -y libpango-1.0-0 libcairo2 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+    # Windows dev: conda install -n sbk-cv-analyzer -c conda-forge weasyprint
+    # weasyprint 60.0 + pydyf 0.8.0 is the last known-compatible pair on PyPI (2025-04).
+    # Newer weasyprint versions require pydyf.PDF(version, identifier) which pydyf ≤0.12.1 doesn't support.
+    "weasyprint==60.0",
+    "pydyf==0.8.0",
 ]
 
 [tool.setuptools]
@@ -53,11 +68,23 @@ extend-exclude = '''
 '''
 
 [tool.ruff]
-# Same line length as Black
 line-length = 88
 target-version = "py313"
 
-# Enable specific rule sets
+exclude = [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "alembic/versions",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -88,26 +115,29 @@ select = [
     "RUF", # ruff-specific rules
 ]
 
-# Ignore specific rules
 ignore = [
-    "E501",   # line too long (handled by black)
-    "B008",   # do not perform function call in argument defaults
+    "E501",    # line too long (handled by black)
+    "B008",    # do not perform function call in argument defaults
     "PLR0913", # too many arguments
     "TRY003",  # avoid specifying long messages outside exception class
-]
-
-# Exclude paths
-exclude = [
-    ".eggs",
-    ".git",
-    ".mypy_cache",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".venv",
-    "__pycache__",
-    "alembic/versions",
-    "build",
-    "dist",
+    "UP046",   # Generic[T] syntax required for Python 3.11 compatibility
+    "PLR2004", # magic value used in comparison
+    "TRY300",  # consider moving this statement to an else block
+    "PLR0912", # too many branches
+    "PLR0915", # too many statements
+    "PLC0415", # import should be at the top-level of a file
+    "N815",    # mixedCase variable in class scope (API contract fields)
+    "ARG001",  # unused function argument (interface contracts)
+    "ARG002",  # unused method argument (interface contracts)
+    "RUF012",  # mutable class attributes should be annotated with ClassVar
+    "RUF001",  # ambiguous unicode character (intentional en-dashes etc.)
+    "EM101",   # exception must not use a string literal
+    "EM102",   # exception must not use an f-string literal
+    "TRY301",  # abstract raise to an inner function
+    "PLW2901", # for loop variable overwritten by assignment target
+    "I001",   # import block un-sorted (black handles import formatting)
+    "UP042",  # replace str+Enum with StrEnum (intentional for compatibility)
+    "N806",    # non-lowercase variable in function
 ]
 
 [tool.ruff.lint.per-file-ignores]

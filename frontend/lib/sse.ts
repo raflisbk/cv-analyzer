@@ -1,7 +1,4 @@
-/**
- * Server-Sent Events (SSE) connection management
- * Implements D-15: Auto-reconnect SSE with resume from last stage
- */
+
 
 export interface SSEMessage {
   type: "connected" | "progress" | "error";
@@ -15,7 +12,9 @@ export class SSEConnection {
   private eventSource: EventSource | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000; // Start with 1 second
+  private isClosed = false;
+  private completedReceived = false;
+  private reconnectDelay = 1000;
 
   constructor(
     private url: string,
@@ -24,6 +23,8 @@ export class SSEConnection {
   ) {}
 
   connect(): void {
+    if (this.isClosed || this.completedReceived) { return; }
+
     if (this.eventSource) {
       this.eventSource.close();
     }
@@ -33,21 +34,23 @@ export class SSEConnection {
     this.eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data as string) as SSEMessage;
-        this.onMessage(data);
 
-        // Reset reconnect attempts on successful message
-        this.reconnectAttempts = 0;
-        this.reconnectDelay = 1000;
+        if (data.stage === "complete" || data.stage === "failed") {
+          this.completedReceived = true;
+          this.isClosed = true;
+        }
+
+        this.onMessage(data);
       } catch (error) {
         console.error("SSE message parse error:", error);
       }
     };
 
     this.eventSource.onerror = () => {
-      // Close current connection
+      if (this.isClosed || this.completedReceived) { return; }
+
       this.eventSource?.close();
 
-      // Attempt reconnection per D-15
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
 
@@ -59,8 +62,7 @@ export class SSEConnection {
           this.connect();
         }, this.reconnectDelay);
 
-        // Exponential backoff
-        this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
+          this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
       } else {
         this.onError?.(new Error("Max SSE reconnection attempts exceeded"));
       }
@@ -68,6 +70,7 @@ export class SSEConnection {
   }
 
   close(): void {
+    this.isClosed = true;
     this.eventSource?.close();
     this.eventSource = null;
   }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -11,9 +11,16 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const bricolageGrotesque = Bricolage_Grotesque({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-display",
+  weight: ["700", "800"],
+});
+
 export const metadata: Metadata = {
-  title: "CV Analyzer - AI-Powered Resume Analysis",
-  description: "Get instant feedback on your CV with AI-powered analysis. Improve clarity, impact, and ATS compatibility.",
+  title: "pathkr — AI-Powered Career Tools",
+  description: "AI-powered CV analysis, skill gap detection, and job matching. Analyze your CV for free in seconds.",
 };
 
 export default function RootLayout({
@@ -22,11 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`}>
       <body className="font-sans antialiased">
         <QueryProvider>
-          {children}
-          <Toaster />
+            {children}
+            <Toaster />
         </QueryProvider>
       </body>
     </html>

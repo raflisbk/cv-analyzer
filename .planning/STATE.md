@@ -1,26 +1,25 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
+milestone: v4.0
 milestone_name: milestone
-current_phase: Phase 1
+current_phase: 17
 status: executing
-last_updated: "2026-04-05T04:45:00.000Z"
+stopped_at: Completed 17-01-PLAN.md - Add V4 Export Support
+last_updated: "2026-04-20T06:35:29.550Z"
+last_activity: 2026-04-20
 progress:
-  total_phases: 5
+  total_phases: 1
   completed_phases: 0
-  total_plans: 5
-  completed_plans: 4
-  wave_1_complete: true
-  wave_2_complete: true
-  wave_3_complete: true
-  wave_4_pending: true
+  total_plans: 2
+  completed_plans: 1
+  percent: 50
 ---
 
-# Project State: CV Analyzer
+# Project State: CV Analyzer (pathkr)
 
 **Created:** 2026-04-03
-**Current Phase:** Phase 1
-**Current Focus:** Foundation & Document Pipeline
+**Current Milestone:** v3.0 — Agentic CV Workspace
+**Current Phase:** 17
 
 ## Project Reference
 
@@ -43,34 +42,302 @@ A web-based CV/resume analyzer application that provides multi-dimensional scori
 
 ## Current Position
 
+**Milestone v4.0 — PDF-First Analysis Workspace**
+
+Phase: 17 (export-v4-migration-cutover-job-match-preservation) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-20
+
+**Why this milestone now:**
+
+- Homepage / brand milestone reached a stable stopping point
+- Current CV Analyzer ends in a strong but static results page
+- Next leap in portfolio value is an end-to-end editing workspace that showcases agentic UX, document modeling, inline editing, and export generation
+
+**Milestone thesis:**
+
+- Turn CV Analyzer into a **career intelligence workspace**
+- Keep current results page as a separate analytical destination
+- Add a new editor route where users can:
+  - view the CV itself,
+  - edit copy inline,
+  - adjust layout/formatting,
+  - run AI actions on blocks/sections,
+  - preview and export the improved CV without an account
+
+**Planned phases:**
+
+- **Phase 11** — Workspace Foundation & Routing
+- **Phase 12** — Editable Canvas & Layout Controls
+- **Phase 13** — Agentic Review Cockpit
+- **Phase 14** — Preview, Export & Variants
+
+## Performance Metrics
+
+**Planning Metrics:**
+
+- Milestone requirements defined: 21
+- Milestone requirements mapped: 21/21
+- Planned phases: 4
+- Planned execution starting phase: 11
+
+## Accumulated Context
+
+### Key Decisions
+
+### Decisions Made
+
+| Decision | Rationale | Outcome |
+| -------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
+| FastAPI backend | Python async framework, ideal for AI/ML apps | ✅ Implemented |
+| Next.js frontend | Modern React framework, App Router, server components | ✅ Implemented |
+| shadcn/ui UI library | Popular 2025, Tailwind-based, impressive for portfolio | ✅ Implemented |
+| PostgreSQL + pgvector | Single DB for relational + vector storage, production-ready | ✅ Schema ready |
+| Celery --pool=solo on Windows | prefork uses spawn which crashes on Windows | ✅ Runtime flag |
+| asyncio.WindowsSelectorEventLoopPolicy | psycopg requires SelectorEventLoop | ✅ Set in celery_app.py |
+| Curated skill whitelist over ESCO | ESCO 14K entries span all industries → false positives | ✅ ~150 curated skills |
+| Rule-based scoring fallback | No OpenAI key in Phase 2; Phase 3 adds LLM scoring | ✅ scoring_method field |
+| react-dropzone 15.0.0 | v14 incompatible with React 19 event delegation | ✅ Upgraded |
+| Phase 04 P01 | 20 | 2 tasks | 5 files |
+| Phase 04 P00 | 35 | 2 tasks | 7 files |
+| Phase 04-streaming-comparison P04 | 15min | 2 tasks | 4 files |
+| Phase 04-streaming-comparison P02 | 15 | 2 tasks | 5 files |
+| Phase 04-streaming-comparison P03 | 25m | 2 tasks | 4 files |
+| Phase 04-streaming-comparison P05 | 10m | 2 tasks | 4 files |
+| Phase 04-streaming-comparison P06 | 15 | 2 tasks | 4 files |
+| Phase 04-streaming-comparison P07 | 1775666259s | 1 tasks | 1 files |
+| Phase 04 P08 | 109 | 1 tasks | 0 files |
+| Phase 04-streaming-comparison P04-09 | 2 minutes | 1 tasks | 1 files |
+| Phase 04 P10 | 140 | 4 tasks | 4 files |
+| Phase 04 P12 | 62 | 2 tasks | 1 files |
+| Phase 04-streaming-comparison P13 | 62 | 1 tasks | 1 files |
+| Phase 04 P14 | 1775723207 | 2 tasks | 3 files |
+| Phase 04 P14 | 480 | 2 tasks | 3 files |
+| Phase 04 P15 | 555 | 2 tasks | 1 files |
+| Phase 04 P16 | 11 min | 3 tasks | 4 files |
+
+- [Phase 04]: Replaced fallback export error PDF with structured JSON error contract to prevent double-failure render paths.
+- [Phase 04]: Pinned WeasyPrint to 61.2 in both pyproject and requirements to match runtime and eliminate install drift.
+
+| Phase 04 P17 | 8 min | 3 tasks | 5 files |
+
+- [Phase 04]: Normalize suggestion keys at results boundary before rendering components
+- [Phase 04]: Copy Suggestions now exports all visible items grouped by section in stable order
+
+| Phase 12 P01 | 15 min | 3 tasks | 11 files |
+
+- [Phase 12]: immediatelyRender: false enforced on all useEditor() calls — prevents Next.js 15 SSR hydration mismatch
+- [Phase 12]: StarterKit v3 includes UndoRedo via @tiptap/extensions — @tiptap/extension-history NOT installed
+- [Phase 12]: Removed auto-generated drop_index for knowledge_chunks_embedding_idx from alembic migration — hnsw vector index unrecognized by autogenerate
+
+| Phase 12 P02 | 30 min | 3 tasks | 8 files |
+
+- [Phase 12]: Portal + anchorRect pattern for SuggestionTooltip — ProseMirror marks are DOM nodes, not React components; Radix TooltipTrigger asChild cannot wrap them
+- [Phase 12]: Event delegation mouseover on [data-suggestion-id] — only reliable pattern for ProseMirror-rendered DOM elements
+- [Phase 12]: setSections functional updater used in handleContentChange to capture latest state for markUnsaved — avoids stale closure
+
+| Phase 11 P02 | 8 min | 2 tasks | 4 files |
+
+- [Phase 11]: Reused the existing job UUID as the only workspace identifier to preserve anonymous job-scoped access.
+- [Phase 11]: Mapped workspace ready only when persisted document and analysis context are both present; otherwise hydration remains preparing.
+
+| Phase 11 P01 | 400 | 2 tasks | 5 files |
+
+- [Phase 11]: Keep /results/[job_id] intact and introduce /workspace/[job_id] as the new upload destination.
+- [Phase 11]: Centralize workspace/results URL creation in helper functions keyed to the original job_id.
+- [Phase 11]: Trigger workspace navigation from a completion effect instead of render-time routing.
+
+| Phase 12 P03 | 35 | 3 tasks | 5 files |
+
+- [Phase 12]: CVPreview uses StarterKit-only extensions (no SuggestionHighlight) to guarantee mark-free clean CV output
+- [Phase 12]: Spacing stored in local SectionState only — not persisted to backend draft_content (out of scope Phase 12)
+
+| Phase 13 P01 | 12 minutes | 2 tasks | 5 files |
+
+- [Phase 13]: Re-export plainTextToTiptapDoc dari section-block.tsx untuk menjaga backward compatibility
+- [Phase 13]: Import + re-export pattern di section-block.tsx karena fungsi dipakai secara internal
+
+| Phase 13 P02 | 10 minutes | 2 tasks | 4 files |
+
+- [Phase 13]: a3f8c9d12b45 adalah revision ID migration Phase 13 untuk kolom cv_document/suggestion_anchors/yjs_snapshot
+- [Phase 13]: storage_service diakses sebagai module-level singleton dari app.services.storage, generate_presigned_url adalah sync method
+
+| Phase 13 P06 | 15 minutes | 2 tasks | 7 files |
+
+- [Phase 13]: type cast 'as any' dibatasi dalam findTextRect function scope — Phase 14 bisa tambah proper typing dengan import type { PDFPageProxy } from pdfjs-dist
+- [Phase 13]: useWorkspaceDoc return refs bukan state — menghindari re-render tiap kali Y.Doc atau IndexeddbPersistence diakses
+
+| Phase 13 P03 | 15 minutes | 2 tasks | 7 files |
+
+- [Phase 13]: CSS vars scoped ke [data-workspace-v2] — tidak override :root global vars landing page
+- [Phase 13]: Zustand store tanpa persist middleware — Yjs menangani persistence di Phase 14+
+- [Phase 13]: loading.tsx menggunakan div placeholder — WorkspaceV2Skeleton belum ada sampai Plan 05
+
+| Phase 13 P04 | 10 minutes | 2 tasks | 2 files |
+
+- [Phase 13]: pdf-viewer-inner.tsx, skeleton, error, worker file pre-exist dari Plan 13-06 — Plan 04 melengkapi stack dengan pdf-viewer.tsx dan pdf-viewer-panel.tsx
+- [Phase 13]: ResizeObserver disconnect di cleanup useEffect — T-13-04-02 mitigated, tidak ada memory leak
+
+| Phase 13 P05 | 15 minutes | 2 tasks | 8 files |
+
+- [Phase 13]: grammarCount = 0 stub intentional di RightRailStats — grammar_issues tidak ada di WorkspaceAnalysisContext Phase 13, akan ditambahkan Phase 15
+- [Phase 13]: WorkspaceSkeleton menggunakan hard-coded hex bukan CSS vars — loading.tsx merender sebelum [data-workspace-v2] aktif
+
+| Phase 15 P01 | 269 | 6 tasks | 12 files |
+
+- [Phase 15]: Portal-based popover rendering to document.body avoids z-index conflicts with PDF viewer overlays
+- [Phase 15]: Inline edit state stored in separate Y.Map (inline_edits) from suggestion_statuses for clear separation of concerns
+- [Phase 15]: Text selection debounced by 150ms to avoid rapid re-renders while maintaining responsive UX
+- [Phase 15]: LLM rewrite limited to 300 tokens for concise responses that maintain CV formatting conventions
+
+| Phase 16 P01 | 30 min | 4 tasks | 6 files |
+
+- [Phase 16]: Mock streaming placeholder for chat — HF InferenceClient does not support streaming yet, will be replaced in future plan
+- [Phase 16]: Messages persisted via await _save_messages() after stream completes rather than FastAPI BackgroundTasks to avoid session issues with SSE generators
+- [Phase 16]: job.scores JSONB dict wrapped with ScoreResult(**job.scores) in chat context builder for type-safe attribute access
+
+| Phase 16 P02 | 30 min | 7 tasks | 7 files |
+
+- [Phase 16]: Native textarea over shadcn Textarea in ChatInput to avoid default styling conflicts with workspace theme
+- [Phase 16]: Chat messages hydrate from WorkspaceHydration.messages into Zustand store only when store is empty
+- [Phase 16]: Direct useWorkspaceV2Store.setState() for stream completion/error to avoid stale closures mid-stream
+
+| Phase 16 P03 | 30 min | 4 tasks | 3 files |
+
+- [Phase 16]: pycrdt-websocket import is pycrdt.websocket (not pycrdt_websocket); ASGIServer is a full ASGI app, mounted as sub-app instead of manual WebSocket route
+- [Phase 16]: Room scoping by URL path (/yjs/{job_id}) — no manual room management; on_connect callback handles job validation
+- [Phase 16]: WebsocketServer.start() called in FastAPI startup event to initialize internal task group
+
+| Phase 16 P04 | 30 min | 4 tasks | 4 files |
+
+- [Phase 16]: cv_document populated in llm_suggest.py (not cv_analysis_task.py — file doesn't exist); llm_suggest is the actual final task that sets COMPLETE
+- [Phase 16]: y-websocket@3.0.0 WebsocketProvider connects to ws://localhost:8000/yjs/{job_id} via NEXT_PUBLIC_API_URL env var protocol swap
+- [Phase 16]: cv_document includes sections, metadata, suggestions, scores — written atomically in same DB transaction as COMPLETE status
+
+- [Phase 16]: Mock streaming placeholder for chat — HF InferenceClient does not support streaming yet, will be replaced in future plan
+- [Phase 16]: Messages persisted via await _save_messages() after stream completes rather than FastAPI BackgroundTasks to avoid session issues with SSE generators
+- [Phase 16]: job.scores JSONB dict wrapped with ScoreResult(**job.scores) in chat context builder for type-safe attribute access
+
+| Phase 17 P01 | 8 | 3 tasks | 3 files |
+
+- [Phase 17]: Optimized CV template uses CV-specific CSS (Arial 11pt, compact layout) instead of reusing analysis report styles
+- [Phase 17]: Score badges placed at top of CV header for immediate visibility without interfering with document content
+- [Phase 17]: Inline suggestion callouts positioned immediately after each affected section for contextual relevance
+- [Phase 17]: Filename sanitization uses strict whitelist (alnum, hyphen, underscore) to prevent path traversal attacks
+
+### Architecture Approach
+
+**Major Components:**
+
+1. **Document Parser** ✅ — Extract text from PDF/DOC, handle OCR, normalize formatting
+2. **Analysis Orchestrator** ✅ — Coordinate async pipeline stages, manage progress streaming
+3. **NLP Service** ✅ — Skill extraction, section detection, entity recognition
+4. **Scoring Service** ✅ — Rule-based multi-dimensional scoring (Phase 3: LLM scoring)
+5. **Grammar Service** ✅ — LanguageTool integration with graceful degradation
+6. **LLM Service** — Semantic analysis, scoring, suggestion generation (Phase 3)
+7. **Vector Store** — Semantic search for RAG retrieval (Phase 3)
+
+### Active Todos
+
+**Immediate:**
+
+- Plan Phase 12 editable canvas and layout controls on top of the new workspace shell
+- Verify upload completion lands on `/workspace/[job_id]` in manual testing
+- Preserve `/results/[job_id]` as the separate analysis destination while Phase 12 adds editing
+
+### Blockers
+
+None identified for milestone definition. Detailed implementation risks to assess during Phase 11 planning.
+
+### Session Continuity
+
+**Last Session:** 2026-04-20T06:35:29.518Z
+**Stopped At:** Completed 17-01-PLAN.md - Add V4 Export Support
+**Phase 2 completed:** 2026-04-06
+**Phase 15 completed:** 2026-04-19
+**Phase 16 completed:** 2026-04-19
+
+**Next Actions:**
+
+1. Plan Phase 17 (Export v4, Migration Cutover & Preservation)
+
+## Technical Stack
+
+**Backend:**
+
+- ✅ FastAPI 0.135.2 + Uvicorn 0.42.0
+- ✅ SQLAlchemy 2.0.43 + psycopg 3.3.3 (async PostgreSQL)
+- ✅ Celery 5.6.3 + Redis 7.4.0 (async job queue)
+- ✅ spaCy en_core_web_lg (NLP pipeline)
+- ✅ PyMuPDF 1.27.2 + python-docx 1.2.0 (document parsing)
+- ✅ Loguru 0.7.3 (structured JSON logging)
+- ✅ slowapi (rate limiting)
+- ⏳ Claude/OpenAI APIs (Phase 3)
+- ⏳ pgvector (Phase 3)
+
+**Frontend:**
+
+- ✅ Next.js 15 + React 19
+- ✅ shadcn/ui + Tailwind CSS
+- ✅ react-dropzone 15.0.0
+- ✅ SSE hooks with auto-reconnect
+- ✅ Animated gauge charts (@visx)
+- ✅ Results page with 4 tabs
+- ✅ Tiptap v3 + SuggestionHighlight Mark (Phase 12 Wave 1)
+- ✅ vitest + @testing-library/react (TDD test infrastructure)
+
+**Infrastructure:**
+
+- ✅ Docker Compose (PostgreSQL + Redis local dev)
+- ⏳ Cloudflare R2 (Phase 3+)
+- ⏳ Vercel + Railway deployment (Phase 5)
+
+## Deployment Targets
+
+**Production URL:** TBD (after Phase 4 completion)
+**Portfolio Demo:** Live production URL showcasing all AI capabilities
+
+---
+
+*State updated: 2026-04-11 — Phase 11 complete, Phase 12 ready for planning*
+
+## Project Reference
+
+**Core Value:** Demonstrate AI Engineer mastery through production-ready CV analysis
+
+**What This Is:**
+A web-based CV/resume analyzer application that provides multi-dimensional scoring, improvement suggestions, and job role comparison. Built as a portfolio project to demonstrate AI Engineer mastery through production-ready architecture and modern AI capabilities.
+
+**Target Audience:**
+
+- Primary: Recruiters and hiring managers evaluating AI Engineer candidates
+- Secondary: Job seekers wanting to improve their CVs
+
+**AI Capabilities to Showcase:**
+
+1. LLM Integration — Semantic understanding, reasoning, prompt engineering, structured output
+2. NLP Techniques — Text extraction, skill recognition, entity matching, keyword analysis
+3. RAG Architecture — Vector embeddings, semantic search, knowledge retrieval
+4. AI Engineering Patterns — Async processing, streaming responses, evaluation metrics
+
+## Current Position
+
+Phase: 01 (foundation-document-pipeline) — **COMPLETE** ✅
 **Phase:** 1 - Foundation & Document Pipeline
-**Wave:** 3 COMPLETE ✅ | Wave 4 starting
-**Plans Completed:** 01-01 (Backend), 01-02 (Frontend), 01-03 (Document Parsing), 01-04 (Async Processing)
-**Plans Pending:** 01-05 (Upload UI)
+**All Waves Complete:** Wave 1 ✅ | Wave 2 ✅ | Wave 3 ✅ | Wave 4 ✅
+**Plans Completed:** 01-01, 01-02, 01-03, 01-04, 01-05 (all 5/5)
 
-**Progress Bar:** ▰▰▰▰▱ 80% (4/5 plans complete in Phase 1)
+**Progress Bar:** ▰▰▰▰▰ 100% (5/5 plans complete in Phase 1)
 
-**Wave 1 Achievements:**
-- ✅ Backend: FastAPI + SQLAlchemy + Logging + Security
-- ✅ Frontend: Next.js 15 + shadcn/ui + API Client  
-- ✅ Code Quality: Black, Ruff, ESLint configured
-- ✅ All linters passing
+**Wave 4 Achievements:**
 
-**Wave 2 Achievements:**
-- ✅ Document Parsing: PDF/DOCX extraction + OCR fallback + Quality validation
-- ✅ R2 Storage: UUID-based naming + 24h retention + Presigned URLs
-- ✅ Dependencies: boto3, PyMuPDF, python-docx, pdf2image, langdetect
-- ✅ Graceful degradation for optional dependencies (EasyOCR)
-
-**Wave 3 Achievements:**
-- ✅ Async Processing: Celery + Redis job queue + Background tasks
-- ✅ API Endpoints: Upload, Job Status, SSE Streaming
-- ✅ Progress Tracking: Real-time SSE updates via Redis pub/sub
-- ✅ Retry Logic: 3 retries with exponential backoff per D-16
-- ✅ Scheduled Cleanup: 24h file retention task per D-20
-- ✅ Wrapped Response Format: Consistent API contract with {data, error, meta}
-- ✅ TDD Workflow: RED-GREEN-REFACTOR cycle with dependency mocking
-- ✅ All tests passing (3/3): Upload validation, size/type rejection
+- ✅ Upload UI: Drag-drop zone + file picker (react-dropzone)
+- ✅ SSE hooks: Real-time progress streaming with auto-reconnect
+- ✅ Processing stages: 4-stage indicator (uploading → extracting → validating → complete)
+- ✅ State machine: Full upload flow (zone → preview → processing → complete/failed)
+- ✅ Toast notifications: sonner integration for errors and status
+- ✅ Local dev infra: Docker Compose (PostgreSQL + Redis) + Alembic migration
 
 ## Performance Metrics
 

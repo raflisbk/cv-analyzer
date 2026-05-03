@@ -9,7 +9,10 @@ export default {
   ],
   theme: {
     extend: {
-      // 8-point grid spacing (already default in Tailwind)
+      fontFamily: {
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+      },
       spacing: {
         '1': '4px',
         '2': '8px',
@@ -19,7 +22,6 @@ export default {
         '12': '48px',
         '16': '64px',
       },
-      // Color palette from UI-SPEC section 4
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -55,6 +57,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2rem": "2rem",
       },
     },
   },

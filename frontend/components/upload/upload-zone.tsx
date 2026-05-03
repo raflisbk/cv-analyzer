@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,23 +17,31 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        onFileSelected(acceptedFiles[0]); // Per D-03: single file upload only
       }
       setIsDragOver(false);
     },
     [onFileSelected]
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const onDropRejected = useCallback(() => {
+    toast.error("Invalid file", {
+      description: "Only PDF or DOCX files up to 5MB are supported.",
+      duration: 5000,
+    });
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       "application/pdf": [".pdf"],
       "application/msword": [".doc"],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     },
-    maxSize: 5 * 1024 * 1024, // 5MB per D-02
-    multiple: false, // Per D-03
+    maxSize: 5 * 1024 * 1024,
+    multiple: false,
     disabled,
+    noClick: true,
     onDragEnter: () => setIsDragOver(true),
     onDragLeave: () => setIsDragOver(false),
   });
@@ -42,50 +50,58 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
     <div
       {...getRootProps()}
       className={cn(
-        // Per UI-SPEC: Min height 240px, max width 600px, centered
-        "flex flex-col items-center justify-center",
-        "min-h-[240px] max-w-[600px] mx-auto",
-        "border-2 border-dashed rounded-lg",
-        "px-8 py-12 sm:px-12", // Per UI-SPEC section 8: responsive padding
+        "relative flex flex-col items-center justify-center",
+        "w-full rounded-2xl border-2 border-dashed",
+        "px-8 py-10 cursor-pointer",
         "transition-all duration-200 ease-out",
-        // Per UI-SPEC: Border color states
         isDragOver || isDragActive
-          ? "border-blue-500 bg-blue-50 scale-[1.01]" // drag-over state
-          : "border-slate-300 bg-white hover:border-blue-500 hover:scale-[1.01]", // idle/hover
-        disabled && "opacity-50 cursor-not-allowed"
+          ? "border-[#CAFF43] bg-[#CAFF43]/6 scale-[1.01]"
+          : "border-[#F5F2D8]/15 hover:border-[#CAFF43]/50 hover:bg-[#CAFF43]/3",
+        disabled && "opacity-40 cursor-not-allowed"
       )}
     >
       <input {...getInputProps()} />
 
-      {/* Icon per UI-SPEC */}
-      <Upload
-        className={cn(
-          "w-16 h-16 mb-4",
-          isDragOver || isDragActive ? "text-blue-600" : "text-slate-400"
-        )}
-      />
+      <div className={cn(
+        "w-20 h-20 rounded-full flex items-center justify-center mb-5 transition-colors duration-200",
+        isDragOver || isDragActive
+          ? "bg-[#CAFF43] text-[#141414]"
+          : "bg-[#CAFF43]/15 text-[#CAFF43]"
+      )}>
+        <Upload className="w-9 h-9" />
+      </div>
 
-      {/* Copy per UI-SPEC section 6 */}
-      <h2 className="text-2xl font-semibold text-slate-900 mb-2 text-center">
-        {isDragOver ? "Drop your CV here" : "Upload Your CV for AI-Powered Analysis"}
+      <h2 className="text-xl font-display font-extrabold text-[#F5F2D8] mb-2 text-center">
+        {isDragOver ? "Drop it!" : "Drop your CV here"}
       </h2>
-
-      <p className="text-sm text-slate-500 mb-4 text-center">
-        Get instant feedback on clarity, impact, and ATS compatibility.
+      <p className="text-sm text-[#F5F2D8]/50 mb-6 text-center max-w-xs">
+        AI scores your CV on clarity, keywords, impact & ATS compatibility
       </p>
 
-      <p className="text-sm text-slate-400 mb-4">
-        Drag & drop your CV here or
-      </p>
+      <div className="flex items-center gap-2 mb-6 flex-wrap justify-center">
+        <span className="rounded-full bg-[#CAFF43]/15 text-[#CAFF43] text-xs font-bold px-3 py-1">
+          ✦ AI Scoring
+        </span>
+        <span className="rounded-full bg-[#FF8C42]/15 text-[#FF8C42] text-xs font-bold px-3 py-1">
+          ✦ Skill Gap
+        </span>
+        <span className="rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] text-xs font-bold px-3 py-1">
+          ✦ ATS Check
+        </span>
+      </div>
 
-      {/* Per D-01: file picker button equally visible */}
-      <Button variant="outline" type="button" disabled={disabled}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={(e) => { e.stopPropagation(); open(); }}
+        className="rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
+                   px-8 py-3 hover:bg-[#CAFF43]/85 active:scale-95 transition-all duration-150
+                   disabled:opacity-40 disabled:cursor-not-allowed"
+      >
         Choose File
-      </Button>
+      </button>
 
-      <p className="text-sm text-slate-500 mt-4">
-        PDF or DOCX, max 5MB
-      </p>
+      <p className="text-xs text-[#F5F2D8]/30 mt-4">PDF or DOCX · max 5 MB</p>
     </div>
   );
 }

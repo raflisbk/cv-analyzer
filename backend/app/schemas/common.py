@@ -1,15 +1,13 @@
 import uuid
 from datetime import UTC, datetime
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, Field
-
 
 T = TypeVar("T")
 
 
 class ErrorDetail(BaseModel):
-    """Error schema per D-24"""
 
     code: str
     message: str
@@ -17,17 +15,12 @@ class ErrorDetail(BaseModel):
 
 
 class ResponseMeta(BaseModel):
-    """Response metadata per D-23"""
 
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
-class WrappedResponse[T](BaseModel):
-    """Wrapped response format per D-23
-
-    Provides consistent API response structure with data, error, and metadata fields.
-    """
+class WrappedResponse(BaseModel, Generic[T]):
 
     data: T | None = None
     error: ErrorDetail | None = None

@@ -11,7 +11,6 @@ from fastapi.testclient import TestClient
 
 from app.db.session import get_db
 from app.main import app
-from app.models.job import JobStatus
 
 
 # Override database dependency for all tests

@@ -2,6 +2,17 @@
 # CV Analyzer - Git Ignore Configuration
 # ============================================================================
 
+# ESCO data (large file, download separately)
+backend/data/esco_skills.csv
+
+# Generated pip/conda output files
+[0-9]*.[0-9]*
+
+# Test/sample CV files at root
+*.pdf
+*.doc
+*.docx
+
 # ============================================================================
 # Python Backend
 # ============================================================================
@@ -321,9 +332,8 @@ backend/storage/
 # Cloudflare R2 local simulation
 .r2/
 
-# Alembic
-backend/alembic/versions/*.py
-!backend/alembic/versions/.gitkeep
+# Alembic (do NOT ignore migration version files - they must be committed)
+# backend/alembic/versions/*.py  -- removed: migrations must be tracked
 
 # Logs
 logs/
@@ -350,6 +360,9 @@ docs/site/
 # AI Agent files
 .agents/
 .claude/
+
+# Local private AI instructions (keep CLAUDE.md tracked)
+CLAUDE.local.md
 
 # GitHub Copilot
 .copilot/
@@ -393,3 +406,8 @@ skills-lock.json
 
 # Frontend
 !frontend/public/.gitkeep
+
+# Local mockup artifacts
+mockup/
+.windsurf/
+.windusrf/

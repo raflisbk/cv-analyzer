@@ -3,8 +3,6 @@ from sqlalchemy.sql import func
 
 
 class TimestampMixin:
-    """Mixin for created_at and updated_at timestamp columns"""
-
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

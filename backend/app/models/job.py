@@ -1,40 +1,67 @@
 import enum
 import uuid
 
-from sqlalchemy import JSON, Column, Enum, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+import sqlalchemy as sa
+from sqlalchemy import (
+    JSON,
+    Column,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from app.db.base import Base
 from app.models.base import TimestampMixin
 
 
 class JobStatus(str, enum.Enum):
-    """Job status enum per D-46"""
-
     PENDING = "pending"
     UPLOADING = "uploading"
     EXTRACTING = "extracting"
     PARSING = "parsing"
     ANALYZING = "analyzing"
+    GENERATING = "generating"
+    COMPARING = "comparing"
     COMPLETE = "complete"
     FAILED = "failed"
 
 
 class Job(Base, TimestampMixin):
-    """Job model per D-45, D-46, D-47
-
-    Tracks CV analysis jobs through the complete pipeline with detailed status tracking.
-    """
-
     __tablename__ = "jobs"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     status = Column(Enum(JobStatus), default=JobStatus.PENDING, nullable=False)
-    file_id = Column(String(255), nullable=False)  # R2 object key
-    stages = Column(JSON, default=dict)  # Track completion of each stage
-    error = Column(String(1000), nullable=True)  # Error message if failed
-    retry_count = Column(Integer, default=0, nullable=False)  # Retry tracking per D-16
-    file_metadata = Column(
-        JSON, default=dict
-    )  # File metadata (name, size, type) per D-21
-    result = Column(JSON, nullable=True)  # Analysis results (JSONB) per D-47
+    file_id = Column(String(255), nullable=False)
+    stages = Column(JSON, default=dict)
+    error = Column(String(1000), nullable=True)
+    retry_count = Column(Integer, default=0, nullable=False)
+    file_metadata = Column(JSON, default=dict)
+    result = Column(JSON, nullable=True)
+
+    nlp_result = Column(JSONB, nullable=True)
+    scores = Column(JSONB, nullable=True)
+    grammar_issues = Column(JSONB, nullable=True)
+    ats_checks = Column(JSONB, nullable=True)
+
+    suggestions = Column(JSONB, nullable=True)
+    llm_tokens_used = Column(Integer, nullable=True)
+
+    comparison_result = Column(JSONB, nullable=True)
+    comparison_status = Column(String(20), nullable=True)
+    jd_text = Column(Text, nullable=True)
+
+    jd_role_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("job_roles.id"),
+        nullable=True,
+    )
+
+    workspace_draft = Column(JSONB, nullable=True)
+    cv_document = Column(JSONB, nullable=True)
+    suggestion_anchors = Column(JSONB, nullable=True)
+    yjs_snapshot = Column(sa.LargeBinary, nullable=True)
+
+    messages = Column(JSONB, nullable=True, default=list)

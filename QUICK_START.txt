@@ -1,0 +1,194 @@
+╔══════════════════════════════════════════════════════════════════╗
+║              CV Analyzer - Quick Start Guide                      ║
+║                  (Read this first!)                               ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📋 STATUS: Ready to Test
+📅 Date: 2026-04-08
+
+────────────────────────────────────────────────────────────────────
+STEP 1: Start Docker Desktop (REQUIRED)
+────────────────────────────────────────────────────────────────────
+
+⚠️  THIS MUST BE DONE MANUALLY - Cannot be automated!
+
+Windows:
+  1. Double-click: Docker Desktop icon on desktop
+     OR
+  2. Start Menu → Docker Desktop
+     OR
+  3. Run: "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+
+⏰ WAIT: 2-3 minutes until you see:
+  ✓ Green whale icon in system tray (bottom right)
+  ✓ "Docker Desktop is running" message
+
+Verify it's ready:
+  > docker info
+  (Should show Docker version and info)
+
+────────────────────────────────────────────────────────────────────
+STEP 2: Start All Services (One Click)
+────────────────────────────────────────────────────────────────────
+
+After Docker is ready, run:
+
+  START_WITH_DOCKER_CHECK.bat
+
+This script will:
+  ✓ Check Docker is ready (or wait for it)
+  ✓ Start PostgreSQL + Redis containers
+  ✓ Run database migrations
+  ✓ Start backend server (port 8000)
+  ✓ Start frontend server (port 3000)
+  ✓ Open browser to http://localhost:3000
+
+────────────────────────────────────────────────────────────────────
+STEP 3: Test as a User
+────────────────────────────────────────────────────────────────────
+
+1. Browser will open to: http://localhost:3000
+
+2. You should see:
+   ✓ "CV Analyzer" title
+   ✓ "Upload your CV" button or drag-drop zone
+
+3. Test the basic flow:
+   a. Click "Upload your CV"
+   b. Select a PDF file from your computer
+   c. Watch the progress stages:
+      • Uploading...
+      • Extracting text...
+      • Analyzing...
+      • Complete
+   d. See results page with:
+      • Overall score (0-100)
+      • 4 tabs: Overview, Scores, Skills, Grammar
+      • AI improvement suggestions
+
+4. For detailed test scenarios, see: MANUAL_TEST_PLAN.md
+
+────────────────────────────────────────────────────────────────────
+TROUBLESHOOTING
+────────────────────────────────────────────────────────────────────
+
+Problem: "Docker not ready"
+Solution:
+  → Wait 2-3 minutes after starting Docker Desktop
+  → Check icon in system tray is GREEN (not orange/red)
+  → Run: docker info (should work)
+
+Problem: "Port 8000 already in use"
+Solution:
+  → Close any other Python/FastAPI apps
+  → Or change port in START_WITH_DOCKER_CHECK.bat
+
+Problem: "Port 3000 already in use"
+Solution:
+  → Close any other Node/Next.js apps
+  → Or change port in frontend/package.json
+
+Problem: "Database connection failed"
+Solution:
+  → Run: docker compose ps (check if postgres running)
+  → Run: cd backend && alembic upgrade head
+  → Check DATABASE_URL in backend/.env
+
+────────────────────────────────────────────────────────────────────
+QUICK COMMANDS (Manual)
+────────────────────────────────────────────────────────────────────
+
+# Start containers
+docker compose up -d
+
+# Check containers
+docker compose ps
+
+# Run migrations
+cd backend
+conda activate sbk-cv-analyzer
+alembic upgrade head
+
+# Start backend (new terminal)
+cd backend
+conda activate sbk-cv-analyzer
+uvicorn app.main:app --reload --port 8000
+
+# Start frontend (new terminal)
+cd frontend
+npm run dev
+
+────────────────────────────────────────────────────────────────────
+WHAT TO TEST
+────────────────────────────────────────────────────────────────────
+
+✅ CV Upload & Parsing
+   Upload PDF/DOCX → Extract text → Show progress
+
+✅ Multi-Dimensional Scoring
+   See overall score → Breakdown by 4 dimensions
+
+✅ AI Suggestions
+   LLM-powered improvement recommendations
+
+✅ Job Comparison
+   Compare CV against job description → See match % and gaps
+
+✅ Real-time Updates
+   Watch progress stages via SSE (no page refresh!)
+
+✅ PDF Export
+   Download results as professional PDF
+
+For full test plan: MANUAL_TEST_PLAN.md (8 detailed scenarios)
+
+────────────────────────────────────────────────────────────────────
+PORTFOLIO DEMO CHECKLIST
+────────────────────────────────────────────────────────────────────
+
+AI Engineering Capabilities Demonstrated:
+  ✓ LLM Integration (OpenAI/Claude)
+  ✓ RAG Architecture (pgvector vector database)
+  ✓ Structured Output (Pydantic validation)
+  ✓ Cost Controls (token tracking, Redis caching)
+  ✓ Async Processing (Celery + Redis)
+  ✓ Real-time Streaming (SSE)
+  ✓ Error Handling (graceful degradation)
+
+Full-Stack Skills:
+  ✓ Frontend: Next.js 15, React 19, shadcn/ui
+  ✓ Backend: FastAPI, PostgreSQL, Redis
+  ✓ Infrastructure: Docker, Cloudflare R2
+  ✓ DevOps: Migrations, environment config
+
+Production Readiness:
+  ✓ Rate limiting (5 uploads/hour)
+  ✓ Error logging (structured JSON)
+  ✓ Input validation (file size, type checks)
+  ✓ Database migrations (Alembic)
+  ✓ Environment-based config
+
+────────────────────────────────────────────────────────────────────
+NEXT STEPS
+────────────────────────────────────────────────────────────────────
+
+1. ✅ Start Docker Desktop manually
+2. ✅ Run START_WITH_DOCKER_CHECK.bat
+3. ✅ Open http://localhost:3000
+4. ✅ Upload CV and test the flow
+5. ✅ Try all 8 test scenarios (MANUAL_TEST_PLAN.md)
+6. ✅ Document any issues found
+7. ✅ Fix critical bugs
+8. ✅ Ready for portfolio showcase! 🎉
+
+────────────────────────────────────────────────────────────────────
+
+Need help? Check these files:
+  • TESTING_GUIDE.md     - Comprehensive guide
+  • MANUAL_TEST_PLAN.md  - 8 detailed test scenarios
+  • RUN_TEST.sh          - Automated smoke tests
+
+────────────────────────────────────────────────────────────────────
+Last updated: 2026-04-08
+Prepared by: Claude (AI Testing Agent)
+╚══════════════════════════════════════════════════════════════════╝

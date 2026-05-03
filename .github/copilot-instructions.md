@@ -88,7 +88,12 @@ Start work through a GSD command to maintain planning artifacts:
      - Database files (`*.db`, `*.sqlite`)
      - Uploaded files in development
 
-3. **Run Linters**
+  3. **Update Backend Dependency Manifest**
+    - If backend dependencies changed during the wave/phase, update `backend/pyproject.toml` first.
+    - Keep `backend/requirements.txt` aligned only when explicitly needed for tooling compatibility.
+    - Treat `backend/pyproject.toml` as the source of truth for backend dependency installation.
+
+  4. **Run Linters**
    
    **Backend (Python):**
    ```bash
@@ -107,7 +112,7 @@ Start work through a GSD command to maintain planning artifacts:
    npx tsc --noEmit          # Type check
    ```
 
-4. **Verify Builds**
+5. **Verify Builds**
    
    **Backend:**
    ```bash
@@ -122,7 +127,7 @@ Start work through a GSD command to maintain planning artifacts:
    npm run build             # Ensure build succeeds
    ```
 
-5. **Commit Clean Code**
+6. **Commit Clean Code**
    - All linting errors fixed
    - All files properly ignored
    - Build passes
@@ -169,6 +174,12 @@ which python            # Should point to conda env
 - **ALWAYS use Conda environment:** `conda activate sbk-cv-analyzer`
 - **Python Version:** 3.13.9
 - **Package Manager:** pip (within conda env)
+- **Dependency Source:** `backend/pyproject.toml` (do not install from `backend/requirements.txt`)
+
+**Backend dependency install rule (Copilot):**
+- Always install backend dependencies from `pyproject.toml`.
+- Use `pip install -e backend` from repository root (or `cd backend && pip install -e .`).
+- Do not use `pip install -r backend/requirements.txt` unless explicitly requested by the user.
 
 **Code Quality Tools:**
 - **Formatter:** Black (line-length: 88)
@@ -387,6 +398,7 @@ pytest
 - **Conda Environment:** `sbk-cv-analyzer`
 - **Python Version:** 3.13.9
 - **Package Manager:** pip (within conda env)
+- **Install Command:** `pip install -e backend` (source of truth: `backend/pyproject.toml`)
 
 **Installed Dependencies (Wave 1 & 2):**
 - fastapi 0.135.2, uvicorn 0.42.0
