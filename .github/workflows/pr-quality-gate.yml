@@ -73,40 +73,36 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      checks: read
 
     steps:
-      - name: Merge PR
+      - name: Find or create PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Close conflicting PRs first
           REPO="${{ github.repository }}"
-          gh pr list --repo $REPO --base main --head dev --state open --json number --jq '.[].number' | while read pr; do
-            MERGEABLE=$(gh pr view $pr --repo $REPO --json mergeable --jq '.mergeable')
-            if [ "$MERGEABLE" = "CONFLICTING" ]; then
-              echo "Closing conflicting PR #$pr"
-              gh pr close $pr --repo $REPO --delete-branch=false
-            fi
-          done
-
-          # Find or create a clean PR
           OPEN_PR=$(gh api "repos/$REPO/pulls?base=main&head=dev&state=open" --jq '.[0].number // empty')
-          if [ -z "$OPEN_PR" ]; then
-            OPEN_PR=$(gh api "repos/$REPO/pulls" \
+
+          if [ -n "$OPEN_PR" ]; then
+            echo "PR_NUMBER=$OPEN_PR" >> "$GITHUB_ENV"
+            echo "Using existing PR #$OPEN_PR"
+          else
+            PR_NUMBER=$(gh api "repos/$REPO/pulls" \
               --method POST \
               --field title="auto: merge dev → main" \
               --field body="Auto-generated PR from push to dev. CI passed." \
               --field head="dev" \
               --field base="main" \
               --jq '.number')
-            echo "Created PR #$OPEN_PR"
-            # Wait briefly for GitHub to compute mergeability
-            sleep 5
+            echo "PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
+            echo "Created PR #$PR_NUMBER"
           fi
 
-          gh api "repos/$REPO/pulls/$OPEN_PR/merge" \
+      - name: Merge PR (squash)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${{ github.repository }}/pulls/${{ env.PR_NUMBER }}/merge" \
             --method PUT \
             --field commit_title="auto: merge dev → main (${{ github.sha }})" \
             --field commit_message="" \
-            --field merge_method="merge"
+            --field merge_method="squash"
