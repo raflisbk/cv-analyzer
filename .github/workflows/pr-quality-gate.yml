@@ -1,6 +1,9 @@
-name: PR Quality Gate
+name: CI and Auto-merge
 
 on:
+  push:
+    branches:
+      - "dev"
   pull_request:
     branches:
       - "main"
@@ -62,3 +65,24 @@ jobs:
       - name: Frontend build
         working-directory: frontend
         run: npm run build
+
+  auto-merge:
+    needs: quality-gate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge dev into main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git merge origin/dev --no-edit
+          git push origin main
