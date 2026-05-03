@@ -15,6 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -22,9 +27,8 @@ jobs:
 
       - name: Install backend dependencies and QA tools
         run: |
-          python -m pip install --upgrade pip
-          pip install -e backend
-          pip install "black>=26.0" "ruff>=0.15" pytest pytest-asyncio
+          uv pip install --system -e backend
+          uv pip install --system "black>=26.0" "ruff>=0.15" pytest pytest-asyncio
 
       - name: Backend formatting (Black)
         run: black --check backend
@@ -36,7 +40,7 @@ jobs:
         env:
           CV_ANALYZER_HF_API_KEY: ci-dummy-key
           CV_ANALYZER_DB_HOST: localhost
-          CV_ANALYZER_DB_NAME: cv_analyzer
+          CV_ANALYZER_DB_NAME: cv-analyzer
           CV_ANALYZER_DB_USER: postgres
           CV_ANALYZER_DB_PASSWORD: dummy
           CV_ANALYZER_REDIS_URL: redis://localhost:6379/0
@@ -49,7 +53,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm install
+        run: npm ci
 
       - name: Frontend lint
         working-directory: frontend
