@@ -1,9 +1,9 @@
 import { AuthUser } from "@/stores/auth-store";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
 
 export async function loginWithGoogle(accessToken: string): Promise<AuthUser> {
-  const res = await fetch(`${API_BASE}/api/v1/auth/google`, {
+  const res = await fetch(`${API_BASE}/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -19,7 +19,7 @@ export async function loginWithGoogle(accessToken: string): Promise<AuthUser> {
 
 export async function getMe(): Promise<AuthUser | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/v1/auth/me`, {
+    const res = await fetch(`${API_BASE}/auth/me`, {
       credentials: "include",
     });
 
@@ -33,7 +33,7 @@ export async function getMe(): Promise<AuthUser | null> {
 }
 
 export async function logoutApi(): Promise<void> {
-  await fetch(`${API_BASE}/api/v1/auth/logout`, {
+  await fetch(`${API_BASE}/auth/logout`, {
     method: "POST",
     credentials: "include",
   });
