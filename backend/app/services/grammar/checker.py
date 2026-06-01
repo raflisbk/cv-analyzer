@@ -3,7 +3,7 @@ import re
 
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.services.llm.hf_llm_service import HFLLMService
+from app.services.llm.koboi_llm_service import KoboiLLMService
 
 _GRAMMAR_SYSTEM_PROMPT_EN = """You are a professional CV grammar and spelling checker.
 Check the provided CV text for grammar, spelling, punctuation, and style errors.
@@ -107,11 +107,11 @@ def check_grammar(text: str) -> list[dict]:
     try:
         settings = get_settings()
 
-        if not settings.CV_ANALYZER_HF_API_KEY:
+        if not settings.CV_ANALYZER_KOBOI_API_KEY:
             logger.warning("grammar_skipped_no_api_key")
             return []
 
-        llm_service = HFLLMService()
+        llm_service = KoboiLLMService()
 
         is_indonesian = _detect_indonesian(text[:2000])
         system_prompt = (

@@ -5,7 +5,7 @@ from app.services.scoring.anchors import (
     IMPACT_ANCHORS,
     RELEVANCE_ANCHORS,
 )
-from app.services.scoring.hf_embeddings import score_dimension as hf_score_dimension
+from app.services.scoring.embeddings import score_dimension
 
 _DIMENSION_WEIGHTS: dict[str, float] = {
     "clarity": 0.40,
@@ -15,13 +15,22 @@ _DIMENSION_WEIGHTS: dict[str, float] = {
 }
 
 
-def _score_with_hf(text: str) -> dict:
+def score_cv(text: str) -> dict:
+    from app.core.config import get_settings
+
+    settings = get_settings()
+
+    if not settings.CV_ANALYZER_KOBOI_API_KEY:
+        raise ValueError(
+            "CV_ANALYZER_KOBOI_API_KEY not configured. Please set it in your .env file."
+        )
+
     logger.info("scoring_start", text_length=len(text))
 
-    clarity = hf_score_dimension(text, CLARITY_ANCHORS)
-    impact = hf_score_dimension(text, IMPACT_ANCHORS)
-    completeness = hf_score_dimension(text, COMPLETENESS_ANCHORS)
-    relevance = hf_score_dimension(text, RELEVANCE_ANCHORS)
+    clarity = score_dimension(text, CLARITY_ANCHORS)
+    impact = score_dimension(text, IMPACT_ANCHORS)
+    completeness = score_dimension(text, COMPLETENESS_ANCHORS)
+    relevance = score_dimension(text, RELEVANCE_ANCHORS)
 
     overall = int(
         clarity * _DIMENSION_WEIGHTS["clarity"]
@@ -38,23 +47,9 @@ def _score_with_hf(text: str) -> dict:
         "completeness": completeness,
         "relevance": relevance,
         "scoring_method": "embedding",
-        "provider": "hf",
+        "provider": "koboi",
     }
 
     logger.info("scoring_done", scores=scores)
 
     return scores
-
-
-def score_cv(text: str) -> dict:
-    from app.core.config import get_settings
-
-    settings = get_settings()
-
-    if not settings.CV_ANALYZER_HF_API_KEY:
-        raise ValueError(
-            "CV_ANALYZER_HF_API_KEY not configured. Please set it in your .env file."
-        )
-
-    logger.info("scoring_provider_selected")
-    return _score_with_hf(text)

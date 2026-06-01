@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.logging import structured_logger as logger
 from app.schemas.inline_edit import InlineEditResponse
-from app.services.llm.hf_llm_service import HFLLMService
+from app.services.llm.koboi_llm_service import KoboiLLMService
 
 _SYSTEM_PROMPT = """You are an expert CV editor and career coach.
 Rewrite the selected CV text according to the user's prompt.
@@ -49,7 +49,7 @@ def _build_user_prompt(
 class InlineEditService:
 
     def __init__(self) -> None:
-        self._llm = HFLLMService()
+        self._llm = KoboiLLMService()
         logger.info("inline_edit_service_initialized", model=self._llm.model)
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=1, max=4))

@@ -25,6 +25,7 @@ export function CompareTab({
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryRequested, setRetryRequested] = useState(false);
   const [streamStage, setStreamStage] = useState<string | null>(null);
   const sseRef = useRef<SSEConnection | null>(null);
 
@@ -37,7 +38,7 @@ export function CompareTab({
     comparisonStatus === "pending" ||
     comparisonStatus === "comparing";
   const isComplete = comparisonStatus === "complete" && comparisonResult !== null;
-  const isFailed = comparisonStatus === "failed";
+  const isFailed = !retryRequested && comparisonStatus === "failed";
 
   const canCompare = jdText.trim().length >= 50 && !isLoading && !isSubmitting;
 
@@ -45,6 +46,7 @@ export function CompareTab({
     if (!canCompare) { return; }
     setIsSubmitting(true);
     setError(null);
+    setRetryRequested(false);
     try {
       const body: { jd_text: string; jd_role_id?: string } = { jd_text: jdText };
       if (selectedRoleId) { body.jd_role_id = selectedRoleId; }
@@ -97,7 +99,7 @@ export function CompareTab({
         </div>
         <button
           className="rounded-full border border-white/10 text-[#F5F2D8]/70 text-sm font-bold px-6 py-2.5 hover:bg-white/5 transition-colors"
-          onClick={() => { setError(null); setIsSubmitting(false); }}
+          onClick={() => { setError(null); setIsSubmitting(false); setRetryRequested(true); }}
         >
           Try again
         </button>
