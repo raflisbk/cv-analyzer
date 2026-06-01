@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { useRouter } from "next/navigation";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
+import { UserMenu } from "@/components/auth/user-menu";
 
 const NAV_LINKS = [
   { href: "/cv-builder", label: "CV Builder", badge: null },
@@ -96,22 +97,7 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
-          <button
-            type="button"
-            className="rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-150"
-            style={{
-              color: "rgba(17,17,17,0.50)",
-              background: "transparent",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.color = "rgba(17,17,17,0.85)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.color = "rgba(17,17,17,0.50)")
-            }
-          >
-            Sign in
-          </button>
+          <UserMenu />
 
           <div
             className="h-5 w-px"
