@@ -15,12 +15,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from sqlalchemy import select
+
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
+from app.models.job import Job  # noqa: F401 - needed for SQLAlchemy relationship resolution
 from app.models.knowledge_chunk import KnowledgeChunk
+from app.models.user import User  # noqa: F401 - needed for SQLAlchemy relationship resolution
 from app.services.rag.chunker import chunk_text
 from app.services.rag.embeddings import get_rag_embedding
-from sqlalchemy import select
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "cv_best_practices.md"
 SOURCE = "cv_best_practices"
@@ -71,6 +74,7 @@ async def seed() -> None:
                 saved += 1
             except Exception as e:
                 logger.warning("chunk_embed_failed", chunk_index=i, error=str(e))
+                print(f"  ERROR chunk {i}: {e}")
 
         await session.commit()
         print()
@@ -79,4 +83,8 @@ async def seed() -> None:
 
 
 if __name__ == "__main__":
+    import sys
+
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(seed())
