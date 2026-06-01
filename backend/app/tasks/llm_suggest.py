@@ -10,14 +10,15 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
-from app.services.llm.hf_llm_service import HFLLMService
+from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.services.llm.protocol import SuggestionsOutput  # noqa: TC001
 from app.services.rag.embeddings import get_rag_embedding
+from app.services.rag.ingestor import ingest_cv_for_user
 from app.services.rag.retriever import retrieve_relevant_chunks
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask
 
-_llm_service = HFLLMService()
+_llm_service = KoboiLLMService()
 _redis_client: redis_lib.Redis | None = None
 
 
@@ -101,7 +102,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
             job = result.scalar_one_or_none()
             return job.file_id if job else ""
 
-    async def _get_job_data() -> tuple[str | None, list[dict] | None]:
+    async def _get_job_data() -> tuple[str | None, list[dict] | None, str | None]:
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -109,8 +110,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
             if job:
                 text = job.result.get("text") if job.result else None
                 sections = job.nlp_result.get("sections") if job.nlp_result else None
-                return text, sections
-            return None, None
+                user_id = str(job.user_id) if job.user_id else None
+                return text, sections, user_id
+            return None, None, None
 
     async def _set_generating_status() -> None:
         async with async_session_maker() as session:
@@ -245,7 +247,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
             90,
             "Generating AI improvement suggestions...",
         )
-        cv_text, sections = asyncio.run(_get_job_data())
+        cv_text, sections, user_id = asyncio.run(_get_job_data())
         if not cv_text:
             logger.warning("llm_suggest_no_text", job_id=job_id)
             asyncio.run(_save_results(None, tokens_used=0))
@@ -254,12 +256,27 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
 
         sections = sections or []
 
+        if user_id:
+            try:
+
+                async def _ingest() -> None:
+                    async with async_session_maker() as session:
+                        await ingest_cv_for_user(cv_text, job_id, user_id, session)
+
+                asyncio.run(_ingest())
+                logger.info("cv_ingested_for_user", job_id=job_id, user_id=user_id)
+            except Exception as ingest_error:
+                logger.warning(
+                    "cv_ingest_failed", job_id=job_id, error=str(ingest_error)
+                )
+
         rag_context: list[str] = []
         try:
             query_embedding = get_rag_embedding(cv_text[:2000])
             rag_context = asyncio.run(
                 retrieve_relevant_chunks(
                     query_embedding=query_embedding,
+                    user_id=user_id,
                     section_type=None,
                     limit=5,
                 )
