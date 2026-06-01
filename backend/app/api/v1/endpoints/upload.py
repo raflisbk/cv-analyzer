@@ -4,12 +4,14 @@ from datetime import UTC, datetime
 from celery import chain as celery_chain
 from fastapi import APIRouter, Depends, Request, UploadFile
 
+from app.api.dependencies import get_current_user
 from app.core.config import get_settings
 from app.core.limiter import limiter
 from app.core.logging import structured_logger as logger
 from app.core.security import FileValidationError, validate_file
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job, JobStatus
+from app.models.user import User
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.upload import UploadResponse
 from app.services.storage import storage_service
@@ -30,6 +32,7 @@ async def upload_file(
     request: Request,
     file: UploadFile,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ):
     request_id = str(uuid.uuid4())
 
@@ -58,6 +61,7 @@ async def upload_file(
                 "size": file_info["size"],
                 "mime_type": file_info["mime_type"],
             },
+            user_id=current_user.id if current_user else None,
         )
 
         db.add(job)

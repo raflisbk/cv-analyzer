@@ -12,6 +12,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 from app.models.base import TimestampMixin
@@ -65,3 +66,11 @@ class Job(Base, TimestampMixin):
     yjs_snapshot = Column(sa.LargeBinary, nullable=True)
 
     messages = Column(JSONB, nullable=True, default=list)
+
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=True,
+        index=True,
+    )
+    user = relationship("User", back_populates="jobs")

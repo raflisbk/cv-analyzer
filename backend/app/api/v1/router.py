@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
+    auth,
     chat,
     compare,
     export,
@@ -14,6 +15,7 @@ from app.api.v1.endpoints import (
 
 router = APIRouter(prefix="/v1")
 
+router.include_router(auth.router, prefix="/auth", tags=["auth"])
 router.include_router(upload.router, tags=["upload"])
 router.include_router(jobs.router, tags=["jobs"])
 router.include_router(stream.router, tags=["stream"])

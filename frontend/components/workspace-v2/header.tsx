@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 import Link from "next/link";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
+import { UserMenu } from "@/components/auth/user-menu";
 
 interface WorkspaceV2HeaderProps {
   filename: string | null;
@@ -192,7 +193,9 @@ export function WorkspaceV2Header({
         </div>
       )}
 
-      <div className="relative flex flex-none items-center gap-1.5">
+      <div className="relative flex flex-none items-center gap-2">
+        <UserMenu />
+
         {!uploadMode && (
           <button
             type="button"

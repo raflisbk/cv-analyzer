@@ -28,11 +28,15 @@ class Settings(BaseSettings):
 
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
-    CV_ANALYZER_LLM_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
+    CV_ANALYZER_KOBOI_API_KEY: str = ""
+    CV_ANALYZER_KOBOI_BASE_URL: str = "https://lite.koboillm.com/v1"
+
+    CV_ANALYZER_LLM_MODEL: str = "openai/gpt-5.1"
     CV_ANALYZER_LLM_MAX_TOKENS: int = 1500
     CV_ANALYZER_LLM_CACHE_TTL: int = 86400
     CV_ANALYZER_RAG_TOP_K: int = 5
-    CV_ANALYZER_RAG_EMBEDDING_MODEL: str = "BAAI/bge-m3"
+    CV_ANALYZER_EMBEDDING_MODEL: str = "openai/text-embedding-3-large"
+    CV_ANALYZER_EMBEDDING_DIMENSIONS: int = 3072
 
     CV_ANALYZER_CORS_ORIGINS: str = "*"
 
@@ -40,11 +44,18 @@ class Settings(BaseSettings):
 
     CV_ANALYZER_LOG_LEVEL: str = "INFO"
 
+    CV_ANALYZER_GOOGLE_CLIENT_ID: str = ""
+    CV_ANALYZER_JWT_SECRET: str = "change-me-in-production-min-32-chars"
+    CV_ANALYZER_JWT_ALGORITHM: str = "HS256"
+    CV_ANALYZER_JWT_EXPIRE_DAYS: int = 7
+
     @property
     def database_url(self) -> str:
         return f"postgresql+psycopg://{self.CV_ANALYZER_DB_USER}:{self.CV_ANALYZER_DB_PASSWORD}@{self.CV_ANALYZER_DB_HOST}:{self.CV_ANALYZER_DB_PORT}/{self.CV_ANALYZER_DB_NAME}"
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=True, extra="ignore"
+    )
 
 
 @lru_cache
