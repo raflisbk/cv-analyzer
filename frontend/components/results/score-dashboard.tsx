@@ -43,7 +43,7 @@ const DIMENSIONS: Array<{
 export function ScoreDashboard({ scores }: ScoreDashboardProps) {
   return (
     <div className="space-y-6">
-      <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-[#F5F2D8]/[0.08]">
+      <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-white/[0.07]">
         <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">Overall Score</span>
         <GaugeChart value={scores.overall} label="Overall" size={180} />
         <ScoreRangeBadge score={scores.overall} />
@@ -57,7 +57,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
           return (
             <div
               key={key}
-              className="rounded-2xl p-5 flex flex-col items-center gap-2 border border-[#F5F2D8]/[0.08] backdrop-blur-sm"
+              className="rounded-2xl p-5 flex flex-col items-center gap-2 border border-white/[0.07] backdrop-blur-sm"
               style={{ backgroundColor: `color-mix(in srgb, ${accentColor} 8%, transparent)` }}
             >
               <span
@@ -75,7 +75,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
               <p className="text-xs text-[#F5F2D8]/60 text-center font-medium mt-1">{description}</p>
               
               {reasoning && (
-                <div className="mt-3 p-3 rounded-xl bg-black/20 border border-white/5 w-full">
+                <div className="mt-3 p-3 rounded-xl bg-black/20 border border-white/[0.07] w-full">
                   <p className="text-[11px] leading-relaxed text-[#F5F2D8]/80 italic">
                     &ldquo;{reasoning}&rdquo;
                   </p>

@@ -78,7 +78,7 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
   const triggerId = `suggestion-before-trigger-${id}`;
 
   return (
-    <div className="mt-4 pt-4 border-t border-white/8">
+    <div className="mt-4 pt-4 border-t border-white/[0.07]">
       <Button
         id={triggerId}
         variant="ghost"
@@ -122,8 +122,8 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
               <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
             </div>
           ) : (
-            <div className="p-3 bg-white/5 rounded-xl">
-              <p className="text-sm text-[#F5F2D8]/30">No original text available for comparison.</p>
+            <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.04)" }}>
+              <p className="text-sm" style={{ color: "rgba(245,242,216,0.40)" }}>No original text available for comparison.</p>
             </div>
           )}
         </div>
@@ -139,7 +139,7 @@ interface SuggestionCardItemProps {
 
 export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
   return (
-    <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-5">
+    <div className="bg-[#1C1C1C] rounded-2xl border border-white/[0.07] p-5">
       <h3 className="text-sm font-extrabold text-[#F5F2D8]/60 uppercase tracking-wider mb-4">{card.section}</h3>
       <div className="space-y-4">
         {card.suggestions.map((item, i) => (

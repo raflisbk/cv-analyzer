@@ -31,35 +31,35 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
       <TabsList className="overflow-x-auto flex w-full bg-[#F5F2D8] border-b border-[#141414]/10 mb-2">
         <TabsTrigger
           value="overview"
-          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-[3px] data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold data-[state=active]:bg-[#CAFF43]/[0.07] rounded-t-lg"
         >
           <LayoutDashboard className="h-4 w-4" />
           Overview
         </TabsTrigger>
         <TabsTrigger
           value="scores"
-          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-[3px] data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold data-[state=active]:bg-[#CAFF43]/[0.07] rounded-t-lg"
         >
           <BarChart3 className="h-4 w-4" />
           Scores
         </TabsTrigger>
         <TabsTrigger
           value="skills"
-          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-[3px] data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold data-[state=active]:bg-[#CAFF43]/[0.07] rounded-t-lg"
         >
           <Sparkles className="h-4 w-4" />
           Skills
         </TabsTrigger>
         <TabsTrigger
           value="grammar"
-          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-[3px] data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold data-[state=active]:bg-[#CAFF43]/[0.07] rounded-t-lg"
         >
           <SpellCheck className="h-4 w-4" />
           Grammar
         </TabsTrigger>
         <TabsTrigger
           value="compare"
-          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-2 data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold"
+          className="min-h-[44px] flex items-center gap-2 text-[#141414]/50 hover:text-[#141414]/80 data-[state=active]:text-[#141414] data-[state=active]:border-b-[3px] data-[state=active]:border-[#CAFF43] data-[state=active]:font-extrabold data-[state=active]:bg-[#CAFF43]/[0.07] rounded-t-lg"
         >
           <ArrowLeftRight className="h-4 w-4" />
           Compare
