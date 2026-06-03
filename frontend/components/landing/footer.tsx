@@ -122,44 +122,18 @@ export default function Footer() {
             © {new Date().getFullYear()} Pathkr Inc. All rights reserved.
           </p>
           <div className="mt-4 md:mt-0 flex gap-3">
-            {/* Twitter / X */}
             <a
               href="#"
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-all"
-              style={{
-                background: "rgba(255,255,255,0.07)",
-                color: "rgba(245,242,216,0.40)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.12)";
-                e.currentTarget.style.color = "#F5F2D8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.07)";
-                e.currentTarget.style.color = "rgba(245,242,216,0.40)";
-              }}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.07] text-[#F5F2D8]/40 hover:bg-white/[0.12] hover:text-[#F5F2D8] transition-all"
               aria-label="Twitter"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
               </svg>
             </a>
-            {/* GitHub */}
             <a
               href="#"
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-all"
-              style={{
-                background: "rgba(255,255,255,0.07)",
-                color: "rgba(245,242,216,0.40)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.12)";
-                e.currentTarget.style.color = "#F5F2D8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.07)";
-                e.currentTarget.style.color = "rgba(245,242,216,0.40)";
-              }}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.07] text-[#F5F2D8]/40 hover:bg-white/[0.12] hover:text-[#F5F2D8] transition-all"
               aria-label="GitHub"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
