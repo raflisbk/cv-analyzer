@@ -97,14 +97,6 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
-          <UserMenu />
-
-          <div
-            className="h-5 w-px"
-            style={{ background: "rgba(17,17,17,0.13)" }}
-            aria-hidden="true"
-          />
-
           <button
             onClick={() => router.push("/workspace-v2/new")}
             className="group relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-2 text-[13px] font-black tracking-wide transition-all duration-200 hover:opacity-92 active:scale-[0.97]"
@@ -132,6 +124,14 @@ export default function Navbar() {
               />
             </span>
           </button>
+
+          <div
+            className="h-5 w-px"
+            style={{ background: "rgba(17,17,17,0.13)" }}
+            aria-hidden="true"
+          />
+
+          <UserMenu />
         </div>
 
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
