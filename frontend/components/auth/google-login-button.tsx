@@ -34,21 +34,42 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
     <button
       onClick={() => login()}
       disabled={isLoading}
-      className={`flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`}
+      className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${className ?? ""}`}
+      style={{
+        background: "rgba(17,17,17,0.06)",
+        border: "1px solid rgba(17,17,17,0.13)",
+        color: "rgba(17,17,17,0.75)",
+      }}
+      onMouseEnter={(e) => {
+        if (!isLoading) {
+          e.currentTarget.style.background = "rgba(17,17,17,0.10)";
+          e.currentTarget.style.color = "rgba(17,17,17,0.95)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "rgba(17,17,17,0.06)";
+        e.currentTarget.style.color = "rgba(17,17,17,0.75)";
+      }}
     >
       {isLoading ? (
-        <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" />
+        <span
+          className="h-4 w-4 animate-spin rounded-full border-2"
+          style={{
+            borderColor: "rgba(17,17,17,0.15)",
+            borderTopColor: "rgba(17,17,17,0.70)",
+          }}
+        />
       ) : (
         <GoogleIcon />
       )}
-      {isLoading ? "Signing in..." : "Continue with Google"}
+      <span>{isLoading ? "Signing in..." : "Sign in with Google"}</span>
     </button>
   );
 }
 
 function GoogleIcon() {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="h-4 w-4 flex-none" viewBox="0 0 24 24" aria-hidden="true">
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
         fill="#4285F4"

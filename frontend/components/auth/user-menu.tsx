@@ -24,27 +24,50 @@ export function UserMenu({ onLoginSuccess }: UserMenuProps) {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2.5">
       <div className="flex items-center gap-2">
         {user.picture ? (
           <img
             src={user.picture}
             alt={user.name ?? user.email}
-            className="h-8 w-8 rounded-full object-cover ring-2 ring-slate-200"
+            className="h-8 w-8 flex-none rounded-full object-cover"
+            style={{ boxShadow: "0 0 0 2px rgba(202,255,67,0.5)" }}
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-xs font-semibold text-white">
+          <div
+            className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-black"
+            style={{ background: "#141414", color: "#F5F2D8" }}
+          >
             {(user.name ?? user.email).charAt(0).toUpperCase()}
           </div>
         )}
-        <span className="hidden text-sm text-slate-600 sm:block">
+        <span
+          className="hidden text-[13px] font-bold sm:block"
+          style={{ color: "rgba(17,17,17,0.65)" }}
+        >
           {user.name ?? user.email}
         </span>
       </div>
+
       <button
         onClick={handleLogout}
-        className="rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+        className="rounded-full px-3 py-1.5 text-[12px] font-bold transition-all duration-150"
+        style={{
+          color: "rgba(17,17,17,0.45)",
+          background: "transparent",
+          border: "1px solid transparent",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(17,17,17,0.06)";
+          e.currentTarget.style.border = "1px solid rgba(17,17,17,0.10)";
+          e.currentTarget.style.color = "rgba(17,17,17,0.75)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.border = "1px solid transparent";
+          e.currentTarget.style.color = "rgba(17,17,17,0.45)";
+        }}
       >
         Logout
       </button>
