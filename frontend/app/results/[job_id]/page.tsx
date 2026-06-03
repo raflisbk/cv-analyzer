@@ -132,7 +132,11 @@ export default function ResultsPage() {
             <div className="flex flex-col gap-3 md:items-end">
               <Link
                 href={getWorkspaceRoute(jobId)}
-                className="inline-flex items-center justify-center rounded-full border border-[#141414]/15 bg-white/60 px-4 py-2 text-sm font-bold text-[#141414] transition-colors hover:bg-[#141414] hover:text-[#F5F2D8]"
+                className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-bold text-[#141414] transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
+                style={{
+                  background: "rgba(17,17,17,0.06)",
+                  border: "1px solid rgba(17,17,17,0.10)",
+                }}
               >
                 Open workspace
               </Link>

@@ -109,8 +109,8 @@
 
   /* Typography — dark on cream */
   --ws-ink:            #111111;
-  --ws-ink-secondary:  rgba(17, 17, 17, 0.65);
-  --ws-ink-ghost:      rgba(17, 17, 17, 0.42);
+  --ws-ink-secondary:  rgba(17, 17, 17, 0.60);
+  --ws-ink-ghost:      rgba(17, 17, 17, 0.40);
 
   /* Accent */
   --ws-accent:         #CAFF43;

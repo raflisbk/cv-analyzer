@@ -38,7 +38,7 @@ export function WorkspaceV2Header({
       ? "#CAFF43"
       : overallScore >= 70
       ? "#FF8C42"
-      : "#f87171";
+      : "#FF4FCB";
 
   return (
     <header
@@ -101,7 +101,7 @@ export function WorkspaceV2Header({
                 style={{
                   background: "rgba(255,140,66,0.15)",
                   border: "1px solid rgba(255,140,66,0.35)",
-                  color: "#6b2d00",
+                  color: "#FF8C42",
                   fontSize: 10,
                   fontWeight: 900,
                   letterSpacing: "0.02em",
@@ -137,7 +137,7 @@ export function WorkspaceV2Header({
               style={{
                 background: "rgba(255,140,66,0.12)",
                 border: "1px solid rgba(255,140,66,0.32)",
-                color: "#7a3500",
+                color: "#FF8C42",
               }}
             >
               <span
@@ -155,7 +155,7 @@ export function WorkspaceV2Header({
               style={{
                 background: "rgba(202,255,67,0.18)",
                 border: "1px solid rgba(202,255,67,0.45)",
-                color: "#294000",
+                color: "#1a2900",
               }}
             >
               <Zap

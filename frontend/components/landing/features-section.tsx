@@ -51,10 +51,11 @@ export default function FeaturesSection() {
           {features.map(({ Icon, iconContainer, iconColor, title, description }) => (
             <div
               key={title}
-              className="group relative overflow-hidden rounded-[2rem] bg-white p-8 transition-all duration-300 hover:-translate-y-1.5"
+              className="group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5"
               style={{
-                boxShadow: "0 8px 32px rgba(20,20,20,0.04), 0 1px 2px rgba(20,20,20,0.02)",
-                border: "1px solid rgba(20,20,20,0.02)"
+                background: "#FFFDF4",
+                boxShadow: "0 8px 32px rgba(17,17,17,0.06), 0 1px 2px rgba(17,17,17,0.04)",
+                border: "1px solid rgba(17,17,17,0.07)",
               }}
             >
               <div 

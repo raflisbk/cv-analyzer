@@ -112,8 +112,11 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
 
   return (
     <div
-      className="inline-ai-popup fixed z-50 flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-lg border border-gray-200"
+      className="inline-ai-popup fixed z-50 flex items-center gap-2 rounded-full px-3 py-2"
       style={{
+        background: "#141414",
+        border: "1px solid rgba(255,255,255,0.10)",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.05) inset",
         left: `${position.x}px`,
         top: `${position.y - 50}px`,
         transform: "translateX(-50%)",
@@ -122,7 +125,7 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
       <button
         onClick={handleImprove}
         disabled={isLoading}
-        className="flex items-center gap-2 text-xs font-semibold text-gray-700 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-2 text-xs font-bold text-[#F5F2D8]/70 hover:text-[#F5F2D8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? (
           <>
