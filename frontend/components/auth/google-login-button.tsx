@@ -2,6 +2,7 @@
 
 import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
+import { toast } from "sonner";
 import { loginWithGoogle } from "@/lib/auth";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -23,7 +24,9 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
         setUser(user);
         onSuccess?.();
       } catch {
-        // silent — user stays logged out
+        toast.error("Sign in failed", {
+          description: "Could not sign in with Google. Please try again.",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -34,22 +37,10 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
     <button
       onClick={() => login()}
       disabled={isLoading}
-      className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${className ?? ""}`}
-      style={{
-        background: "rgba(17,17,17,0.06)",
-        border: "1px solid rgba(17,17,17,0.13)",
-        color: "rgba(17,17,17,0.75)",
-      }}
-      onMouseEnter={(e) => {
-        if (!isLoading) {
-          e.currentTarget.style.background = "rgba(17,17,17,0.10)";
-          e.currentTarget.style.color = "rgba(17,17,17,0.95)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(17,17,17,0.06)";
-        e.currentTarget.style.color = "rgba(17,17,17,0.75)";
-      }}
+      className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-150
+        border border-[#141414]/[0.13] bg-[#141414]/[0.06] text-[#141414]/[0.75]
+        hover:bg-[#141414]/[0.10] hover:text-[#141414]/[0.95]
+        disabled:cursor-not-allowed disabled:opacity-50 ${className ?? ""}`}
     >
       {isLoading ? (
         <span

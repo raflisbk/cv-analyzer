@@ -7,8 +7,9 @@ const products = [
   {
     id: "cv-builder",
     Icon: CVBuilderIcon,
-    iconContainer: "bg-[#FF8C42]/15 rounded-full p-4",
+    iconBg: "bg-[#FF8C42]/15",
     iconColor: "text-[#FF8C42]",
+    glowColor: "rgba(255,140,66,0.1)",
     title: "CV Builder",
     description:
       "Create a professional CV from scratch with AI guidance and industry-standard templates.",
@@ -18,8 +19,9 @@ const products = [
   {
     id: "cv-analyzer",
     Icon: CVAnalyzerIcon,
-    iconContainer: "bg-[#CAFF43]/15 rounded-full p-4",
+    iconBg: "bg-[#CAFF43]/15",
     iconColor: "text-[#CAFF43]",
+    glowColor: "rgba(202,255,67,0.1)",
     title: "CV Analyzer",
     description:
       "Upload your CV for AI-powered scoring across clarity, impact, ATS compatibility, and keyword relevance.",
@@ -29,8 +31,9 @@ const products = [
   {
     id: "job-finding",
     Icon: JobFindingIcon,
-    iconContainer: "bg-[#8B5CF6]/15 rounded-full p-4",
+    iconBg: "bg-[#8B5CF6]/15",
     iconColor: "text-[#8B5CF6]",
+    glowColor: "rgba(139,92,246,0.1)",
     title: "Job Finding",
     description:
       "Discover roles that match your skills and experience with intelligent job recommendations.",
@@ -73,7 +76,7 @@ export default function ProductsSection() {
                 <div 
                   className="absolute inset-x-0 top-0 h-40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   style={{
-                    background: `radial-gradient(ellipse at top, ${product.iconColor === 'text-[#CAFF43]' ? 'rgba(202,255,67,0.1)' : product.iconColor === 'text-[#FF8C42]' ? 'rgba(255,140,66,0.1)' : 'rgba(139,92,246,0.1)'} 0%, transparent 70%)`
+                    background: `radial-gradient(ellipse at top, ${product.glowColor} 0%, transparent 70%)`,
                   }}
                   aria-hidden="true"
                 />
@@ -81,7 +84,7 @@ export default function ProductsSection() {
                 <div className="relative z-10">
                   <div className="flex items-start justify-between mb-8">
                     <div 
-                      className={`inline-flex items-center justify-center h-14 w-14 rounded-2xl ${product.iconContainer.split(' ')[0]}`}
+                      className={`inline-flex items-center justify-center h-14 w-14 rounded-2xl ${product.iconBg}`}
                       style={{ border: "1px solid rgba(255,255,255,0.05)" }}
                     >
                       <product.Icon size={28} className={product.iconColor} />

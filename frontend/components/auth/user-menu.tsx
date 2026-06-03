@@ -52,22 +52,9 @@ export function UserMenu({ onLoginSuccess }: UserMenuProps) {
 
       <button
         onClick={handleLogout}
-        className="rounded-full px-3 py-1.5 text-[12px] font-bold transition-all duration-150"
-        style={{
-          color: "rgba(17,17,17,0.45)",
-          background: "transparent",
-          border: "1px solid transparent",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(17,17,17,0.06)";
-          e.currentTarget.style.border = "1px solid rgba(17,17,17,0.10)";
-          e.currentTarget.style.color = "rgba(17,17,17,0.75)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "transparent";
-          e.currentTarget.style.border = "1px solid transparent";
-          e.currentTarget.style.color = "rgba(17,17,17,0.45)";
-        }}
+        className="rounded-full px-3 py-1.5 text-[12px] font-bold transition-all duration-150
+          border border-transparent text-[#141414]/[0.45]
+          hover:bg-[#141414]/[0.06] hover:border-[#141414]/10 hover:text-[#141414]/[0.75]"
       >
         Logout
       </button>
