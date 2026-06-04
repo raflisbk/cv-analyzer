@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
+import DOMPurify from "dompurify";
 import type { JSONContent } from "@tiptap/core";
 
 const PREVIEW_EXTENSIONS = [StarterKit];
@@ -118,7 +119,18 @@ function SectionPreview({ type, json }: PreviewSection) {
   const html = useMemo(() => {
     try {
       const raw = generateHTML(json, PREVIEW_EXTENSIONS);
-      return cleanPreviewHTML(raw);
+      const cleaned = cleanPreviewHTML(raw);
+      return DOMPurify.sanitize(cleaned, {
+        ALLOWED_TAGS: [
+          "h1", "h2", "h3", "h4", "h5", "h6",
+          "p", "br", "hr",
+          "ul", "ol", "li",
+          "strong", "em", "b", "i", "u", "s",
+          "a", "span", "div",
+          "blockquote", "code", "pre",
+        ],
+        ALLOWED_ATTR: ["href", "target", "rel", "class"],
+      });
     } catch {
       return "";
     }

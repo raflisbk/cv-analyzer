@@ -15,6 +15,7 @@ export class SSEConnection {
   private isClosed = false;
   private completedReceived = false;
   private reconnectDelay = 1000;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private url: string,
@@ -58,7 +59,7 @@ export class SSEConnection {
           `SSE reconnecting... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
         );
 
-        setTimeout(() => {
+        this.reconnectTimer = setTimeout(() => {
           this.connect();
         }, this.reconnectDelay);
 
@@ -71,6 +72,10 @@ export class SSEConnection {
 
   close(): void {
     this.isClosed = true;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     this.eventSource?.close();
     this.eventSource = null;
   }

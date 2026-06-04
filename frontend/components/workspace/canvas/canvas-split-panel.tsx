@@ -17,7 +17,9 @@ interface CanvasSplitPanelProps {
   jobId: string;
 }
 
-export function CanvasSplitPanel({ editorSlot, fileName, saveState, jobId }: CanvasSplitPanelProps) {
+export function CanvasSplitPanel(
+  { editorSlot, fileName, saveState, jobId }: CanvasSplitPanelProps
+) {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
       <div className="min-w-0 flex-1 lg:basis-[55%]">

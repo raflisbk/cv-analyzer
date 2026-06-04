@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface AuthUser {
   id: string;
@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "cv-analyzer-auth",
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ user: state.user }),
     }
   )

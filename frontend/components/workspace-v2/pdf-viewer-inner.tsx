@@ -12,6 +12,7 @@ import { InlineEditPopover } from "./inline-edit-popover";
 import { useInlineEdit } from "@/hooks/use-inline-edit";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
+import type { SuggestionCard } from "@/lib/types";
 
 interface PdfViewerInnerProps {
   url: string;
@@ -21,7 +22,7 @@ interface PdfViewerInnerProps {
   onPageLoadSuccess?: (page: unknown) => void;
   onDocumentLoadSuccess?: (numPages: number) => void;
   anchors?: SuggestionAnchorRecord[];
-  suggestions?: any[];
+  suggestions?: SuggestionCard[];
   jobId?: string;
 }
 
@@ -56,12 +57,10 @@ export default function PdfViewerInner({
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
 
   const handleApply = useCallback((id: string) => {
-    console.warn("[PDF Viewer] Applying:", id);
     setSuggestionStatus(id, "applied");
   }, [setSuggestionStatus]);
 
   const handleDismiss = useCallback((id: string) => {
-    console.warn("[PDF Viewer] Dismissing:", id);
     setSuggestionStatus(id, "dismissed");
   }, [setSuggestionStatus]);
 
@@ -142,7 +141,13 @@ export default function PdfViewerInner({
 
             {viewMode !== "original" &&
               Object.entries(cvDocument || {}).map(([id, patch]) => {
-                const p = patch as { rewrittenText: string; rectPercent?: { left: number; top: number; width: number; height: number } };
+                const p = patch as {
+                  rewrittenText: string;
+                  rectPercent?: {
+                    left: number; top: number;
+                    width: number; height: number;
+                  };
+                };
                 if (!p.rectPercent) {
                   return null;
                 }

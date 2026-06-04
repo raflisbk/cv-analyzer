@@ -21,6 +21,8 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
   const [error, setError] = useState<Error | null>(null);
   const completedRef = useRef(false);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const onCompleteRef = useRef(options?.onComplete);
+  onCompleteRef.current = options?.onComplete;
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -38,7 +40,9 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       const checkStatus = async () => {
         if (completedRef.current) { stopPolling(); return; }
         try {
-          const res = await fetch(`${apiUrl}/jobs/${id}/results`);
+          const res = await fetch(`${apiUrl}/jobs/${id}/results`, {
+            credentials: "include",
+          });
           if (!res.ok) return;
           const json = (await res.json()) as { data?: { status?: string } };
           const status = json.data?.status;
@@ -83,11 +87,11 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
             percentage: data.percentage,
             message: data.message,
           });
-          if (data.stage === "complete" && options?.onComplete && jobId) {
+          if (data.stage === "complete" && onCompleteRef.current && jobId) {
             completedRef.current = true;
             stopPolling();
             connection.close();
-            options.onComplete(jobId);
+            onCompleteRef.current(jobId);
           }
           if (data.stage === "failed") {
             completedRef.current = true;
@@ -99,8 +103,8 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       (err: Error) => {
         setError(err);
         setIsConnected(false);
-        if (!completedRef.current && jobId && options?.onComplete) {
-          startFallbackPoll(jobId, options.onComplete);
+        if (!completedRef.current && jobId && onCompleteRef.current) {
+          startFallbackPoll(jobId, onCompleteRef.current);
         }
       }
     );
@@ -108,8 +112,8 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
     connection.connect();
 
     const safetyTimer = setTimeout(() => {
-      if (!completedRef.current && jobId && options?.onComplete) {
-        startFallbackPoll(jobId, options.onComplete);
+      if (!completedRef.current && jobId && onCompleteRef.current) {
+        startFallbackPoll(jobId, onCompleteRef.current);
       }
     }, 8000);
 
@@ -118,8 +122,7 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       clearTimeout(safetyTimer);
       stopPolling();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobId]);
+  }, [jobId, apiUrl, stopPolling, startFallbackPoll]);
 
   return { progress, isConnected, error };
 }

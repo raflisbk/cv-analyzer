@@ -15,11 +15,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { setUser, setHydrated } = useAuthStore();
 
   useEffect(() => {
+    if (process.env.NODE_ENV === "development" && !GOOGLE_CLIENT_ID) {
+      console.warn(
+        "[AuthProvider] NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set. Google OAuth will not work."
+      );
+    }
+  }, []);
+
+  useEffect(() => {
     getMe().then((user) => {
       setUser(user);
       setHydrated(true);
     });
   }, [setUser, setHydrated]);
+
+  if (!GOOGLE_CLIENT_ID) {
+    return <>{children}</>;
+  }
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

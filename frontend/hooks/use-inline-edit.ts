@@ -25,7 +25,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
   const initialized = useRef(false);
 
   const docRef = useRef<Y.Doc | null>(null);
-  const inlineEditsMapRef = useRef<Y.Map<any> | null>(null);
+  const inlineEditsMapRef = useRef<Y.Map<unknown> | null>(null);
 
   const [state, setState] = useState<InlineEditState>({
     selectedText: "",

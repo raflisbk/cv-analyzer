@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { logoutApi } from "@/lib/auth";
 import { useAuthStore } from "@/stores/auth-store";
+import { sanitizeUrl } from "@/lib/sanitize";
 import { GoogleLoginButton } from "./google-login-button";
 
 interface UserMenuProps {
@@ -27,13 +29,27 @@ export function UserMenu({ onLoginSuccess }: UserMenuProps) {
     <div className="flex items-center gap-2.5">
       <div className="flex items-center gap-2">
         {user.picture ? (
-          <img
-            src={user.picture}
-            alt={user.name ?? user.email}
-            className="h-8 w-8 flex-none rounded-full object-cover"
-            style={{ boxShadow: "0 0 0 2px rgba(202,255,67,0.5)" }}
-            referrerPolicy="no-referrer"
-          />
+          (() => {
+            const safeSrc = sanitizeUrl(user.picture);
+            return safeSrc ? (
+              <Image
+                src={safeSrc}
+                alt={user.name ?? user.email}
+                width={32}
+                height={32}
+                className="h-8 w-8 flex-none rounded-full object-cover"
+                style={{ boxShadow: "0 0 0 2px rgba(202,255,67,0.5)" }}
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div
+                className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-black"
+                style={{ background: "#141414", color: "#F5F2D8" }}
+              >
+                {(user.name ?? user.email).charAt(0).toUpperCase()}
+              </div>
+            );
+          })()
         ) : (
           <div
             className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-black"

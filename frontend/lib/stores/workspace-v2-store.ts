@@ -22,7 +22,7 @@ interface WorkspaceV2State {
 
   suggestionStatuses: Record<string, SuggestionStatus>;
 
-  cvDocument: Record<string, any> | null;
+  cvDocument: Record<string, unknown> | null;
 
   chatMessages: ChatMessage[];
   isChatStreaming: boolean;

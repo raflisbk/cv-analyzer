@@ -60,7 +60,7 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     wsProviderRef.current = wsProvider;
 
     wsProvider.on("status", (event: { status: string }) => {
-      console.log("[Yjs] WebSocket status:", event.status);
+      console.debug("[Yjs] WebSocket status:", event.status);
     });
 
     return () => {

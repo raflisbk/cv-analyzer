@@ -74,6 +74,7 @@ export function WorkspaceV2Shell({
       const proxyUrl = `/api/v1/jobs/${jobId}/file/proxy`;
       setPdfUrl(proxyUrl);
     } catch {
+      /* PDF proxy URL assignment cannot fail */
     }
   }, [jobId, pdfUrl, setPdfUrl]);
 
@@ -92,7 +93,11 @@ export function WorkspaceV2Shell({
     } else {
       fetchPdfUrl();
     }
-  }, [isUpload, jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl, fetchPdfUrl, fetchHydration, storeHydration]);
+  }, [
+    isUpload, jobId, hydration, initialPdfUrl,
+    setJobId, setHydration, setPdfUrl,
+    fetchPdfUrl, fetchHydration, storeHydration
+  ]);
 
   const gridStyle: CSSProperties = isUpload
     ? { gridTemplateColumns: "210px minmax(0, 1.18fr) 280px" }

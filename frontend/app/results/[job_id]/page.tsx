@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useJobResults } from "@/hooks/use-job-results";
 import type { JobRole, SuggestionCard } from "@/lib/types";
+import { apiFetch } from "@/lib/api";
 import { ExportStickyBar } from "@/components/results/export-sticky-bar";
 import { ResultsError } from "@/components/results/results-error";
 import { ResultsSkeleton } from "@/components/results/results-skeleton";
@@ -65,19 +66,14 @@ export default function ResultsPage() {
 
   const { data: jobRolesData } = useQuery<JobRole[]>({
     queryKey: ["job-roles"],
-    queryFn: async () => {
-      const res = await fetch("/api/v1/job-roles");
-      const json = await res.json();
-      return json.data as JobRole[];
-    },
+    queryFn: () => apiFetch<JobRole[]>("/job-roles"),
     staleTime: Infinity,
   });
 
   if (isError) {
     const isRateLimit =
       (error as Error)?.message?.includes("429") ||
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (error as any)?.code === "RATE_LIMIT_EXCEEDED";
+      (error instanceof Error && "code" in error && (error as unknown as { code: string }).code === "RATE_LIMIT_EXCEEDED");
     return (
       <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type={isRateLimit ? "rate-limit" : "network"} />

@@ -9,7 +9,7 @@ export class ApiError extends Error {
   constructor(
     public code: string,
     message: string,
-    public details?: Record<string, any>
+    public details?: Record<string, unknown>
   ) {
     super(message);
     this.name = "ApiError";
@@ -26,6 +26,7 @@ export async function apiFetch<T>(
   try {
     const response = await fetch(url, {
       ...options,
+      credentials: "include",
       headers: isFormData
         ? undefined
         : {
@@ -44,14 +45,14 @@ export async function apiFetch<T>(
       );
     }
     
-    if (!data.data) {
+    if (!('data' in data)) {
       throw new ApiError(
         "NO_DATA",
         "API response missing data field"
       );
     }
-    
-    return data.data;
+
+    return data.data as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
@@ -27,6 +27,13 @@ async function patchWorkspaceContent(
 
 export function useDraftSave(jobId: string) {
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+    };
+  }, []);
 
   const { mutate } = useMutation({
     mutationFn: (content: DraftContent) =>
@@ -36,7 +43,8 @@ export function useDraftSave(jobId: string) {
     },
     onSuccess: () => {
       setSaveState("saved");
-      setTimeout(() => setSaveState("idle"), 1500);
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+      clearTimerRef.current = setTimeout(() => setSaveState("idle"), 1500);
     },
     onError: () => {
       setSaveState("error");

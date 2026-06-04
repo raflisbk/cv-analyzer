@@ -17,7 +17,10 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const [numPages, setNumPages] = useState<number>(0);
   const [zoomScale, setZoomScale] = useState<number>(1.0);
   const [isPanning, setIsPanning] = useState(false);
-  const panStartRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number } | null>(null);
+  const panStartRef = useRef<{
+    x: number; y: number;
+    scrollLeft: number; scrollTop: number;
+  } | null>(null);
 
   const { hydration, viewMode } = useWorkspaceV2Store();
   const filename = hydration?.file.filename ?? "document.pdf";

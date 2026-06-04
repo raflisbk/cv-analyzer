@@ -7,7 +7,9 @@ import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
+import type { SuggestionCard as SuggestionCardType, SuggestionItem } from "@/lib/types";
 import { SuggestionMark } from "./suggestion-mark";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { SuggestionCard } from "./suggestion-card";
@@ -16,7 +18,7 @@ import { InlineAIPopup } from "./inline-ai-popup";
 interface RichTextEditorProps {
   content: string;
   anchors?: SuggestionAnchorRecord[];
-  suggestions?: any[];
+  suggestions?: SuggestionCardType[];
   onContentChange?: (content: string) => void;
   onExportPdf?: () => void;
   className?: string;
@@ -70,9 +72,12 @@ export function RichTextEditor({
     let highlighted = content;
 
     if (content && anchors.length > 0) {
-      const suggestionMap = new Map<string, { text: string; afterText?: string; section: string; priority: string }>();
+      const suggestionMap = new Map<string, {
+        text: string; afterText?: string;
+        section: string; priority: string;
+      }>();
       for (const card of suggestions || []) {
-        card.suggestions?.forEach((item: any, idx: number) => {
+        card.suggestions?.forEach((item: SuggestionItem, idx: number) => {
           const suggestionId = `${card.section}_${idx}_0`;
           suggestionMap.set(suggestionId, {
             text: item.text,
@@ -155,6 +160,7 @@ export function RichTextEditor({
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/export/pdf`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           html,
@@ -179,7 +185,7 @@ export function RichTextEditor({
       onExportPdf?.();
     } catch (err) {
       console.error("PDF export error:", err);
-      alert("Failed to export PDF. Please try again.");
+      toast.error("Failed to export PDF. Please try again.");
     } finally {
       setIsExporting(false);
     }

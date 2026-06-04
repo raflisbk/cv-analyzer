@@ -3,7 +3,7 @@
 export interface ErrorDetail {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface ResponseMeta {
@@ -39,7 +39,7 @@ export interface Job {
     size: number;
     mime_type: string;
   };
-  result?: any;
+  result?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }

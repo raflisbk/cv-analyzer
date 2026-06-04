@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Wand2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { apiFetch } from "@/lib/api";
 
 interface InlineAIPopupProps {
   onApplyImprovement: (originalText: string, improvedText: string) => void;
@@ -62,9 +64,9 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/improve`, {
+      const data = await apiFetch<{ rewrittenText: string }>("/ai/improve", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           selectedText,
           prompt: "Improve this text for a CV. Make it more impactful and professional.",
@@ -72,21 +74,14 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
         }),
       });
 
-      const data = await response.json();
-      if (data.error) {
-        console.error("AI improve failed:", data.error);
-        alert("Failed to improve text. Please try again.");
-        return;
-      }
-
-      const improved = data.data.rewrittenText;
+      const improved = data.rewrittenText;
       if (improved) {
         onApplyImprovement(selectedText, improved);
         setIsVisible(false);
       }
     } catch (err) {
       console.error("AI improve error:", err);
-      alert("Failed to improve text. Please try again.");
+      toast.error("Failed to improve text. Please try again.");
     } finally {
       setIsLoading(false);
     }

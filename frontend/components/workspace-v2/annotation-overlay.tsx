@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { FloatingPortal, useFloating, shift, offset, flip } from "@floating-ui/react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
@@ -34,12 +34,15 @@ interface AnnotationHitAreaProps {
   onDismiss?: (suggestionId: string) => void;
 }
 
-function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: AnnotationHitAreaProps) {
+function AnnotationHitArea(
+  { anchor, scale, suggestions, onApply, onDismiss }: AnnotationHitAreaProps
+) {
   const setActiveSuggestionId = useWorkspaceV2Store((s) => s.setActiveSuggestionId);
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const viewMode = useWorkspaceV2Store((s) => s.viewMode);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const status = suggestionStatuses[anchor.suggestion_id];
   const isApplied = status === "applied";
@@ -78,7 +81,10 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   }, [anchor.suggestion_id, setActiveSuggestionId]);
 
   const handleMouseLeave = useCallback(() => {
-    setTimeout(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    hoverTimerRef.current = setTimeout(() => {
       setActiveSuggestionId(null);
     }, 100);
   }, [setActiveSuggestionId]);
@@ -295,19 +301,6 @@ export function AnnotationOverlay({
   onApply,
   onDismiss,
 }: AnnotationOverlayProps) {
-  if (!anchors.length || containerWidth === 0 || pageWidth === 0) {
-    return null;
-  }
-
-  const pageAnchors = anchors.filter(
-    (a) => a.page_index === pageIndex
-  );
-
-  if (!pageAnchors.length) {
-    return null;
-  }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const suggestionsMap = useMemo(() => {
     const map = new Map<string, { text: string; afterText?: string }>();
     for (const card of suggestions) {
@@ -321,6 +314,18 @@ export function AnnotationOverlay({
     }
     return map;
   }, [suggestions]);
+
+  if (!anchors.length || containerWidth === 0 || pageWidth === 0) {
+    return null;
+  }
+
+  const pageAnchors = anchors.filter(
+    (a) => a.page_index === pageIndex
+  );
+
+  if (!pageAnchors.length) {
+    return null;
+  }
 
   return (
     <>

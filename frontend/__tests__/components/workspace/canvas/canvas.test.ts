@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { plainTextToTiptapDoc } from "./section-block";
+import { plainTextToTiptapDoc } from "@/components/workspace/canvas/section-block";
 
 describe("plainTextToTiptapDoc", () => {
   it("returns a doc with 2 paragraph nodes for 'hello\\nworld'", () => {
@@ -33,9 +33,16 @@ describe("plainTextToTiptapDoc", () => {
     expect(doc.content![0]).toMatchObject({ type: "paragraph", content: [] });
   });
 
-  it("blank line produces empty paragraph node", () => {
+  it("blank line is skipped (not produced as empty paragraph)", () => {
     const doc = plainTextToTiptapDoc("line one\n\nline three");
-    expect(doc.content).toHaveLength(3);
-    expect(doc.content![1]).toMatchObject({ type: "paragraph", content: [] });
+    expect(doc.content).toHaveLength(2);
+    expect(doc.content![0]).toMatchObject({
+      type: "paragraph",
+      content: [{ type: "text", text: "line one" }],
+    });
+    expect(doc.content![1]).toMatchObject({
+      type: "paragraph",
+      content: [{ type: "text", text: "line three" }],
+    });
   });
 });
