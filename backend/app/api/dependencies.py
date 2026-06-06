@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -38,3 +40,14 @@ async def require_user(
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication required.")
     return user
+
+
+def check_job_access(job: "Any", current_user: User | None) -> None:
+    """Raises 403 if the job is owned by a user and current_user is not that user.
+
+    Anonymous jobs (user_id=NULL) are publicly accessible via UUID-as-secret.
+    User-owned jobs require the requesting user to be the owner.
+    """
+    if job.user_id is not None:
+        if current_user is None or str(current_user.id) != str(job.user_id):
+            raise HTTPException(status_code=403, detail="Access denied.")

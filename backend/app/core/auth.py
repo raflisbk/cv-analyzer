@@ -77,9 +77,9 @@ def set_auth_cookie(response: Response, token: str) -> None:
         max_age=max_age,
         httponly=True,
         secure=is_prod,
-        samesite="lax",
+        samesite="strict",
     )
 
 
 def clear_auth_cookie(response: Response) -> None:
-    response.delete_cookie(key="access_token", httponly=True, samesite="lax")
+    response.delete_cookie(key="access_token", httponly=True, samesite="strict")

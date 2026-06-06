@@ -6,8 +6,10 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 
+from app.api.dependencies import check_job_access, get_current_user
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
+from app.models.user import User
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.job import JobResponse
 from app.services.storage import StorageError, storage_service
@@ -16,7 +18,11 @@ router = APIRouter()
 
 
 @router.get("/jobs/{job_id}", response_model=WrappedResponse[JobResponse])
-async def get_job_status(job_id: str, db: AsyncSession = Depends(get_db)):
+async def get_job_status(
+    job_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
+):
     request_id = str(uuid.uuid4())
 
     try:
@@ -33,6 +39,8 @@ async def get_job_status(job_id: str, db: AsyncSession = Depends(get_db)):
                     request_id=request_id, timestamp=datetime.now(UTC).isoformat()
                 ),
             )
+
+        check_job_access(job, current_user)
 
         return WrappedResponse(
             data=JobResponse.model_validate(job),
@@ -58,6 +66,7 @@ async def get_job_status(job_id: str, db: AsyncSession = Depends(get_db)):
 async def proxy_job_file(
     job_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ):
     try:
         stmt = select(Job).where(Job.id == job_id)
@@ -75,6 +84,8 @@ async def proxy_job_file(
                     timestamp=datetime.now(UTC).isoformat(),
                 ),
             )
+
+        check_job_access(job, current_user)
 
         if not job.file_id:
             return WrappedResponse(

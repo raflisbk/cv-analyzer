@@ -7,9 +7,11 @@ from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
+from app.api.dependencies import check_job_access, get_current_user
 from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job, JobStatus
+from app.models.user import User
 from app.schemas.analysis import (
     AtsCheck,
     ComparisonResult,
@@ -218,6 +220,7 @@ def _build_suggestion_anchors(
 async def get_workspace_hydration(
     job_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ) -> WrappedResponse[WorkspaceHydration]:
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
@@ -235,6 +238,8 @@ async def get_workspace_hydration(
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+
+        check_job_access(job, current_user)
 
         safe_file_metadata = (
             job.file_metadata if isinstance(job.file_metadata, dict) else {}
@@ -336,6 +341,7 @@ async def get_workspace_hydration(
 async def get_job_file_url(
     job_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ) -> WrappedResponse[WorkspaceFileUrl]:
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
@@ -353,6 +359,8 @@ async def get_job_file_url(
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+
+        check_job_access(job, current_user)
 
         if not job.file_id:
             return WrappedResponse(
@@ -397,6 +405,7 @@ async def get_job_file_url(
 async def get_job_html(
     job_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ) -> WrappedResponse[dict[str, Any]]:
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
@@ -414,6 +423,8 @@ async def get_job_html(
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+
+        check_job_access(job, current_user)
 
         safe_result = job.result if isinstance(job.result, dict) else {}
         safe_nlp_result = job.nlp_result if isinstance(job.nlp_result, dict) else {}
@@ -464,6 +475,7 @@ async def patch_workspace_content(
     job_id: str,
     body: WorkspaceContentPatch,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ) -> WrappedResponse[WorkspaceContentSaveResult]:
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
@@ -481,6 +493,8 @@ async def patch_workspace_content(
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+
+        check_job_access(job, current_user)
 
         job.workspace_draft = {"sections": body.sections}
         await db.commit()

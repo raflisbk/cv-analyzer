@@ -4,9 +4,11 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
+from app.api.dependencies import check_job_access, get_current_user
 from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
+from app.models.user import User
 from app.schemas.analysis import (
     AnalysisResult,
     AtsCheck,
@@ -30,6 +32,7 @@ router = APIRouter()
 async def get_job_results(
     job_id: str,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ) -> WrappedResponse[AnalysisResult]:
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
@@ -47,6 +50,8 @@ async def get_job_results(
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+
+        check_job_access(job, current_user)
 
         scores = (
             ScoreResult(

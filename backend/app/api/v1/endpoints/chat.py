@@ -3,13 +3,15 @@ import json
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 
+from app.api.dependencies import check_job_access, get_current_user
 from app.core.logging import structured_logger as logger
-from app.db.session import async_session_maker
+from app.db.session import AsyncSession, async_session_maker, get_db
 from app.models.job import Job
+from app.models.user import User
 from app.services.llm.chat_context_builder import build_chat_system_prompt
 
 router = APIRouter()
@@ -41,7 +43,17 @@ async def _stream_mock_response(user_message: str) -> AsyncGenerator[str]:
 
 
 @router.post("/jobs/{job_id}/chat")
-async def chat_stream(job_id: str, message: str):
+async def chat_stream(
+    job_id: str,
+    message: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
+):
+    result = await db.execute(select(Job).where(Job.id == job_id))
+    job_check = result.scalar_one_or_none()
+    if not job_check:
+        raise HTTPException(status_code=404, detail=f"Job {job_id} not found.")
+    check_job_access(job_check, current_user)
 
     async def stream_chat_response() -> AsyncGenerator[str]:
         async with async_session_maker() as db:

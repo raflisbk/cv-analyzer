@@ -1,6 +1,9 @@
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_WEAK_JWT_SECRET = "change-me-in-production-min-32-chars"
 
 
 class Settings(BaseSettings):
@@ -38,7 +41,7 @@ class Settings(BaseSettings):
     CV_ANALYZER_EMBEDDING_MODEL: str = "openai/text-embedding-3-large"
     CV_ANALYZER_EMBEDDING_DIMENSIONS: int = 3072
 
-    CV_ANALYZER_CORS_ORIGINS: str = "*"
+    CV_ANALYZER_CORS_ORIGINS: str = "http://localhost:3000"
 
     CV_ANALYZER_SENTRY_DSN: str = ""
 
@@ -48,6 +51,23 @@ class Settings(BaseSettings):
     CV_ANALYZER_JWT_SECRET: str = "change-me-in-production-min-32-chars"
     CV_ANALYZER_JWT_ALGORITHM: str = "HS256"
     CV_ANALYZER_JWT_EXPIRE_DAYS: int = 7
+
+    @model_validator(mode="after")
+    def validate_security_settings(self) -> "Settings":
+        if self.CV_ANALYZER_ENV == "production":
+            if self.CV_ANALYZER_JWT_SECRET == _WEAK_JWT_SECRET:
+                raise ValueError(
+                    "CV_ANALYZER_JWT_SECRET must be changed from the default value in production"
+                )
+            if len(self.CV_ANALYZER_JWT_SECRET) < 32:
+                raise ValueError(
+                    "CV_ANALYZER_JWT_SECRET must be at least 32 characters in production"
+                )
+            if self.CV_ANALYZER_CORS_ORIGINS == "*":
+                raise ValueError(
+                    "CV_ANALYZER_CORS_ORIGINS must not be wildcard (*) in production"
+                )
+        return self
 
     @property
     def database_url(self) -> str:
