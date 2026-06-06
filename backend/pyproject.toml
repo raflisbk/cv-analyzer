@@ -47,6 +47,13 @@ dependencies = [
     "pydyf==0.8.0",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "anyio>=4.0",
+]
+
 [tool.setuptools]
 packages = ["app"]
 
@@ -161,6 +168,7 @@ minversion = "7.0"
 addopts = "-ra -q --strict-markers --strict-config"
 testpaths = ["tests"]
 pythonpath = ["."]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["setuptools>=61.0"]
