@@ -70,16 +70,11 @@ export function WorkspaceV2Header({
           <PathkrLogo size="md" variant="light" className="flex-none" />
         </Link>
 
-        <div
-          className="h-5 w-px flex-none"
-          style={{ background: "rgba(17,17,17,0.15)" }}
-          aria-hidden="true"
-        />
+        <div className="h-5 w-px flex-none bg-[#141414]/[0.15]" aria-hidden="true" />
 
         <div className="min-w-0">
           <p
-            className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px]"
-            style={{ color: "rgba(17,17,17,0.38)" }}
+            className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px] text-[#141414]/40"
           >
             Workspace
             <span className="mx-1 opacity-50">/</span>
@@ -214,11 +209,7 @@ export function WorkspaceV2Header({
 
         <button
           onClick={() => router.push(uploadMode ? "/" : `/results/${jobId}`)}
-          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97]"
-          style={{
-            background: "rgba(17,17,17,0.06)",
-            border: "1px solid rgba(17,17,17,0.13)",
-          }}
+          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97] bg-[#141414]/[0.06] border border-[#141414]/[0.13] hover:bg-[#141414]/[0.10] hover:border-[#141414]/[0.18]"
           aria-label={uploadMode ? "Back to home" : "Back to results"}
         >
           <ChevronLeft className="h-3.5 w-3.5" />

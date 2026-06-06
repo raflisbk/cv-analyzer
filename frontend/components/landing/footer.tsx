@@ -28,7 +28,7 @@ export default function Footer() {
                 path<span className="text-[#CAFF43]">kr</span>
               </span>
             </Link>
-            <p className="text-[15px] leading-relaxed mb-6" style={{ color: "rgba(245,242,216,0.60)" }}>
+            <p className="text-[15px] leading-relaxed mb-6 text-[#F5F2D8]/60">
               AI-powered career tools designed to elevate your professional journey,
               from scoring your CV to securing your dream job.
             </p>
@@ -38,52 +38,30 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4
-              className="font-display font-bold text-sm tracking-wider uppercase mb-6"
-              style={{ color: "rgba(245,242,216,0.40)" }}
-            >
+            <h4 className="font-display font-bold text-sm tracking-wider uppercase mb-6 text-[#F5F2D8]/40">
               Products
             </h4>
             <ul className="space-y-4">
               <li>
                 <Link
                   href="/cv-analyzer"
-                  className="text-sm font-medium transition-colors hover:text-[#CAFF43]"
-                  style={{ color: "rgba(245,242,216,0.60)" }}
+                  className="text-sm font-medium text-[#F5F2D8]/60 transition-colors hover:text-[#CAFF43]"
                 >
                   CV Analyzer
                 </Link>
               </li>
               <li>
-                <span
-                  className="text-sm font-medium cursor-not-allowed transition-colors flex items-center gap-2"
-                  style={{ color: "rgba(245,242,216,0.40)" }}
-                >
+                <span className="flex items-center gap-2 text-sm font-medium text-[#F5F2D8]/40 cursor-not-allowed">
                   CV Builder
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded-full"
-                    style={{
-                      background: "rgba(255,255,255,0.07)",
-                      color: "rgba(245,242,216,0.40)",
-                    }}
-                  >
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.07] text-[#F5F2D8]/40">
                     Soon
                   </span>
                 </span>
               </li>
               <li>
-                <span
-                  className="text-sm font-medium cursor-not-allowed transition-colors flex items-center gap-2"
-                  style={{ color: "rgba(245,242,216,0.40)" }}
-                >
+                <span className="flex items-center gap-2 text-sm font-medium text-[#F5F2D8]/40 cursor-not-allowed">
                   Job Match
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded-full"
-                    style={{
-                      background: "rgba(255,255,255,0.07)",
-                      color: "rgba(245,242,216,0.40)",
-                    }}
-                  >
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.07] text-[#F5F2D8]/40">
                     Soon
                   </span>
                 </span>
@@ -92,10 +70,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4
-              className="font-display font-bold text-sm tracking-wider uppercase mb-6"
-              style={{ color: "rgba(245,242,216,0.40)" }}
-            >
+            <h4 className="font-display font-bold text-sm tracking-wider uppercase mb-6 text-[#F5F2D8]/40">
               Resources
             </h4>
             <ul className="space-y-4">
@@ -103,8 +78,7 @@ export default function Footer() {
                 <li key={label}>
                   <a
                     href="#"
-                    className="text-sm font-medium transition-colors hover:text-[#F5F2D8]"
-                    style={{ color: "rgba(245,242,216,0.60)" }}
+                    className="text-sm font-medium text-[#F5F2D8]/60 transition-colors hover:text-[#F5F2D8]"
                   >
                     {label}
                   </a>
@@ -114,11 +88,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div
-          className="pt-8 flex flex-col md:flex-row items-center justify-between"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          <p className="text-xs font-medium" style={{ color: "rgba(245,242,216,0.40)" }}>
+        <div className="pt-8 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between">
+          <p className="text-xs font-medium text-[#F5F2D8]/40">
             © {new Date().getFullYear()} Pathkr Inc. All rights reserved.
           </p>
           <div className="mt-4 md:mt-0 flex gap-3">

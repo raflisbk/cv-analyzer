@@ -68,8 +68,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-200"
-              style={{ color: "rgba(17,17,17,0.55)" }}
+              className="group relative flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] font-bold text-[#141414]/60 transition-all duration-200"
             >
               <span
                 className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -139,12 +138,7 @@ export default function Navbar() {
             <button
               aria-label="Open navigation menu"
               aria-expanded={mobileOpen}
-              className="md:hidden flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-150"
-              style={{
-                color: "rgba(17,17,17,0.65)",
-                background: "rgba(17,17,17,0.06)",
-                border: "1px solid rgba(17,17,17,0.09)",
-              }}
+              className="md:hidden flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-150 text-[#141414]/60 bg-[#141414]/[0.06] border border-[#141414]/[0.09]"
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
@@ -168,13 +162,9 @@ export default function Navbar() {
               <SheetClose asChild>
                 <button
                   aria-label="Close menu"
-                  className="flex h-8 w-8 items-center justify-center rounded-full transition-colors"
-                  style={{
-                    background: "rgba(17,17,17,0.06)",
-                    border: "1px solid rgba(17,17,17,0.09)",
-                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-full transition-colors bg-[#141414]/[0.06] border border-[#141414]/[0.09]"
                 >
-                  <X className="h-4 w-4" style={{ color: "rgba(17,17,17,0.55)" }} />
+                  <X className="h-4 w-4 text-[#141414]/60" />
                 </button>
               </SheetClose>
             </div>
@@ -184,16 +174,7 @@ export default function Navbar() {
                 <SheetClose key={link.href} asChild>
                   <Link
                     href={link.href}
-                    className="group flex items-center justify-between rounded-2xl px-4 py-3.5 transition-all duration-150"
-                    style={{ color: "rgba(17,17,17,0.65)" }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(17,17,17,0.05)";
-                      e.currentTarget.style.color = "rgba(17,17,17,0.9)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "rgba(17,17,17,0.65)";
-                    }}
+                    className="group flex items-center justify-between rounded-2xl px-4 py-3.5 transition-all duration-150 text-[#141414]/60 hover:bg-[#141414]/[0.05] hover:text-[#141414]/90"
                   >
                     <span className="text-[15px] font-bold">{link.label}</span>
                     {link.badge && (
@@ -251,10 +232,7 @@ export default function Navbar() {
                 </span>
               </button>
 
-              <p
-                className="mt-3 text-center text-[11px] font-medium"
-                style={{ color: "rgba(17,17,17,0.38)" }}
-              >
+              <p className="mt-3 text-center text-[11px] font-medium text-[#141414]/40">
                 Free. Instant. No sign-up required.
               </p>
             </div>

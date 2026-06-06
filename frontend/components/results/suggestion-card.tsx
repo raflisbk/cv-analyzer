@@ -109,21 +109,21 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
             <>
               <div className="p-3 bg-[#FF4FCB]/8 border border-[#FF4FCB]/20 rounded-xl">
                 <p className="text-xs font-bold text-[#FF4FCB] mb-1 uppercase tracking-wider">Before:</p>
-                <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
+                <p className="text-sm text-[#F5F2D8]/60">{beforeText}</p>
               </div>
               <div className="p-3 bg-[#CAFF43]/8 border border-[#CAFF43]/20 rounded-xl">
                 <p className="text-xs font-bold text-[#CAFF43] mb-1 uppercase tracking-wider">After:</p>
-                <p className="text-sm text-[#F5F2D8]/70">{afterText}</p>
+                <p className="text-sm text-[#F5F2D8]/60">{afterText}</p>
               </div>
             </>
           ) : beforeText ? (
             <div className="p-3 bg-[#FF4FCB]/8 border border-[#FF4FCB]/20 rounded-xl">
               <p className="text-xs font-bold text-[#FF4FCB] mb-1 uppercase tracking-wider">Original text:</p>
-              <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
+              <p className="text-sm text-[#F5F2D8]/60">{beforeText}</p>
             </div>
           ) : (
-            <div className="p-3 rounded-xl" style={{ background: "rgba(255,255,255,0.04)" }}>
-              <p className="text-sm" style={{ color: "rgba(245,242,216,0.40)" }}>No original text available for comparison.</p>
+            <div className="p-3 rounded-xl bg-white/[0.04]">
+              <p className="text-sm text-[#F5F2D8]/40">No original text available for comparison.</p>
             </div>
           )}
         </div>
