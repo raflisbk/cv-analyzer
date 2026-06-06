@@ -15,15 +15,20 @@ from app.services.scoring.scorer import score_cv
 _FAKE_EMBEDDING = [0.1] * 1536
 
 
+def _mock_scorer(text: str, **kw) -> dict:
+    """Run score_cv with get_embeddings and get_settings mocked out."""
+    with patch("app.core.config.get_settings") as mock_settings:
+        mock_settings.return_value.CV_ANALYZER_KOBOI_API_KEY = "test-key"
+        with patch(
+            "app.services.scoring.scorer.get_embeddings",
+            side_effect=lambda texts, **_: [_FAKE_EMBEDDING] * len(texts),
+        ):
+            return score_cv(text, **kw)
+
+
 def test_score_cv_returns_dict_with_all_keys() -> None:
     """score_cv returns dict with all required keys per SCORE-01..05"""
-    with patch("app.core.config.get_settings") as mock_settings:
-        mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
-        with patch(
-            "app.services.scoring.hf_embeddings.get_embedding",
-            return_value=_FAKE_EMBEDDING,
-        ):
-            result = score_cv("Sample CV text for testing")
+    result = _mock_scorer("Sample CV text for testing")
 
     assert isinstance(result, dict)
     assert "overall" in result
@@ -35,15 +40,9 @@ def test_score_cv_returns_dict_with_all_keys() -> None:
 
 def test_score_cv_all_values_are_int_0_to_100() -> None:
     """All numeric score values are integers in range [0, 100] per SCORE-01"""
-    _NON_NUMERIC_KEYS = {"scoring_method", "provider"}
+    _NON_NUMERIC_KEYS = {"scoring_method", "provider", "jd_relevance"}
 
-    with patch("app.core.config.get_settings") as mock_settings:
-        mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
-        with patch(
-            "app.services.scoring.hf_embeddings.get_embedding",
-            return_value=_FAKE_EMBEDDING,
-        ):
-            result = score_cv("Sample CV text")
+    result = _mock_scorer("Sample CV text")
 
     for key, value in result.items():
         if key in _NON_NUMERIC_KEYS:
@@ -56,13 +55,7 @@ def test_score_cv_overall_is_weighted_average() -> None:
     """overall is weighted average of 4 dimensions per SCORE-01"""
     # When all embeddings are identical -> cosine sim = 1.0 -> all dimension scores = 100
     # Overall = int(100*0.40 + 100*0.25 + 100*0.20 + 100*0.15) = 100
-    with patch("app.core.config.get_settings") as mock_settings:
-        mock_settings.return_value.CV_ANALYZER_HF_API_KEY = "test-key"
-        with patch(
-            "app.services.scoring.hf_embeddings.get_embedding",
-            return_value=_FAKE_EMBEDDING,
-        ):
-            result = score_cv("Sample CV text")
+    result = _mock_scorer("Sample CV text")
 
     assert result["overall"] == 100
 
