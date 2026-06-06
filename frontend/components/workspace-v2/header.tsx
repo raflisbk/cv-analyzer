@@ -66,7 +66,7 @@ export function WorkspaceV2Header({
       />
 
       <div className="relative flex min-w-0 flex-1 items-center gap-3">
-        <Link href="/" className="hover:opacity-80 transition-opacity">
+        <Link href="/" className="hover:opacity-80 transition-opacity rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#CAFF43]">
           <PathkrLogo size="md" variant="light" className="flex-none" />
         </Link>
 

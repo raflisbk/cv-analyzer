@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "cv-analyzer-auth",
+      // sessionStorage: user state intentionally cleared on tab/browser close
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ user: state.user }),
     }

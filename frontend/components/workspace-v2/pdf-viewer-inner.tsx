@@ -48,11 +48,11 @@ export default function PdfViewerInner({
   suggestions = [],
   jobId = "",
 }: PdfViewerInnerProps) {
-  const [_numPages, setNumPages] = useState<number>(0);
+  const [numPages, setNumPages] = useState<number>(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pageWidth, setPageWidth] = useState<number>(595.5);
 
-  const isValidPage = _numPages === 0 || currentPage <= _numPages;
+  const isValidPage = numPages === 0 || currentPage <= numPages;
 
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
 
@@ -68,20 +68,6 @@ export default function PdfViewerInner({
 
   const cvDocument = useWorkspaceV2Store((s) => s.cvDocument);
   const viewMode = useWorkspaceV2Store((s) => s.viewMode);
-
-  const _scrollCleanup = useCallback(() => {
-    const container = document.querySelector(".react-pdf-document");
-    if (container) {
-      const handler = () => {
-        if (inlineEditState.isVisible) {
-          closePopover();
-        }
-      };
-      container.addEventListener("scroll", handler);
-      return () => container.removeEventListener("scroll", handler);
-    }
-    return undefined;
-  }, [inlineEditState.isVisible, closePopover]);
 
   if (loadError) {
     return (

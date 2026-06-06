@@ -149,7 +149,6 @@ function AccordionSection({
 }
 export function RightRailStats({ className }: RightRailStatsProps) {
   const { hydration } = useWorkspaceV2Store();
-  const [chatInput, setChatInput] = useState("");
 
   const analysis = hydration?.analysis;
   const overallScore = analysis?.scores?.overall ?? null;
@@ -177,7 +176,7 @@ export function RightRailStats({ className }: RightRailStatsProps) {
       ? { label: "Excellent", color: "#CAFF43" }
       : overallScore >= 70
       ? { label: "Good", color: "#FF8C42" }
-      : { label: "Needs Work", color: "#f87171" };
+      : { label: "Needs Work", color: "#FF4FCB" };
 
   return (
     <div className={cn("flex h-full flex-col overflow-hidden", className)}>
@@ -206,7 +205,7 @@ export function RightRailStats({ className }: RightRailStatsProps) {
               >
                 {overallScore ?? "—"}
               </span>
-              <span className="text-[13px] font-bold text-[#F5F2D8]/35">/100</span>
+              <span className="text-[13px] font-bold text-[#F5F2D8]/40">/100</span>
             </div>
             {scoreGrade && (
               <span
@@ -420,13 +419,11 @@ export function RightRailStats({ className }: RightRailStatsProps) {
           >
             <input
               type="text"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
               placeholder="Ask AI to refine, explain…"
               className="min-w-0 flex-1 bg-transparent text-[11px] text-[#F5F2D8] placeholder:text-[#F5F2D8]/50 outline-none"
             />
             <button
-              type="submit"
+              type="button"
               aria-label="Send message"
               className="flex h-7 w-7 flex-none items-center justify-center rounded-lg transition-colors hover:bg-[rgba(139,92,246,0.25)]"
               style={{ background: "rgba(139,92,246,0.18)" }}
