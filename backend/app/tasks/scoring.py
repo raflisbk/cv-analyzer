@@ -38,9 +38,10 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                 return {"error": msg}
 
             text = job.result.get("text", "")
+            jd_text = job.jd_text or None
 
         # Scoring work (sync, makes HTTP calls) — outside DB session
-        scores = score_cv(text)
+        scores = score_cv(text, jd_text=jd_text)
         try:
             from app.services.llm.score_explainer import ScoreExplainerService
 

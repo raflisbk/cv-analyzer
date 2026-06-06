@@ -1,3 +1,4 @@
+import re
 from typing import Literal, Protocol
 
 from pydantic import BaseModel, field_validator
@@ -25,6 +26,14 @@ class SuggestionItemOutput(BaseModel):
         if v in ("action_verb", "impact_metric", "missing_section"):
             return str(v)
         return "action_verb"
+
+    @field_validator("original_text", "after_text", mode="before")
+    @classmethod
+    def normalize_whitespace(cls, v: object) -> str | None:
+        if v and isinstance(v, str):
+            cleaned = re.sub(r"\s+", " ", v).strip()
+            return cleaned or None
+        return None
 
 
 class SuggestionCardOutput(BaseModel):

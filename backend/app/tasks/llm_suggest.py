@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from datetime import UTC, datetime
 
 import redis as redis_lib
@@ -82,6 +83,12 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
             if "after_text" not in suggestion:
                 suggestion["after_text"] = None
 
+            # Normalize whitespace: collapse newlines/tabs/multiple spaces into one space
+            for field in ("original_text", "after_text"):
+                val = suggestion.get(field)
+                if val and isinstance(val, str):
+                    suggestion[field] = re.sub(r"\s+", " ", val).strip()
+
     return json.dumps(data)
 
 
@@ -140,26 +147,20 @@ def _build_cv_document(
         ]
 
     if scores:
+        _s = scores if isinstance(scores, dict) else scores.__dict__
+        clarity     = _s.get("clarity", 0) or 0
+        impact      = _s.get("impact", 0) or 0
+        completeness = _s.get("completeness", 0) or 0
+        relevance   = _s.get("relevance", 0) or 0
+        overall     = _s.get("overall") or int(
+            clarity * 0.40 + impact * 0.25 + completeness * 0.20 + relevance * 0.15
+        )
         cv_document["scores"] = {
-            "overall": (
-                scores.get("overall") if isinstance(scores, dict) else scores.overall
-            ),
-            "clarity": (
-                scores.get("clarity") if isinstance(scores, dict) else scores.clarity
-            ),
-            "impact": (
-                scores.get("impact") if isinstance(scores, dict) else scores.impact
-            ),
-            "completeness": (
-                scores.get("completeness")
-                if isinstance(scores, dict)
-                else scores.completeness
-            ),
-            "relevance": (
-                scores.get("relevance")
-                if isinstance(scores, dict)
-                else scores.relevance
-            ),
+            "overall": overall,
+            "clarity": clarity,
+            "impact": impact,
+            "completeness": completeness,
+            "relevance": relevance,
         }
 
     return cv_document

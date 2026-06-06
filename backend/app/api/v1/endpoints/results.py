@@ -60,6 +60,8 @@ async def get_job_results(
                 impact=job.scores.get("impact", 0),
                 completeness=job.scores.get("completeness", 0),
                 relevance=job.scores.get("relevance", 0),
+                reasonings=job.scores.get("reasonings", {}),
+                jd_relevance=job.scores.get("jd_relevance", False),
             )
             if job.scores
             else None

@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 
 from celery import chain as celery_chain
-from fastapi import APIRouter, Depends, Request, UploadFile
+from fastapi import APIRouter, Depends, Form, Request, UploadFile
 
 from app.api.dependencies import get_current_user
 from app.core.config import get_settings
@@ -31,6 +31,7 @@ router = APIRouter()
 async def upload_file(
     request: Request,
     file: UploadFile,
+    jd_text: str | None = Form(None),
     db: AsyncSession = Depends(get_db),
     current_user: User | None = Depends(get_current_user),
 ):
@@ -61,6 +62,7 @@ async def upload_file(
                 "size": file_info["size"],
                 "mime_type": file_info["mime_type"],
             },
+            jd_text=jd_text.strip() if jd_text and jd_text.strip() else None,
             user_id=current_user.id if current_user else None,
         )
 

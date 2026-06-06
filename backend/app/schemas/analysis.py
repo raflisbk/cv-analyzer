@@ -20,6 +20,7 @@ class ScoreResult(BaseModel):
     completeness: int
     relevance: int
     reasonings: dict[str, str] = {}
+    jd_relevance: bool = False
 
 
 class GrammarIssue(BaseModel):
