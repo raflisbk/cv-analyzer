@@ -23,10 +23,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
-    getMe().then((user) => {
-      setUser(user);
-      setHydrated(true);
-    });
+    getMe()
+      .then((user) => setUser(user))
+      .catch(() => setUser(null))
+      .finally(() => setHydrated(true));
   }, [setUser, setHydrated]);
 
   if (!GOOGLE_CLIENT_ID) {

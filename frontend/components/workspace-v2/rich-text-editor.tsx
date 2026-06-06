@@ -155,6 +155,9 @@ export function RichTextEditor({
     }
 
     setIsExporting(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
     try {
       const html = editor.getHTML();
 
@@ -162,10 +165,8 @@ export function RichTextEditor({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          html,
-          filename: "cv-optimized.pdf",
-        }),
+        body: JSON.stringify({ html, filename: "cv-optimized.pdf" }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -184,9 +185,13 @@ export function RichTextEditor({
 
       onExportPdf?.();
     } catch (err) {
-      console.error("PDF export error:", err);
-      toast.error("Failed to export PDF. Please try again.");
+      if (err instanceof Error && err.name === "AbortError") {
+        toast.error("PDF export timed out. Please try again.");
+      } else {
+        toast.error("Failed to export PDF. Please try again.");
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsExporting(false);
     }
   }, [editor, isExporting, onExportPdf]);
