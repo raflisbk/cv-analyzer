@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { plainTextToTiptapDoc } from "@/components/workspace/canvas/section-block";
+import { plainTextToTiptapDoc } from "@/lib/workspace-utils";
 
 describe("plainTextToTiptapDoc", () => {
   it("returns a doc with 2 paragraph nodes for 'hello\\nworld'", () => {

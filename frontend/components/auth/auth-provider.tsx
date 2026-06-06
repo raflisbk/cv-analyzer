@@ -29,12 +29,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       .finally(() => setHydrated(true));
   }, [setUser, setHydrated]);
 
-  if (!GOOGLE_CLIENT_ID) {
-    return <>{children}</>;
-  }
-
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID || "no-client-id"}>
       {children}
     </GoogleOAuthProvider>
   );
