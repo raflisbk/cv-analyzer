@@ -137,6 +137,7 @@ async def get_job_results(
         if job.comparison_result and safe_comparison_status == "complete":
             try:
                 raw_comp = dict(job.comparison_result)
+                raw_comp.pop("skill_gaps", None)  # computed below, not stored
                 missing = raw_comp.get("missing_skills", [])
                 skill_gaps = [SkillGapItem(**g) for g in rank_skill_gaps(missing)]
                 comparison_result = ComparisonResult(**raw_comp, skill_gaps=skill_gaps)

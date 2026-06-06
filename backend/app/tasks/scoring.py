@@ -56,33 +56,29 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         # Compute benchmark percentile (how this CV compares to all previously scored CVs)
         benchmark: dict = {}
         try:
+            from sqlalchemy import cast, Integer, func as sa_func
             async with async_session_maker() as session:
                 overall_score = scores.get("overall", 0)
-                total_stmt = select(func.count()).where(
-                    Job.status == JobStatus.COMPLETE,
-                    Job.scores.isnot(None),
-                    Job.id != job_id,
+
+                total_count_result = await session.execute(
+                    select(sa_func.count(Job.id)).where(
+                        Job.status == JobStatus.COMPLETE,
+                        Job.scores.isnot(None),
+                        Job.id != job_id,
+                    )
                 )
-                total_result = await session.execute(total_stmt)
-                total_count = total_result.scalar_one() or 0
+                total_count: int = total_count_result.scalar() or 0
 
                 if total_count > 0:
-                    better_stmt = select(func.count()).where(
-                        Job.status == JobStatus.COMPLETE,
-                        Job.scores.isnot(None),
-                        Job.id != job_id,
-                        func.cast(Job.scores["overall"].astext, type_=func.Integer.__class__).label("s") <= overall_score,
+                    better_count_result = await session.execute(
+                        select(sa_func.count(Job.id)).where(
+                            Job.status == JobStatus.COMPLETE,
+                            Job.scores.isnot(None),
+                            Job.id != job_id,
+                            cast(Job.scores["overall"].astext, Integer) <= overall_score,
+                        )
                     )
-                    # Use raw cast for JSONB integer comparison
-                    from sqlalchemy import cast, Integer, text as sa_text
-                    better_stmt = select(func.count()).where(
-                        Job.status == JobStatus.COMPLETE,
-                        Job.scores.isnot(None),
-                        Job.id != job_id,
-                        cast(Job.scores["overall"].astext, Integer) <= overall_score,
-                    )
-                    better_result = await session.execute(better_stmt)
-                    better_count = better_result.scalar_one() or 0
+                    better_count: int = better_count_result.scalar() or 0
                     percentile = round((better_count / total_count) * 100)
                     benchmark = {"percentile": percentile, "sample_size": total_count}
         except Exception as e:
