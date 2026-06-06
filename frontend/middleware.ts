@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 const PROTECTED_PATHS = ["/workspace-v2", "/results"];
 
+const BASE64URL = /^[A-Za-z0-9_-]+$/;
+
 function isTokenStructureValid(token: string): boolean {
   if (!token || token.length < 10) return false;
 
@@ -9,7 +11,7 @@ function isTokenStructureValid(token: string): boolean {
   if (parts.length !== 3) return false;
 
   for (const part of parts) {
-    if (part.length === 0) return false;
+    if (part.length === 0 || !BASE64URL.test(part)) return false;
   }
 
   return true;

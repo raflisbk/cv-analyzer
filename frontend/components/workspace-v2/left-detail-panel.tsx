@@ -126,15 +126,15 @@ function SuggestionsTabContent({
             {(originalText || afterText) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
                 {originalText && (
-                  <div className="rounded p-2 bg-red-500/10 border border-red-500/20">
-                    <p className="text-[9px] font-bold text-red-400 uppercase tracking-widest mb-1">Before</p>
-                    <p className="text-[11px] text-red-200 line-through decoration-red-500/50">{originalText}</p>
+                  <div className="rounded p-2 bg-[#FF4FCB]/10 border border-[#FF4FCB]/20">
+                    <p className="text-[9px] font-bold text-[#FF4FCB] uppercase tracking-widest mb-1">Before</p>
+                    <p className="text-[11px] text-[#F5F2D8]/60 line-through decoration-[#FF4FCB]/50">{originalText}</p>
                   </div>
                 )}
                 {afterText && (
-                  <div className="rounded p-2 bg-green-500/10 border border-green-500/20">
-                    <p className="text-[9px] font-bold text-green-400 uppercase tracking-widest mb-1">After</p>
-                    <p className="text-[11px] text-green-200">{afterText}</p>
+                  <div className="rounded p-2 bg-[#CAFF43]/10 border border-[#CAFF43]/20">
+                    <p className="text-[9px] font-bold text-[#CAFF43] uppercase tracking-widest mb-1">After</p>
+                    <p className="text-[11px] text-[#F5F2D8]/60">{afterText}</p>
                   </div>
                 )}
               </div>
@@ -179,10 +179,12 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
               <span>PDF</span>
             </button>
 
-            <div className="flex flex-wrap gap-1 flex-1 min-w-0">
+            <div role="tablist" aria-label="Analysis sections" className="flex flex-wrap gap-1 flex-1 min-w-0">
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
+                  role="tab"
+                  aria-selected={activeDetailTab === tab.id}
                   onClick={() => setActiveDetailTab(tab.id)}
                   className={cn(
                     "rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition-colors duration-150 flex-none",

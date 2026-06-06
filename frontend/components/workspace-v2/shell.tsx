@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useCallback, useState, type CSSProperties } from "react";
+import { toast } from "sonner";
 import { Wand2, GitCompare, Download, FileText, ChevronUp, ChevronDown, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -63,8 +64,8 @@ export function WorkspaceV2Shell({
       if (data) {
         setHydration(data);
       }
-    } catch (error) {
-      console.error("[Shell] Failed to fetch hydration:", error);
+    } catch {
+      toast.error("Failed to load workspace data. Please refresh the page.");
     }
   }, [jobId, setHydration]);
 

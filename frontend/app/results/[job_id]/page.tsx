@@ -72,8 +72,8 @@ export default function ResultsPage() {
 
   if (isError) {
     const isRateLimit =
-      (error as Error)?.message?.includes("429") ||
-      (error instanceof Error && "code" in error && (error as unknown as { code: string }).code === "RATE_LIMIT_EXCEEDED");
+      (error instanceof Error && error.message.includes("429")) ||
+      (error instanceof Error && "code" in error && (error as Error & { code: string }).code === "RATE_LIMIT_EXCEEDED");
     return (
       <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type={isRateLimit ? "rate-limit" : "network"} />
