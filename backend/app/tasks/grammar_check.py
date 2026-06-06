@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job, JobStatus
+from app.models import Job, JobStatus
 from app.services.ats.checker import check_ats_compatibility
 from app.services.grammar.checker import check_grammar
 from app.services.nlp.section_detector import CvSection, detect_sections

@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job, JobStatus
+from app.models import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
 from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.services.llm.protocol import SuggestionsOutput  # noqa: TC001
@@ -244,33 +244,44 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         except Exception as rag_error:
             logger.warning("rag_failed_in_llm", job_id=job_id, error=str(rag_error))
 
-        # LLM generation (sync) — fine to call from async context
-        result = _llm_service.generate_suggestions(
-            cv_text=cv_text,
-            sections=sections,
-            rag_context=rag_context,
-        )
-
-        repaired_json = _repair_llm_output(result["raw_json"], cv_text)
-        validated: SuggestionsOutput = _llm_service.validate_output(repaired_json)
-        suggestions_list = [card.model_dump() for card in validated.suggestions]
-
-        total_tokens = result["prompt_tokens"] + result["completion_tokens"]
-        redis_client.setex(cache_key, cache_ttl, json.dumps(suggestions_list))
+        # LLM generation — wrapped so a bad LLM response still yields COMPLETE
+        suggestions_list: list | None = None
+        total_tokens = 0
+        try:
+            result = _llm_service.generate_suggestions(
+                cv_text=cv_text,
+                sections=sections,
+                rag_context=rag_context,
+            )
+            repaired_json = _repair_llm_output(result["raw_json"], cv_text)
+            validated: SuggestionsOutput = _llm_service.validate_output(repaired_json)
+            suggestions_list = [card.model_dump() for card in validated.suggestions]
+            total_tokens = result["prompt_tokens"] + result["completion_tokens"]
+            redis_client.setex(cache_key, cache_ttl, json.dumps(suggestions_list))
+            logger.info(
+                "llm_suggest_done",
+                job_id=job_id,
+                suggestion_cards=len(suggestions_list),
+                prompt_tokens=result["prompt_tokens"],
+                completion_tokens=result["completion_tokens"],
+            )
+        except Exception as llm_err:
+            logger.error(
+                "llm_suggest_failed",
+                job_id=job_id,
+                error=str(llm_err),
+                exc_info=True,
+            )
 
         await _persist_results(
             job_id, suggestions_list, total_tokens, file_id, nlp_result, scores
         )
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
-
-        logger.info(
-            "llm_suggest_done",
-            job_id=job_id,
-            suggestion_cards=len(suggestions_list),
-            prompt_tokens=result["prompt_tokens"],
-            completion_tokens=result["completion_tokens"],
-        )
-        return {"status": "complete", "job_id": job_id, "cards": len(suggestions_list)}
+        return {
+            "status": "complete" if suggestions_list is not None else "complete_partial",
+            "job_id": job_id,
+            "cards": len(suggestions_list) if suggestions_list else 0,
+        }
 
     async def _persist_results(
         jid: str,
@@ -303,9 +314,6 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
     try:
         return asyncio.run(_run())
     except Exception as e:
-        logger.error("llm_suggest_failed", job_id=job_id, error=str(e), exc_info=True)
+        logger.error("llm_task_error", job_id=job_id, error=str(e), exc_info=True)
         asyncio.run(mark_job_failed(job_id, str(e)))
-        self.update_progress(
-            job_id, "complete", 100, "Analysis complete (AI suggestions unavailable)"
-        )
-        return {"status": "complete_partial", "job_id": job_id, "error": str(e)}
+        return {"status": "failed", "job_id": job_id, "error": str(e)}

@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job
+from app.models import Job
 from app.schemas.analysis import ComparisonResult
 from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.tasks.celery_app import celery_app

@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job, JobStatus
+from app.models import Job, JobStatus
 from app.services.scoring.scorer import score_cv
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask, mark_job_failed

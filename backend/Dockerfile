@@ -11,10 +11,13 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 # - general build: gcc, g++
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libpangocairo-1.0-0 \
     libcairo2 \
     libgdk-pixbuf2.0-0 \
     libffi-dev \
     shared-mime-info \
+    fonts-noto-core \
     libmagic1 \
     poppler-utils \
     libgl1 \

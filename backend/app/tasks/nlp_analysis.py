@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job, JobStatus
+from app.models import Job, JobStatus
 from app.services.nlp.entity_extractor import extract_entities
 from app.services.nlp.section_detector import detect_sections
 from app.services.nlp.skill_extractor import extract_skills

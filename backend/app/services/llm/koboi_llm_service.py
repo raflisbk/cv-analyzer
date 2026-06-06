@@ -2,6 +2,8 @@ import json
 import re
 from collections.abc import AsyncGenerator
 
+from json_repair import repair_json
+
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -85,21 +87,46 @@ def _build_system_prompt(rag_context: str) -> str:
 
 def _build_user_prompt(cv_text: str, sections: list[dict]) -> str:
     return _USER_PROMPT_TEMPLATE.format(
-        cv_text=cv_text[:6000],
+        cv_text=cv_text[:3500],
         sections_json=json.dumps(sections, indent=2),
     )
 
 
 def _extract_json(response: str) -> str:
+    """Extract JSON object from LLM response using balanced brace matching."""
     response = response.strip()
     if "```" in response:
-        json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", response, re.DOTALL)
-        if json_match:
-            return json_match.group(1)
-    brace_match = re.search(r"\{.*\}", response, re.DOTALL)
-    if brace_match:
-        return brace_match.group(0)
-    return response
+        fenced = re.search(r"```(?:json)?\s*(\{.*)", response, re.DOTALL)
+        if fenced:
+            response = fenced.group(1)
+
+    start = response.find("{")
+    if start == -1:
+        return response
+
+    depth = 0
+    in_string = False
+    escape_next = False
+    for i, ch in enumerate(response[start:], start):
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == "\\" and in_string:
+            escape_next = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return response[start : i + 1]
+
+    return response[start:]
 
 
 def _log_tokens(model: str, prompt_tokens: int, completion_tokens: int) -> None:
@@ -294,14 +321,23 @@ class KoboiLLMService:
         try:
             data = json.loads(raw_json)
         except json.JSONDecodeError as e:
-            logger.error(
-                "llm_json_parse_failed",
+            logger.warning(
+                "llm_json_truncated_attempting_repair",
                 error=str(e),
                 raw_length=len(raw_json),
-                raw_preview=raw_json[:500] if raw_json else None,
-                exc_info=True,
             )
-            msg = f"Invalid JSON from LLM: {e}"
-            raise ValueError(msg) from e
+            try:
+                repaired = repair_json(raw_json, return_objects=True)
+                data = repaired if isinstance(repaired, dict) else json.loads(repair_json(raw_json))
+            except Exception as repair_err:
+                logger.error(
+                    "llm_json_repair_failed",
+                    error=str(repair_err),
+                    raw_length=len(raw_json),
+                    raw_preview=raw_json[:500] if raw_json else None,
+                    exc_info=True,
+                )
+                msg = f"Invalid JSON from LLM (repair failed): {e}"
+                raise ValueError(msg) from e
 
         return SuggestionsOutput.model_validate(data)

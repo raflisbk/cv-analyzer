@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job, JobStatus
+from app.models import Job, JobStatus
 from app.services.parser import ParsingError, parse_document
 from app.services.storage import storage_service
 from app.tasks.celery_app import celery_app
