@@ -14,6 +14,47 @@ import { ResultsTabs } from "@/components/results/results-tabs";
 import { ScoreRangeBadge } from "@/components/results/score-range-badge";
 import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
 import { getWorkspaceRoute } from "@/lib/job-routes";
+import type { ScoreVersion } from "@/lib/types";
+
+function VersionHistoryBar({ versions, currentJobId }: { versions: ScoreVersion[]; currentJobId: string }) {
+  if (!versions || versions.length < 2) return null;
+  return (
+    <div className="rounded-2xl border border-white/8 bg-[#1C1C1C] px-6 py-4">
+      <p className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 mb-3">Version History</p>
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {versions.map((v, i) => {
+          const isCurrent = v.job_id === currentJobId;
+          const deltaColor = v.delta === null ? "" : v.delta > 0 ? "text-[#CAFF43]" : v.delta < 0 ? "text-[#FF4FCB]" : "text-[#F5F2D8]/40";
+          return (
+            <div key={v.job_id} className="flex items-center gap-2 flex-shrink-0">
+              {i > 0 && <span className="text-[#F5F2D8]/20 text-sm">→</span>}
+              <a
+                href={`/results/${v.job_id}`}
+                className={`rounded-xl px-3 py-2 text-center transition-colors ${
+                  isCurrent
+                    ? "bg-[#CAFF43]/10 border border-[#CAFF43]/30"
+                    : "bg-white/4 border border-white/8 hover:bg-white/8"
+                }`}
+              >
+                <p className={`text-xs font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]/60"}`}>
+                  v{v.version}
+                </p>
+                <p className={`text-sm font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]"}`}>
+                  {v.overall}
+                </p>
+                {v.delta !== null && (
+                  <p className={`text-[10px] font-bold ${deltaColor}`}>
+                    {v.delta > 0 ? "+" : ""}{v.delta}
+                  </p>
+                )}
+              </a>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function buildSuggestionsClipboardText(
   cards: SuggestionCard[] | null | undefined
@@ -181,13 +222,20 @@ export default function ResultsPage() {
                 </div>
               )}
 
+              {normalizedResult.version_history && normalizedResult.version_history.length >= 2 && (
+                <VersionHistoryBar
+                  versions={normalizedResult.version_history}
+                  currentJobId={jobId}
+                />
+              )}
+
                 <ResultsTabs
                   result={normalizedResult}
                   jobRoles={jobRolesData ?? []}
                   onCompareComplete={() => { void refetch(); }}
                 />
 
-              <div className="flex justify-center pt-4">
+              <div className="flex items-center justify-center gap-3 pt-4 flex-wrap">
                 <button
                   onClick={() => router.push("/")}
                   className="rounded-full border-2 border-[#141414] bg-transparent text-[#141414]
@@ -196,6 +244,14 @@ export default function ResultsPage() {
                 >
                   Analyze Another CV
                 </button>
+                <a
+                  href={`/?reanalyze=${jobId}`}
+                  className="rounded-full bg-[#141414]/8 border border-[#141414]/15 text-[#141414]
+                             px-6 py-3 text-sm font-extrabold
+                             hover:bg-[#141414]/15 transition-colors duration-150"
+                >
+                  Re-analyze (new version)
+                </a>
               </div>
             </div>
           )}

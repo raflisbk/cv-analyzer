@@ -40,7 +40,7 @@ def test_score_cv_returns_dict_with_all_keys() -> None:
 
 def test_score_cv_all_values_are_int_0_to_100() -> None:
     """All numeric score values are integers in range [0, 100] per SCORE-01"""
-    _NON_NUMERIC_KEYS = {"scoring_method", "provider", "jd_relevance"}
+    _NON_NUMERIC_KEYS = {"scoring_method", "provider", "jd_relevance", "target_role", "benchmark", "reasonings"}
 
     result = _mock_scorer("Sample CV text")
 

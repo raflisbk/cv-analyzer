@@ -12,13 +12,17 @@ from app.models.user import User
 from app.schemas.analysis import (
     AnalysisResult,
     AtsCheck,
+    BenchmarkResult,
     ComparisonResult,
     GrammarIssue,
     ScoreResult,
+    ScoreVersion,
     SectionResult,
+    SkillGapItem,
     SuggestionCard,
     SuggestionItem,
 )
+from app.services.skills_gap import rank_skill_gaps
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
 router = APIRouter()
@@ -53,6 +57,7 @@ async def get_job_results(
 
         check_job_access(job, current_user)
 
+        raw_benchmark = (job.scores or {}).get("benchmark", {}) or {}
         scores = (
             ScoreResult(
                 overall=job.scores.get("overall", 0),
@@ -62,6 +67,11 @@ async def get_job_results(
                 relevance=job.scores.get("relevance", 0),
                 reasonings=job.scores.get("reasonings", {}),
                 jd_relevance=job.scores.get("jd_relevance", False),
+                target_role=job.scores.get("target_role") or job.target_role,
+                benchmark=BenchmarkResult(
+                    percentile=raw_benchmark.get("percentile", 0),
+                    sample_size=raw_benchmark.get("sample_size", 0),
+                ),
             )
             if job.scores
             else None
@@ -126,10 +136,45 @@ async def get_job_results(
         )
         if job.comparison_result and safe_comparison_status == "complete":
             try:
-                comparison_result = ComparisonResult(**job.comparison_result)
+                raw_comp = dict(job.comparison_result)
+                missing = raw_comp.get("missing_skills", [])
+                skill_gaps = [SkillGapItem(**g) for g in rank_skill_gaps(missing)]
+                comparison_result = ComparisonResult(**raw_comp, skill_gaps=skill_gaps)
             except Exception:
                 logger.warning("malformed_comparison_jsonb", job_id=job_id)
                 comparison_result = None
+
+        # Build version history (walk parent chain, max 10 hops)
+        version_history: list[ScoreVersion] = []
+        try:
+            visited: list[Job] = [job]
+            current = job
+            for _ in range(9):
+                if not current.parent_job_id:
+                    break
+                stmt_p = select(Job).where(Job.id == current.parent_job_id)
+                res_p = await db.execute(stmt_p)
+                parent = res_p.scalar_one_or_none()
+                if not parent:
+                    break
+                visited.append(parent)
+                current = parent
+
+            if len(visited) > 1:
+                for i, v in enumerate(reversed(visited)):
+                    prev = visited[len(visited) - i] if i > 0 else None
+                    prev_overall = (prev.scores or {}).get("overall", 0) if prev else None
+                    curr_overall = (v.scores or {}).get("overall", 0)
+                    delta = (curr_overall - prev_overall) if prev_overall is not None else None
+                    version_history.append(ScoreVersion(
+                        job_id=str(v.id),
+                        version=i + 1,
+                        overall=curr_overall,
+                        created_at=v.created_at.isoformat() if v.created_at else "",
+                        delta=delta,
+                    ))
+        except Exception:
+            logger.warning("version_history_failed", job_id=job_id)
 
         return WrappedResponse(
             data=AnalysisResult(
@@ -143,6 +188,8 @@ async def get_job_results(
                 suggestions=suggestions,
                 comparison_result=comparison_result,
                 comparison_status=safe_comparison_status,
+                parent_job_id=str(job.parent_job_id) if job.parent_job_id else None,
+                version_history=version_history,
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )

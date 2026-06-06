@@ -73,6 +73,8 @@ def mock_complete_job():
     job.comparison_result = None
     job.comparison_status = None
     job.user_id = None
+    job.target_role = None
+    job.parent_job_id = None
     return job
 
 
@@ -93,6 +95,8 @@ def mock_processing_job():
     job.comparison_result = None
     job.comparison_status = None
     job.user_id = None
+    job.target_role = None
+    job.parent_job_id = None
     return job
 
 

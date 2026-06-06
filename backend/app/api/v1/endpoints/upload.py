@@ -32,6 +32,8 @@ async def upload_file(
     request: Request,
     file: UploadFile,
     jd_text: str | None = Form(None),
+    target_role: str | None = Form(None),
+    parent_job_id: str | None = Form(None),
     db: AsyncSession = Depends(get_db),
     current_user: User | None = Depends(get_current_user),
 ):
@@ -63,6 +65,8 @@ async def upload_file(
                 "mime_type": file_info["mime_type"],
             },
             jd_text=jd_text.strip() if jd_text and jd_text.strip() else None,
+            target_role=target_role.strip() if target_role and target_role.strip() else None,
+            parent_job_id=parent_job_id.strip() if parent_job_id and parent_job_id.strip() else None,
             user_id=current_user.id if current_user else None,
         )
 

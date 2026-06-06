@@ -65,10 +65,22 @@ export async function apiFetch<T>(
   }
 }
 
-export async function uploadFile(file: File): Promise<{ job_id: string }> {
+export interface UploadOptions {
+  targetRole?: string;
+  parentJobId?: string;
+  jdText?: string;
+}
+
+export async function uploadFile(
+  file: File,
+  options: UploadOptions = {}
+): Promise<{ job_id: string }> {
   const formData = new FormData();
   formData.append("file", file);
-  
+  if (options.targetRole) formData.append("target_role", options.targetRole);
+  if (options.parentJobId) formData.append("parent_job_id", options.parentJobId);
+  if (options.jdText) formData.append("jd_text", options.jdText);
+
   return apiFetch<{ job_id: string }>("/upload", {
     method: "POST",
     body: formData,

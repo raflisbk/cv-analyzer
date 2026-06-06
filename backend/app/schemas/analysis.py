@@ -12,6 +12,11 @@ class SectionResult(BaseModel):
     entities: list[dict[str, Any]] = []
 
 
+class BenchmarkResult(BaseModel):
+    percentile: int = 0
+    sample_size: int = 0
+
+
 class ScoreResult(BaseModel):
 
     overall: int
@@ -21,6 +26,8 @@ class ScoreResult(BaseModel):
     relevance: int
     reasonings: dict[str, str] = {}
     jd_relevance: bool = False
+    target_role: str | None = None
+    benchmark: BenchmarkResult = BenchmarkResult()
 
 
 class GrammarIssue(BaseModel):
@@ -54,6 +61,14 @@ class SuggestionCard(BaseModel):
     suggestions: list[SuggestionItem]
 
 
+class SkillGapItem(BaseModel):
+    skill: str
+    priority: Literal["high", "medium", "low"] = "low"
+    category: str = "General"
+    why_important: str = ""
+    resources: list[dict[str, str]] = []
+
+
 class ComparisonResult(BaseModel):
 
     match_pct: int
@@ -62,6 +77,7 @@ class ComparisonResult(BaseModel):
     matched_experience: list[str]
     missing_experience: list[str]
     overall_recommendation: str
+    skill_gaps: list[SkillGapItem] = []
 
 
 class SkillGapGroup(BaseModel):
@@ -77,6 +93,14 @@ class JobRole(BaseModel):
     title: str
     seniority: str
     industry: str
+
+
+class ScoreVersion(BaseModel):
+    job_id: str
+    version: int
+    overall: int
+    created_at: str
+    delta: int | None = None  # overall score change vs previous version
 
 
 class AnalysisResult(BaseModel):
@@ -96,3 +120,6 @@ class AnalysisResult(BaseModel):
 
     comparison_result: ComparisonResult | None = None
     comparison_status: str | None = None
+
+    parent_job_id: str | None = None
+    version_history: list[ScoreVersion] = []

@@ -1,14 +1,23 @@
 "use client";
 
 import { FileText, CheckCircle2 } from "lucide-react";
+import { SUPPORTED_ROLES } from "@/lib/types";
 
 interface DocumentPreviewProps {
   file: File;
   onAnalyze: () => void;
   isAnalyzing: boolean;
+  targetRole?: string;
+  onTargetRoleChange?: (role: string) => void;
 }
 
-export function DocumentPreview({ file, onAnalyze, isAnalyzing }: DocumentPreviewProps) {
+export function DocumentPreview({
+  file,
+  onAnalyze,
+  isAnalyzing,
+  targetRole = "",
+  onTargetRoleChange,
+}: DocumentPreviewProps) {
   const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
   const fileType = file.name.toLowerCase().endsWith(".pdf") ? "PDF" : "DOCX";
   const fileTypeColor = fileType === "PDF"
@@ -37,6 +46,29 @@ export function DocumentPreview({ file, onAnalyze, isAnalyzing }: DocumentPrevie
           </div>
         </div>
       </div>
+
+      {onTargetRoleChange && (
+        <div>
+          <label className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block mb-2">
+            Target Role <span className="normal-case font-normal">(optional — improves scoring accuracy)</span>
+          </label>
+          <select
+            value={targetRole}
+            onChange={(e) => onTargetRoleChange(e.target.value)}
+            className="w-full bg-[#141414] border border-white/10 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30 appearance-none cursor-pointer"
+          >
+            <option value="">General (no specific role)</option>
+            {SUPPORTED_ROLES.map((r) => (
+              <option key={r.id} value={r.id}>{r.label}</option>
+            ))}
+          </select>
+          {targetRole && (
+            <p className="text-xs text-[#CAFF43]/60 mt-1.5">
+              ✦ Anchors calibrated for {SUPPORTED_ROLES.find((r) => r.id === targetRole)?.label}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {[

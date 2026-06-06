@@ -44,6 +44,11 @@ export interface Job {
   updated_at: string;
 }
 
+export interface BenchmarkResult {
+  percentile: number;
+  sample_size: number;
+}
+
 export interface ScoreResult {
   overall: number;
   clarity: number;
@@ -51,6 +56,9 @@ export interface ScoreResult {
   completeness: number;
   relevance: number;
   reasonings?: Record<string, string>;
+  jd_relevance?: boolean;
+  target_role?: string | null;
+  benchmark?: BenchmarkResult;
 }
 
 export interface SectionResult {
@@ -122,6 +130,34 @@ export interface AnalysisResult {
   suggestions?: SuggestionCard[] | null;
   comparison_result?: ComparisonResult | null;
   comparison_status?: "pending" | "comparing" | "complete" | "failed" | null;
+  parent_job_id?: string | null;
+  version_history?: ScoreVersion[];
+}
+
+export const SUPPORTED_ROLES = [
+  { id: "ml_engineer", label: "ML / AI Engineer" },
+  { id: "data_scientist", label: "Data Scientist" },
+  { id: "software_engineer", label: "Software Engineer" },
+  { id: "data_engineer", label: "Data Engineer" },
+  { id: "product_manager", label: "Product Manager" },
+] as const;
+
+export type RoleId = (typeof SUPPORTED_ROLES)[number]["id"];
+
+export interface SkillGapItem {
+  skill: string;
+  priority: "high" | "medium" | "low";
+  category: string;
+  why_important: string;
+  resources: Array<{ title: string; url: string }>;
+}
+
+export interface ScoreVersion {
+  job_id: string;
+  version: number;
+  overall: number;
+  created_at: string;
+  delta: number | null;
 }
 
 export interface ComparisonResult {
@@ -131,6 +167,7 @@ export interface ComparisonResult {
   matched_experience: string[];
   missing_experience: string[];
   overall_recommendation: string;
+  skill_gaps?: SkillGapItem[];
 }
 
 export interface SkillGapGroup {

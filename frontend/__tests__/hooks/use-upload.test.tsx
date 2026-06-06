@@ -9,8 +9,8 @@ vi.mock("@/lib/api", () => ({
   uploadFile: vi.fn(),
   ApiError: class extends Error {
     code: string;
-    details?: Record<string, any>;
-    constructor(code: string, message: string, details?: Record<string, any>) {
+    details?: Record<string, unknown>;
+    constructor(code: string, message: string, details?: Record<string, unknown>) {
       super(message);
       this.name = "ApiError";
       this.code = code;
@@ -49,7 +49,7 @@ describe("useUpload", () => {
 
     await act(async () => {
       try {
-        await result.current.mutateAsync(bigFile);
+        await result.current.mutateAsync({ file: bigFile });
         expect.unreachable("Should have thrown");
       } catch (e) {
         expect((e as ApiError).code).toBe("FILE_TOO_LARGE");
@@ -67,7 +67,7 @@ describe("useUpload", () => {
 
     await act(async () => {
       try {
-        await result.current.mutateAsync(textFile);
+        await result.current.mutateAsync({ file: textFile });
         expect.unreachable("Should have thrown");
       } catch (e) {
         expect((e as ApiError).code).toBe("INVALID_FILE_TYPE");
@@ -85,11 +85,11 @@ describe("useUpload", () => {
     });
 
     const uploadResult = await act(async () => {
-      return result.current.mutateAsync(pdfFile);
+      return result.current.mutateAsync({ file: pdfFile });
     });
 
     expect(uploadResult).toEqual({ job_id: "job-123" });
-    expect(uploadFile).toHaveBeenCalledWith(pdfFile);
+    expect(uploadFile).toHaveBeenCalledWith(pdfFile, {});
   });
 
   it("accepts DOCX files", async () => {
@@ -100,10 +100,10 @@ describe("useUpload", () => {
     });
 
     await act(async () => {
-      await result.current.mutateAsync(docxFile);
+      await result.current.mutateAsync({ file: docxFile });
     });
 
-    expect(uploadFile).toHaveBeenCalledWith(docxFile);
+    expect(uploadFile).toHaveBeenCalledWith(docxFile, {});
   });
 
   it("accepts DOC files", async () => {
@@ -114,9 +114,21 @@ describe("useUpload", () => {
     });
 
     await act(async () => {
-      await result.current.mutateAsync(docFile);
+      await result.current.mutateAsync({ file: docFile });
     });
 
-    expect(uploadFile).toHaveBeenCalledWith(docFile);
+    expect(uploadFile).toHaveBeenCalledWith(docFile, {});
+  });
+
+  it("passes targetRole option to uploadFile", async () => {
+    vi.mocked(uploadFile).mockResolvedValue({ job_id: "job-role-test" });
+    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
+    const pdfFile = new File(["content"], "test.pdf", { type: "application/pdf" });
+
+    await act(async () => {
+      await result.current.mutateAsync({ file: pdfFile, options: { targetRole: "ml_engineer" } });
+    });
+
+    expect(uploadFile).toHaveBeenCalledWith(pdfFile, { targetRole: "ml_engineer" });
   });
 });

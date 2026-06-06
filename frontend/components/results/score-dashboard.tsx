@@ -1,6 +1,7 @@
 
 
 import type { ScoreResult } from "@/lib/types";
+import { SUPPORTED_ROLES } from "@/lib/types";
 import { GaugeChart } from "./gauge-chart";
 import { ScoreRangeBadge } from "./score-range-badge";
 
@@ -9,7 +10,7 @@ interface ScoreDashboardProps {
 }
 
 const DIMENSIONS: Array<{
-  key: keyof Omit<ScoreResult, "overall" | "scoring_method" | "reasonings">;
+  key: "clarity" | "impact" | "completeness" | "relevance";
   label: string;
   description: string;
   accentColor: string;
@@ -41,12 +42,35 @@ const DIMENSIONS: Array<{
 ];
 
 export function ScoreDashboard({ scores }: ScoreDashboardProps) {
+  const benchmark = scores.benchmark;
+  const showBenchmark = benchmark && benchmark.sample_size >= 5;
+  const roleLabel = scores.target_role
+    ? SUPPORTED_ROLES.find((r) => r.id === scores.target_role)?.label
+    : null;
+
   return (
     <div className="space-y-6">
       <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-white/[0.07]">
         <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">Overall Score</span>
         <GaugeChart value={scores.overall} label="Overall" size={180} />
         <ScoreRangeBadge score={scores.overall} />
+
+        {roleLabel && (
+          <span className="text-xs font-bold rounded-full px-3 py-1 bg-[#8B5CF6]/12 text-[#8B5CF6] border border-[#8B5CF6]/20">
+            Scored for: {roleLabel}
+          </span>
+        )}
+
+        {showBenchmark && (
+          <div className="mt-1 rounded-2xl bg-[#CAFF43]/6 border border-[#CAFF43]/15 px-5 py-3 text-center">
+            <p className="text-sm font-extrabold text-[#CAFF43]">
+              Better than {benchmark.percentile}% of CVs analyzed
+            </p>
+            <p className="text-xs text-[#F5F2D8]/40 mt-0.5">
+              Based on {benchmark.sample_size.toLocaleString()} CVs in our platform
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">

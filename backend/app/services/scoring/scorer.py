@@ -6,16 +6,35 @@ from app.services.scoring.anchors import (
     RELEVANCE_ANCHORS,
 )
 from app.services.scoring.embeddings import cosine_similarity, get_embeddings
+from app.services.scoring.role_anchors import ROLE_ANCHORS
 
-_DIMENSION_CONFIGS: list[tuple[str, list[str], float]] = [
+_GENERIC_DIMENSION_CONFIGS: list[tuple[str, list[str], float]] = [
     ("clarity", CLARITY_ANCHORS, 0.40),
     ("impact", IMPACT_ANCHORS, 0.25),
     ("completeness", COMPLETENESS_ANCHORS, 0.20),
     ("relevance", RELEVANCE_ANCHORS, 0.15),
 ]
 
+_GENERIC_ANCHORS = {
+    "clarity": CLARITY_ANCHORS,
+    "impact": IMPACT_ANCHORS,
+    "completeness": COMPLETENESS_ANCHORS,
+    "relevance": RELEVANCE_ANCHORS,
+}
 
-def score_cv(text: str, jd_text: str | None = None) -> dict:
+
+def _get_dimension_configs(target_role: str | None) -> list[tuple[str, list[str], float]]:
+    if not target_role or target_role not in ROLE_ANCHORS:
+        return _GENERIC_DIMENSION_CONFIGS
+    role = ROLE_ANCHORS[target_role]
+    weights: list[tuple[str, list[str], float]] = []
+    for dim_name, _, weight in _GENERIC_DIMENSION_CONFIGS:
+        anchors = role.get(dim_name) or _GENERIC_ANCHORS[dim_name]
+        weights.append((dim_name, anchors, weight))
+    return weights
+
+
+def score_cv(text: str, jd_text: str | None = None, target_role: str | None = None) -> dict:
     from app.core.config import get_settings
 
     settings = get_settings()
@@ -25,15 +44,23 @@ def score_cv(text: str, jd_text: str | None = None) -> dict:
             "CV_ANALYZER_KOBOI_API_KEY not configured. Please set it in your .env file."
         )
 
+    dimension_configs = _get_dimension_configs(target_role)
+
     # Build flat list: [cv_text, *all_anchors, jd_text(optional)]
     all_texts = [text]
-    for _, anchors, _ in _DIMENSION_CONFIGS:
+    for _, anchors, _ in dimension_configs:
         all_texts.extend(anchors)
     if jd_text:
         all_texts.append(jd_text[:4000])
 
     total = len(all_texts)
-    logger.info("scoring_start", text_length=len(text), total_embeddings=total, jd_provided=bool(jd_text))
+    logger.info(
+        "scoring_start",
+        text_length=len(text),
+        total_embeddings=total,
+        jd_provided=bool(jd_text),
+        target_role=target_role,
+    )
 
     all_embeddings = get_embeddings(all_texts)
 
@@ -42,7 +69,7 @@ def score_cv(text: str, jd_text: str | None = None) -> dict:
     offset = 1
 
     dimension_scores: dict[str, int] = {}
-    for dim_name, anchors, _ in _DIMENSION_CONFIGS:
+    for dim_name, anchors, _ in dimension_configs:
         anchor_embeddings = all_embeddings[offset : offset + len(anchors)]
         offset += len(anchors)
 
@@ -57,7 +84,7 @@ def score_cv(text: str, jd_text: str | None = None) -> dict:
 
         dimension_scores[dim_name] = score
 
-    overall = min(100, max(0, int(sum(dimension_scores[d] * w for d, _, w in _DIMENSION_CONFIGS))))
+    overall = min(100, max(0, int(sum(dimension_scores[d] * w for d, _, w in dimension_configs))))
 
     scores = {
         "overall": overall,
@@ -65,6 +92,7 @@ def score_cv(text: str, jd_text: str | None = None) -> dict:
         "scoring_method": "embedding",
         "provider": "koboi",
         "jd_relevance": bool(jd_text),
+        "target_role": target_role,
     }
 
     logger.info("scoring_done", scores=scores)

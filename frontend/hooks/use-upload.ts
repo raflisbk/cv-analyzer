@@ -1,14 +1,18 @@
 
-
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { uploadFile, ApiError } from "@/lib/api";
+import { uploadFile, ApiError, type UploadOptions } from "@/lib/api";
 import { toast } from "sonner";
 
+interface UploadPayload {
+  file: File;
+  options?: UploadOptions;
+}
+
 export function useUpload() {
-  return useMutation<{ job_id: string }, ApiError, File>({
-    mutationFn: async (file: File) => {
+  return useMutation<{ job_id: string }, ApiError, UploadPayload>({
+    mutationFn: async ({ file, options = {} }: UploadPayload) => {
       const maxSize = 5 * 1024 * 1024;
       const allowedTypes = [
         "application/pdf",
@@ -30,7 +34,7 @@ export function useUpload() {
         );
       }
 
-      return uploadFile(file);
+      return uploadFile(file, options);
     },
     onError: (error: ApiError) => {
       toast.error(error.message, {

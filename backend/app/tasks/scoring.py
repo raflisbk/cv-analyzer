@@ -1,7 +1,7 @@
 import asyncio
 
 from celery import Task
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
@@ -39,9 +39,10 @@ def score_cv_task(self: Task, job_id: str) -> dict:
 
             text = job.result.get("text", "")
             jd_text = job.jd_text or None
+            target_role = job.target_role or None
 
         # Scoring work (sync, makes HTTP calls) — outside DB session
-        scores = score_cv(text, jd_text=jd_text)
+        scores = score_cv(text, jd_text=jd_text, target_role=target_role)
         try:
             from app.services.llm.score_explainer import ScoreExplainerService
 
@@ -51,6 +52,43 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         except Exception as e:
             logger.error("score_explanation_failed", error=str(e), exc_info=True)
             scores["reasonings"] = {}
+
+        # Compute benchmark percentile (how this CV compares to all previously scored CVs)
+        benchmark: dict = {}
+        try:
+            async with async_session_maker() as session:
+                overall_score = scores.get("overall", 0)
+                total_stmt = select(func.count()).where(
+                    Job.status == JobStatus.COMPLETE,
+                    Job.scores.isnot(None),
+                    Job.id != job_id,
+                )
+                total_result = await session.execute(total_stmt)
+                total_count = total_result.scalar_one() or 0
+
+                if total_count > 0:
+                    better_stmt = select(func.count()).where(
+                        Job.status == JobStatus.COMPLETE,
+                        Job.scores.isnot(None),
+                        Job.id != job_id,
+                        func.cast(Job.scores["overall"].astext, type_=func.Integer.__class__).label("s") <= overall_score,
+                    )
+                    # Use raw cast for JSONB integer comparison
+                    from sqlalchemy import cast, Integer, text as sa_text
+                    better_stmt = select(func.count()).where(
+                        Job.status == JobStatus.COMPLETE,
+                        Job.scores.isnot(None),
+                        Job.id != job_id,
+                        cast(Job.scores["overall"].astext, Integer) <= overall_score,
+                    )
+                    better_result = await session.execute(better_stmt)
+                    better_count = better_result.scalar_one() or 0
+                    percentile = round((better_count / total_count) * 100)
+                    benchmark = {"percentile": percentile, "sample_size": total_count}
+        except Exception as e:
+            logger.warning("benchmark_computation_failed", error=str(e))
+
+        scores["benchmark"] = benchmark
 
         # Save scores
         async with async_session_maker() as session:
