@@ -8,7 +8,7 @@ from app.db.session import async_session_maker
 from app.models.job import Job, JobStatus
 from app.services.scoring.scorer import score_cv
 from app.tasks.celery_app import celery_app
-from app.tasks.document_processing import ProgressTask
+from app.tasks.document_processing import ProgressTask, mark_job_failed
 
 
 @celery_app.task(
@@ -18,45 +18,28 @@ from app.tasks.document_processing import ProgressTask
     default_retry_delay=60,
 )
 def score_cv_task(self: Task, job_id: str) -> dict:
-    async def _get_cv_text() -> str | None:
-        async with async_session_maker() as session:
-            stmt = select(Job).where(Job.id == job_id)
-            result = await session.execute(stmt)
-            job = result.scalar_one_or_none()
-            if job and job.result:
-                return job.result.get("text")
-            return None
-
-    async def _save_scores(scores: dict) -> None:
-        async with async_session_maker() as session:
-            stmt = select(Job).where(Job.id == job_id)
-            result = await session.execute(stmt)
-            job = result.scalar_one_or_none()
-            if job:
-                job.scores = scores
-                await session.commit()
-
-    async def _mark_failed(error_msg: str) -> None:
-        async with async_session_maker() as session:
-            stmt = select(Job).where(Job.id == job_id)
-            result = await session.execute(stmt)
-            job = result.scalar_one_or_none()
-            if job:
-                job.status = JobStatus.FAILED
-                job.error = error_msg
-                await session.commit()
-
-    try:
+    async def _run() -> dict:
         self.update_progress(job_id, "scoring", 75, "Scoring CV with AI embeddings...")
 
-        text = asyncio.run(_get_cv_text())
-        if not text:
-            msg = f"No CV text for scoring, job {job_id}"
-            logger.error("scoring_no_text", job_id=job_id)
-            asyncio.run(_mark_failed(msg))
-            self.update_progress(job_id, "failed", 0, msg)
-            return {"error": msg}
+        # Load CV text
+        async with async_session_maker() as session:
+            stmt = select(Job).where(Job.id == job_id)
+            result = await session.execute(stmt)
+            job = result.scalar_one_or_none()
 
+            if not job or not job.result:
+                msg = f"No CV text for scoring, job {job_id}"
+                logger.error("scoring_no_text", job_id=job_id)
+                if job:
+                    job.status = JobStatus.FAILED
+                    job.error = msg
+                    await session.commit()
+                self.update_progress(job_id, "failed", 0, msg)
+                return {"error": msg}
+
+            text = job.result.get("text", "")
+
+        # Scoring work (sync, makes HTTP calls) — outside DB session
         scores = score_cv(text)
         try:
             from app.services.llm.score_explainer import ScoreExplainerService
@@ -68,7 +51,14 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             logger.error("score_explanation_failed", error=str(e), exc_info=True)
             scores["reasonings"] = {}
 
-        asyncio.run(_save_scores(scores))
+        # Save scores
+        async with async_session_maker() as session:
+            stmt = select(Job).where(Job.id == job_id)
+            result = await session.execute(stmt)
+            job = result.scalar_one_or_none()
+            if job:
+                job.scores = scores
+                await session.commit()
 
         logger.info(
             "scoring_done",
@@ -77,9 +67,11 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         )
         return {"status": "scoring_complete", "job_id": job_id}
 
+    try:
+        return asyncio.run(_run())
     except Exception as e:
         error_msg = f"CV scoring failed: {e!s}"
         logger.error("scoring_failed", job_id=job_id, error=error_msg, exc_info=True)
-        asyncio.run(_mark_failed(error_msg))
+        asyncio.run(mark_job_failed(job_id, error_msg))
         self.update_progress(job_id, "failed", 0, error_msg)
         return {"error": error_msg}
