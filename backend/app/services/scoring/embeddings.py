@@ -19,30 +19,22 @@ def _get_client() -> OpenAI:
     )
 
 
-def get_embedding(text: str) -> list[float]:
+def get_embeddings(texts: list[str]) -> list[list[float]]:
+    """Batch embed multiple texts in a single API call."""
     settings = get_settings()
     client = _get_client()
     model = settings.CV_ANALYZER_EMBEDDING_MODEL
 
-    logger.debug(
-        "embedding_request",
-        text_length=len(text),
-        model=model,
-    )
+    logger.debug("batch_embedding_request", count=len(texts), model=model)
 
-    response = client.embeddings.create(
-        input=text,
-        model=model,
-    )
+    response = client.embeddings.create(input=texts, model=model)
+    # Sort by index to guarantee order matches input
+    return [item.embedding for item in sorted(response.data, key=lambda x: x.index)]
 
-    embedding = response.data[0].embedding
 
-    logger.debug(
-        "embedding_received",
-        embedding_dim=len(embedding),
-    )
-
-    return embedding
+def get_embedding(text: str) -> list[float]:
+    """Get embedding for a single text. Use get_embeddings() for batches."""
+    return get_embeddings([text])[0]
 
 
 def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
