@@ -195,7 +195,7 @@ class CvSection:
 
 def detect_sections(text: str) -> list[CvSection]:
     lines = text.splitlines()
-    sections: list[CvSection] = []
+    raw_sections: list[CvSection] = []
     current_type = "header"
     current_start = 0
     current_lines: list[str] = []
@@ -208,10 +208,9 @@ def detect_sections(text: str) -> list[CvSection]:
 
         matched_type = _match_heading(stripped)
         if matched_type is not None and matched_type != current_type:
-
             content = "\n".join(current_lines).strip()
             if content:
-                sections.append(
+                raw_sections.append(
                     CvSection(type=current_type, text=content, start_line=current_start)
                 )
             current_type = matched_type
@@ -222,11 +221,31 @@ def detect_sections(text: str) -> list[CvSection]:
 
     content = "\n".join(current_lines).strip()
     if content:
-        sections.append(
+        raw_sections.append(
             CvSection(type=current_type, text=content, start_line=current_start)
         )
 
-    return sections
+    return _deduplicate_sections(raw_sections)
+
+
+def _deduplicate_sections(sections: list[CvSection]) -> list[CvSection]:
+    """Merge repeated sections of the same type (e.g. skills × 3 → skills × 1).
+
+    Sub-headings inside a section often re-trigger the detector for the same
+    type.  Collapsing duplicates into the first occurrence keeps downstream
+    scoring and NLP clean without losing any content.
+    """
+    seen: dict[str, int] = {}
+    result: list[CvSection] = []
+    for section in sections:
+        if section.type in ("header", "other"):
+            result.append(section)
+        elif section.type in seen:
+            result[seen[section.type]].text += "\n\n" + section.text
+        else:
+            seen[section.type] = len(result)
+            result.append(section)
+    return result
 
 
 def _match_heading(line: str) -> str | None:

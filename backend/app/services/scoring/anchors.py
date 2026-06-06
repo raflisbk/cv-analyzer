@@ -48,6 +48,39 @@ CLARITY_ANCHORS: list[str] = [
         "Maintained organized documentation for audit compliance. "
         "Collaborated with accounting and operations teams on budget planning."
     ),
+    # ML / AI Engineer
+    (
+        "Junior Machine Learning Engineer with 1+ year building production-ready AI systems. "
+        "Designed and deployed computer vision pipelines for real-time object detection. "
+        "Documented model architecture, training procedures, and evaluation metrics clearly. "
+        "Communicated experiment results to stakeholders through structured reports."
+    ),
+    (
+        "AI Engineer experienced in NLP, computer vision, and generative AI. "
+        "Built end-to-end ML pipelines from data ingestion to model serving. "
+        "Wrote clear technical documentation for model cards and API usage guides. "
+        "Explained complex model behaviour and tradeoffs to non-technical audiences."
+    ),
+    (
+        "EXPERIENCE\nML Engineer, StartupAI (Jan 2023-Present)\n"
+        "- Developed object detection model using YOLOv8 achieving 91% mAP on production dataset\n"
+        "- Built FastAPI inference service handling 200 req/s with <100ms latency\n"
+        "- Automated training pipeline with MLflow experiment tracking\n\n"
+        "EDUCATION\nS1 Teknik Informatika, Universitas Indonesia (2023)\nIPK: 3.7"
+    ),
+    (
+        "SKILLS\nAI/ML: Python, TensorFlow, PyTorch, scikit-learn, HuggingFace\n"
+        "MLOps: MLflow, Docker, GitHub Actions, GCP Vertex AI\n"
+        "Data: pandas, NumPy, SQL, BigQuery, Apache Spark\n"
+        "Deployment: FastAPI, Celery, Redis, PostgreSQL"
+    ),
+    # Junior / early-career
+    (
+        "Fresh graduate with strong foundation in software engineering and data science. "
+        "Completed 3 production projects during internship with clear deliverables. "
+        "Documented code and processes thoroughly for team knowledge transfer. "
+        "Communicated progress and blockers proactively in agile stand-ups."
+    ),
 ]
 
 
@@ -112,6 +145,32 @@ IMPACT_ANCHORS: list[str] = [
         "Handled customer satisfaction score of 4.7/5 across 500+ interactions. "
         "Managed portfolio of 200+ client accounts worth Rp 10B in premiums."
     ),
+    # ML / AI Engineer impact
+    (
+        "Trained object detection model achieving 91% mAP, improving over 78% baseline (+13%). "
+        "Optimised inference pipeline reducing latency from 850ms to 95ms (89% faster). "
+        "Deployed ML service handling 10K daily requests with 99.5% uptime. "
+        "Reduced manual labelling time by 70% through active learning data selection."
+    ),
+    (
+        "Built NLP text classification model reaching 94% F1-score on production dataset. "
+        "Reduced model training time by 60% through mixed-precision training and data caching. "
+        "Shipped RAG-based chatbot serving 500+ internal users with <2s response time. "
+        "Cut cloud compute cost by 40% by switching to quantised model inference."
+    ),
+    (
+        "Delivered computer vision quality-inspection system replacing manual checking for 3 production lines. "
+        "Achieved defect detection recall of 97% with <0.5% false positive rate. "
+        "Processed 1,200 units/hour, 3× faster than previous manual inspection. "
+        "Saved estimated Rp 150M/year in labour and defect rework costs."
+    ),
+    # Junior / early-career impact
+    (
+        "Completed 2 production ML features during 3-month internship shipped to 10K users. "
+        "Improved recommendation click-through rate by 8% through feature engineering. "
+        "Reduced data preprocessing pipeline runtime by 45% using vectorised pandas operations. "
+        "Contributed 5 merged pull requests with 100% test coverage."
+    ),
 ]
 
 
@@ -160,6 +219,23 @@ COMPLETENESS_ANCHORS: list[str] = [
         "skills section matches job requirements, "
         "education includes GPA if strong, relevant coursework, "
         "certifications section with dates and issuing organizations."
+    ),
+    # ML / AI Engineer completeness
+    (
+        "CONTACT\nName | email | phone | LinkedIn | GitHub: github.com/username | Portfolio: username.vercel.app\n\n"
+        "SUMMARY\nJunior ML Engineer with 1+ year production experience in computer vision and NLP.\n\n"
+        "EXPERIENCE\n2 roles with dates, tech stack used, model metrics, and business impact.\n\n"
+        "PROJECTS\n3 projects with: name, GitHub link, tech stack, dataset size, evaluation metric.\n\n"
+        "EDUCATION\nS1 Computer Science / Informatics, GPA 3.5+\n\n"
+        "SKILLS\nGrouped by category: Languages, ML Frameworks, MLOps, Cloud, Databases.\n\n"
+        "CERTIFICATIONS\nTensorFlow Developer Certificate | Google Cloud Professional ML Engineer"
+    ),
+    (
+        "Complete ML engineer CV with: public GitHub profile with pinned repositories, "
+        "Kaggle profile or competition rankings, portfolio website or demo links, "
+        "projects section listing model architecture and performance metrics, "
+        "skills grouped as programming languages, ML frameworks, deployment tools, "
+        "cloud platforms, and databases with proficiency indicators."
     ),
 ]
 
@@ -254,5 +330,30 @@ RELEVANCE_ANCHORS: list[str] = [
         "front office operations, housekeeping management, food and beverage service, "
         "event planning, reservation systems, revenue management, "
         "customer satisfaction, staff scheduling, health and safety compliance."
+    ),
+    # ML / AI Engineer relevance
+    (
+        "Machine learning engineer with expertise in deep learning, computer vision, "
+        "natural language processing, PyTorch, TensorFlow, Keras, scikit-learn, "
+        "HuggingFace Transformers, YOLO, OpenCV, CNNs, object detection, "
+        "image segmentation, model training, hyperparameter tuning, transfer learning."
+    ),
+    (
+        "AI engineer specialising in generative AI, large language models, RAG pipelines, "
+        "LangChain, LlamaIndex, vector databases, pgvector, Chroma, Pinecone, "
+        "prompt engineering, fine-tuning, LoRA, RLHF, OpenAI API, "
+        "inference optimisation, quantisation, ONNX, TensorRT."
+    ),
+    (
+        "MLOps / AI infrastructure engineer skilled in model deployment, "
+        "Docker, Kubernetes, FastAPI, Celery, Redis, MLflow, DVC, "
+        "CI/CD pipelines, GitHub Actions, Google Cloud Platform, AWS SageMaker, "
+        "model monitoring, data drift detection, A/B testing for ML models."
+    ),
+    (
+        "Data scientist with skills in statistical modelling, exploratory data analysis, "
+        "pandas, NumPy, matplotlib, seaborn, Plotly, SQL, BigQuery, "
+        "A/B testing, hypothesis testing, regression, classification, clustering, "
+        "time series forecasting, feature engineering, cross-validation."
     ),
 ]
