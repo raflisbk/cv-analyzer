@@ -56,7 +56,8 @@ conda activate sbk-cv-analyzer
 **Development server:**
 ```bash
 cd backend
-uvicorn app.main:app --reload --port 8000
+python run.py          # Windows: MUST use run.py (sets WindowsSelectorEventLoopPolicy before uvicorn)
+# uvicorn app.main:app --reload --port 8000  ← DO NOT use directly on Windows (ProactorEventLoop breaks psycopg)
 # API: http://localhost:8000
 # Docs: http://localhost:8000/docs
 ```
