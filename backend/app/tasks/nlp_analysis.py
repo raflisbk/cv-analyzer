@@ -50,6 +50,12 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
         skills = extract_skills(text)
         entities = extract_entities(text, sections=sections)
 
+        self.update_progress(
+            job_id, "detecting_role", 80, "Detecting job role from CV..."
+        )
+        from app.services.llm.role_detector import detect_role_from_cv
+        detected_role = detect_role_from_cv(text)
+
         nlp_result = {
             "sections": [
                 {"type": s.type, "text": s.text, "entities": s.entities}
@@ -57,6 +63,7 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
             ],
             "skills": skills,
             "entities": entities,
+            "detected_role": detected_role,
         }
 
         # Save results
@@ -73,6 +80,7 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
             job_id=job_id,
             section_count=len(sections),
             skill_count=len(skills),
+            detected_role=detected_role,
         )
         return {"status": "nlp_complete", "job_id": job_id}
 

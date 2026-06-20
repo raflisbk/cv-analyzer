@@ -39,8 +39,13 @@ def score_cv_task(self: Task, job_id: str) -> dict:
 
             text = job.result.get("text", "")
             jd_text = job.jd_text or None
-            target_role = job.target_role or None
-            nlp_sections = (job.nlp_result or {}).get("sections") or None
+            nlp_result = job.nlp_result or {}
+            nlp_sections = nlp_result.get("sections") or None
+
+            # Prefer explicit user selection; fall back to LLM-detected role from NLP stage
+            target_role = job.target_role or nlp_result.get("detected_role") or None
+            if not job.target_role and target_role:
+                logger.info("using_detected_role", job_id=job_id, detected_role=target_role)
 
         # Scoring work (sync, makes HTTP calls) — outside DB session
         scores = score_cv(text, jd_text=jd_text, target_role=target_role, nlp_sections=nlp_sections)
