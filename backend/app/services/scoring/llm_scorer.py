@@ -1,15 +1,19 @@
-"""LLM-based CV scoring — single call, calibrated to experience level and role category."""
+"""LLM-based CV scoring — calibrated to experience level and role category.
+
+Supports ensemble scoring (configurable N runs, median per dimension)
+to reduce inherent LLM non-determinism. Set CV_ANALYZER_SCORING_ENSEMBLE_RUNS=3
+to enable; defaults to 1 (single run, fastest).
+"""
 
 import json
 import re
+import statistics
 
 import httpx
 
 from app.core.logging import structured_logger as logger
 from app.services.scoring.text_normalizer import normalize_cv_text
 
-# Weights rebalanced: impact & relevance raised, clarity lowered.
-# Reflects what recruiters actually prioritize vs. surface-level formatting.
 _WEIGHTS = {
     "impact": 0.35,
     "clarity": 0.30,
@@ -114,6 +118,39 @@ def _extract_json(text: str) -> dict:
     raise ValueError(f"Cannot extract JSON from LLM output: {text[:300]!r}")
 
 
+def _median_int(values: list[int]) -> int:
+    if len(values) == 1:
+        return values[0]
+    return int(statistics.median(values))
+
+
+def _single_llm_call(prompt: str, settings) -> dict | None:
+    """Execute one LLM scoring call. Returns parsed dict or None on failure."""
+    try:
+        with httpx.Client(timeout=60.0) as client:
+            resp = client.post(
+                f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
+                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
+                json={
+                    "model": settings.CV_ANALYZER_LLM_MODEL,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 600,
+                    "temperature": 0.1,
+                },
+            )
+            resp.raise_for_status()
+            raw = resp.json()["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        logger.error("llm_scoring_request_failed", error=str(e))
+        return None
+
+    try:
+        return _extract_json(raw)
+    except ValueError:
+        logger.error("llm_scoring_parse_failed", raw=raw[:300])
+        return None
+
+
 def score_cv_with_llm(
     cv_text: str,
     target_role: str | None = None,
@@ -137,49 +174,57 @@ def score_cv_with_llm(
         impact_guidance=_IMPACT_GUIDANCE[category],
     )
 
-    logger.info("llm_scoring_request", role=role_label, category=category, cv_len=len(cv_slice))
-
-    try:
-        with httpx.Client(timeout=60.0) as client:
-            resp = client.post(
-                f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
-                json={
-                    "model": settings.CV_ANALYZER_LLM_MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 600,
-                    "temperature": 0.1,
-                },
-            )
-            resp.raise_for_status()
-            raw = resp.json()["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        logger.error("llm_scoring_request_failed", error=str(e))
-        return _fallback_scores(target_role)
-
-    try:
-        data = _extract_json(raw)
-    except ValueError:
-        logger.error("llm_scoring_parse_failed", raw=raw[:300])
-        return _fallback_scores(target_role)
+    n_runs = max(1, settings.CV_ANALYZER_SCORING_ENSEMBLE_RUNS)
+    logger.info(
+        "llm_scoring_request",
+        role=role_label,
+        category=category,
+        cv_len=len(cv_slice),
+        ensemble_runs=n_runs,
+    )
 
     dims = list(_WEIGHTS.keys())
+    all_raw: list[dict] = []
+
+    for run_i in range(n_runs):
+        result = _single_llm_call(prompt, settings)
+        if result is not None:
+            all_raw.append(result)
+        else:
+            logger.warning("llm_scoring_run_failed", run=run_i + 1, total=n_runs)
+
+    if not all_raw:
+        return _fallback_scores(target_role)
+
+    # Per-dimension median across all successful runs
     scores: dict[str, int] = {}
+    score_ranges: dict[str, int] = {}
     for dim in dims:
-        val = data.get(dim)
-        try:
-            scores[dim] = max(0, min(100, int(val)))
-        except (TypeError, ValueError):
-            logger.warning("llm_scoring_invalid_dim", dim=dim, val=val)
-            scores[dim] = 50
+        vals: list[int] = []
+        for raw in all_raw:
+            val = raw.get(dim)
+            try:
+                vals.append(max(0, min(100, int(val))))
+            except (TypeError, ValueError):
+                vals.append(50)
+        scores[dim] = _median_int(vals)
+        score_ranges[dim] = max(vals) - min(vals)
 
     overall = max(0, min(100, int(sum(scores[d] * _WEIGHTS[d] for d in dims))))
 
+    # Use reasoning from the first successful run
     reasonings: dict[str, str] = {}
-    if isinstance(data.get("reasoning"), dict):
-        reasonings = {d: str(data["reasoning"].get(d, "")) for d in dims}
+    if isinstance(all_raw[0].get("reasoning"), dict):
+        reasonings = {d: str(all_raw[0]["reasoning"].get(d, "")) for d in dims}
 
-    logger.info("llm_scoring_done", overall=overall, role=role_label, category=category, **scores)
+    logger.info(
+        "llm_scoring_done",
+        overall=overall,
+        role=role_label,
+        category=category,
+        ensemble_runs=len(all_raw),
+        **scores,
+    )
 
     return {
         "overall": overall,
@@ -189,6 +234,9 @@ def score_cv_with_llm(
         "provider": "koboi",
         "jd_relevance": bool(jd_text),
         "target_role": target_role,
+        "ensemble_runs": len(all_raw),
+        # score_ranges: per-dim max-min spread across runs. High = low confidence.
+        "score_ranges": score_ranges if len(all_raw) > 1 else {},
     }
 
 
@@ -205,4 +253,6 @@ def _fallback_scores(target_role: str | None) -> dict:
         "provider": "koboi",
         "jd_relevance": False,
         "target_role": target_role,
+        "ensemble_runs": 0,
+        "score_ranges": {},
     }

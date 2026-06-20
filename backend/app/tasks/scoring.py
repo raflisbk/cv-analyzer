@@ -19,9 +19,9 @@ from app.tasks.document_processing import ProgressTask, mark_job_failed
 )
 def score_cv_task(self: Task, job_id: str) -> dict:
     async def _run() -> dict:
-        self.update_progress(job_id, "scoring", 75, "Scoring CV with AI embeddings...")
+        self.update_progress(job_id, "scoring", 75, "Scoring CV with AI...")
 
-        # Load CV text
+        # Load CV text and job metadata
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
             result = await session.execute(stmt)
@@ -41,6 +41,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             jd_text = job.jd_text or None
             nlp_result = job.nlp_result or {}
             nlp_sections = nlp_result.get("sections") or None
+            parent_job_id = job.parent_job_id
 
             # Prefer explicit user selection; fall back to LLM-detected role from NLP stage
             target_role = job.target_role or nlp_result.get("detected_role") or None
@@ -48,7 +49,13 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                 logger.info("using_detected_role", job_id=job_id, detected_role=target_role)
 
         # Scoring work (sync, makes HTTP calls) — outside DB session
-        scores = score_cv(text, jd_text=jd_text, target_role=target_role, nlp_sections=nlp_sections)
+        scores = score_cv(
+            text,
+            jd_text=jd_text,
+            target_role=target_role,
+            nlp_sections=nlp_sections,
+            nlp_result=nlp_result,
+        )
 
         # LLM scorer already includes per-dimension reasoning — no separate explainer needed.
         # Fall back to ScoreExplainerService only if reasonings are missing (e.g. fallback path).
@@ -62,15 +69,14 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                 logger.error("score_explanation_failed", error=str(e), exc_info=True)
                 scores["reasonings"] = {}
 
-        # Compute benchmark percentile (how this CV compares to all previously scored CVs)
+        # Compute benchmark percentile vs previously scored CVs (same scoring method)
         benchmark: dict = {}
         try:
-            from sqlalchemy import cast, Integer, func as sa_func
+            from sqlalchemy import cast, Integer
+            from sqlalchemy import func as sa_func
+
             async with async_session_maker() as session:
                 overall_score = scores.get("overall", 0)
-
-                # Only compare against jobs scored with the same method to avoid
-                # mixing embedding-based scores with LLM scores.
                 same_method_filter = Job.scores["scoring_method"].astext == "llm"
 
                 total_count_result = await session.execute(
@@ -101,6 +107,31 @@ def score_cv_task(self: Task, job_id: str) -> dict:
 
         scores["benchmark"] = benchmark
 
+        # Version delta — compare to parent job when this is a revised CV
+        if parent_job_id:
+            try:
+                async with async_session_maker() as session:
+                    parent_stmt = select(Job).where(Job.id == parent_job_id)
+                    parent_result = await session.execute(parent_stmt)
+                    parent_job = parent_result.scalar_one_or_none()
+
+                    if parent_job and parent_job.scores:
+                        dims = ["overall", "impact", "clarity", "relevance", "completeness"]
+                        delta = {
+                            d: scores.get(d, 0) - parent_job.scores.get(d, 0)
+                            for d in dims
+                            if isinstance(parent_job.scores.get(d), (int, float))
+                        }
+                        scores["version_delta"] = delta
+                        logger.info(
+                            "version_delta_computed",
+                            job_id=job_id,
+                            parent_job_id=str(parent_job_id),
+                            delta=delta,
+                        )
+            except Exception as e:
+                logger.warning("version_delta_failed", error=str(e))
+
         # Save scores
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)
@@ -114,6 +145,8 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             "scoring_done",
             job_id=job_id,
             overall_score=scores.get("overall"),
+            has_metrics=bool(scores.get("metrics")),
+            has_delta=bool(scores.get("version_delta")),
         )
         return {"status": "scoring_complete", "job_id": job_id}
 
