@@ -132,6 +132,19 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             except Exception as e:
                 logger.warning("version_delta_failed", error=str(e))
 
+        # Compute ATS numeric score from existing ats_checks (stored by grammar_check_task
+        # which runs after scoring in the chain — but if a re-run has ats_checks already, use them)
+        try:
+            async with async_session_maker() as session:
+                stmt = select(Job).where(Job.id == job_id)
+                result = await session.execute(stmt)
+                job_for_ats = result.scalar_one_or_none()
+                if job_for_ats and job_for_ats.ats_checks:
+                    from app.services.ats.checker import compute_ats_score
+                    scores["ats_score"] = compute_ats_score(job_for_ats.ats_checks)
+        except Exception as e:
+            logger.warning("ats_score_computation_failed", error=str(e))
+
         # Save scores
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == job_id)

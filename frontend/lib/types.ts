@@ -49,6 +49,46 @@ export interface BenchmarkResult {
   sample_size: number;
 }
 
+export interface DeterministicMetrics {
+  bullet_count: number;
+  word_count: number;
+  quantification_ratio: number;
+  action_verb_ratio: {
+    strong: number;
+    weak: number;
+    neutral: number;
+    strong_ratio: number;
+    weak_ratio: number;
+  };
+  passive_voice_ratio: number;
+  avg_bullet_length_words: number;
+  section_coverage: {
+    found: string[];
+    missing: string[];
+    score: number;
+  };
+  skill_presence_in_experience: number;
+  employment_gaps: {
+    gaps_found: number;
+    longest_gap_months: number;
+  };
+  contact_signals: {
+    has_email: boolean;
+    has_phone: boolean;
+    has_linkedin: boolean;
+    has_github: boolean;
+    has_portfolio: boolean;
+  };
+  objective_score: number;
+}
+
+export interface JdKeywordGap {
+  matched_keywords: string[];
+  missing_keywords: string[];
+  match_ratio: number;
+  keyword_count: number;
+}
+
 export interface ScoreResult {
   overall: number;
   clarity: number;
@@ -59,6 +99,14 @@ export interface ScoreResult {
   jd_relevance?: boolean;
   target_role?: string | null;
   benchmark?: BenchmarkResult;
+  scoring_method?: string;
+  metrics?: DeterministicMetrics;
+  low_confidence?: boolean;
+  version_delta?: Record<string, number> | null;
+  ensemble_runs?: number;
+  score_ranges?: Record<string, number>;
+  ats_score?: number | null;
+  jd_keyword_gap?: JdKeywordGap | null;
 }
 
 export interface SectionResult {

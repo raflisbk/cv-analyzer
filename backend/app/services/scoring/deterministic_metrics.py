@@ -5,10 +5,10 @@ the LLM subjective score. The same CV always produces the same numbers.
 """
 
 import re
-from collections import Counter
+import statistics
 
 # ---------------------------------------------------------------------------
-# Verb lists (from ats/checker.py — shared ground truth)
+# Verb lists
 # ---------------------------------------------------------------------------
 
 _STRONG_VERBS: set[str] = {
@@ -39,17 +39,12 @@ _WEAK_VERBS: set[str] = {
 _PASSIVE_PATTERN = re.compile(
     r"\b(?:was|were|been|is|are|being)\s+\w+(?:ed|en)\b", re.IGNORECASE
 )
-_BULLET_PATTERN = re.compile(r"^[\s]*[-•●◆▪▸►*]\s+(.+)$", re.MULTILINE)
+# Traditional bullet chars
+_EXPLICIT_BULLET = re.compile(r"^[\s]*[-•●◆▪▸►*]\s+(.+)$", re.MULTILINE)
+# Numbered list: 1. text or (1) text
+_NUMBERED_BULLET = re.compile(r"^\s*\(\d+\)\s+(.+)$|\s*\d+\.\s+([A-Z].+)$", re.MULTILINE)
 _NUMBER_IN_TEXT = re.compile(r"\d+(?:[.,]\d+)?(?:\s*[%xX×])?|\$[\d,]+|Rp[\s\d,.]+")
-_DATE_RANGE = re.compile(
-    r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|"
-    r"april|june|july|august|september|october|november|december)"
-    r"\s+(\d{4})\s*[-–—]\s*"
-    r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|"
-    r"april|june|july|august|september|october|november|december"
-    r"|\d{4}|present|current|now|sekarang)",
-    re.IGNORECASE,
-)
+# Year ranges — used for employment gap detection
 _YEAR_RANGE = re.compile(r"(\d{4})\s*[-–—]\s*(\d{4}|present|current|now|sekarang)", re.IGNORECASE)
 _LINKEDIN = re.compile(r"linkedin\.com/in/", re.IGNORECASE)
 _GITHUB = re.compile(r"github\.com/", re.IGNORECASE)
@@ -57,14 +52,65 @@ _PORTFOLIO = re.compile(r"https?://(?!github|linkedin)[\w.-]+\.[a-z]{2,}", re.IG
 
 _EXPECTED_SECTIONS = {"experience", "education", "skills", "summary", "contact", "projects"}
 
+# Section keywords used to identify experience text from free text
+_EXP_SECTION_KEYWORDS = re.compile(
+    r"\b(?:experience|work|employment|professional|position|career|job|internship|freelance)\b",
+    re.IGNORECASE,
+)
+_EDU_SECTION_KEYWORDS = re.compile(
+    r"\b(?:education|university|college|degree|bachelor|master|phd|diploma|certification|course|training)\b",
+    re.IGNORECASE,
+)
+
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Bullet / achievement line extraction
 # ---------------------------------------------------------------------------
 
-def _extract_bullets(text: str) -> list[str]:
-    return [m.group(1).strip() for m in _BULLET_PATTERN.finditer(text)]
+def _extract_bullets(text: str, nlp_result: dict | None = None) -> list[str]:
+    """Extract achievement lines from CV text.
 
+    Handles:
+    - Traditional bullet chars (•, -, *, etc.)
+    - PDF-extracted text where lines are indented with spaces (no bullet char)
+    - Numbered lists
+    """
+    # 1. Traditional explicit bullets
+    explicit = [m.group(1).strip() for m in _EXPLICIT_BULLET.finditer(text)]
+    if explicit:
+        return explicit
+
+    # 2. Numbered bullets
+    numbered: list[str] = []
+    for m in _NUMBERED_BULLET.finditer(text):
+        line = (m.group(1) or m.group(2) or "").strip()
+        if len(line.split()) >= 4:
+            numbered.append(line)
+    if numbered:
+        return numbered
+
+    # 3. Fallback: indented achievement lines (PDF extraction artifact)
+    # Lines with 3+ leading spaces, 5+ words, not all-caps (not section headers)
+    indent_lines: list[str] = []
+    for line in text.splitlines():
+        stripped = line.lstrip(" \t")
+        indent = len(line) - len(stripped)
+        words = stripped.split()
+        if (
+            indent >= 3
+            and len(words) >= 5
+            and not stripped.isupper()
+            and not stripped.endswith(":")
+            and not stripped.startswith("#")
+        ):
+            indent_lines.append(stripped)
+
+    return indent_lines
+
+
+# ---------------------------------------------------------------------------
+# Individual metric helpers
+# ---------------------------------------------------------------------------
 
 def _quantification_ratio(bullets: list[str]) -> float:
     if not bullets:
@@ -74,7 +120,6 @@ def _quantification_ratio(bullets: list[str]) -> float:
 
 
 def _action_verb_ratio(bullets: list[str]) -> dict:
-    """Returns ratio of bullets starting with strong vs weak verb."""
     strong = weak = neutral = 0
     for bullet in bullets:
         first_word = bullet.split()[0].lower().rstrip(".,;") if bullet.split() else ""
@@ -119,7 +164,6 @@ def _section_coverage(nlp_result: dict | None) -> dict:
 
 
 def _skill_presence_in_experience(nlp_result: dict | None) -> float:
-    """Fraction of top-10 skills that appear verbatim in experience/projects text."""
     if not nlp_result:
         return 0.0
     skills: list[str] = nlp_result.get("skills", [])[:10]
@@ -136,36 +180,49 @@ def _skill_presence_in_experience(nlp_result: dict | None) -> float:
     return round(present / len(skills), 3)
 
 
-def _employment_gaps(text: str) -> dict:
-    """Detect employment gaps > 3 months from date ranges in text."""
-    import datetime
+def _employment_gaps(text: str, nlp_result: dict | None = None) -> dict:
+    """Detect employment gaps >3 months.
 
+    Uses experience section text when available (from nlp_result) to avoid
+    false positives from education dates.
+    """
+    import datetime
     _PRESENT_YEAR = datetime.date.today().year
 
-    year_ranges = _YEAR_RANGE.findall(text)
+    # Prefer experience section text to avoid education date false-positives
+    exp_text = text
+    if nlp_result:
+        sections = nlp_result.get("sections", [])
+        exp_parts = [
+            s.get("text", "")
+            for s in sections
+            if s.get("type") in {"experience", "work"}
+        ]
+        if exp_parts:
+            exp_text = " ".join(exp_parts)
+
+    year_ranges = _YEAR_RANGE.findall(exp_text)
     if len(year_ranges) < 2:
         return {"gaps_found": 0, "longest_gap_months": 0}
 
-    end_years: list[int] = []
-    start_years: list[int] = []
+    pairs: list[tuple[int, int]] = []
     for start, end in year_ranges:
         try:
             s = int(start)
             e = _PRESENT_YEAR if str(end).lower() in {"present", "current", "now", "sekarang"} else int(end)
-            start_years.append(s)
-            end_years.append(e)
+            if 1990 <= s <= _PRESENT_YEAR and s <= e:
+                pairs.append((s, e))
         except ValueError:
             continue
 
-    if not end_years:
+    if len(pairs) < 2:
         return {"gaps_found": 0, "longest_gap_months": 0}
 
-    # Sort ranges and find gaps
-    pairs = sorted(zip(start_years, end_years), key=lambda x: x[0])
+    pairs_sorted = sorted(pairs, key=lambda x: x[0])
     gaps_months: list[int] = []
-    for i in range(1, len(pairs)):
-        prev_end = pairs[i - 1][1]
-        curr_start = pairs[i][0]
+    for i in range(1, len(pairs_sorted)):
+        prev_end = pairs_sorted[i - 1][1]
+        curr_start = pairs_sorted[i][0]
         gap = (curr_start - prev_end) * 12
         if gap > 3:
             gaps_months.append(gap)
@@ -187,16 +244,15 @@ def _contact_signals(text: str) -> dict:
 
 
 def _objective_score(metrics: dict) -> int:
-    """Compute a fully deterministic overall quality score (0–100)."""
-    q_ratio     = metrics.get("quantification_ratio", 0)
-    verb        = metrics.get("action_verb_ratio", {})
-    strong_r    = verb.get("strong_ratio", 0)
-    weak_r      = verb.get("weak_ratio", 0)
-    passive     = metrics.get("passive_voice_ratio", 0)
-    section     = metrics.get("section_coverage", {}).get("score", 0) / 100
-    skill_pres  = metrics.get("skill_presence_in_experience", 0)
-    contact     = metrics.get("contact_signals", {})
-    gap         = metrics.get("employment_gaps", {}).get("longest_gap_months", 0)
+    q_ratio    = metrics.get("quantification_ratio", 0)
+    verb       = metrics.get("action_verb_ratio", {})
+    strong_r   = verb.get("strong_ratio", 0)
+    weak_r     = verb.get("weak_ratio", 0)
+    passive    = metrics.get("passive_voice_ratio", 0)
+    section    = metrics.get("section_coverage", {}).get("score", 0) / 100
+    skill_pres = metrics.get("skill_presence_in_experience", 0)
+    contact    = metrics.get("contact_signals", {})
+    gap        = metrics.get("employment_gaps", {}).get("longest_gap_months", 0)
 
     contact_score = sum([
         contact.get("has_email", False),
@@ -204,20 +260,98 @@ def _objective_score(metrics: dict) -> int:
         contact.get("has_linkedin", False),
     ]) / 3
 
-    gap_penalty = min(gap / 24, 0.5)  # max 50% penalty for 2-year gap
+    gap_penalty = min(gap / 24, 0.5)  # max 50-pt penalty at 24 months gap
 
-    # Weights sum to 100 → raw is already on a 0–100 scale
     raw = (
-        q_ratio     * 25 +
-        strong_r    * 20 +
+        q_ratio    * 25 +
+        strong_r   * 20 +
         (1 - weak_r) * 10 +
         (1 - passive) * 10 +
-        section     * 20 +
-        skill_pres  * 10 +
+        section    * 20 +
+        skill_pres * 10 +
         contact_score * 5
     ) - gap_penalty * 20
 
     return max(0, min(100, int(raw)))
+
+
+# ---------------------------------------------------------------------------
+# Score adjustment layer
+# ---------------------------------------------------------------------------
+
+_SCORE_WEIGHTS = {"impact": 0.35, "clarity": 0.30, "relevance": 0.20, "completeness": 0.15}
+
+
+def apply_score_adjustments(
+    llm_scores: dict,
+    metrics: dict,
+) -> tuple[dict, bool]:
+    """Nudge LLM scores using deterministic signals (±10 pt max per dimension).
+
+    Returns (adjusted_scores_dict, low_confidence_bool).
+    If bullet_count < 3, metrics are unreliable — scores unchanged, low_confidence=True.
+    """
+    adjusted = dict(llm_scores)
+    low_confidence = False
+
+    bullet_count = metrics.get("bullet_count", 0)
+    if bullet_count < 3:
+        # Can't trust per-bullet ratios with so few data points
+        low_confidence = True
+        return adjusted, low_confidence
+
+    quant_ratio = metrics.get("quantification_ratio", 0.0)
+    verb        = metrics.get("action_verb_ratio", {})
+    strong_r    = verb.get("strong_ratio", 0.0)
+    passive_r   = metrics.get("passive_voice_ratio", 0.0)
+    avg_len     = metrics.get("avg_bullet_length_words", 12.0)
+    sec_score   = metrics.get("section_coverage", {}).get("score", 50) / 100
+
+    # --- Impact: quantification & action verb signals ---
+    impact_adj = 0
+    if quant_ratio < 0.10:
+        impact_adj -= 7   # nearly no numbers → can't justify high impact
+    elif quant_ratio >= 0.50:
+        impact_adj += 3   # well quantified
+    if strong_r < 0.20:
+        impact_adj -= 4   # mostly weak/passive verbs
+    elif strong_r >= 0.60:
+        impact_adj += 2
+    impact_adj = max(-10, min(10, impact_adj))
+
+    # --- Clarity: passive voice & bullet length ---
+    clarity_adj = 0
+    if passive_r > 0.30:
+        clarity_adj -= 5
+    if avg_len > 30:
+        clarity_adj -= 3  # bullets are walls of text
+    elif 8 <= avg_len <= 20:
+        clarity_adj += 2  # optimal length
+    clarity_adj = max(-10, min(10, clarity_adj))
+
+    # --- Completeness: section coverage is objective ---
+    completeness_adj = 0
+    if sec_score < 0.50:
+        completeness_adj -= 8
+    elif sec_score >= 0.83:
+        completeness_adj += 3
+    completeness_adj = max(-10, min(10, completeness_adj))
+
+    adjusted["impact"]       = max(0, min(100, adjusted.get("impact", 50)       + impact_adj))
+    adjusted["clarity"]      = max(0, min(100, adjusted.get("clarity", 50)      + clarity_adj))
+    adjusted["completeness"] = max(0, min(100, adjusted.get("completeness", 50) + completeness_adj))
+
+    # Recompute overall
+    adjusted["overall"] = max(0, min(100, int(
+        sum(adjusted.get(d, 50) * w for d, w in _SCORE_WEIGHTS.items())
+    )))
+
+    # Consistency guard: flag when LLM impact >> deterministic proxy
+    det_impact_proxy = quant_ratio * 50 + strong_r * 50
+    if abs(llm_scores.get("impact", 50) - det_impact_proxy) > 25:
+        low_confidence = True
+
+    return adjusted, low_confidence
 
 
 # ---------------------------------------------------------------------------
@@ -229,7 +363,7 @@ def compute_deterministic_metrics(
     nlp_result: dict | None = None,
 ) -> dict:
     """Return fully reproducible CV quality metrics — no LLM, no randomness."""
-    bullets = _extract_bullets(cv_text)
+    bullets = _extract_bullets(cv_text, nlp_result)
 
     metrics = {
         "bullet_count": len(bullets),
@@ -240,7 +374,7 @@ def compute_deterministic_metrics(
         "avg_bullet_length_words": _avg_bullet_length(bullets),
         "section_coverage": _section_coverage(nlp_result),
         "skill_presence_in_experience": _skill_presence_in_experience(nlp_result),
-        "employment_gaps": _employment_gaps(cv_text),
+        "employment_gaps": _employment_gaps(cv_text, nlp_result),
         "contact_signals": _contact_signals(cv_text),
     }
     metrics["objective_score"] = _objective_score(metrics)

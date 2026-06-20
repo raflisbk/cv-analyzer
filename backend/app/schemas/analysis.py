@@ -28,13 +28,20 @@ class ScoreResult(BaseModel):
     jd_relevance: bool = False
     target_role: str | None = None
     benchmark: BenchmarkResult = BenchmarkResult()
-    # Deterministic objective metrics (added in scoring v2)
+    scoring_method: str = "llm"
+    # Deterministic objective metrics
     metrics: dict[str, Any] = {}
+    # Score adjustments applied (low confidence when LLM & deterministic disagree strongly)
+    low_confidence: bool = False
     # Per-dimension delta vs parent job (present when parent_job_id is set)
     version_delta: dict[str, int] | None = None
     # Ensemble metadata
     ensemble_runs: int = 1
     score_ranges: dict[str, int] = {}
+    # ATS numeric score (0-100) — populated on re-run when ats_checks exist
+    ats_score: int | None = None
+    # JD keyword gap (populated when JD was uploaded with CV)
+    jd_keyword_gap: dict[str, Any] | None = None
 
 
 class GrammarIssue(BaseModel):

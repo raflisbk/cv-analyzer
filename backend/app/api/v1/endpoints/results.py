@@ -73,10 +73,14 @@ async def get_job_results(
                     percentile=raw_benchmark.get("percentile", 0),
                     sample_size=raw_benchmark.get("sample_size", 0),
                 ),
+                scoring_method=raw_scores.get("scoring_method", "llm"),
                 metrics=raw_scores.get("metrics", {}),
+                low_confidence=raw_scores.get("low_confidence", False),
                 version_delta=raw_scores.get("version_delta"),
                 ensemble_runs=raw_scores.get("ensemble_runs", 1),
                 score_ranges=raw_scores.get("score_ranges", {}),
+                ats_score=raw_scores.get("ats_score"),
+                jd_keyword_gap=raw_scores.get("jd_keyword_gap"),
             )
             if job.scores
             else None
