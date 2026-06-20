@@ -118,7 +118,28 @@ def test_role_category_management() -> None:
 
 def test_role_category_engineering_fallback() -> None:
     assert _role_category("Software Engineer") == "engineering"
+    assert _role_category("Machine Learning Engineer") == "engineering"
     assert _role_category(None) == "general"
+
+
+def test_role_category_data() -> None:
+    assert _role_category("Data Scientist") == "data"
+    assert _role_category("Data Analyst") == "data"
+    assert _role_category("Data Engineer") == "data"
+    assert _role_category("MLOps Engineer") == "data"
+    assert _role_category("Analytics Engineer") == "data"
+
+
+def test_role_category_devops() -> None:
+    assert _role_category("DevOps Engineer") == "devops"
+    assert _role_category("Site Reliability Engineer") == "devops"
+    assert _role_category("Cloud Engineer") == "devops"
+
+
+def test_role_category_finance() -> None:
+    assert _role_category("Financial Analyst") == "finance"
+    assert _role_category("Accountant") == "finance"
+    assert _role_category("Audit Manager") == "finance"
 
 
 # ---------------------------------------------------------------------------

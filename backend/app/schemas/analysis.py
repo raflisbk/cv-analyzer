@@ -29,6 +29,7 @@ class ScoreResult(BaseModel):
     target_role: str | None = None
     benchmark: BenchmarkResult = BenchmarkResult()
     scoring_method: str = "llm"
+    scoring_algorithm_version: str = "v3"
     # Deterministic objective metrics
     metrics: dict[str, Any] = {}
     # Score adjustments applied (low confidence when LLM & deterministic disagree strongly)
@@ -42,6 +43,8 @@ class ScoreResult(BaseModel):
     ats_score: int | None = None
     # JD keyword gap (populated when JD was uploaded with CV)
     jd_keyword_gap: dict[str, Any] | None = None
+    # Grammar-based clarity penalty applied in llm_suggest_task (-10 to 0)
+    grammar_clarity_penalty: int | None = None
 
 
 class GrammarIssue(BaseModel):

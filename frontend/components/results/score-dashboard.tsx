@@ -48,7 +48,8 @@ const DIMENSIONS: Array<{
 
 export function ScoreDashboard({ scores }: ScoreDashboardProps) {
   const benchmark = scores.benchmark;
-  const showBenchmark = benchmark && benchmark.sample_size >= 5;
+  const showBenchmark = benchmark && benchmark.sample_size >= 20;
+  const isFallback = scores.scoring_method === "fallback";
   const roleLabel =
     scores.target_role
       ? SUPPORTED_ROLES.find((r) => r.id === scores.target_role)?.label ?? scores.target_role
@@ -57,6 +58,19 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
 
   return (
     <div className="space-y-6">
+      {/* Fallback warning — shown when LLM scoring failed entirely */}
+      {isFallback && (
+        <div className="rounded-xl border border-[#FF4FCB]/40 bg-[#FF4FCB]/8 px-4 py-3">
+          <p className="text-xs font-bold text-[#FF4FCB]">
+            ⚠ Scoring unavailable — placeholder values shown
+          </p>
+          <p className="text-[11px] text-[#F5F2D8]/60 mt-0.5">
+            The AI scorer could not process this CV. All scores shown (50/100) are
+            defaults and do not reflect the actual quality of the CV. Try re-analyzing.
+          </p>
+        </div>
+      )}
+
       {/* Overall score panel */}
       <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-white/[0.07]">
         <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">Overall Score</span>
@@ -89,15 +103,19 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
           )}
         </div>
 
-        {showBenchmark && (
+        {showBenchmark ? (
           <div className="mt-1 rounded-2xl bg-[#CAFF43]/6 border border-[#CAFF43]/15 px-5 py-3 text-center">
             <p className="text-sm font-extrabold text-[#CAFF43]">
-              Better than {benchmark.percentile}% of CVs analyzed
+              Better than {benchmark!.percentile}% of CVs analyzed
             </p>
             <p className="text-xs text-[#F5F2D8]/40 mt-0.5">
-              Based on {benchmark.sample_size.toLocaleString()} CVs in our platform
+              Based on {benchmark!.sample_size.toLocaleString()} CVs in our platform
             </p>
           </div>
+        ) : (
+          <p className="text-[10px] text-[#F5F2D8]/20 text-center mt-1">
+            Benchmark unlocks after 20+ CVs are analyzed on this platform
+          </p>
         )}
       </div>
 
@@ -175,6 +193,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
             jdKeywordGap={scores.jd_keyword_gap}
             lowConfidence={scores.low_confidence}
             versionDelta={scores.version_delta}
+            grammarClarityPenalty={scores.grammar_clarity_penalty}
           />
         </div>
       )}

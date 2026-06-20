@@ -100,6 +100,7 @@ export interface ScoreResult {
   target_role?: string | null;
   benchmark?: BenchmarkResult;
   scoring_method?: string;
+  scoring_algorithm_version?: string;
   metrics?: DeterministicMetrics;
   low_confidence?: boolean;
   version_delta?: Record<string, number> | null;
@@ -107,6 +108,7 @@ export interface ScoreResult {
   score_ranges?: Record<string, number>;
   ats_score?: number | null;
   jd_keyword_gap?: JdKeywordGap | null;
+  grammar_clarity_penalty?: number | null;
 }
 
 export interface SectionResult {

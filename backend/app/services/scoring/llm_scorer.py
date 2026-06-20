@@ -1,18 +1,28 @@
 """LLM-based CV scoring — calibrated to experience level and role category.
 
-Supports ensemble scoring (configurable N runs, median per dimension)
-to reduce inherent LLM non-determinism. Set CV_ANALYZER_SCORING_ENSEMBLE_RUNS=3
-to enable; defaults to 1 (single run, fastest).
+Features:
+- Ensemble scoring (configurable N runs, median per dimension)
+- Redis cache: same CV+role returns cached result, cuts API cost and variance
+- scoring_algorithm_version field for safe cross-run comparison
+
+Cache key: llm_score:{SCORING_VERSION}:{sha256(cv_slice+role+jd)[:24]}
+TTL: CV_ANALYZER_LLM_CACHE_TTL (default 86400s)
 """
 
+import hashlib
 import json
 import re
 import statistics
 
 import httpx
+import redis as redis_sync
 
 from app.core.logging import structured_logger as logger
 from app.services.scoring.text_normalizer import normalize_cv_text
+
+# Bump this when the prompt or weights change significantly.
+# Changing this string automatically invalidates all cached scores.
+SCORING_VERSION = "v4"
 
 _WEIGHTS = {
     "impact": 0.35,
@@ -42,6 +52,22 @@ _IMPACT_GUIDANCE: dict[str, str] = {
         "For engineering roles, impact includes: performance improvements (%, latency, throughput), "
         "cost savings, system scale (users, requests/day), reliability metrics (uptime, error rate), "
         "and delivered business outcomes (revenue, cost reduction)."
+    ),
+    "data": (
+        "For data roles (analyst/scientist/engineer), impact includes: model accuracy improvements "
+        "(precision, recall, F1, AUC), pipeline throughput or latency reduction, reduction in manual "
+        "reporting time, dashboard adoption rates, cost savings from automation, and business decisions "
+        "enabled or revenue influenced by analysis."
+    ),
+    "devops": (
+        "For DevOps/SRE/infrastructure roles, impact includes: deployment frequency improvements, "
+        "MTTR/incident reduction, uptime/availability percentages (e.g. 99.9%), infrastructure cost "
+        "savings, CI/CD pipeline speed gains, and scale metrics (servers managed, requests/day handled)."
+    ),
+    "finance": (
+        "For finance/accounting roles, impact includes: cost reduction ($ or %), budget variance "
+        "tightened, revenue protected or generated, time saved on reporting cycles, forecast accuracy "
+        "improvements, portfolio size managed, and compliance/audit outcomes."
     ),
     "general": (
         "Impact includes any measurable outcomes relevant to the role: "
@@ -82,40 +108,98 @@ Respond with ONLY a JSON object, no markdown fences, no text outside JSON:
   "relevance": <integer 0-100>,
   "completeness": <integer 0-100>,
   "reasoning": {{
-    "impact": "<1-2 sentences>",
-    "clarity": "<1-2 sentences>",
-    "relevance": "<1-2 sentences>",
-    "completeness": "<1-2 sentences>"
+    "impact": "<diagnosis of impact quality> — e.g. change '[weak phrase from CV]' → '[stronger version with metric]'",
+    "clarity": "<diagnosis of clarity/structure> — e.g. '[specific issue observed]' could be improved by '[concrete fix]'",
+    "relevance": "<how well skills/experience match target role> — key gap: '[specific missing skill or keyword]'",
+    "completeness": "<which sections are present or missing> — e.g. '[section name]' section is missing or needs '[specific content]'"
   }}
 }}\
 """
 
 
+# ---------------------------------------------------------------------------
+# Redis cache helpers
+# ---------------------------------------------------------------------------
+
+def _cache_key(cv_slice: str, role: str, jd_slice: str) -> str:
+    raw = f"{cv_slice}|{role}|{jd_slice}"
+    digest = hashlib.sha256(raw.encode()).hexdigest()[:24]
+    return f"llm_score:{SCORING_VERSION}:{digest}"
+
+
+def _cache_get(key: str, settings) -> dict | None:
+    try:
+        r = redis_sync.from_url(settings.CV_ANALYZER_REDIS_URL, decode_responses=True)
+        raw = r.get(key)
+        if raw:
+            logger.info("llm_scoring_cache_hit", key=key)
+            return json.loads(raw)
+    except Exception as e:
+        logger.warning("llm_score_cache_read_failed", error=str(e))
+    return None
+
+
+def _cache_set(key: str, data: dict, settings) -> None:
+    try:
+        r = redis_sync.from_url(settings.CV_ANALYZER_REDIS_URL, decode_responses=True)
+        r.setex(key, settings.CV_ANALYZER_LLM_CACHE_TTL, json.dumps(data))
+    except Exception as e:
+        logger.warning("llm_score_cache_write_failed", error=str(e))
+
+
+# ---------------------------------------------------------------------------
+# LLM helpers
+# ---------------------------------------------------------------------------
+
 def _role_category(role: str | None) -> str:
     if not role:
         return "general"
     r = role.lower()
-    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand"]):
+    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand", "graphic"]):
         return "design"
     if any(w in r for w in ["marketing", "growth", "content", "seo", "social media", "copywrite"]):
         return "marketing"
-    if any(w in r for w in ["manager", "product manager", "project manager", "scrum", "operations", "program"]):
+    if any(w in r for w in ["devops", "sre", "site reliability", "infrastructure", "platform engineer", "cloud engineer", "devsecops"]):
+        return "devops"
+    if any(w in r for w in ["data analyst", "data scientist", "data engineer", "business intelligence", "bi developer", "analytics engineer", "mlops", "ml ops"]):
+        return "data"
+    if any(w in r for w in ["financial analyst", "finance manager", "accountant", "accounting", "investment banker", "banking", "audit", "treasury", "controller", "cfo"]):
+        return "finance"
+    if any(w in r for w in ["product manager", "project manager", "scrum master", "program manager", "operations manager"]):
         return "management"
     return "engineering"
 
 
 def _extract_json(text: str) -> dict:
+    # Tier 1: direct parse
     try:
         return json.loads(text.strip())
     except json.JSONDecodeError:
         pass
+    # Tier 2: extract first {...} block then parse
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if match:
         try:
             return json.loads(match.group())
         except json.JSONDecodeError:
-            pass
-    raise ValueError(f"Cannot extract JSON from LLM output: {text[:300]!r}")
+            # Tier 3: json_repair for malformed JSON with closing brace present
+            try:
+                from json_repair import repair_json
+                repaired = repair_json(match.group(), return_objects=True)
+                if isinstance(repaired, dict):
+                    return repaired
+            except Exception:
+                pass
+    # Tier 4: json_repair on full raw text — handles truncated JSON with no closing brace
+    # (max_tokens cutoff mid-string means regex never matches, but json_repair can close open structures)
+    try:
+        from json_repair import repair_json
+        repaired = repair_json(text, return_objects=True)
+        if isinstance(repaired, dict) and any(k in repaired for k in ("impact", "clarity", "relevance", "completeness")):
+            return repaired
+    except Exception:
+        pass
+    raise ValueError(f"Cannot extract JSON from LLM output: {text[:500]!r}")
 
 
 def _median_int(values: list[int]) -> int:
@@ -134,7 +218,7 @@ def _single_llm_call(prompt: str, settings) -> dict | None:
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
                     "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": 600,
+                    "max_tokens": 1200,
                     "temperature": 0.1,
                 },
             )
@@ -151,6 +235,10 @@ def _single_llm_call(prompt: str, settings) -> dict | None:
         return None
 
 
+# ---------------------------------------------------------------------------
+# Public scorer
+# ---------------------------------------------------------------------------
+
 def score_cv_with_llm(
     cv_text: str,
     target_role: str | None = None,
@@ -162,6 +250,7 @@ def score_cv_with_llm(
     role_label = target_role or "General Professional"
     category = _role_category(target_role)
     cv_slice = normalize_cv_text(cv_text)[:4000]
+    jd_slice = (jd_text or "")[:200]
 
     jd_section = ""
     if jd_text:
@@ -175,6 +264,14 @@ def score_cv_with_llm(
     )
 
     n_runs = max(1, settings.CV_ANALYZER_SCORING_ENSEMBLE_RUNS)
+
+    # Cache lookup — only for single-run (ensemble explicitly wants fresh calls)
+    cache_key = _cache_key(cv_slice, role_label, jd_slice)
+    if n_runs == 1:
+        cached = _cache_get(cache_key, settings)
+        if cached:
+            return cached
+
     logger.info(
         "llm_scoring_request",
         role=role_label,
@@ -212,7 +309,6 @@ def score_cv_with_llm(
 
     overall = max(0, min(100, int(sum(scores[d] * _WEIGHTS[d] for d in dims))))
 
-    # Use reasoning from the first successful run
     reasonings: dict[str, str] = {}
     if isinstance(all_raw[0].get("reasoning"), dict):
         reasonings = {d: str(all_raw[0]["reasoning"].get(d, "")) for d in dims}
@@ -226,18 +322,24 @@ def score_cv_with_llm(
         **scores,
     )
 
-    return {
+    result_dict = {
         "overall": overall,
         **scores,
         "reasonings": reasonings,
         "scoring_method": "llm",
+        "scoring_algorithm_version": SCORING_VERSION,
         "provider": "koboi",
         "jd_relevance": bool(jd_text),
         "target_role": target_role,
         "ensemble_runs": len(all_raw),
-        # score_ranges: per-dim max-min spread across runs. High = low confidence.
         "score_ranges": score_ranges if len(all_raw) > 1 else {},
     }
+
+    # Cache the result for future identical requests
+    if n_runs == 1:
+        _cache_set(cache_key, result_dict, settings)
+
+    return result_dict
 
 
 def _fallback_scores(target_role: str | None) -> dict:
@@ -250,6 +352,7 @@ def _fallback_scores(target_role: str | None) -> dict:
         "completeness": 50,
         "reasonings": {},
         "scoring_method": "fallback",
+        "scoring_algorithm_version": SCORING_VERSION,
         "provider": "koboi",
         "jd_relevance": False,
         "target_role": target_role,

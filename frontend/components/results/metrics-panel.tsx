@@ -42,9 +42,10 @@ interface MetricsPanelProps {
   jdKeywordGap?: JdKeywordGap | null;
   lowConfidence?: boolean;
   versionDelta?: Record<string, number> | null;
+  grammarClarityPenalty?: number | null;
 }
 
-export function MetricsPanel({ metrics, jdKeywordGap, lowConfidence, versionDelta }: MetricsPanelProps) {
+export function MetricsPanel({ metrics, jdKeywordGap, lowConfidence, versionDelta, grammarClarityPenalty }: MetricsPanelProps) {
   const { action_verb_ratio, section_coverage, contact_signals, employment_gaps } = metrics;
 
   return (
@@ -162,6 +163,16 @@ export function MetricsPanel({ metrics, jdKeywordGap, lowConfidence, versionDelt
               {metrics.word_count}
             </span>
           </div>
+          {grammarClarityPenalty !== null && grammarClarityPenalty !== undefined && grammarClarityPenalty < 0 && (
+            <div className="rounded-lg border border-[#FF4FCB]/25 bg-[#FF4FCB]/8 px-3 py-2">
+              <p className="text-[10px] font-bold text-[#FF4FCB]">
+                Grammar penalty: {grammarClarityPenalty} pts applied to Clarity
+              </p>
+              <p className="text-[10px] text-[#F5F2D8]/50 mt-0.5">
+                Reduce grammar/spelling errors to recover clarity score
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Completeness signals */}

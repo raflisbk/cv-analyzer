@@ -117,11 +117,15 @@ def score_cv_task(self: Task, job_id: str) -> dict:
 
                     if parent_job and parent_job.scores:
                         dims = ["overall", "impact", "clarity", "relevance", "completeness"]
-                        delta = {
+                        delta: dict[str, int] = {
                             d: scores.get(d, 0) - parent_job.scores.get(d, 0)
                             for d in dims
                             if isinstance(parent_job.scores.get(d), (int, float))
                         }
+                        parent_alg = parent_job.scores.get("scoring_algorithm_version", "")
+                        curr_alg = scores.get("scoring_algorithm_version", "")
+                        if parent_alg and curr_alg and parent_alg != curr_alg:
+                            delta["_algorithm_changed"] = 1
                         scores["version_delta"] = delta
                         logger.info(
                             "version_delta_computed",
@@ -132,16 +136,25 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             except Exception as e:
                 logger.warning("version_delta_failed", error=str(e))
 
-        # Compute ATS numeric score from existing ats_checks (stored by grammar_check_task
-        # which runs after scoring in the chain — but if a re-run has ats_checks already, use them)
+        # Compute ATS score directly from nlp_sections — don't read from DB since
+        # grammar_check_task (which writes ats_checks) runs AFTER this task in the chain.
         try:
-            async with async_session_maker() as session:
-                stmt = select(Job).where(Job.id == job_id)
-                result = await session.execute(stmt)
-                job_for_ats = result.scalar_one_or_none()
-                if job_for_ats and job_for_ats.ats_checks:
-                    from app.services.ats.checker import compute_ats_score
-                    scores["ats_score"] = compute_ats_score(job_for_ats.ats_checks)
+            from app.services.ats.checker import check_ats_compatibility, compute_ats_score
+            from app.services.nlp.section_detector import CvSection
+
+            sections_for_ats: list[CvSection] | None = None
+            if nlp_sections:
+                sections_for_ats = [
+                    CvSection(
+                        type=sec.get("type", "other"),
+                        text=sec.get("text", ""),
+                        start_line=i * 5,
+                    )
+                    for i, sec in enumerate(nlp_sections)
+                ]
+            ats_checks_now = check_ats_compatibility(text, sections=sections_for_ats)
+            scores["ats_score"] = compute_ats_score(ats_checks_now)
+            logger.info("ats_score_computed", job_id=job_id, ats_score=scores["ats_score"])
         except Exception as e:
             logger.warning("ats_score_computation_failed", error=str(e))
 

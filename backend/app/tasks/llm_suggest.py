@@ -153,7 +153,7 @@ def _build_cv_document(
         completeness = _s.get("completeness", 0) or 0
         relevance   = _s.get("relevance", 0) or 0
         overall     = _s.get("overall") or int(
-            clarity * 0.40 + impact * 0.25 + completeness * 0.20 + relevance * 0.15
+            impact * 0.35 + clarity * 0.30 + relevance * 0.20 + completeness * 0.15
         )
         cv_document["scores"] = {
             "overall": overall,
@@ -293,12 +293,44 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         scores: dict | None,
     ) -> None:
         """Write suggestions + cv_document + COMPLETE atomically."""
+        _SCORE_WEIGHTS = {"impact": 0.35, "clarity": 0.30, "relevance": 0.20, "completeness": 0.15}
+
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == jid)
             result = await session.execute(stmt)
             job = result.scalar_one_or_none()
             if not job:
                 return
+
+            # Apply grammar clarity adjustment — grammar_check_task has already run at this point
+            if scores and job.grammar_issues:
+                issue_count = len(job.grammar_issues)
+                if issue_count > 30:
+                    grammar_penalty = -10
+                elif issue_count > 20:
+                    grammar_penalty = -7
+                elif issue_count > 10:
+                    grammar_penalty = -5
+                elif issue_count > 5:
+                    grammar_penalty = -3
+                else:
+                    grammar_penalty = 0
+
+                if grammar_penalty < 0:
+                    scores = dict(scores)
+                    scores["clarity"] = max(0, min(100, scores.get("clarity", 50) + grammar_penalty))
+                    scores["overall"] = max(0, min(100, int(
+                        sum(scores.get(d, 50) * w for d, w in _SCORE_WEIGHTS.items())
+                    )))
+                    scores["grammar_clarity_penalty"] = grammar_penalty
+                    job.scores = scores
+                    logger.info(
+                        "grammar_clarity_adjustment",
+                        job_id=jid,
+                        issue_count=issue_count,
+                        penalty=grammar_penalty,
+                        clarity_after=scores["clarity"],
+                    )
 
             job.suggestions = suggestions_json
             job.llm_tokens_used = tokens_used

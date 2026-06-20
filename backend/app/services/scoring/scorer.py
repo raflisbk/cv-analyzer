@@ -43,7 +43,7 @@ def score_cv(
 
     # Step 2: Deterministic metrics
     try:
-        metrics = compute_deterministic_metrics(text, nlp_result)
+        metrics = compute_deterministic_metrics(text, nlp_result, target_role=target_role)
         scores["metrics"] = metrics
     except Exception as e:
         logger.warning("deterministic_metrics_failed", error=str(e))

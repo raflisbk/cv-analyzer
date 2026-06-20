@@ -50,7 +50,30 @@ _LINKEDIN = re.compile(r"linkedin\.com/in/", re.IGNORECASE)
 _GITHUB = re.compile(r"github\.com/", re.IGNORECASE)
 _PORTFOLIO = re.compile(r"https?://(?!github|linkedin)[\w.-]+\.[a-z]{2,}", re.IGNORECASE)
 
-_EXPECTED_SECTIONS = {"experience", "education", "skills", "summary", "contact", "projects"}
+_DEFAULT_SECTIONS = {"experience", "education", "skills", "summary", "contact", "projects"}
+# Design/creative: portfolio (projects) + certifications matter more than traditional experience section
+_DESIGN_SECTIONS  = {"projects", "education", "skills", "summary", "contact", "certifications"}
+# DevOps/SRE/infra: certifications (AWS/GCP/Azure) critical; projects less common than experience
+_DEVOPS_SECTIONS  = {"experience", "education", "skills", "certifications", "contact", "summary"}
+# Finance/accounting: certifications (CPA/CFA) expected; projects rarely present
+_FINANCE_SECTIONS = {"experience", "education", "skills", "certifications", "contact", "summary"}
+
+# NLP section_detector returns "header" for the contact/personal info at the top of a CV.
+# Map it to "contact" so _section_coverage() recognises it correctly.
+_SECTION_TYPE_ALIASES: dict[str, str] = {"header": "contact"}
+
+
+def _expected_sections_for_role(target_role: str | None) -> set[str]:
+    if not target_role:
+        return _DEFAULT_SECTIONS
+    r = target_role.lower()
+    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand", "graphic", "illustrat"]):
+        return _DESIGN_SECTIONS
+    if any(w in r for w in ["devops", "sre", "site reliability", "infrastructure", "platform engineer", "cloud engineer", "devsecops"]):
+        return _DEVOPS_SECTIONS
+    if any(w in r for w in ["financial analyst", "finance", "accountant", "accounting", "banking", "audit", "treasury", "controller"]):
+        return _FINANCE_SECTIONS
+    return _DEFAULT_SECTIONS
 
 # Section keywords used to identify experience text from free text
 _EXP_SECTION_KEYWORDS = re.compile(
@@ -112,11 +135,18 @@ def _extract_bullets(text: str, nlp_result: dict | None = None) -> list[str]:
 # Individual metric helpers
 # ---------------------------------------------------------------------------
 
-def _quantification_ratio(bullets: list[str]) -> float:
-    if not bullets:
+def _quantification_ratio(bullets: list[str], exp_bullets: list[str] | None = None) -> float:
+    """Fraction of achievement bullets that contain a number/metric.
+
+    Uses experience+projects bullets when available (passed as exp_bullets) because
+    quantification in skill lists or education sections is not meaningful for impact scoring.
+    Falls back to all bullets if no experience-specific bullets were found.
+    """
+    target = exp_bullets if exp_bullets else bullets
+    if not target:
         return 0.0
-    with_numbers = sum(1 for b in bullets if _NUMBER_IN_TEXT.search(b))
-    return round(with_numbers / len(bullets), 3)
+    with_numbers = sum(1 for b in target if _NUMBER_IN_TEXT.search(b))
+    return round(with_numbers / len(target), 3)
 
 
 def _action_verb_ratio(bullets: list[str]) -> dict:
@@ -153,13 +183,16 @@ def _avg_bullet_length(bullets: list[str]) -> float:
     return round(sum(len(b.split()) for b in bullets) / len(bullets), 1)
 
 
-def _section_coverage(nlp_result: dict | None) -> dict:
+def _section_coverage(nlp_result: dict | None, target_role: str | None = None) -> dict:
+    expected = _expected_sections_for_role(target_role)
     if not nlp_result:
-        return {"found": [], "missing": list(_EXPECTED_SECTIONS), "score": 0}
-    found_types = {s.get("type", "") for s in nlp_result.get("sections", [])}
-    found = [s for s in _EXPECTED_SECTIONS if s in found_types]
-    missing = [s for s in _EXPECTED_SECTIONS if s not in found_types]
-    score = round(len(found) / len(_EXPECTED_SECTIONS) * 100)
+        return {"found": [], "missing": sorted(expected), "score": 0}
+    raw_types = {s.get("type", "") for s in nlp_result.get("sections", [])}
+    # Apply aliases: NLP returns "header" for the contact block at the top of a CV
+    found_types = {_SECTION_TYPE_ALIASES.get(t, t) for t in raw_types}
+    found = [s for s in expected if s in found_types]
+    missing = [s for s in expected if s not in found_types]
+    score = round(len(found) / len(expected) * 100)
     return {"found": found, "missing": missing, "score": score}
 
 
@@ -361,18 +394,27 @@ def apply_score_adjustments(
 def compute_deterministic_metrics(
     cv_text: str,
     nlp_result: dict | None = None,
+    target_role: str | None = None,
 ) -> dict:
     """Return fully reproducible CV quality metrics — no LLM, no randomness."""
     bullets = _extract_bullets(cv_text, nlp_result)
 
+    # Extract experience/projects bullets separately for impact-relevant quantification
+    exp_text = " ".join(
+        s.get("text", "")
+        for s in (nlp_result or {}).get("sections", [])
+        if s.get("type") in {"experience", "projects"}
+    )
+    exp_bullets = _extract_bullets(exp_text) if exp_text.strip() else None
+
     metrics = {
         "bullet_count": len(bullets),
         "word_count": len(cv_text.split()),
-        "quantification_ratio": _quantification_ratio(bullets),
+        "quantification_ratio": _quantification_ratio(bullets, exp_bullets),
         "action_verb_ratio": _action_verb_ratio(bullets),
         "passive_voice_ratio": _passive_voice_ratio(cv_text),
         "avg_bullet_length_words": _avg_bullet_length(bullets),
-        "section_coverage": _section_coverage(nlp_result),
+        "section_coverage": _section_coverage(nlp_result, target_role),
         "skill_presence_in_experience": _skill_presence_in_experience(nlp_result),
         "employment_gaps": _employment_gaps(cv_text, nlp_result),
         "contact_signals": _contact_signals(cv_text),
