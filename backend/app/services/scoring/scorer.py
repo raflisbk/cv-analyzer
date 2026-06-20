@@ -29,6 +29,17 @@ _RELEVANCE_SECTION_TYPES = {"skills", "experience", "projects"}
 # Top-K anchors to average per dimension (avoids dilution from weakly-matching anchors)
 _TOP_K_ANCHORS = 2
 
+# Cosine similarity rescaling: practical range of text-embedding-3-large in this domain.
+# Unrelated text clusters ~0.20; near-perfect CV-to-anchor match tops out ~0.75.
+# Mapping [SIM_FLOOR, SIM_CEIL] → [0, 100] gives a human-friendly scale.
+_SIM_FLOOR = 0.20
+_SIM_CEIL = 0.75
+
+
+def _rescale(sim: float) -> int:
+    scaled = (sim - _SIM_FLOOR) / (_SIM_CEIL - _SIM_FLOOR) * 100
+    return max(0, min(100, int(scaled)))
+
 
 def _get_dimension_configs(target_role: str | None) -> list[tuple[str, list[str], float]]:
     if not target_role:
@@ -136,13 +147,13 @@ def score_cv(
 
         if dim_name == "relevance" and jd_embedding is not None:
             # JD provided: direct CV↔JD cosine is more accurate than anchor comparison
-            score = max(0, min(100, int(cosine_similarity(cv_full_emb, jd_embedding) * 100)))
+            score = _rescale(cosine_similarity(cv_full_emb, jd_embedding))
             logger.info("dimension_scored", dimension=dim_name, score=score, method="jd_similarity")
         else:
             cv_emb = _CV_EMB_FOR_DIM.get(dim_name, cv_full_emb)
             similarities = [cosine_similarity(cv_emb, ae) for ae in anchor_embeddings]
             mean_sim = _top_k_mean_sim(similarities)
-            score = max(0, min(100, int(mean_sim * 100)))
+            score = _rescale(mean_sim)
             logger.info(
                 "dimension_scored",
                 dimension=dim_name,
