@@ -69,11 +69,16 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             async with async_session_maker() as session:
                 overall_score = scores.get("overall", 0)
 
+                # Only compare against jobs scored with the same method to avoid
+                # mixing embedding-based scores with LLM scores.
+                same_method_filter = Job.scores["scoring_method"].astext == "llm"
+
                 total_count_result = await session.execute(
                     select(sa_func.count(Job.id)).where(
                         Job.status == JobStatus.COMPLETE,
                         Job.scores.isnot(None),
                         Job.id != job_id,
+                        same_method_filter,
                     )
                 )
                 total_count: int = total_count_result.scalar() or 0
@@ -84,6 +89,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                             Job.status == JobStatus.COMPLETE,
                             Job.scores.isnot(None),
                             Job.id != job_id,
+                            same_method_filter,
                             cast(Job.scores["overall"].astext, Integer) <= overall_score,
                         )
                     )
