@@ -49,15 +49,18 @@ def score_cv_task(self: Task, job_id: str) -> dict:
 
         # Scoring work (sync, makes HTTP calls) — outside DB session
         scores = score_cv(text, jd_text=jd_text, target_role=target_role, nlp_sections=nlp_sections)
-        try:
-            from app.services.llm.score_explainer import ScoreExplainerService
 
-            explainer = ScoreExplainerService()
-            reasonings = explainer.explain_scores(text, scores)
-            scores["reasonings"] = reasonings
-        except Exception as e:
-            logger.error("score_explanation_failed", error=str(e), exc_info=True)
-            scores["reasonings"] = {}
+        # LLM scorer already includes per-dimension reasoning — no separate explainer needed.
+        # Fall back to ScoreExplainerService only if reasonings are missing (e.g. fallback path).
+        if not scores.get("reasonings"):
+            try:
+                from app.services.llm.score_explainer import ScoreExplainerService
+
+                explainer = ScoreExplainerService()
+                scores["reasonings"] = explainer.explain_scores(text, scores)
+            except Exception as e:
+                logger.error("score_explanation_failed", error=str(e), exc_info=True)
+                scores["reasonings"] = {}
 
         # Compute benchmark percentile (how this CV compares to all previously scored CVs)
         benchmark: dict = {}
