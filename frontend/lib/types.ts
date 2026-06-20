@@ -142,7 +142,9 @@ export const SUPPORTED_ROLES = [
   { id: "product_manager", label: "Product Manager" },
 ] as const;
 
-export type RoleId = (typeof SUPPORTED_ROLES)[number]["id"];
+export type PredefinedRoleId = (typeof SUPPORTED_ROLES)[number]["id"];
+/** Predefined role ID or any free-text custom role string. */
+export type RoleId = PredefinedRoleId | (string & {});
 
 export interface SkillGapItem {
   skill: string;

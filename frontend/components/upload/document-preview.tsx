@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { FileText, CheckCircle2 } from "lucide-react";
 import { SUPPORTED_ROLES } from "@/lib/types";
 
@@ -10,6 +11,8 @@ interface DocumentPreviewProps {
   targetRole?: string;
   onTargetRoleChange?: (role: string) => void;
 }
+
+const CUSTOM_ROLE_VALUE = "__custom__";
 
 export function DocumentPreview({
   file,
@@ -23,6 +26,33 @@ export function DocumentPreview({
   const fileTypeColor = fileType === "PDF"
     ? "bg-[#FF8C42]/15 text-[#FF8C42]"
     : "bg-[#8B5CF6]/15 text-[#8B5CF6]";
+
+  const isPredefinedRole = SUPPORTED_ROLES.some((r) => r.id === targetRole);
+  const isCustomMode = targetRole !== "" && !isPredefinedRole;
+
+  const [customInput, setCustomInput] = useState(isCustomMode ? targetRole : "");
+  const [selectValue, setSelectValue] = useState(
+    isCustomMode ? CUSTOM_ROLE_VALUE : targetRole
+  );
+
+  const handleSelectChange = (value: string) => {
+    setSelectValue(value);
+    if (value === CUSTOM_ROLE_VALUE) {
+      onTargetRoleChange?.(customInput);
+    } else {
+      onTargetRoleChange?.(value);
+    }
+  };
+
+  const handleCustomInputChange = (value: string) => {
+    setCustomInput(value);
+    onTargetRoleChange?.(value);
+  };
+
+  const activeRoleLabel =
+    selectValue === CUSTOM_ROLE_VALUE
+      ? customInput || null
+      : SUPPORTED_ROLES.find((r) => r.id === selectValue)?.label ?? null;
 
   return (
     <div className="w-full space-y-4">
@@ -48,23 +78,39 @@ export function DocumentPreview({
       </div>
 
       {onTargetRoleChange && (
-        <div>
-          <label className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block mb-2">
+        <div className="space-y-2">
+          <label className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block">
             Target Role <span className="normal-case font-normal">(optional — improves scoring accuracy)</span>
           </label>
           <select
-            value={targetRole}
-            onChange={(e) => onTargetRoleChange(e.target.value)}
+            value={selectValue}
+            onChange={(e) => handleSelectChange(e.target.value)}
             className="w-full bg-[#141414] border border-white/10 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30 appearance-none cursor-pointer"
           >
             <option value="">General (no specific role)</option>
             {SUPPORTED_ROLES.map((r) => (
               <option key={r.id} value={r.id}>{r.label}</option>
             ))}
+            <option value={CUSTOM_ROLE_VALUE}>✦ Custom role (type your own)…</option>
           </select>
-          {targetRole && (
-            <p className="text-xs text-[#CAFF43]/60 mt-1.5">
-              ✦ Anchors calibrated for {SUPPORTED_ROLES.find((r) => r.id === targetRole)?.label}
+
+          {selectValue === CUSTOM_ROLE_VALUE && (
+            <input
+              type="text"
+              value={customInput}
+              onChange={(e) => handleCustomInputChange(e.target.value)}
+              placeholder="e.g. Backend Engineer, UI/UX Designer, DevOps Engineer…"
+              className="w-full bg-[#141414] border border-[#CAFF43]/30 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] placeholder:text-[#F5F2D8]/25 focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30"
+              autoFocus
+            />
+          )}
+
+          {activeRoleLabel && (
+            <p className="text-xs text-[#CAFF43]/60">
+              ✦ Anchors calibrated for {activeRoleLabel}
+              {selectValue === CUSTOM_ROLE_VALUE && (
+                <span className="text-[#F5F2D8]/30 ml-1">(AI-generated, cached 7 days)</span>
+              )}
             </p>
           )}
         </div>

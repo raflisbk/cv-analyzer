@@ -27,18 +27,32 @@ _IMPACT_SECTION_TYPES = {"experience", "projects", "achievements", "awards"}
 _RELEVANCE_SECTION_TYPES = {"skills", "experience", "projects"}
 
 # Top-K anchors to average per dimension (avoids dilution from weakly-matching anchors)
-_TOP_K_ANCHORS = 3
+_TOP_K_ANCHORS = 2
 
 
 def _get_dimension_configs(target_role: str | None) -> list[tuple[str, list[str], float]]:
-    if not target_role or target_role not in ROLE_ANCHORS:
+    if not target_role:
         return _GENERIC_DIMENSION_CONFIGS
-    role = ROLE_ANCHORS[target_role]
-    weights: list[tuple[str, list[str], float]] = []
-    for dim_name, _, weight in _GENERIC_DIMENSION_CONFIGS:
-        anchors = role.get(dim_name) or _GENERIC_ANCHORS[dim_name]
-        weights.append((dim_name, anchors, weight))
-    return weights
+    if target_role in ROLE_ANCHORS:
+        role = ROLE_ANCHORS[target_role]
+        return [
+            (dim_name, role.get(dim_name) or _GENERIC_ANCHORS[dim_name], weight)
+            for dim_name, _, weight in _GENERIC_DIMENSION_CONFIGS
+        ]
+    # Unknown / custom role: try LLM-generated anchors (cached in Redis 7 days)
+    try:
+        from app.services.scoring.dynamic_anchors import get_all_dynamic_anchors
+
+        dynamic = get_all_dynamic_anchors(target_role)
+        if dynamic:
+            logger.info("dynamic_anchors_applied", role=target_role)
+            return [
+                (dim_name, dynamic.get(dim_name) or _GENERIC_ANCHORS[dim_name], weight)
+                for dim_name, _, weight in _GENERIC_DIMENSION_CONFIGS
+            ]
+    except Exception as e:
+        logger.warning("dynamic_anchors_failed", role=target_role, error=str(e))
+    return _GENERIC_DIMENSION_CONFIGS
 
 
 def _build_focused_text(
