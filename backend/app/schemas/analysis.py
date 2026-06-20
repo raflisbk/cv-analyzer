@@ -28,6 +28,13 @@ class ScoreResult(BaseModel):
     jd_relevance: bool = False
     target_role: str | None = None
     benchmark: BenchmarkResult = BenchmarkResult()
+    # Deterministic objective metrics (added in scoring v2)
+    metrics: dict[str, Any] = {}
+    # Per-dimension delta vs parent job (present when parent_job_id is set)
+    version_delta: dict[str, int] | None = None
+    # Ensemble metadata
+    ensemble_runs: int = 1
+    score_ranges: dict[str, int] = {}
 
 
 class GrammarIssue(BaseModel):

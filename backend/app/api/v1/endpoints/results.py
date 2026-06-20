@@ -57,21 +57,26 @@ async def get_job_results(
 
         check_job_access(job, current_user)
 
-        raw_benchmark = (job.scores or {}).get("benchmark", {}) or {}
+        raw_scores = job.scores or {}
+        raw_benchmark = raw_scores.get("benchmark", {}) or {}
         scores = (
             ScoreResult(
-                overall=job.scores.get("overall", 0),
-                clarity=job.scores.get("clarity", 0),
-                impact=job.scores.get("impact", 0),
-                completeness=job.scores.get("completeness", 0),
-                relevance=job.scores.get("relevance", 0),
-                reasonings=job.scores.get("reasonings", {}),
-                jd_relevance=job.scores.get("jd_relevance", False),
-                target_role=job.scores.get("target_role") or job.target_role,
+                overall=raw_scores.get("overall", 0),
+                clarity=raw_scores.get("clarity", 0),
+                impact=raw_scores.get("impact", 0),
+                completeness=raw_scores.get("completeness", 0),
+                relevance=raw_scores.get("relevance", 0),
+                reasonings=raw_scores.get("reasonings", {}),
+                jd_relevance=raw_scores.get("jd_relevance", False),
+                target_role=raw_scores.get("target_role") or job.target_role,
                 benchmark=BenchmarkResult(
                     percentile=raw_benchmark.get("percentile", 0),
                     sample_size=raw_benchmark.get("sample_size", 0),
                 ),
+                metrics=raw_scores.get("metrics", {}),
+                version_delta=raw_scores.get("version_delta"),
+                ensemble_runs=raw_scores.get("ensemble_runs", 1),
+                score_ranges=raw_scores.get("score_ranges", {}),
             )
             if job.scores
             else None
