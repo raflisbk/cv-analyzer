@@ -16,6 +16,7 @@ def _get_client() -> OpenAI:
     return OpenAI(
         base_url=settings.CV_ANALYZER_KOBOI_BASE_URL,
         api_key=settings.CV_ANALYZER_KOBOI_API_KEY,
+        timeout=60.0,
     )
 
 
