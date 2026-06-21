@@ -242,6 +242,7 @@ export type ArchetypeDomain =
   | "environment_sustainability"
   | "domestic_household"
   | "arts_entertainment_sports"
+  | "digital_economy"
   | (string & {});
 
 export interface ArchetypeResult {

@@ -924,6 +924,63 @@ REGISTRY: dict[str, dict] = {
             "instruktur_seni_tari": "instruktur tari, sanggar, anak-anak, lomba, PAUD hingga dewasa",
         },
     },
+    # ── 31. Digital Economy & Startup ────────────────────────────────────────
+    "digital_economy": {
+        "display_name": "Ekonomi Digital & Startup",
+        "archetypes": {
+            # Startup & founder
+            "startup_founder_ceo": "founder startup, CEO, fundraising, investor deck, pivot, PMF",
+            "cto_startup_tech": "CTO startup, MVP, tech stack, tim kecil, architecture awal",
+            "startup_growth_hacker": "growth hacking, viral loop, referral, retention, 0-to-1 growth",
+            "product_manager_startup": "PM startup, discovery, prioritization, north star, sprint",
+            "startup_ops_chief_of_staff": "chief of staff, ops startup, OKR, cross-function, founder support",
+
+            # Digital health & telemedicine
+            "telemedicine_doctor": "dokter telemed, Halodoc/Alodokter/KlikDokter, konsul online, e-resep",
+            "digital_health_pm": "health app PM, EHR/EMR, HL7/FHIR, SATUSEHAT, interoperabilitas",
+            "health_informatics": "informatika kesehatan, SIMRS, data klinik, rekam medis digital",
+            "mental_health_digital": "kesehatan jiwa digital, platform konseling, Into The Light",
+
+            # EdTech
+            "edtech_pm": "EdTech PM, platform belajar, engagement, LMS, Ruangguru/Zenius/Quipper",
+            "instructional_designer": "instructional design, ADDIE, learning objective, e-learning module",
+            "edtech_content_creator": "konten edukasi digital, video tutorial, animasi belajar, micro-learning",
+            "online_course_manager": "course manager platform, kurikulum digital, kelas live, LMS admin",
+
+            # Fintech & neobank
+            "neobank_product": "neobank PM, digital wallet, tabungan digital, GoPay/OVO/DANA feature",
+            "crypto_web3_engineer": "kripto, DeFi, smart contract, Solidity, Web3, token, NFT",
+            "paylater_bnpl_analyst": "PayLater, BNPL, kredit digital, credit scoring algoritmik, OJK",
+            "p2p_lending_analyst": "P2P lending, marketplace lending, risiko kredit digital, fintech OJK",
+            "open_banking_engineer": "open banking, API banking, SNAP BI, agregator rekening, BaaS",
+            "insurtech_pm": "InsurTech PM, micro asuransi, klaim otomatis, embedded insurance",
+            "wealthtech_analyst": "WealthTech, robo-advisor, reksa dana digital, portofolio, SPPEI",
+
+            # Marketplace & super app
+            "marketplace_ops": "marketplace ops, trust & safety, fraud, seller management, dispute",
+            "super_app_pm": "super app PM, ekosistem multi-layanan, Gojek/Grab/Shopee ecosystem",
+            "platform_partnerships": "platform BD, kemitraan ekosistem, API monetization, white-label",
+            "ecommerce_manager": "e-commerce manager, marketplace strategy, omnichannel, D2C",
+            "live_commerce_manager": "live commerce manager, host management, GMV, Shopee/TikTok Shop",
+            "d2c_brand_manager": "D2C brand, direct-to-consumer, brand.com, own channel, CRM D2C",
+
+            # Digital transformation (lintas industri)
+            "chief_digital_officer": "CDO, transformasi digital korporat, roadmap, legacy modernization",
+            "digital_transformation_consultant": "konsultan digitalisasi, BPR, ERP, change management",
+            "enterprise_digitization": "digitalisasi proses, workflow otomasi, paperless, RPA",
+            "govtech_developer": "SPBE, aplikasi Pemda, GovTech, OSS, portal layanan publik",
+            "smart_city_analyst": "smart city, IoT kota, dashboard Pemda, data perkotaan",
+
+            # PropTech & AgriTech digital
+            "proptech_pm": "PropTech PM, platform properti, virtual tour, Lamudi/Rumah123/99.co",
+            "agritech_pm": "AgriTech PM, platform petani, Jala/TaniHub/eFarm, precision farming",
+
+            # Creator economy & digital media
+            "creator_economy_manager": "creator economy, brand deal manager, platform kreator, monetisasi",
+            "talent_manager_digital": "talent manager digital, manajemen artis digital, KOL agency",
+            "newsletter_writer": "newsletter, Substack/Beehiiv, subscriber, paid newsletter, niche",
+        },
+    },
 }
 
 
@@ -1263,6 +1320,24 @@ _EXPANSIONS: dict[str, dict[str, str]] = {
         "art_director_film": "art director film, production design, set dressing, prop",
         "colorist_grader": "color grading, DaVinci Resolve, look, HDR, final grade",
         "media_buyer_digital": "media buyer, programmatic, DSP, DV360, RTB, CPM/CPC",
+        "live_shopping_host": "host live commerce, TikTok Shop/Shopee Live, demo produk, GMV",
+        "kol_beauty_lifestyle": "KOL beauty/lifestyle, review skincare, GRWM, haul, endorse",
+        "kol_food_kuliner": "KOL kuliner, food vlog, review restoran, mukbang, food review",
+        "kol_travel_pariwisata": "KOL travel, vlog perjalanan, destinasi, tips trip, endorse hotel",
+        "kol_tech_gadget": "KOL teknologi, unboxing, review gadget, comparison, affiliate",
+        "kol_gaming": "KOL gaming, gameplay, review game, mobile/PC, competitive, sponsor",
+        "kol_parenting_family": "KOL parenting, konten keluarga, edukasi anak, tips ibu, collab",
+        "short_form_specialist": "konten pendek vertikal, Reels/TikTok/Shorts, hook, trending audio",
+        "ugc_creator": "UGC creator, user generated content, brand brief, authentic review",
+    },
+    "marketing": {
+        "technical_seo": "SEO teknis, Core Web Vitals, schema markup, crawl budget, site audit",
+        "sem_ppc_specialist": "SEM, Google Ads, Bing Ads, PPC, Quality Score, smart bidding",
+        "kol_talent_manager": "talent manager KOL, manajemen influencer, rate card, kontrak brand",
+        "content_strategist": "content strategy, pillar content, distribution, multi-platform",
+        "affiliate_program_manager": "affiliate program, publisher network, komisi, tracking, voucher",
+        "marketplace_ads_specialist": "iklan marketplace, Shopee Ads/Tokopedia Ads, search boost",
+        "social_listening_analyst": "social listening, brand monitoring, Brandwatch/Mention/Talkwalker",
     },
 }
 
