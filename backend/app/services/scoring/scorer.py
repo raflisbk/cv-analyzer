@@ -31,19 +31,32 @@ def score_cv(
             "CV_ANALYZER_KOBOI_API_KEY not configured. Please set it in your .env file."
         )
 
+    # Extract archetype domain detected during NLP stage — more precise than role text
+    archetype_domain: str | None = None
+    if nlp_result and nlp_result.get("archetype"):
+        archetype_domain = nlp_result["archetype"].get("domain") or None
+
     logger.info(
         "scoring_start",
         text_length=len(text),
         target_role=target_role,
+        archetype_domain=archetype_domain,
         jd_provided=bool(jd_text),
     )
 
     # Step 1: LLM scoring
-    scores = score_cv_with_llm(text, target_role=target_role, jd_text=jd_text)
+    scores = score_cv_with_llm(
+        text,
+        target_role=target_role,
+        jd_text=jd_text,
+        archetype_domain=archetype_domain,
+    )
 
     # Step 2: Deterministic metrics
     try:
-        metrics = compute_deterministic_metrics(text, nlp_result, target_role=target_role)
+        metrics = compute_deterministic_metrics(
+            text, nlp_result, target_role=target_role, archetype_domain=archetype_domain
+        )
         scores["metrics"] = metrics
     except Exception as e:
         logger.warning("deterministic_metrics_failed", error=str(e))

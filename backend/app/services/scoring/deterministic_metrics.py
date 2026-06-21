@@ -25,9 +25,20 @@ _STRONG_VERBS: set[str] = {
     "restructured", "revamped", "scaled", "secured", "shaped",
     "shipped", "simplified", "spearheaded", "standardized", "streamlined",
     "transformed", "upgraded", "won",
-    # Indonesian
+    # Indonesian — comprehensive coverage for CV in Bahasa Indonesia
     "membangun", "mengembangkan", "meningkatkan", "mengoptimalkan",
     "memimpin", "merancang", "menciptakan", "mengimplementasikan",
+    "meluncurkan", "mengelola", "mendirikan", "memperluas", "mencapai",
+    "mengurangi", "memotong", "menyederhanakan", "mempercepat",
+    "mengintegrasikan", "mengotomasi", "menghasilkan", "memenangkan",
+    "menegosiasikan", "melatih", "membimbing", "memproduksi",
+    "mengoperasikan", "mengaudit", "memantau", "merestrukturisasi",
+    "mengkoordinasikan", "menyelesaikan", "mengadvokasi", "mempublikasikan",
+    "merekrut", "menstandarisasi", "memvalidasi", "mendistribusikan",
+    "memfasilitasi", "mensertifikasi", "memperbaiki", "mendigitalisasi",
+    "mentransformasikan", "memangkas", "mengkomersialkan", "menyusun",
+    "mengkalibrasi", "mendeploy", "merenovasi", "memperkenalkan",
+    "mengkoordinir", "mendampingi", "merintis", "memprakarsai",
 }
 
 _WEAK_VERBS: set[str] = {
@@ -51,28 +62,64 @@ _GITHUB = re.compile(r"github\.com/", re.IGNORECASE)
 _PORTFOLIO = re.compile(r"https?://(?!github|linkedin)[\w.-]+\.[a-z]{2,}", re.IGNORECASE)
 
 _DEFAULT_SECTIONS = {"experience", "education", "skills", "summary", "contact", "projects"}
-# Design/creative: portfolio (projects) + certifications matter more than traditional experience section
+# Design/creative (portfolio-centric): projects + certifications > traditional experience section
 _DESIGN_SECTIONS  = {"projects", "education", "skills", "summary", "contact", "certifications"}
-# DevOps/SRE/infra: certifications (AWS/GCP/Azure) critical; projects less common than experience
+# Creative media: same portfolio-centric pattern — portfolio/reel replaces experience
+_CREATIVE_SECTIONS = {"projects", "summary", "contact", "skills", "certifications"}
+# DevOps/SRE/infra: certifications (AWS/GCP/Azure) critical; projects less expected
 _DEVOPS_SECTIONS  = {"experience", "education", "skills", "certifications", "contact", "summary"}
-# Finance/accounting: certifications (CPA/CFA) expected; projects rarely present
+# Finance/accounting: certifications (CPA/CFA/CMA) expected; projects rarely present
 _FINANCE_SECTIONS = {"experience", "education", "skills", "certifications", "contact", "summary"}
+# Certification-focused domains: healthcare, manufacturing, construction, education, legal, beauty,
+# mining, government — certifications are as important as experience
+_CERTIF_FOCUSED_SECTIONS = {"experience", "education", "certifications", "skills", "contact", "summary"}
+
+# Maps archetype domain → expected section set.
+# Domains not listed fall through to role-text matching then _DEFAULT_SECTIONS.
+_DOMAIN_TO_SECTIONS: dict[str, set[str]] = {
+    "healthcare": _CERTIF_FOCUSED_SECTIONS,
+    "manufacturing": _CERTIF_FOCUSED_SECTIONS,
+    "construction": _CERTIF_FOCUSED_SECTIONS,
+    "education": _CERTIF_FOCUSED_SECTIONS,
+    "legal_professional": _CERTIF_FOCUSED_SECTIONS,
+    "beauty_wellness": _CERTIF_FOCUSED_SECTIONS,
+    "mining_energy": _CERTIF_FOCUSED_SECTIONS,
+    "government_public": _CERTIF_FOCUSED_SECTIONS,
+    "telecom_infrastructure": _DEVOPS_SECTIONS,
+    "finance_banking": _FINANCE_SECTIONS,
+    "design": _DESIGN_SECTIONS,
+    "creative_media": _CREATIVE_SECTIONS,
+}
 
 # NLP section_detector returns "header" for the contact/personal info at the top of a CV.
 # Map it to "contact" so _section_coverage() recognises it correctly.
 _SECTION_TYPE_ALIASES: dict[str, str] = {"header": "contact"}
 
 
-def _expected_sections_for_role(target_role: str | None) -> set[str]:
+def _expected_sections_for_role(
+    target_role: str | None,
+    archetype_domain: str | None = None,
+) -> set[str]:
+    # Archetype domain lookup takes priority — it's more precise
+    if archetype_domain and archetype_domain in _DOMAIN_TO_SECTIONS:
+        return _DOMAIN_TO_SECTIONS[archetype_domain]
     if not target_role:
         return _DEFAULT_SECTIONS
     r = target_role.lower()
-    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand", "graphic", "illustrat"]):
+    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "brand", "graphic", "illustrat"]):
         return _DESIGN_SECTIONS
+    if any(w in r for w in ["photographer", "videographer", "filmmaker", "animator", "content creator", "kreator"]):
+        return _CREATIVE_SECTIONS
     if any(w in r for w in ["devops", "sre", "site reliability", "infrastructure", "platform engineer", "cloud engineer", "devsecops"]):
         return _DEVOPS_SECTIONS
     if any(w in r for w in ["financial analyst", "finance", "accountant", "accounting", "banking", "audit", "treasury", "controller"]):
         return _FINANCE_SECTIONS
+    if any(w in r for w in ["dokter", "doctor", "nurse", "perawat", "bidan", "apoteker", "fisioterapis"]):
+        return _CERTIF_FOCUSED_SECTIONS
+    if any(w in r for w in ["guru", "teacher", "dosen", "lecturer", "trainer", "instruktur"]):
+        return _CERTIF_FOCUSED_SECTIONS
+    if any(w in r for w in ["legal", "lawyer", "advokat", "notaris", "hukum"]):
+        return _CERTIF_FOCUSED_SECTIONS
     return _DEFAULT_SECTIONS
 
 # Section keywords used to identify experience text from free text
@@ -183,8 +230,12 @@ def _avg_bullet_length(bullets: list[str]) -> float:
     return round(sum(len(b.split()) for b in bullets) / len(bullets), 1)
 
 
-def _section_coverage(nlp_result: dict | None, target_role: str | None = None) -> dict:
-    expected = _expected_sections_for_role(target_role)
+def _section_coverage(
+    nlp_result: dict | None,
+    target_role: str | None = None,
+    archetype_domain: str | None = None,
+) -> dict:
+    expected = _expected_sections_for_role(target_role, archetype_domain)
     if not nlp_result:
         return {"found": [], "missing": sorted(expected), "score": 0}
     raw_types = {s.get("type", "") for s in nlp_result.get("sections", [])}
@@ -395,6 +446,7 @@ def compute_deterministic_metrics(
     cv_text: str,
     nlp_result: dict | None = None,
     target_role: str | None = None,
+    archetype_domain: str | None = None,
 ) -> dict:
     """Return fully reproducible CV quality metrics — no LLM, no randomness."""
     bullets = _extract_bullets(cv_text, nlp_result)
@@ -414,7 +466,7 @@ def compute_deterministic_metrics(
         "action_verb_ratio": _action_verb_ratio(bullets),
         "passive_voice_ratio": _passive_voice_ratio(cv_text),
         "avg_bullet_length_words": _avg_bullet_length(bullets),
-        "section_coverage": _section_coverage(nlp_result, target_role),
+        "section_coverage": _section_coverage(nlp_result, target_role, archetype_domain),
         "skill_presence_in_experience": _skill_presence_in_experience(nlp_result),
         "employment_gaps": _employment_gaps(cv_text, nlp_result),
         "contact_signals": _contact_signals(cv_text),

@@ -31,6 +31,42 @@ _WEIGHTS = {
     "completeness": 0.15,
 }
 
+# Maps archetype registry domain keys → scoring category (used for impact guidance selection).
+# Archetype detection is more precise than role-text matching, so it takes priority.
+_DOMAIN_TO_CATEGORY: dict[str, str] = {
+    "healthcare": "healthcare",
+    "technology": "engineering",
+    "ai_ml": "data",
+    "data": "data",
+    "design": "design",
+    "product": "management",
+    "marketing": "marketing",
+    "finance_banking": "finance",
+    "government_public": "government",
+    "manufacturing": "manufacturing",
+    "construction": "construction",
+    "hospitality_fnb": "hospitality",
+    "retail": "retail",
+    "logistics_transport": "logistics",
+    "creative_media": "creative",
+    "agriculture": "agriculture",
+    "education": "education",
+    "beauty_wellness": "beauty",
+    "gig_freelance": "general",
+    "journalism_media": "journalism",
+    "legal_professional": "legal",
+    "mining_energy": "mining",
+    "human_resources": "hr",
+    "social_ngo": "social",
+    "religious_services": "general",
+    "property_realestate": "property",
+    "telecom_infrastructure": "engineering",
+    "environment_sustainability": "environment",
+    "domestic_household": "general",
+    "arts_entertainment_sports": "arts",
+    "digital_economy": "digital_economy",
+}
+
 _IMPACT_GUIDANCE: dict[str, str] = {
     "design": (
         "For design roles, impact includes: design system coverage/adoption, "
@@ -54,20 +90,159 @@ _IMPACT_GUIDANCE: dict[str, str] = {
         "and delivered business outcomes (revenue, cost reduction)."
     ),
     "data": (
-        "For data roles (analyst/scientist/engineer), impact includes: model accuracy improvements "
+        "For data roles (analyst/scientist/engineer/MLOps), impact includes: model accuracy improvements "
         "(precision, recall, F1, AUC), pipeline throughput or latency reduction, reduction in manual "
         "reporting time, dashboard adoption rates, cost savings from automation, and business decisions "
         "enabled or revenue influenced by analysis."
+    ),
+    "finance": (
+        "For finance/accounting/banking roles, impact includes: cost reduction ($ or %), budget variance "
+        "tightened, revenue protected or generated, time saved on reporting cycles, forecast accuracy "
+        "improvements, portfolio size or AUM managed, and compliance/audit outcomes."
+    ),
+    "healthcare": (
+        "For healthcare roles, impact includes: patient volume handled (daily/monthly), "
+        "clinical outcome metrics (recovery rate, complication reduction, mortality rate), "
+        "certifications earned (STR/SIP/fellowship/subspecialty), research publications, "
+        "quality improvement outcomes (SNARS/JCI audit scores), "
+        "program coverage (% population served), waiting time reduction, "
+        "and operational throughput (procedure volume per period)."
+    ),
+    "government": (
+        "For government/public sector roles, impact includes: program beneficiaries served (number), "
+        "budget managed (Rp), compliance and audit results (BPK/BPKP finding reduction), "
+        "policy outcomes (target achievement %), service delivery improvements "
+        "(waiting time, digitalization adoption rate), awards/recognition received, "
+        "and cross-institutional coordination outcomes."
+    ),
+    "manufacturing": (
+        "For manufacturing roles, impact includes: OEE improvement (%), "
+        "defect/rejection rate reduction (PPM or %), production throughput increase, "
+        "cost savings (material, energy, downtime in Rp or %), "
+        "safety record (LTI-free days, LTIR reduction), cycle time reduction, "
+        "certifications achieved (ISO 9001/14001, OHSAS 18001), "
+        "and capacity utilization improvement."
+    ),
+    "construction": (
+        "For construction roles, impact includes: project delivered on-time and on-budget (% variance), "
+        "contract value managed (Rp), safety record (LTI-free days, near-miss reduction), "
+        "quality defect rate, team/subcontractor size coordinated, "
+        "value engineering savings (Rp), and client satisfaction or repeat contracts."
+    ),
+    "hospitality": (
+        "For hospitality/F&B roles, impact includes: revenue per cover, "
+        "occupancy rate and RevPAR improvement, food cost % reduction, "
+        "customer satisfaction score (NPS, Google/TripAdvisor rating), "
+        "upselling revenue contribution, team/outlet size managed, "
+        "staff turnover reduction, and health/HACCP compliance results."
+    ),
+    "retail": (
+        "For retail roles, impact includes: sales per sqm, inventory turnover, "
+        "shrinkage/loss reduction (%), conversion rate improvement, "
+        "basket size increase, revenue growth (% YoY), "
+        "store/category ranking within region, and stock availability rate."
+    ),
+    "logistics": (
+        "For logistics/transport roles, impact includes: on-time delivery rate (%), "
+        "cost per shipment/km reduction, fleet or warehouse utilization %, "
+        "throughput improvement (orders or tons/day), inventory accuracy %, "
+        "SLA compliance with key clients, and team/driver count managed."
+    ),
+    "creative": (
+        "For creative/media roles, impact includes: follower or subscriber growth (absolute or %), "
+        "engagement rate vs benchmark, view/impression milestones, "
+        "brand deals or clients secured (number or value), production credits (notable titles), "
+        "awards and festival selections, portfolio breadth across industries, "
+        "and measurable audience demographics achieved."
+    ),
+    "agriculture": (
+        "For agriculture/farming roles, impact includes: yield per hectare (increase %), "
+        "production cost reduction (%), quality grade achieved (Grade A, SNI, organic cert), "
+        "land area managed (Ha), certification earned (GAP, SOP, rainforest alliance), "
+        "revenue or income generated, livestock count or production volume per cycle, "
+        "and technology adoption outcomes (IoT, precision farming)."
+    ),
+    "education": (
+        "For education roles, impact includes: student pass/kelulusan rate (%), "
+        "student satisfaction score, class or student cohort size, "
+        "curriculum development and adoption, enrollment growth, "
+        "student competition achievements, accreditation results (BAN-PT/S grade), "
+        "digital learning adoption rate, and training program completion rate."
+    ),
+    "beauty": (
+        "For beauty/wellness roles, impact includes: client retention rate (%), "
+        "revenue per treatment, monthly active client volume, "
+        "certification or competition achievements (BNSP, contest wins), "
+        "social media growth (followers, content reach), "
+        "product or service launched, training classes delivered, "
+        "and outlet/studio revenue contribution."
+    ),
+    "journalism": (
+        "For journalism/media roles, impact includes: articles or content published (volume), "
+        "readership, pageview, or viewership milestones, "
+        "virality or social reach achieved, awards and nominations (PWI, Anugerah Jurnalistik), "
+        "exclusive stories or scoops landed, podcast or broadcast audience size, "
+        "and platform growth metrics (subscribers, followers)."
+    ),
+    "legal": (
+        "For legal/professional roles, impact includes: case win rate (%), "
+        "contract value negotiated or protected (Rp/$), "
+        "litigation outcomes (settlement amount, favorable court ruling), "
+        "compliance audit results (zero findings), licenses or permits secured, "
+        "legal risk exposure mitigated (Rp), policy or regulation drafted, "
+        "and client retention rate."
+    ),
+    "mining": (
+        "For mining/energy roles, impact includes: production volume (ton/bbl/MW), "
+        "cost per ton/bbl/MWh reduction (%), LTIFR or safety record improvement, "
+        "ore or resource recovery rate improvement, equipment availability %, "
+        "project capex delivered vs budget (% variance), "
+        "environmental compliance (zero violations), and reserve or resource estimate contribution."
+    ),
+    "hr": (
+        "For HR roles, impact includes: time-to-hire reduction (days), "
+        "cost-per-hire reduction (%), attrition rate reduction (%), "
+        "employee satisfaction or eNPS improvement, training completion rate, "
+        "headcount managed, payroll accuracy %, "
+        "labor compliance or audit results, and employer branding outcomes."
+    ),
+    "social": (
+        "For social/NGO roles, impact includes: beneficiaries directly reached (number), "
+        "funds raised (Rp/$), donor retention rate, program outcome achievement (% of target), "
+        "volunteer hours mobilized, partnership value secured, "
+        "and measurable behavior change or service coverage increase in target communities."
+    ),
+    "property": (
+        "For property/real estate roles, impact includes: transaction value facilitated (Rp), "
+        "units sold or leased per period, occupancy rate achieved, "
+        "rental yield improvement, client referral rate, listing volume managed, "
+        "project development value overseen, and time-on-market reduction."
+    ),
+    "environment": (
+        "For environment/sustainability roles, impact includes: emissions reduced (CO₂ tons/year), "
+        "waste diverted from landfill (ton or %), renewable energy capacity added (MW/kWh), "
+        "cost savings from efficiency or green programs (Rp), compliance rate (zero violations), "
+        "ESG rating or PROPER grade improvement, area conserved or rehabilitated (Ha), "
+        "and stakeholder or community engagement outcomes."
+    ),
+    "arts": (
+        "For arts/entertainment/sports roles, impact includes: competition or performance achievements "
+        "(rankings, titles, medals, awards), audience size at events, "
+        "revenue or sponsorship generated or secured, media coverage scale, "
+        "coaching outcomes (student achievements, competition wins), "
+        "and production or event scale (budget, attendance, reach)."
+    ),
+    "digital_economy": (
+        "For digital economy/startup roles, impact includes: GMV or TPV, MAU/DAU, "
+        "revenue growth (% MoM/YoY), conversion rate improvement, "
+        "app downloads or installs, user retention or churn reduction, "
+        "fundraising raised (seed/series, total amount), NPS score, "
+        "and platform scale metrics (transactions/day, merchants onboarded)."
     ),
     "devops": (
         "For DevOps/SRE/infrastructure roles, impact includes: deployment frequency improvements, "
         "MTTR/incident reduction, uptime/availability percentages (e.g. 99.9%), infrastructure cost "
         "savings, CI/CD pipeline speed gains, and scale metrics (servers managed, requests/day handled)."
-    ),
-    "finance": (
-        "For finance/accounting roles, impact includes: cost reduction ($ or %), budget variance "
-        "tightened, revenue protected or generated, time saved on reporting cycles, forecast accuracy "
-        "improvements, portfolio size managed, and compliance/audit outcomes."
     ),
     "general": (
         "Impact includes any measurable outcomes relevant to the role: "
@@ -151,13 +326,16 @@ def _cache_set(key: str, data: dict, settings) -> None:
 # LLM helpers
 # ---------------------------------------------------------------------------
 
-def _role_category(role: str | None) -> str:
+def _role_category(role: str | None, archetype_domain: str | None = None) -> str:
+    # Archetype domain is more precise than free-text role matching — use it first
+    if archetype_domain and archetype_domain in _DOMAIN_TO_CATEGORY:
+        return _DOMAIN_TO_CATEGORY[archetype_domain]
     if not role:
         return "general"
     r = role.lower()
     if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand", "graphic"]):
         return "design"
-    if any(w in r for w in ["marketing", "growth", "content", "seo", "social media", "copywrite"]):
+    if any(w in r for w in ["marketing", "growth", "seo", "social media", "copywrite"]):
         return "marketing"
     if any(w in r for w in ["devops", "sre", "site reliability", "infrastructure", "platform engineer", "cloud engineer", "devsecops"]):
         return "devops"
@@ -167,6 +345,18 @@ def _role_category(role: str | None) -> str:
         return "finance"
     if any(w in r for w in ["product manager", "project manager", "scrum master", "program manager", "operations manager"]):
         return "management"
+    if any(w in r for w in ["doctor", "nurse", "dokter", "perawat", "bidan", "farmasi", "apoteker", "fisioterapis"]):
+        return "healthcare"
+    if any(w in r for w in ["teacher", "guru", "lecturer", "dosen", "trainer", "pengajar", "instruktur"]):
+        return "education"
+    if any(w in r for w in ["lawyer", "legal", "advokat", "notaris", "hukum", "counsel", "jaksa"]):
+        return "legal"
+    if any(w in r for w in ["journalist", "reporter", "jurnalis", "wartawan", "redaktur", "editor media"]):
+        return "journalism"
+    if any(w in r for w in ["photographer", "videographer", "filmmaker", "animator", "content creator", "kreator"]):
+        return "creative"
+    if any(w in r for w in ["hr ", "human resource", "hrga", "recruitment", "people ops", "talent acquisition"]):
+        return "hr"
     return "engineering"
 
 
@@ -243,12 +433,13 @@ def score_cv_with_llm(
     cv_text: str,
     target_role: str | None = None,
     jd_text: str | None = None,
+    archetype_domain: str | None = None,
 ) -> dict:
     from app.core.config import get_settings
 
     settings = get_settings()
     role_label = target_role or "General Professional"
-    category = _role_category(target_role)
+    category = _role_category(target_role, archetype_domain)
     cv_slice = normalize_cv_text(cv_text)[:4000]
     jd_slice = (jd_text or "")[:200]
 
