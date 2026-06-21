@@ -1065,6 +1065,13 @@ _EXPANSIONS: dict[str, dict[str, str]] = {
         "channel_marketing": "channel marketing, distributor program, incentive, sell-through",
         "field_sales_fmcg": "sales lapangan FMCG, kanvas, salesforce, MD, distribution",
         "ambassador_program": "ambassador program, KOL management, talent database, brief",
+        "technical_seo": "SEO teknis, Core Web Vitals, schema markup, crawl budget, site audit",
+        "sem_ppc_specialist": "SEM, Google Ads, Bing Ads, PPC, Quality Score, smart bidding",
+        "kol_talent_manager": "talent manager KOL, manajemen influencer, rate card, kontrak brand",
+        "content_strategist": "content strategy, pillar content, distribution, multi-platform",
+        "affiliate_program_manager": "affiliate program, publisher network, komisi, tracking, voucher",
+        "marketplace_ads_specialist": "iklan marketplace, Shopee Ads/Tokopedia Ads, search boost",
+        "social_listening_analyst": "social listening, brand monitoring, Brandwatch/Mention/Talkwalker",
     },
     "finance_banking": {
         "financial_modeling": "financial modeling, LBO, DCF, scenario, Excel/Python/VBA",
@@ -1329,15 +1336,37 @@ _EXPANSIONS: dict[str, dict[str, str]] = {
         "kol_parenting_family": "KOL parenting, konten keluarga, edukasi anak, tips ibu, collab",
         "short_form_specialist": "konten pendek vertikal, Reels/TikTok/Shorts, hook, trending audio",
         "ugc_creator": "UGC creator, user generated content, brand brief, authentic review",
-    },
-    "marketing": {
-        "technical_seo": "SEO teknis, Core Web Vitals, schema markup, crawl budget, site audit",
-        "sem_ppc_specialist": "SEM, Google Ads, Bing Ads, PPC, Quality Score, smart bidding",
-        "kol_talent_manager": "talent manager KOL, manajemen influencer, rate card, kontrak brand",
-        "content_strategist": "content strategy, pillar content, distribution, multi-platform",
-        "affiliate_program_manager": "affiliate program, publisher network, komisi, tracking, voucher",
-        "marketplace_ads_specialist": "iklan marketplace, Shopee Ads/Tokopedia Ads, search boost",
-        "social_listening_analyst": "social listening, brand monitoring, Brandwatch/Mention/Talkwalker",
+        # Photography specializations
+        "photographer_portrait": "portrait/headshot studio, beauty retouching, lighting studio, model arahan",
+        "photographer_product_ecommerce": "foto produk e-commerce, katalog digital, flat lay, hero shot, Tokopedia/Shopee",
+        "photographer_documentary": "foto dokumenter, photo essay, editorial photography, NGO/media",
+        "photographer_aerial_drone": "drone photography/cinematography, DJI, aerial shot, izin terbang DJPU",
+        "photographer_architecture": "foto arsitektur & interior, real estate photography, property listing",
+        # Video production crew
+        "cinematographer_dop": "Director of Photography, DOP, sinematografi, lighting design, look film",
+        "documentary_filmmaker": "filmmaker dokumenter, riset lapangan, narasumber, pitching festival, broadcast",
+        "motion_designer": "motion graphics, After Effects, broadcast design, title sequence, infografis animasi",
+        "video_editor_corporate": "editor video korporat, company profile, explainer, training video, internal",
+        # Audio & voice
+        "voice_over_artist": "voice over, dubbing, narasi, radio iklan, VO booth, audiobook, ADR recording",
+        "mixing_mastering_engineer": "mixing & mastering, DAW, LUFS, audio balance, Spotify/Apple mastering",
+        "jingle_composer": "komposer jingle iklan, production music, music library, musik latar brand",
+        # Illustration & visual art
+        "comic_artist_webtoon": "komik/webtoon, Line Webtoon/Tapas, panel, inking, cerita bergambar digital",
+        "storyboard_artist": "storyboard, animatic, shot breakdown, pre-viz, advertising & film production",
+        "concept_artist": "concept art, environment/karakter game & film, production brief, Photoshop/Procreate",
+        "mural_street_artist": "mural, street art, cat tembok, commissioned wall art, festival seni publik",
+        # Digital & interactive
+        "ar_filter_creator": "AR filter Instagram/Snapchat, Spark AR, Lens Studio, branded filter, effect viral",
+        "virtual_youtuber_vtuber": "VTuber, Live2D/3D avatar, virtual streamer Indonesia, model rigging, OBS",
+        # Creative agency & brand
+        "copywriter_advertising": "copywriter iklan, ATL/BTL, headline, tagline, campaign concept, pitch deck",
+        "brand_storyteller": "brand storytelling, narrative strategy, long-form brand content, konten merek",
+        "creative_producer": "creative producer, produksi konten, brief management, vendor, timeline shoot",
+        # Music production & live
+        "music_video_director": "sutradara MV, treatment, on-set, kolaborasi artis/label, post-production MV",
+        "session_musician": "musisi session, rekaman studio, backing track, multi-instrument, session player",
+        "newsletter_creator": "newsletter kreator, Substack/beehiiv, email list, konten berkala, subscriber",
     },
 }
 
