@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useCallback, useState, type CSSProperties } from "react";
+import { toast } from "sonner";
 import { Wand2, GitCompare, Download, FileText, ChevronUp, ChevronDown, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -63,8 +64,8 @@ export function WorkspaceV2Shell({
       if (data) {
         setHydration(data);
       }
-    } catch (error) {
-      console.error("[Shell] Failed to fetch hydration:", error);
+    } catch {
+      toast.error("Failed to load workspace data. Please refresh the page.");
     }
   }, [jobId, setHydration]);
 
@@ -74,6 +75,7 @@ export function WorkspaceV2Shell({
       const proxyUrl = `/api/v1/jobs/${jobId}/file/proxy`;
       setPdfUrl(proxyUrl);
     } catch {
+      /* PDF proxy URL assignment cannot fail */
     }
   }, [jobId, pdfUrl, setPdfUrl]);
 
@@ -92,7 +94,11 @@ export function WorkspaceV2Shell({
     } else {
       fetchPdfUrl();
     }
-  }, [isUpload, jobId, hydration, initialPdfUrl, setJobId, setHydration, setPdfUrl, fetchPdfUrl, fetchHydration, storeHydration]);
+  }, [
+    isUpload, jobId, hydration, initialPdfUrl,
+    setJobId, setHydration, setPdfUrl,
+    fetchPdfUrl, fetchHydration, storeHydration
+  ]);
 
   const gridStyle: CSSProperties = isUpload
     ? { gridTemplateColumns: "210px minmax(0, 1.18fr) 280px" }

@@ -89,6 +89,7 @@ def mock_ready_job():
         "overall_recommendation": "Strong fit with room to improve platform depth.",
     }
     job.comparison_status = "complete"
+    job.user_id = None
     return job
 
 
@@ -113,6 +114,7 @@ def mock_preparing_job():
     job.suggestions = None
     job.comparison_result = None
     job.comparison_status = None
+    job.user_id = None
     return job
 
 
@@ -137,6 +139,7 @@ def mock_failed_job():
     job.suggestions = None
     job.comparison_result = None
     job.comparison_status = None
+    job.user_id = None
     return job
 
 

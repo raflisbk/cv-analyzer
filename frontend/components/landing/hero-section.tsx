@@ -86,44 +86,18 @@ export default function HeroSection() {
 
             <button
               onClick={() => showComingSoon("CV Builder")}
-              className="rounded-full px-8 py-3.5 text-base font-extrabold transition-all duration-200 active:scale-[0.98]"
-              style={{
-                background: "rgba(245,242,216,0.05)",
-                color: "rgba(245,242,216,0.6)",
-                border: "1px solid rgba(245,242,216,0.15)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,140,66,0.6)";
-                e.currentTarget.style.color = "#FF8C42";
-                e.currentTarget.style.background = "rgba(255,140,66,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(245,242,216,0.15)";
-                e.currentTarget.style.color = "rgba(245,242,216,0.6)";
-                e.currentTarget.style.background = "rgba(245,242,216,0.05)";
-              }}
+              className="rounded-full px-8 py-3.5 text-base font-extrabold transition-all duration-200 active:scale-[0.98]
+                border border-[#F5F2D8]/15 bg-[#F5F2D8]/[0.05] text-[#F5F2D8]/60
+                hover:border-[#FF8C42]/60 hover:bg-[#FF8C42]/[0.05] hover:text-[#FF8C42]"
             >
               Build My CV
             </button>
 
             <button
               onClick={() => showComingSoon("Job Finding")}
-              className="rounded-full px-8 py-3.5 text-base font-extrabold transition-all duration-200 active:scale-[0.98]"
-              style={{
-                background: "rgba(245,242,216,0.05)",
-                color: "rgba(245,242,216,0.6)",
-                border: "1px solid rgba(245,242,216,0.15)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(139,92,246,0.6)";
-                e.currentTarget.style.color = "#8B5CF6";
-                e.currentTarget.style.background = "rgba(139,92,246,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(245,242,216,0.15)";
-                e.currentTarget.style.color = "rgba(245,242,216,0.6)";
-                e.currentTarget.style.background = "rgba(245,242,216,0.05)";
-              }}
+              className="rounded-full px-8 py-3.5 text-base font-extrabold transition-all duration-200 active:scale-[0.98]
+                border border-[#F5F2D8]/15 bg-[#F5F2D8]/[0.05] text-[#F5F2D8]/60
+                hover:border-[#8B5CF6]/60 hover:bg-[#8B5CF6]/[0.05] hover:text-[#8B5CF6]"
             >
               Find My Job
             </button>

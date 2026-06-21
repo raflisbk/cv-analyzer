@@ -2,7 +2,62 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SSEConnection } from "@/lib/sse";
-import type { ComparisonResult, JobRole } from "@/lib/types";
+import type { ComparisonResult, JobRole, SkillGapItem } from "@/lib/types";
+
+const PRIORITY_STYLES: Record<string, { badge: string; dot: string; label: string }> = {
+  high: { badge: "bg-[#FF4FCB]/12 text-[#FF4FCB] border border-[#FF4FCB]/20", dot: "bg-[#FF4FCB]", label: "High Priority" },
+  medium: { badge: "bg-[#FF8C42]/12 text-[#FF8C42] border border-[#FF8C42]/20", dot: "bg-[#FF8C42]", label: "Medium" },
+  low: { badge: "bg-white/8 text-[#F5F2D8]/50 border border-white/10", dot: "bg-[#F5F2D8]/30", label: "Low" },
+};
+
+function SkillGapReport({ gaps }: { gaps: SkillGapItem[] }) {
+  if (!gaps || gaps.length === 0) { return null; }
+  return (
+    <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-6 md:p-8 space-y-4">
+      <div>
+        <h3 className="font-display font-extrabold text-base text-[#F5F2D8]">Skills Gap Report</h3>
+        <p className="text-xs text-[#F5F2D8]/40 mt-1">Missing skills ranked by importance for this role</p>
+      </div>
+      <div className="space-y-3">
+        {gaps.map((gap) => {
+          const style = PRIORITY_STYLES[gap.priority] ?? PRIORITY_STYLES.low;
+          return (
+            <div key={gap.skill} className="rounded-xl border border-white/5 bg-[#141414] p-4 space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${style.dot}`} />
+                  <span className="font-extrabold text-sm text-[#F5F2D8] truncate">{gap.skill}</span>
+                  <span className="text-xs text-[#F5F2D8]/30 flex-shrink-0">{gap.category}</span>
+                </div>
+                <span className={`text-xs font-bold rounded-full px-2.5 py-0.5 flex-shrink-0 ${style.badge}`}>
+                  {style.label}
+                </span>
+              </div>
+              {gap.why_important && (
+                <p className="text-xs text-[#F5F2D8]/50 leading-relaxed">{gap.why_important}</p>
+              )}
+              {gap.resources.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {gap.resources.map((r) => (
+                    <a
+                      key={r.url}
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-bold text-[#CAFF43]/70 hover:text-[#CAFF43] underline underline-offset-2 transition-colors"
+                    >
+                      {r.title} ↗
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 interface CompareTabProps {
   jobId: string;
@@ -25,6 +80,7 @@ export function CompareTab({
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryRequested, setRetryRequested] = useState(false);
   const [streamStage, setStreamStage] = useState<string | null>(null);
   const sseRef = useRef<SSEConnection | null>(null);
 
@@ -37,7 +93,7 @@ export function CompareTab({
     comparisonStatus === "pending" ||
     comparisonStatus === "comparing";
   const isComplete = comparisonStatus === "complete" && comparisonResult !== null;
-  const isFailed = comparisonStatus === "failed";
+  const isFailed = !retryRequested && comparisonStatus === "failed";
 
   const canCompare = jdText.trim().length >= 50 && !isLoading && !isSubmitting;
 
@@ -45,6 +101,7 @@ export function CompareTab({
     if (!canCompare) { return; }
     setIsSubmitting(true);
     setError(null);
+    setRetryRequested(false);
     try {
       const body: { jd_text: string; jd_role_id?: string } = { jd_text: jdText };
       if (selectedRoleId) { body.jd_role_id = selectedRoleId; }
@@ -97,7 +154,7 @@ export function CompareTab({
         </div>
         <button
           className="rounded-full border border-white/10 text-[#F5F2D8]/70 text-sm font-bold px-6 py-2.5 hover:bg-white/5 transition-colors"
-          onClick={() => { setError(null); setIsSubmitting(false); }}
+          onClick={() => { setError(null); setIsSubmitting(false); setRetryRequested(true); }}
         >
           Try again
         </button>
@@ -174,6 +231,9 @@ export function CompareTab({
       </div>
 
       {isComplete && children}
+      {isComplete && comparisonResult?.skill_gaps && comparisonResult.skill_gaps.length > 0 && (
+        <SkillGapReport gaps={comparisonResult.skill_gaps} />
+      )}
 
       {!isComplete && !isLoading && (
         <div className="text-center py-10 space-y-3">

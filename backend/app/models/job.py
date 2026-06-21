@@ -12,6 +12,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 from app.models.base import TimestampMixin
@@ -59,9 +60,28 @@ class Job(Base, TimestampMixin):
         nullable=True,
     )
 
+    target_role = Column(String(100), nullable=True, index=True)
+    parent_job_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("jobs.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    parent_job = relationship(
+        "Job", remote_side="Job.id", foreign_keys="Job.parent_job_id"
+    )
+
     workspace_draft = Column(JSONB, nullable=True)
     cv_document = Column(JSONB, nullable=True)
     suggestion_anchors = Column(JSONB, nullable=True)
     yjs_snapshot = Column(sa.LargeBinary, nullable=True)
 
     messages = Column(JSONB, nullable=True, default=list)
+
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=True,
+        index=True,
+    )
+    user = relationship("User", back_populates="jobs")

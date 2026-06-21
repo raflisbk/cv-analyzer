@@ -14,6 +14,15 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
   const [error, setError] = useState<Error | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  const onTokenRef = useRef(options.onToken);
+  onTokenRef.current = options.onToken;
+  const onCompleteRef = useRef(options.onComplete);
+  onCompleteRef.current = options.onComplete;
+  const onErrorRef = useRef(options.onError);
+  onErrorRef.current = options.onError;
+  const apiUrlRef = useRef(options.apiUrl);
+  apiUrlRef.current = options.apiUrl;
+
   const send = useCallback(
     async (message: string) => {
       if (!jobId || isStreaming) return;
@@ -28,8 +37,9 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
       abortControllerRef.current = new AbortController();
 
       try {
-        const response = await fetch(`${options.apiUrl}/jobs/${jobId}/chat`, {
+        const response = await fetch(`${apiUrlRef.current}/jobs/${jobId}/chat`, {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message }),
           signal: abortControllerRef.current.signal,
@@ -60,9 +70,9 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
 
                 if (data.type === "connected") {
                 } else if (data.token) {
-                  options.onToken?.(data.token);
+                  onTokenRef.current?.(data.token);
                 } else if (data.type === "complete") {
-                  options.onComplete?.();
+                  onCompleteRef.current?.();
                   setIsStreaming(false);
                 } else if (data.error) {
                   throw new Error(data.error);
@@ -76,13 +86,13 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
       } catch (err) {
         const error = err instanceof Error ? err : new Error("Unknown error");
         setError(error);
-        options.onError?.(error);
+        onErrorRef.current?.(error);
         setIsStreaming(false);
       } finally {
         abortControllerRef.current = null;
       }
     },
-    [jobId, isStreaming, options]
+    [jobId, isStreaming]
   );
 
   return { isStreaming, error, send };

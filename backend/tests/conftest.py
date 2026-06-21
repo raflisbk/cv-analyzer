@@ -77,3 +77,13 @@ def mock_openai_embedding():
     with patch("app.services.scoring.embeddings.get_embedding") as mock_embed:
         mock_embed.return_value = fake_embedding
         yield mock_embed
+
+
+def pytest_sessionfinish(session, exitstatus: int) -> None:
+    # Native libraries (easyocr/cv2/spaCy stubs) can trigger SIGSEGV during
+    # Python's GC cleanup on Linux. All tests have already been reported at
+    # this point, so skipping cleanup is safe for our CI.
+    if exitstatus == 0:
+        import os
+
+        os._exit(0)

@@ -69,6 +69,12 @@ def mock_complete_job():
     job.ats_checks = [
         {"check": "Standard sections present", "status": "pass", "detail": "OK"}
     ]
+    job.suggestions = None
+    job.comparison_result = None
+    job.comparison_status = None
+    job.user_id = None
+    job.target_role = None
+    job.parent_job_id = None
     return job
 
 
@@ -85,6 +91,12 @@ def mock_processing_job():
     job.nlp_result = None
     job.grammar_issues = None
     job.ats_checks = None
+    job.suggestions = None
+    job.comparison_result = None
+    job.comparison_status = None
+    job.user_id = None
+    job.target_role = None
+    job.parent_job_id = None
     return job
 
 

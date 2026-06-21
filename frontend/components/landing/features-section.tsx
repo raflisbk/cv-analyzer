@@ -3,7 +3,7 @@ import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/featu
 const features = [
   {
     Icon: AIScoringIcon,
-    iconContainer: "bg-[#CAFF43]/20 rounded-full p-3",
+    iconBg: "bg-[#CAFF43]/20",
     iconColor: "text-[#141414]",
     title: "AI Scoring",
     description:
@@ -11,7 +11,7 @@ const features = [
   },
   {
     Icon: SkillGapIcon,
-    iconContainer: "bg-[#FF4FCB]/20 rounded-full p-3",
+    iconBg: "bg-[#FF4FCB]/20",
     iconColor: "text-[#141414]",
     title: "Skill Gap Analysis",
     description:
@@ -19,7 +19,7 @@ const features = [
   },
   {
     Icon: JobMatchIcon,
-    iconContainer: "bg-[#FF8C42]/20 rounded-full p-3",
+    iconBg: "bg-[#FF8C42]/20",
     iconColor: "text-[#141414]",
     title: "Job Match Comparison",
     description:
@@ -48,17 +48,18 @@ export default function FeaturesSection() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {features.map(({ Icon, iconContainer, iconColor, title, description }) => (
+          {features.map(({ Icon, iconBg, iconColor, title, description }) => (
             <div
               key={title}
-              className="group relative overflow-hidden rounded-[2rem] bg-white p-8 transition-all duration-300 hover:-translate-y-1.5"
+              className="group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5"
               style={{
-                boxShadow: "0 8px 32px rgba(20,20,20,0.04), 0 1px 2px rgba(20,20,20,0.02)",
-                border: "1px solid rgba(20,20,20,0.02)"
+                background: "#FFFDF4",
+                boxShadow: "0 8px 32px rgba(17,17,17,0.06), 0 1px 2px rgba(17,17,17,0.04)",
+                border: "1px solid rgba(17,17,17,0.07)",
               }}
             >
-              <div 
-                className={`mb-8 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${iconContainer.split(' ')[0]}`}
+              <div
+                className={`mb-8 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${iconBg}`}
               >
                 <Icon size={28} className={iconColor} />
               </div>

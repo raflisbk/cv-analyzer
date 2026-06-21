@@ -7,7 +7,9 @@ import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
+import type { SuggestionCard as SuggestionCardType, SuggestionItem } from "@/lib/types";
 import { SuggestionMark } from "./suggestion-mark";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { SuggestionCard } from "./suggestion-card";
@@ -16,7 +18,7 @@ import { InlineAIPopup } from "./inline-ai-popup";
 interface RichTextEditorProps {
   content: string;
   anchors?: SuggestionAnchorRecord[];
-  suggestions?: any[];
+  suggestions?: SuggestionCardType[];
   onContentChange?: (content: string) => void;
   onExportPdf?: () => void;
   className?: string;
@@ -70,9 +72,12 @@ export function RichTextEditor({
     let highlighted = content;
 
     if (content && anchors.length > 0) {
-      const suggestionMap = new Map<string, { text: string; afterText?: string; section: string; priority: string }>();
+      const suggestionMap = new Map<string, {
+        text: string; afterText?: string;
+        section: string; priority: string;
+      }>();
       for (const card of suggestions || []) {
-        card.suggestions?.forEach((item: any, idx: number) => {
+        card.suggestions?.forEach((item: SuggestionItem, idx: number) => {
           const suggestionId = `${card.section}_${idx}_0`;
           suggestionMap.set(suggestionId, {
             text: item.text,
@@ -150,16 +155,18 @@ export function RichTextEditor({
     }
 
     setIsExporting(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
     try {
       const html = editor.getHTML();
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/export/pdf`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          html,
-          filename: "cv-optimized.pdf",
-        }),
+        body: JSON.stringify({ html, filename: "cv-optimized.pdf" }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -178,9 +185,13 @@ export function RichTextEditor({
 
       onExportPdf?.();
     } catch (err) {
-      console.error("PDF export error:", err);
-      alert("Failed to export PDF. Please try again.");
+      if (err instanceof Error && err.name === "AbortError") {
+        toast.error("PDF export timed out. Please try again.");
+      } else {
+        toast.error("Failed to export PDF. Please try again.");
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsExporting(false);
     }
   }, [editor, isExporting, onExportPdf]);

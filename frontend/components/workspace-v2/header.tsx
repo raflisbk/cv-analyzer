@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 import Link from "next/link";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
+import { UserMenu } from "@/components/auth/user-menu";
 
 interface WorkspaceV2HeaderProps {
   filename: string | null;
@@ -37,7 +38,7 @@ export function WorkspaceV2Header({
       ? "#CAFF43"
       : overallScore >= 70
       ? "#FF8C42"
-      : "#f87171";
+      : "#FF4FCB";
 
   return (
     <header
@@ -65,20 +66,15 @@ export function WorkspaceV2Header({
       />
 
       <div className="relative flex min-w-0 flex-1 items-center gap-3">
-        <Link href="/" className="hover:opacity-80 transition-opacity">
+        <Link href="/" className="hover:opacity-80 transition-opacity rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#CAFF43]">
           <PathkrLogo size="md" variant="light" className="flex-none" />
         </Link>
 
-        <div
-          className="h-5 w-px flex-none"
-          style={{ background: "rgba(17,17,17,0.15)" }}
-          aria-hidden="true"
-        />
+        <div className="h-5 w-px flex-none bg-[#141414]/[0.15]" aria-hidden="true" />
 
         <div className="min-w-0">
           <p
-            className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px]"
-            style={{ color: "rgba(17,17,17,0.38)" }}
+            className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px] text-[#141414]/40"
           >
             Workspace
             <span className="mx-1 opacity-50">/</span>
@@ -100,7 +96,7 @@ export function WorkspaceV2Header({
                 style={{
                   background: "rgba(255,140,66,0.15)",
                   border: "1px solid rgba(255,140,66,0.35)",
-                  color: "#6b2d00",
+                  color: "#FF8C42",
                   fontSize: 10,
                   fontWeight: 900,
                   letterSpacing: "0.02em",
@@ -136,7 +132,7 @@ export function WorkspaceV2Header({
               style={{
                 background: "rgba(255,140,66,0.12)",
                 border: "1px solid rgba(255,140,66,0.32)",
-                color: "#7a3500",
+                color: "#FF8C42",
               }}
             >
               <span
@@ -154,7 +150,7 @@ export function WorkspaceV2Header({
               style={{
                 background: "rgba(202,255,67,0.18)",
                 border: "1px solid rgba(202,255,67,0.45)",
-                color: "#294000",
+                color: "#1a2900",
               }}
             >
               <Zap
@@ -192,7 +188,9 @@ export function WorkspaceV2Header({
         </div>
       )}
 
-      <div className="relative flex flex-none items-center gap-1.5">
+      <div className="relative flex flex-none items-center gap-2">
+        <UserMenu />
+
         {!uploadMode && (
           <button
             type="button"
@@ -211,11 +209,7 @@ export function WorkspaceV2Header({
 
         <button
           onClick={() => router.push(uploadMode ? "/" : `/results/${jobId}`)}
-          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97]"
-          style={{
-            background: "rgba(17,17,17,0.06)",
-            border: "1px solid rgba(17,17,17,0.13)",
-          }}
+          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] font-black text-[#141414] transition-all duration-150 active:scale-[0.97] bg-[#141414]/[0.06] border border-[#141414]/[0.13] hover:bg-[#141414]/[0.10] hover:border-[#141414]/[0.18]"
           aria-label={uploadMode ? "Back to home" : "Back to results"}
         >
           <ChevronLeft className="h-3.5 w-3.5" />

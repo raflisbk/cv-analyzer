@@ -30,18 +30,30 @@ dependencies = [
     "spacy>=3.7",
     "rapidfuzz>=3.0",
     "openai>=1.0",
+    "httpx>=0.27.0,<0.28.0",
     "zai-sdk>=0.2.0",
     "tenacity>=8.0",
     "pgvector>=0.3.0",
     "pycrdt-websocket>=0.1.0",
+    "python-jose[cryptography]>=3.3.0",
+    "google-auth>=2.0.0",
     "huggingface_hub>=0.20.0",
     "numpy>=1.24.0",
+    "json-repair>=0.30.0",
+    "replicate>=0.34.0",
     # Linux/Railway: apt-get install -y libpango-1.0-0 libcairo2 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
     # Windows dev: conda install -n sbk-cv-analyzer -c conda-forge weasyprint
     # weasyprint 60.0 + pydyf 0.8.0 is the last known-compatible pair on PyPI (2025-04).
     # Newer weasyprint versions require pydyf.PDF(version, identifier) which pydyf ≤0.12.1 doesn't support.
     "weasyprint==60.0",
     "pydyf==0.8.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "anyio>=4.0",
 ]
 
 [tool.setuptools]
@@ -143,6 +155,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Allow unused imports in __init__.py
 "tests/*" = ["ARG", "PLR2004"]  # Allow magic values in tests
+"scripts/*" = ["E402", "F401", "ERA001"]  # Scripts use sys.path hacks before imports
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
@@ -158,6 +171,7 @@ minversion = "7.0"
 addopts = "-ra -q --strict-markers --strict-config"
 testpaths = ["tests"]
 pythonpath = ["."]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["setuptools>=61.0"]

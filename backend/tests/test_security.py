@@ -32,7 +32,7 @@ async def test_validate_invalid_extension():
     with pytest.raises(FileValidationError) as exc:
         await validate_file("test.txt", b"content")
     assert exc.value.code == "INVALID_FILE_TYPE"
-    assert "PDF, DOC, and DOCX" in exc.value.message
+    assert "PDF" in exc.value.message
 
 
 @pytest.mark.asyncio

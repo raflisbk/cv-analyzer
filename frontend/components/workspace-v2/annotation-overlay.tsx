@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { FloatingPortal, useFloating, shift, offset, flip } from "@floating-ui/react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
@@ -34,12 +34,15 @@ interface AnnotationHitAreaProps {
   onDismiss?: (suggestionId: string) => void;
 }
 
-function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: AnnotationHitAreaProps) {
+function AnnotationHitArea(
+  { anchor, scale, suggestions, onApply, onDismiss }: AnnotationHitAreaProps
+) {
   const setActiveSuggestionId = useWorkspaceV2Store((s) => s.setActiveSuggestionId);
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const viewMode = useWorkspaceV2Store((s) => s.viewMode);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const status = suggestionStatuses[anchor.suggestion_id];
   const isApplied = status === "applied";
@@ -78,7 +81,10 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
   }, [anchor.suggestion_id, setActiveSuggestionId]);
 
   const handleMouseLeave = useCallback(() => {
-    setTimeout(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    hoverTimerRef.current = setTimeout(() => {
       setActiveSuggestionId(null);
     }, 100);
   }, [setActiveSuggestionId]);
@@ -179,7 +185,7 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
                 >
                   {anchor.priority === "high_impact" ? "High Impact" : "Quick Win"}
                 </span>
-                <span className="text-[11px] font-medium text-gray-500">
+                <span className="text-[11px] font-medium" style={{ color: "rgba(17,17,17,0.40)" }}>
                   {anchor.section}
                 </span>
               </div>
@@ -188,7 +194,7 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
             <p
               className="text-[13px] leading-snug"
               style={{
-                color: "#222",
+                color: "#141414",
                 marginBottom: suggestion?.text ? "10px" : "16px",
                 lineHeight: "1.5",
                 fontWeight: "500",
@@ -200,20 +206,20 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
             {suggestion?.text && suggestion.text !== suggestionText && (
               <div
                 style={{
-                  background: "#f5f5f5",
+                  background: "#F5F2D8",
                   padding: "8px 10px",
                   borderRadius: "6px",
                   marginBottom: "12px",
                   borderLeft: `3px solid ${color.border}`,
                 }}
               >
-                <p className="text-[10px] text-gray-500 mb-1" style={{ margin: "0 0 4px 0", fontWeight: "600" }}>
+                <p className="text-[10px] mb-1" style={{ margin: "0 0 4px 0", fontWeight: "600", color: "rgba(17,17,17,0.40)" }}>
                   CURRENT:
                 </p>
                 <p
                   className="text-[11px] leading-snug"
                   style={{
-                    color: "#666",
+                    color: "rgba(17,17,17,0.55)",
                     margin: 0,
                     fontStyle: "italic",
                     lineHeight: "1.4",
@@ -256,9 +262,9 @@ function AnnotationHitArea({ anchor, scale, suggestions, onApply, onDismiss }: A
                 }}
                 className="px-4 py-2 text-xs font-semibold rounded-md transition-all"
                 style={{
-                  background: "#ffffff",
-                  color: "#666",
-                  border: "1px solid #e0e0e0",
+                  background: "rgba(17,17,17,0.06)",
+                  color: "rgba(17,17,17,0.60)",
+                  border: "1px solid rgba(17,17,17,0.10)",
                   cursor: "pointer",
                   flex: 1,
                   textAlign: "center",
@@ -295,19 +301,6 @@ export function AnnotationOverlay({
   onApply,
   onDismiss,
 }: AnnotationOverlayProps) {
-  if (!anchors.length || containerWidth === 0 || pageWidth === 0) {
-    return null;
-  }
-
-  const pageAnchors = anchors.filter(
-    (a) => a.page_index === pageIndex
-  );
-
-  if (!pageAnchors.length) {
-    return null;
-  }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const suggestionsMap = useMemo(() => {
     const map = new Map<string, { text: string; afterText?: string }>();
     for (const card of suggestions) {
@@ -321,6 +314,18 @@ export function AnnotationOverlay({
     }
     return map;
   }, [suggestions]);
+
+  if (!anchors.length || containerWidth === 0 || pageWidth === 0) {
+    return null;
+  }
+
+  const pageAnchors = anchors.filter(
+    (a) => a.page_index === pageIndex
+  );
+
+  if (!pageAnchors.length) {
+    return null;
+  }
 
   return (
     <>

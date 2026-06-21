@@ -17,6 +17,7 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
+        onFileSelected(acceptedFiles[0]);
       }
       setIsDragOver(false);
     },

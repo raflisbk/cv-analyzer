@@ -28,8 +28,7 @@ export function ChatPanel({ className }: { className?: string }) {
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydration]);
+  }, [hydration, addChatMessage]);
 
   const { isStreaming, error, send } = useChatStream(jobId, {
     apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1",

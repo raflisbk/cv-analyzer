@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useJobResults } from "@/hooks/use-job-results";
-import type { JobRole, SuggestionCard } from "@/lib/types";
+import type { JobRole, ScoreVersion, SuggestionCard } from "@/lib/types";
+import { apiFetch } from "@/lib/api";
 import { ExportStickyBar } from "@/components/results/export-sticky-bar";
 import { ResultsError } from "@/components/results/results-error";
 import { ResultsSkeleton } from "@/components/results/results-skeleton";
@@ -13,6 +14,46 @@ import { ResultsTabs } from "@/components/results/results-tabs";
 import { ScoreRangeBadge } from "@/components/results/score-range-badge";
 import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
 import { getWorkspaceRoute } from "@/lib/job-routes";
+
+function VersionHistoryBar({ versions, currentJobId }: { versions: ScoreVersion[]; currentJobId: string }) {
+  if (!versions || versions.length < 2) { return null; }
+  return (
+    <div className="rounded-2xl border border-white/8 bg-[#1C1C1C] px-6 py-4">
+      <p className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 mb-3">Version History</p>
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {versions.map((v, i) => {
+          const isCurrent = v.job_id === currentJobId;
+          const deltaColor = v.delta === null ? "" : v.delta > 0 ? "text-[#CAFF43]" : v.delta < 0 ? "text-[#FF4FCB]" : "text-[#F5F2D8]/40";
+          return (
+            <div key={v.job_id} className="flex items-center gap-2 flex-shrink-0">
+              {i > 0 && <span className="text-[#F5F2D8]/20 text-sm">→</span>}
+              <a
+                href={`/results/${v.job_id}`}
+                className={`rounded-xl px-3 py-2 text-center transition-colors ${
+                  isCurrent
+                    ? "bg-[#CAFF43]/10 border border-[#CAFF43]/30"
+                    : "bg-white/4 border border-white/8 hover:bg-white/8"
+                }`}
+              >
+                <p className={`text-xs font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]/60"}`}>
+                  v{v.version}
+                </p>
+                <p className={`text-sm font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]"}`}>
+                  {v.overall}
+                </p>
+                {v.delta !== null && (
+                  <p className={`text-[10px] font-bold ${deltaColor}`}>
+                    {v.delta > 0 ? "+" : ""}{v.delta}
+                  </p>
+                )}
+              </a>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function buildSuggestionsClipboardText(
   cards: SuggestionCard[] | null | undefined
@@ -65,19 +106,14 @@ export default function ResultsPage() {
 
   const { data: jobRolesData } = useQuery<JobRole[]>({
     queryKey: ["job-roles"],
-    queryFn: async () => {
-      const res = await fetch("/api/v1/job-roles");
-      const json = await res.json();
-      return json.data as JobRole[];
-    },
+    queryFn: () => apiFetch<JobRole[]>("/job-roles"),
     staleTime: Infinity,
   });
 
   if (isError) {
     const isRateLimit =
-      (error as Error)?.message?.includes("429") ||
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (error as any)?.code === "RATE_LIMIT_EXCEEDED";
+      (error instanceof Error && error.message.includes("429")) ||
+      (error instanceof Error && "code" in error && (error as Error & { code: string }).code === "RATE_LIMIT_EXCEEDED");
     return (
       <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type={isRateLimit ? "rate-limit" : "network"} />
@@ -132,7 +168,11 @@ export default function ResultsPage() {
             <div className="flex flex-col gap-3 md:items-end">
               <Link
                 href={getWorkspaceRoute(jobId)}
-                className="inline-flex items-center justify-center rounded-full border border-[#141414]/15 bg-white/60 px-4 py-2 text-sm font-bold text-[#141414] transition-colors hover:bg-[#141414] hover:text-[#F5F2D8]"
+                className="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-bold text-[#141414] transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
+                style={{
+                  background: "rgba(17,17,17,0.06)",
+                  border: "1px solid rgba(17,17,17,0.10)",
+                }}
               >
                 Open workspace
               </Link>
@@ -181,13 +221,20 @@ export default function ResultsPage() {
                 </div>
               )}
 
+              {normalizedResult.version_history && normalizedResult.version_history.length >= 2 && (
+                <VersionHistoryBar
+                  versions={normalizedResult.version_history}
+                  currentJobId={jobId}
+                />
+              )}
+
                 <ResultsTabs
                   result={normalizedResult}
                   jobRoles={jobRolesData ?? []}
                   onCompareComplete={() => { void refetch(); }}
                 />
 
-              <div className="flex justify-center pt-4">
+              <div className="flex items-center justify-center gap-3 pt-4 flex-wrap">
                 <button
                   onClick={() => router.push("/")}
                   className="rounded-full border-2 border-[#141414] bg-transparent text-[#141414]
@@ -196,6 +243,14 @@ export default function ResultsPage() {
                 >
                   Analyze Another CV
                 </button>
+                <a
+                  href={`/?reanalyze=${jobId}`}
+                  className="rounded-full bg-[#141414]/8 border border-[#141414]/15 text-[#141414]
+                             px-6 py-3 text-sm font-extrabold
+                             hover:bg-[#141414]/15 transition-colors duration-150"
+                >
+                  Re-analyze (new version)
+                </a>
               </div>
             </div>
           )}

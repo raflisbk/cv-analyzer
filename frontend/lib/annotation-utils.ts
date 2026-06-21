@@ -20,8 +20,12 @@ export async function findTextRect(
   pageIndex: number = 0,
   section: string = "unknown"
 ): Promise<SuggestionAnchor | null> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const pdfPage = page as any;
+  const pdfPage = page as {
+    getTextContent: () => Promise<{ items: Array<Record<string, unknown>> }>;
+    getViewport: (opts: { scale: number }) => {
+      convertToViewportPoint: (x: number, y: number) => [number, number];
+    };
+  };
 
   try {
     const textContent = await pdfPage.getTextContent();
@@ -60,7 +64,7 @@ export async function findTextRect(
 
             return null;
   } catch (err) {
-    console.warn("[annotation-utils] findTextRect error:", err);
+    console.warn("[annotation-utils] findTextRect failed:", err);
     return null;
   }
 }

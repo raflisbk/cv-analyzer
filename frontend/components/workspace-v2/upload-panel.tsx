@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Upload, CheckCircle2 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -10,13 +10,18 @@ import { ProcessingStages } from "@/components/upload/processing-stages";
 import { useUpload } from "@/hooks/use-upload";
 import { useJobStream } from "@/hooks/use-job-stream";
 import { getWorkspaceRoute } from "@/lib/job-routes";
+import { SUPPORTED_ROLES } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type UploadState = "idle" | "preview" | "processing" | "complete" | "failed";
 
 export function UploadPanel() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const parentJobId = searchParams.get("reanalyze");
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [targetRole, setTargetRole] = useState<string>("");
   const [jobId, setJobId] = useState<string | null>(null);
   const [completedJobId, setCompletedJobId] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -52,7 +57,13 @@ export function UploadPanel() {
   const handleAnalyze = async () => {
     if (!selectedFile) { return; }
     try {
-      const result = await uploadMutation.mutateAsync(selectedFile);
+      const result = await uploadMutation.mutateAsync({
+        file: selectedFile,
+        options: {
+          targetRole: targetRole || undefined,
+          parentJobId: parentJobId || undefined,
+        },
+      });
       setJobId(result.job_id);
       toast.success("Upload successful!", {
         description: "Your CV is being analyzed...",
@@ -65,6 +76,7 @@ export function UploadPanel() {
 
   const handleReset = () => {
     setSelectedFile(null);
+    setTargetRole("");
     setJobId(null);
     setCompletedJobId(null);
     hasNavigatedRef.current = false;
@@ -183,11 +195,13 @@ export function UploadPanel() {
   if (state === "preview" && selectedFile) {
     return (
       <div className="flex h-full w-full items-center justify-center p-6">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-4">
           <DocumentPreview
             file={selectedFile}
             onAnalyze={handleAnalyze}
             isAnalyzing={uploadMutation.isPending}
+            targetRole={targetRole}
+            onTargetRoleChange={setTargetRole}
           />
         </div>
       </div>
@@ -220,8 +234,15 @@ export function UploadPanel() {
           <Upload className="w-7 h-7" />
         </div>
 
+        {parentJobId && (
+          <div className="mb-4 rounded-xl border border-[#CAFF43]/20 bg-[#CAFF43]/8 px-4 py-2.5 text-center w-full">
+            <p className="text-xs font-bold text-[#CAFF43]">Re-analyzing — upload your updated CV</p>
+            <p className="text-[10px] text-[#CAFF43]/50 mt-0.5">Score delta will appear in version history</p>
+          </div>
+        )}
+
         <h2 className="font-display font-extrabold text-lg text-[#F5F2D8] mb-1.5">
-          {isDragOver ? "Drop it!" : "Drop your CV here"}
+          {isDragOver ? "Drop it!" : parentJobId ? "Drop your updated CV" : "Drop your CV here"}
         </h2>
         <p className="text-xs text-[#F5F2D8]/40 mb-5 max-w-[220px]">
           AI scores your CV on clarity, keywords, impact &amp; ATS compatibility

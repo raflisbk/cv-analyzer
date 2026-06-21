@@ -574,3 +574,45 @@ def check_ats_compatibility(
         )
 
     return results
+
+
+# ---------------------------------------------------------------------------
+# Numeric ATS score
+# ---------------------------------------------------------------------------
+
+_CHECK_WEIGHTS: dict[str, int] = {
+    "Standard sections present": 15,
+    "Contact information complete": 15,
+    "Quantified achievements": 15,
+    "Action verb density": 12,
+    "Date formatting": 10,
+    "Bullet point usage": 10,
+    "Appropriate CV length": 8,
+    "LinkedIn profile": 5,
+    "No tables detected": 5,
+    "No images detected": 5,
+}
+_DEFAULT_CHECK_WEIGHT = 2  # unweighted checks
+
+
+def compute_ats_score(ats_checks: list[dict]) -> int:
+    """Convert ATS checklist to a numeric score 0-100.
+
+    pass=full weight, warn=half weight, fail=0.
+    """
+    if not ats_checks:
+        return 0
+
+    score = 0.0
+    for check in ats_checks:
+        name = check.get("check", "")
+        status = check.get("status", "fail")
+        w = _CHECK_WEIGHTS.get(name, _DEFAULT_CHECK_WEIGHT)
+        if status == "pass":
+            score += w
+        elif status == "warn":
+            score += w * 0.5
+
+    # Normalize to 100 using expected max from defined weights
+    max_score = sum(_CHECK_WEIGHTS.values())
+    return min(100, int(score / max_score * 100))

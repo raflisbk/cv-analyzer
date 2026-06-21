@@ -32,6 +32,21 @@
     --color-pink: #FF4FCB;
     --color-orange: #FF8C42;
     --color-purple: #8B5CF6;
+
+    /* Standardized text opacity levels (4 levels only)
+       On dark bg:  use rgba(245,242,216, x) = #F5F2D8
+       On light bg: use rgba(17,17,17, x)    = #141414
+       Primary   = 1.00 (full)
+       Secondary = 0.60
+       Tertiary  = 0.40
+       Ghost     = 0.20 */
+
+    /* Standardized border tokens
+       Dark background cards:  rgba(255,255,255,0.07)
+       Light background cards: rgba(17,17,17,0.10)
+       Accent borders:         keep per-color with /15 opacity */
+    --border-dark-card: rgba(255,255,255,0.07);
+    --border-light-card: rgba(17,17,17,0.10);
   }
 }
 
@@ -94,8 +109,8 @@
 
   /* Typography — dark on cream */
   --ws-ink:            #111111;
-  --ws-ink-secondary:  rgba(17, 17, 17, 0.65);
-  --ws-ink-ghost:      rgba(17, 17, 17, 0.42);
+  --ws-ink-secondary:  rgba(17, 17, 17, 0.60);
+  --ws-ink-ghost:      rgba(17, 17, 17, 0.40);
 
   /* Accent */
   --ws-accent:         #CAFF43;

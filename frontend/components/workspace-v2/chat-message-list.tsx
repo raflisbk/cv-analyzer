@@ -58,7 +58,7 @@ export function ChatMessageList({ messages, isStreaming, className }: ChatMessag
             className={cn(
               "max-w-[85%] rounded-xl px-3 py-2",
               msg.role === "user"
-                ? "bg-[rgba(255,255,255,0.82)] text-gray-900"
+                ? "bg-[rgba(255,255,255,0.82)] text-[#141414]"
                 : msg.status === "error"
                   ? "bg-destructive/15 text-destructive"
                   : "bg-[rgba(245,242,216,0.06)] text-[#F5F2D8]"

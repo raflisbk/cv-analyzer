@@ -9,7 +9,7 @@ export class ApiError extends Error {
   constructor(
     public code: string,
     message: string,
-    public details?: Record<string, any>
+    public details?: Record<string, unknown>
   ) {
     super(message);
     this.name = "ApiError";
@@ -26,6 +26,7 @@ export async function apiFetch<T>(
   try {
     const response = await fetch(url, {
       ...options,
+      credentials: "include",
       headers: isFormData
         ? undefined
         : {
@@ -44,14 +45,14 @@ export async function apiFetch<T>(
       );
     }
     
-    if (!data.data) {
+    if (!('data' in data)) {
       throw new ApiError(
         "NO_DATA",
         "API response missing data field"
       );
     }
-    
-    return data.data;
+
+    return data.data as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
@@ -64,10 +65,22 @@ export async function apiFetch<T>(
   }
 }
 
-export async function uploadFile(file: File): Promise<{ job_id: string }> {
+export interface UploadOptions {
+  targetRole?: string;
+  parentJobId?: string;
+  jdText?: string;
+}
+
+export async function uploadFile(
+  file: File,
+  options: UploadOptions = {}
+): Promise<{ job_id: string }> {
   const formData = new FormData();
   formData.append("file", file);
-  
+  if (options.targetRole) { formData.append("target_role", options.targetRole); }
+  if (options.parentJobId) { formData.append("parent_job_id", options.parentJobId); }
+  if (options.jdText) { formData.append("jd_text", options.jdText); }
+
   return apiFetch<{ job_id: string }>("/upload", {
     method: "POST",
     body: formData,

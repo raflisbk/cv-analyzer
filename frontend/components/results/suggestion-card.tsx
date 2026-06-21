@@ -78,7 +78,7 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
   const triggerId = `suggestion-before-trigger-${id}`;
 
   return (
-    <div className="mt-4 pt-4 border-t border-white/8">
+    <div className="mt-4 pt-4 border-t border-white/[0.07]">
       <Button
         id={triggerId}
         variant="ghost"
@@ -109,21 +109,21 @@ function SuggestionBeforeAfter({ beforeText, afterText, id }: SuggestionBeforeAf
             <>
               <div className="p-3 bg-[#FF4FCB]/8 border border-[#FF4FCB]/20 rounded-xl">
                 <p className="text-xs font-bold text-[#FF4FCB] mb-1 uppercase tracking-wider">Before:</p>
-                <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
+                <p className="text-sm text-[#F5F2D8]/60">{beforeText}</p>
               </div>
               <div className="p-3 bg-[#CAFF43]/8 border border-[#CAFF43]/20 rounded-xl">
                 <p className="text-xs font-bold text-[#CAFF43] mb-1 uppercase tracking-wider">After:</p>
-                <p className="text-sm text-[#F5F2D8]/70">{afterText}</p>
+                <p className="text-sm text-[#F5F2D8]/60">{afterText}</p>
               </div>
             </>
           ) : beforeText ? (
             <div className="p-3 bg-[#FF4FCB]/8 border border-[#FF4FCB]/20 rounded-xl">
               <p className="text-xs font-bold text-[#FF4FCB] mb-1 uppercase tracking-wider">Original text:</p>
-              <p className="text-sm text-[#F5F2D8]/70">{beforeText}</p>
+              <p className="text-sm text-[#F5F2D8]/60">{beforeText}</p>
             </div>
           ) : (
-            <div className="p-3 bg-white/5 rounded-xl">
-              <p className="text-sm text-[#F5F2D8]/30">No original text available for comparison.</p>
+            <div className="p-3 rounded-xl bg-white/[0.04]">
+              <p className="text-sm text-[#F5F2D8]/40">No original text available for comparison.</p>
             </div>
           )}
         </div>
@@ -139,7 +139,7 @@ interface SuggestionCardItemProps {
 
 export function SuggestionCardItem({ card }: SuggestionCardItemProps) {
   return (
-    <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-5">
+    <div className="bg-[#1C1C1C] rounded-2xl border border-white/[0.07] p-5">
       <h3 className="text-sm font-extrabold text-[#F5F2D8]/60 uppercase tracking-wider mb-4">{card.section}</h3>
       <div className="space-y-4">
         {card.suggestions.map((item, i) => (

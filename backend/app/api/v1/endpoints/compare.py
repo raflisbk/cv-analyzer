@@ -5,10 +5,12 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, field_validator
 from sqlalchemy import select
 
+from app.api.dependencies import check_job_access, get_current_user
 from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
 from app.models.job_role import JobRole as JobRoleModel
+from app.models.user import User
 from app.schemas.analysis import JobRole
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.tasks.comparison import compare_cv_task
@@ -82,6 +84,7 @@ async def compare_cv(
     job_id: str,
     body: CompareRequest,
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user),
 ) -> WrappedResponse[CompareResponse]:
     request_id = str(uuid.uuid4())
     timestamp = datetime.now(UTC).isoformat()
@@ -98,6 +101,8 @@ async def compare_cv(
                 ),
                 meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
             )
+
+        check_job_access(job, current_user)
 
         job.comparison_status = "pending"
         await db.commit()

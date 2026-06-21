@@ -9,7 +9,10 @@ def get_nlp() -> spacy.Language:
     global _nlp  # noqa: PLW0603
     if _nlp is None:
         logger.info("spacy_loading")
-        _nlp = spacy.load("en_core_web_lg")
+        try:
+            _nlp = spacy.load("en_core_web_lg")
+        except OSError:
+            _nlp = spacy.load("en_core_web_sm")
         logger.info(
             "spacy_loaded",
             pipeline=_nlp.pipe_names,

@@ -17,10 +17,11 @@ export default function ScrollReveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) { return; }
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
+          timer = setTimeout(() => {
             el.classList.remove("opacity-0", "translate-y-4");
             el.classList.add("opacity-100", "translate-y-0");
           }, delay);
@@ -30,7 +31,12 @@ export default function ScrollReveal({
       { threshold: 0.1 }
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timer !== undefined) {
+        clearTimeout(timer);
+      }
+    };
   }, [delay]);
 
   return (

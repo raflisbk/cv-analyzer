@@ -1,5 +1,7 @@
 import dynamic from "next/dynamic";
 import { PdfViewerSkeleton } from "./pdf-viewer-skeleton";
+import type { SuggestionAnchorRecord } from "@/lib/workspace";
+import type { SuggestionCard } from "@/lib/types";
 
 const PdfViewerInner = dynamic(
   () => import("./pdf-viewer-inner"),
@@ -16,12 +18,15 @@ interface PdfViewerProps {
   scale?: number;
   onPageLoadSuccess?: (page: unknown) => void;
   onDocumentLoadSuccess?: (numPages: number) => void;
-  anchors?: any[];
-  suggestions?: any[];
+  anchors?: SuggestionAnchorRecord[];
+  suggestions?: SuggestionCard[];
   jobId?: string;
 }
 
-export function PdfViewer({ url, containerWidth, currentPage = 1, scale = 1.0, onPageLoadSuccess, onDocumentLoadSuccess, anchors, suggestions, jobId }: PdfViewerProps) {
+export function PdfViewer({
+  url, containerWidth, currentPage = 1, scale = 1.0,
+  onPageLoadSuccess, onDocumentLoadSuccess, anchors, suggestions, jobId
+}: PdfViewerProps) {
   if (!url) {
     return (
       <div

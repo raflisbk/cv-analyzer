@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 
 import "./globals.css";
+import { AuthProvider } from "@/components/auth/auth-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -32,8 +33,10 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`}>
       <body className="font-sans antialiased">
         <QueryProvider>
+          <AuthProvider>
             {children}
             <Toaster />
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

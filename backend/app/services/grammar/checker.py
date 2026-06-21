@@ -1,9 +1,11 @@
 import json
 import re
 
+from json_repair import repair_json
+
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
-from app.services.llm.hf_llm_service import HFLLMService
+from app.services.llm.koboi_llm_service import KoboiLLMService
 
 _GRAMMAR_SYSTEM_PROMPT_EN = """You are a professional CV grammar and spelling checker.
 Check the provided CV text for grammar, spelling, punctuation, and style errors.
@@ -107,11 +109,11 @@ def check_grammar(text: str) -> list[dict]:
     try:
         settings = get_settings()
 
-        if not settings.CV_ANALYZER_HF_API_KEY:
+        if not settings.CV_ANALYZER_KOBOI_API_KEY:
             logger.warning("grammar_skipped_no_api_key")
             return []
 
-        llm_service = HFLLMService()
+        llm_service = KoboiLLMService()
 
         is_indonesian = _detect_indonesian(text[:2000])
         system_prompt = (
@@ -124,16 +126,19 @@ def check_grammar(text: str) -> list[dict]:
         raw = llm_service._chat(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
-            temperature=0.3,
-            max_tokens=1000,
+            temperature=0.1,
+            max_tokens=1500,
         ).strip()
 
         if "```" in raw:
-            json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
-            if json_match:
-                raw = json_match.group(1)
+            fenced = re.search(r"```(?:json)?\s*(\{.*)", raw, re.DOTALL)
+            if fenced:
+                raw = fenced.group(1)
 
-        data = json.loads(raw)
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            data = json.loads(repair_json(raw))
         issues_raw = data.get("issues", [])
 
         issues: list[dict] = []

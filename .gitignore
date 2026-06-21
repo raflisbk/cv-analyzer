@@ -316,6 +316,12 @@ $RECYCLE.BIN/
 # Project Specific
 # ============================================================================
 
+# Debug / one-off scripts at root and backend root (not part of app)
+test_db_connection.py
+backend/test_db.py
+backend/check_*.py
+backend/debug_*.py
+
 # Environment files
 .env
 .env.local
@@ -411,3 +417,6 @@ skills-lock.json
 mockup/
 .windsurf/
 .windusrf/
+
+# Test fixtures (PDFs, sample files)
+tests/fixtures/*.pdf

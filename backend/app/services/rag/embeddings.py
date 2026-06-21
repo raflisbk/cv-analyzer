@@ -1,7 +1,7 @@
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.logging import structured_logger as logger
-from app.services.scoring.hf_embeddings import get_embedding
+from app.services.scoring.embeddings import get_embedding
 
 _MAX_RAG_CHARS = 20000
 

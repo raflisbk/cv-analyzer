@@ -1,6 +1,9 @@
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_WEAK_JWT_SECRET = "change-me-in-production-min-32-chars"
 
 
 class Settings(BaseSettings):
@@ -28,23 +31,55 @@ class Settings(BaseSettings):
 
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
-    CV_ANALYZER_LLM_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
-    CV_ANALYZER_LLM_MAX_TOKENS: int = 1500
+    CV_ANALYZER_KOBOI_API_KEY: str = ""
+    CV_ANALYZER_KOBOI_BASE_URL: str = "https://lite.koboillm.com/v1"
+
+    CV_ANALYZER_LLM_MODEL: str = "openai/gpt-5.1"
+    CV_ANALYZER_LLM_MAX_TOKENS: int = 4096
     CV_ANALYZER_LLM_CACHE_TTL: int = 86400
     CV_ANALYZER_RAG_TOP_K: int = 5
-    CV_ANALYZER_RAG_EMBEDDING_MODEL: str = "BAAI/bge-m3"
+    CV_ANALYZER_EMBEDDING_MODEL: str = "openai/text-embedding-3-large"
+    CV_ANALYZER_EMBEDDING_DIMENSIONS: int = 3072
+    # Number of LLM calls per scoring (1 = fast, 3 = ensemble/median, reduces variance)
+    CV_ANALYZER_SCORING_ENSEMBLE_RUNS: int = 1
 
-    CV_ANALYZER_CORS_ORIGINS: str = "*"
+    CV_ANALYZER_CORS_ORIGINS: str = "http://localhost:3000"
 
     CV_ANALYZER_SENTRY_DSN: str = ""
 
     CV_ANALYZER_LOG_LEVEL: str = "INFO"
 
+    CV_ANALYZER_REPLICATE_API_TOKEN: str = ""
+
+    CV_ANALYZER_GOOGLE_CLIENT_ID: str = ""
+    CV_ANALYZER_JWT_SECRET: str = "change-me-in-production-min-32-chars"
+    CV_ANALYZER_JWT_ALGORITHM: str = "HS256"
+    CV_ANALYZER_JWT_EXPIRE_DAYS: int = 7
+
+    @model_validator(mode="after")
+    def validate_security_settings(self) -> "Settings":
+        if self.CV_ANALYZER_ENV == "production":
+            if self.CV_ANALYZER_JWT_SECRET == _WEAK_JWT_SECRET:
+                raise ValueError(
+                    "CV_ANALYZER_JWT_SECRET must be changed from the default value in production"
+                )
+            if len(self.CV_ANALYZER_JWT_SECRET) < 32:
+                raise ValueError(
+                    "CV_ANALYZER_JWT_SECRET must be at least 32 characters in production"
+                )
+            if self.CV_ANALYZER_CORS_ORIGINS == "*":
+                raise ValueError(
+                    "CV_ANALYZER_CORS_ORIGINS must not be wildcard (*) in production"
+                )
+        return self
+
     @property
     def database_url(self) -> str:
         return f"postgresql+psycopg://{self.CV_ANALYZER_DB_USER}:{self.CV_ANALYZER_DB_PASSWORD}@{self.CV_ANALYZER_DB_HOST}:{self.CV_ANALYZER_DB_PORT}/{self.CV_ANALYZER_DB_NAME}"
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=True, extra="ignore"
+    )
 
 
 @lru_cache
