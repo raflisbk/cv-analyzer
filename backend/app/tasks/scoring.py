@@ -46,7 +46,9 @@ def score_cv_task(self: Task, job_id: str) -> dict:
             # Prefer explicit user selection; fall back to LLM-detected role from NLP stage
             target_role = job.target_role or nlp_result.get("detected_role") or None
             if not job.target_role and target_role:
-                logger.info("using_detected_role", job_id=job_id, detected_role=target_role)
+                logger.info(
+                    "using_detected_role", job_id=job_id, detected_role=target_role
+                )
 
         # Scoring work (sync, makes HTTP calls) — outside DB session
         scores = score_cv(
@@ -96,7 +98,8 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                             Job.scores.isnot(None),
                             Job.id != job_id,
                             same_method_filter,
-                            cast(Job.scores["overall"].astext, Integer) <= overall_score,
+                            cast(Job.scores["overall"].astext, Integer)
+                            <= overall_score,
                         )
                     )
                     better_count: int = better_count_result.scalar() or 0
@@ -116,13 +119,21 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                     parent_job = parent_result.scalar_one_or_none()
 
                     if parent_job and parent_job.scores:
-                        dims = ["overall", "impact", "clarity", "relevance", "completeness"]
+                        dims = [
+                            "overall",
+                            "impact",
+                            "clarity",
+                            "relevance",
+                            "completeness",
+                        ]
                         delta: dict[str, int] = {
                             d: scores.get(d, 0) - parent_job.scores.get(d, 0)
                             for d in dims
                             if isinstance(parent_job.scores.get(d), (int, float))
                         }
-                        parent_alg = parent_job.scores.get("scoring_algorithm_version", "")
+                        parent_alg = parent_job.scores.get(
+                            "scoring_algorithm_version", ""
+                        )
                         curr_alg = scores.get("scoring_algorithm_version", "")
                         if parent_alg and curr_alg and parent_alg != curr_alg:
                             delta["_algorithm_changed"] = 1
@@ -139,7 +150,10 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         # Compute ATS score directly from nlp_sections — don't read from DB since
         # grammar_check_task (which writes ats_checks) runs AFTER this task in the chain.
         try:
-            from app.services.ats.checker import check_ats_compatibility, compute_ats_score
+            from app.services.ats.checker import (
+                check_ats_compatibility,
+                compute_ats_score,
+            )
             from app.services.nlp.section_detector import CvSection
 
             sections_for_ats: list[CvSection] | None = None
@@ -154,7 +168,9 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                 ]
             ats_checks_now = check_ats_compatibility(text, sections=sections_for_ats)
             scores["ats_score"] = compute_ats_score(ats_checks_now)
-            logger.info("ats_score_computed", job_id=job_id, ats_score=scores["ats_score"])
+            logger.info(
+                "ats_score_computed", job_id=job_id, ats_score=scores["ats_score"]
+            )
         except Exception as e:
             logger.warning("ats_score_computation_failed", error=str(e))
 

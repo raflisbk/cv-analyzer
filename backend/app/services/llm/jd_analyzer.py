@@ -68,7 +68,9 @@ def analyze_jd_red_flags(jd_text: str) -> dict | None:
         with httpx.Client(timeout=25.0) as client:
             resp = client.post(
                 f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
+                headers={
+                    "Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"
+                },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
                     "messages": [{"role": "user", "content": prompt}],

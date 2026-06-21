@@ -296,6 +296,7 @@ Respond with ONLY a JSON object, no markdown fences, no text outside JSON:
 # Redis cache helpers
 # ---------------------------------------------------------------------------
 
+
 def _cache_key(cv_slice: str, role: str, jd_slice: str) -> str:
     raw = f"{cv_slice}|{role}|{jd_slice}"
     digest = hashlib.sha256(raw.encode()).hexdigest()[:24]
@@ -326,6 +327,7 @@ def _cache_set(key: str, data: dict, settings) -> None:
 # LLM helpers
 # ---------------------------------------------------------------------------
 
+
 def _role_category(role: str | None, archetype_domain: str | None = None) -> str:
     # Archetype domain is more precise than free-text role matching — use it first
     if archetype_domain and archetype_domain in _DOMAIN_TO_CATEGORY:
@@ -333,29 +335,143 @@ def _role_category(role: str | None, archetype_domain: str | None = None) -> str
     if not role:
         return "general"
     r = role.lower()
-    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand", "graphic"]):
+    if any(
+        w in r
+        for w in [
+            "design",
+            "ux",
+            "ui ",
+            "ui/ux",
+            "visual",
+            "creative",
+            "brand",
+            "graphic",
+        ]
+    ):
         return "design"
     if any(w in r for w in ["marketing", "growth", "seo", "social media", "copywrite"]):
         return "marketing"
-    if any(w in r for w in ["devops", "sre", "site reliability", "infrastructure", "platform engineer", "cloud engineer", "devsecops"]):
+    if any(
+        w in r
+        for w in [
+            "devops",
+            "sre",
+            "site reliability",
+            "infrastructure",
+            "platform engineer",
+            "cloud engineer",
+            "devsecops",
+        ]
+    ):
         return "devops"
-    if any(w in r for w in ["data analyst", "data scientist", "data engineer", "business intelligence", "bi developer", "analytics engineer", "mlops", "ml ops"]):
+    if any(
+        w in r
+        for w in [
+            "data analyst",
+            "data scientist",
+            "data engineer",
+            "business intelligence",
+            "bi developer",
+            "analytics engineer",
+            "mlops",
+            "ml ops",
+        ]
+    ):
         return "data"
-    if any(w in r for w in ["financial analyst", "finance manager", "accountant", "accounting", "investment banker", "banking", "audit", "treasury", "controller", "cfo"]):
+    if any(
+        w in r
+        for w in [
+            "financial analyst",
+            "finance manager",
+            "accountant",
+            "accounting",
+            "investment banker",
+            "banking",
+            "audit",
+            "treasury",
+            "controller",
+            "cfo",
+        ]
+    ):
         return "finance"
-    if any(w in r for w in ["product manager", "project manager", "scrum master", "program manager", "operations manager"]):
+    if any(
+        w in r
+        for w in [
+            "product manager",
+            "project manager",
+            "scrum master",
+            "program manager",
+            "operations manager",
+        ]
+    ):
         return "management"
-    if any(w in r for w in ["doctor", "nurse", "dokter", "perawat", "bidan", "farmasi", "apoteker", "fisioterapis"]):
+    if any(
+        w in r
+        for w in [
+            "doctor",
+            "nurse",
+            "dokter",
+            "perawat",
+            "bidan",
+            "farmasi",
+            "apoteker",
+            "fisioterapis",
+        ]
+    ):
         return "healthcare"
-    if any(w in r for w in ["teacher", "guru", "lecturer", "dosen", "trainer", "pengajar", "instruktur"]):
+    if any(
+        w in r
+        for w in [
+            "teacher",
+            "guru",
+            "lecturer",
+            "dosen",
+            "trainer",
+            "pengajar",
+            "instruktur",
+        ]
+    ):
         return "education"
-    if any(w in r for w in ["lawyer", "legal", "advokat", "notaris", "hukum", "counsel", "jaksa"]):
+    if any(
+        w in r
+        for w in ["lawyer", "legal", "advokat", "notaris", "hukum", "counsel", "jaksa"]
+    ):
         return "legal"
-    if any(w in r for w in ["journalist", "reporter", "jurnalis", "wartawan", "redaktur", "editor media"]):
+    if any(
+        w in r
+        for w in [
+            "journalist",
+            "reporter",
+            "jurnalis",
+            "wartawan",
+            "redaktur",
+            "editor media",
+        ]
+    ):
         return "journalism"
-    if any(w in r for w in ["photographer", "videographer", "filmmaker", "animator", "content creator", "kreator"]):
+    if any(
+        w in r
+        for w in [
+            "photographer",
+            "videographer",
+            "filmmaker",
+            "animator",
+            "content creator",
+            "kreator",
+        ]
+    ):
         return "creative"
-    if any(w in r for w in ["hr ", "human resource", "hrga", "recruitment", "people ops", "talent acquisition"]):
+    if any(
+        w in r
+        for w in [
+            "hr ",
+            "human resource",
+            "hrga",
+            "recruitment",
+            "people ops",
+            "talent acquisition",
+        ]
+    ):
         return "hr"
     return "engineering"
 
@@ -375,6 +491,7 @@ def _extract_json(text: str) -> dict:
             # Tier 3: json_repair for malformed JSON with closing brace present
             try:
                 from json_repair import repair_json
+
                 repaired = repair_json(match.group(), return_objects=True)
                 if isinstance(repaired, dict):
                     return repaired
@@ -384,8 +501,11 @@ def _extract_json(text: str) -> dict:
     # (max_tokens cutoff mid-string means regex never matches, but json_repair can close open structures)
     try:
         from json_repair import repair_json
+
         repaired = repair_json(text, return_objects=True)
-        if isinstance(repaired, dict) and any(k in repaired for k in ("impact", "clarity", "relevance", "completeness")):
+        if isinstance(repaired, dict) and any(
+            k in repaired for k in ("impact", "clarity", "relevance", "completeness")
+        ):
             return repaired
     except Exception:
         pass
@@ -404,7 +524,9 @@ def _single_llm_call(prompt: str, settings) -> dict | None:
         with httpx.Client(timeout=60.0) as client:
             resp = client.post(
                 f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
+                headers={
+                    "Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"
+                },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
                     "messages": [{"role": "user", "content": prompt}],
@@ -428,6 +550,7 @@ def _single_llm_call(prompt: str, settings) -> dict | None:
 # ---------------------------------------------------------------------------
 # Public scorer
 # ---------------------------------------------------------------------------
+
 
 def score_cv_with_llm(
     cv_text: str,

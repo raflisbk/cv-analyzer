@@ -25,10 +25,7 @@ from app.services.llm.archetype_registry import (
 )
 
 # Re-export ARCHETYPES as alias for backward-compat (old tests may import it)
-ARCHETYPES = {
-    domain: data["archetypes"]
-    for domain, data in REGISTRY.items()
-}
+ARCHETYPES = {domain: data["archetypes"] for domain, data in REGISTRY.items()}
 
 _DOMAIN_PROMPT = """\
 Identify the professional domain that best fits this CV.
@@ -65,7 +62,9 @@ def _llm_call(
         with httpx.Client(timeout=timeout) as client:
             resp = client.post(
                 f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
+                headers={
+                    "Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"
+                },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
                     "messages": [{"role": "user", "content": prompt}],
@@ -128,7 +127,9 @@ def _detect_archetype_in_domain(
     try:
         data = json.loads(match.group())
         archetype = data.get("archetype", "")
-        if not archetype or archetype not in REGISTRY.get(domain, {}).get("archetypes", {}):
+        if not archetype or archetype not in REGISTRY.get(domain, {}).get(
+            "archetypes", {}
+        ):
             return None
         return {
             "archetype": archetype,
@@ -160,7 +161,9 @@ def detect_archetype(cv_text: str, detected_role: str | None = None) -> dict | N
 
     archetype_result = _detect_archetype_in_domain(cv_text, domain, settings)
     if not archetype_result:
-        logger.info("archetype_not_detected_in_domain", domain=domain, role=detected_role)
+        logger.info(
+            "archetype_not_detected_in_domain", domain=domain, role=detected_role
+        )
         return None
 
     archetype = archetype_result["archetype"]

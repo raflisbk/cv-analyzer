@@ -103,6 +103,7 @@ def compare_cv_task(
         # JD red flags analysis (non-blocking — failure does not break comparison)
         try:
             from app.services.llm.jd_analyzer import analyze_jd_red_flags
+
             red_flags_data = analyze_jd_red_flags(jd_text)
             if red_flags_data:
                 comparison_dict["red_flags"] = red_flags_data.get("red_flags", [])

@@ -34,21 +34,63 @@ _TECH_TERM = re.compile(
 _PHRASE_PATTERNS: list[re.Pattern] = [
     re.compile(r"\b" + re.escape(phrase) + r"\b", re.IGNORECASE)
     for phrase in [
-        "machine learning", "deep learning", "natural language processing",
-        "computer vision", "data engineering", "software engineering",
-        "cloud computing", "data science", "product management",
-        "project management", "software architecture", "system design",
-        "microservices", "distributed systems", "real-time processing",
-        "ci/cd", "devops", "mlops", "object detection",
+        "machine learning",
+        "deep learning",
+        "natural language processing",
+        "computer vision",
+        "data engineering",
+        "software engineering",
+        "cloud computing",
+        "data science",
+        "product management",
+        "project management",
+        "software architecture",
+        "system design",
+        "microservices",
+        "distributed systems",
+        "real-time processing",
+        "ci/cd",
+        "devops",
+        "mlops",
+        "object detection",
     ]
 ]
 
 # Noise words to exclude from keyword extraction
 _STOP_WORDS: set[str] = {
-    "the", "and", "or", "for", "with", "this", "that", "have", "will",
-    "from", "they", "been", "has", "are", "was", "not", "but", "can",
-    "you", "your", "our", "its", "be", "by", "as", "at", "an", "is",
-    "in", "on", "to", "of", "a",
+    "the",
+    "and",
+    "or",
+    "for",
+    "with",
+    "this",
+    "that",
+    "have",
+    "will",
+    "from",
+    "they",
+    "been",
+    "has",
+    "are",
+    "was",
+    "not",
+    "but",
+    "can",
+    "you",
+    "your",
+    "our",
+    "its",
+    "be",
+    "by",
+    "as",
+    "at",
+    "an",
+    "is",
+    "in",
+    "on",
+    "to",
+    "of",
+    "a",
 }
 
 
@@ -87,7 +129,12 @@ def compute_jd_keyword_gaps(
     Returns matched/missing keyword lists and a match ratio.
     """
     if not jd_text:
-        return {"matched_keywords": [], "missing_keywords": [], "match_ratio": 0.0, "keyword_count": 0}
+        return {
+            "matched_keywords": [],
+            "missing_keywords": [],
+            "match_ratio": 0.0,
+            "keyword_count": 0,
+        }
 
     jd_keywords = _extract_jd_keywords(jd_text)
     cv_lower = cv_text.lower()

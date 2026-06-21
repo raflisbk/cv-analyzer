@@ -139,7 +139,9 @@ def _build_cv_document(
                         ),
                     }
                     for sug in (
-                        s.get("suggestions", []) if isinstance(s, dict) else s.suggestions
+                        s.get("suggestions", [])
+                        if isinstance(s, dict)
+                        else s.suggestions
                     )
                 ],
             }
@@ -148,11 +150,11 @@ def _build_cv_document(
 
     if scores:
         _s = scores if isinstance(scores, dict) else scores.__dict__
-        clarity     = _s.get("clarity", 0) or 0
-        impact      = _s.get("impact", 0) or 0
+        clarity = _s.get("clarity", 0) or 0
+        impact = _s.get("impact", 0) or 0
         completeness = _s.get("completeness", 0) or 0
-        relevance   = _s.get("relevance", 0) or 0
-        overall     = _s.get("overall") or int(
+        relevance = _s.get("relevance", 0) or 0
+        overall = _s.get("overall") or int(
             impact * 0.35 + clarity * 0.30 + relevance * 0.20 + completeness * 0.15
         )
         cv_document["scores"] = {
@@ -202,7 +204,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         if cached:
             logger.info("llm_suggest_cache_hit", job_id=job_id)
             cached_suggestions = json.loads(cached)
-            await _persist_results(job_id, cached_suggestions, 0, file_id, nlp_result, scores)
+            await _persist_results(
+                job_id, cached_suggestions, 0, file_id, nlp_result, scores
+            )
             self.update_progress(job_id, "complete", 100, "Analysis complete!")
             return {"status": "complete", "job_id": job_id, "from_cache": True}
 
@@ -279,7 +283,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         )
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
         return {
-            "status": "complete" if suggestions_list is not None else "complete_partial",
+            "status": (
+                "complete" if suggestions_list is not None else "complete_partial"
+            ),
             "job_id": job_id,
             "cards": len(suggestions_list) if suggestions_list else 0,
         }
@@ -293,7 +299,12 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         scores: dict | None,
     ) -> None:
         """Write suggestions + cv_document + COMPLETE atomically."""
-        _SCORE_WEIGHTS = {"impact": 0.35, "clarity": 0.30, "relevance": 0.20, "completeness": 0.15}
+        _SCORE_WEIGHTS = {
+            "impact": 0.35,
+            "clarity": 0.30,
+            "relevance": 0.20,
+            "completeness": 0.15,
+        }
 
         async with async_session_maker() as session:
             stmt = select(Job).where(Job.id == jid)
@@ -318,10 +329,21 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
 
                 if grammar_penalty < 0:
                     scores = dict(scores)
-                    scores["clarity"] = max(0, min(100, scores.get("clarity", 50) + grammar_penalty))
-                    scores["overall"] = max(0, min(100, int(
-                        sum(scores.get(d, 50) * w for d, w in _SCORE_WEIGHTS.items())
-                    )))
+                    scores["clarity"] = max(
+                        0, min(100, scores.get("clarity", 50) + grammar_penalty)
+                    )
+                    scores["overall"] = max(
+                        0,
+                        min(
+                            100,
+                            int(
+                                sum(
+                                    scores.get(d, 50) * w
+                                    for d, w in _SCORE_WEIGHTS.items()
+                                )
+                            ),
+                        ),
+                    )
                     scores["grammar_clarity_penalty"] = grammar_penalty
                     job.scores = scores
                     logger.info(

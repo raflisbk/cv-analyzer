@@ -157,7 +157,7 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
             25,
             f"Extraction failed, retrying... (attempt {self.request.retries + 1}/3)",
         )
-        countdown = 60 * (2 ** self.request.retries)
+        countdown = 60 * (2**self.request.retries)
         try:
             raise self.retry(exc=e, countdown=countdown)
         except MaxRetriesExceededError:

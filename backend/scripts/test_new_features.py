@@ -45,11 +45,17 @@ print("=" * 60)
 from app.services.llm.archetype_detector import detect_archetype, _is_ai_role
 
 # Heuristic check (no API call)
-ai_cv = "Machine learning engineer with LLM experience, MLOps pipelines, vector databases"
+ai_cv = (
+    "Machine learning engineer with LLM experience, MLOps pipelines, vector databases"
+)
 non_ai_cv = "Marketing manager with experience in brand campaigns and social media"
 
-assert _is_ai_role("Machine Learning Engineer", ai_cv), "_is_ai_role should be True for ML CV"
-assert not _is_ai_role("Marketing Manager", non_ai_cv), "_is_ai_role should be False for marketing CV"
+assert _is_ai_role(
+    "Machine Learning Engineer", ai_cv
+), "_is_ai_role should be True for ML CV"
+assert not _is_ai_role(
+    "Marketing Manager", non_ai_cv
+), "_is_ai_role should be False for marketing CV"
 print("  PASS — _is_ai_role() heuristic correct")
 
 # Live LLM call with a realistic AI CV snippet
@@ -141,6 +147,7 @@ if not VISION_AVAILABLE:
     print("  SKIP — install replicate: pip install replicate")
 else:
     from app.core.config import get_settings
+
     settings = get_settings()
     if not settings.CV_ANALYZER_REPLICATE_API_TOKEN:
         print("  SKIP — CV_ANALYZER_REPLICATE_API_TOKEN not set in .env")
@@ -153,9 +160,15 @@ else:
             img = Image.new("RGB", (600, 200), color=(255, 255, 255))
             draw = ImageDraw.Draw(img)
             draw.text((20, 20), "John Doe — Software Engineer", fill=(0, 0, 0))
-            draw.text((20, 60), "Email: john@example.com | Phone: +1 555-1234", fill=(0, 0, 0))
-            draw.text((20, 100), "SKILLS: Python, FastAPI, Docker, PostgreSQL", fill=(0, 0, 0))
-            draw.text((20, 140), "EXPERIENCE: 5 years building scalable APIs", fill=(0, 0, 0))
+            draw.text(
+                (20, 60), "Email: john@example.com | Phone: +1 555-1234", fill=(0, 0, 0)
+            )
+            draw.text(
+                (20, 100), "SKILLS: Python, FastAPI, Docker, PostgreSQL", fill=(0, 0, 0)
+            )
+            draw.text(
+                (20, 140), "EXPERIENCE: 5 years building scalable APIs", fill=(0, 0, 0)
+            )
 
             buf = io.BytesIO()
             img.save(buf, format="JPEG")
@@ -163,6 +176,7 @@ else:
 
             print("  Sending test image to Granite Vision 4.1 4B on Replicate...")
             from app.services.vision import extract_text_from_image
+
             text = extract_text_from_image(img_bytes, "image/jpeg")
 
             if text and len(text.strip()) > 10:
@@ -173,7 +187,9 @@ else:
 
         except ImportError:
             print("  INFO — PIL not available, skipping image creation test")
-            print("  (replicate token is configured — vision will work on real uploads)")
+            print(
+                "  (replicate token is configured — vision will work on real uploads)"
+            )
 
 # ─── SUMMARY ──────────────────────────────────────────────────────────────────
 print("\n" + "=" * 60)

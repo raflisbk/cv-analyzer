@@ -76,7 +76,9 @@ async def get_job_results(
                     sample_size=raw_benchmark.get("sample_size", 0),
                 ),
                 scoring_method=raw_scores.get("scoring_method", "llm"),
-                scoring_algorithm_version=raw_scores.get("scoring_algorithm_version", "v3"),
+                scoring_algorithm_version=raw_scores.get(
+                    "scoring_algorithm_version", "v3"
+                ),
                 metrics=raw_scores.get("metrics", {}),
                 low_confidence=raw_scores.get("low_confidence", False),
                 version_delta=raw_scores.get("version_delta"),
@@ -102,7 +104,11 @@ async def get_job_results(
         skills = (job.nlp_result or {}).get("skills", [])
 
         raw_archetype = (job.nlp_result or {}).get("archetype")
-        archetype = ArchetypeResult(**raw_archetype) if isinstance(raw_archetype, dict) else None
+        archetype = (
+            ArchetypeResult(**raw_archetype)
+            if isinstance(raw_archetype, dict)
+            else None
+        )
 
         grammar_issues = [
             GrammarIssue(
@@ -158,7 +164,9 @@ async def get_job_results(
                 skill_gaps = [SkillGapItem(**g) for g in rank_skill_gaps(missing)]
                 # Coerce red_flags dicts to JdRedFlag instances
                 raw_red_flags = raw_comp.pop("red_flags", []) or []
-                red_flags = [JdRedFlag(**f) if isinstance(f, dict) else f for f in raw_red_flags]
+                red_flags = [
+                    JdRedFlag(**f) if isinstance(f, dict) else f for f in raw_red_flags
+                ]
                 comparison_result = ComparisonResult(
                     **raw_comp, skill_gaps=skill_gaps, red_flags=red_flags
                 )
@@ -185,16 +193,24 @@ async def get_job_results(
             if len(visited) > 1:
                 for i, v in enumerate(reversed(visited)):
                     prev = visited[len(visited) - i] if i > 0 else None
-                    prev_overall = (prev.scores or {}).get("overall", 0) if prev else None
+                    prev_overall = (
+                        (prev.scores or {}).get("overall", 0) if prev else None
+                    )
                     curr_overall = (v.scores or {}).get("overall", 0)
-                    delta = (curr_overall - prev_overall) if prev_overall is not None else None
-                    version_history.append(ScoreVersion(
-                        job_id=str(v.id),
-                        version=i + 1,
-                        overall=curr_overall,
-                        created_at=v.created_at.isoformat() if v.created_at else "",
-                        delta=delta,
-                    ))
+                    delta = (
+                        (curr_overall - prev_overall)
+                        if prev_overall is not None
+                        else None
+                    )
+                    version_history.append(
+                        ScoreVersion(
+                            job_id=str(v.id),
+                            version=i + 1,
+                            overall=curr_overall,
+                            created_at=v.created_at.isoformat() if v.created_at else "",
+                            delta=delta,
+                        )
+                    )
         except Exception:
             logger.warning("version_history_failed", job_id=job_id)
 

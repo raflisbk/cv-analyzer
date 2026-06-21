@@ -19,9 +19,13 @@ from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
-from app.models.job import Job  # noqa: F401 - needed for SQLAlchemy relationship resolution
+from app.models.job import (
+    Job,
+)  # noqa: F401 - needed for SQLAlchemy relationship resolution
 from app.models.knowledge_chunk import KnowledgeChunk
-from app.models.user import User  # noqa: F401 - needed for SQLAlchemy relationship resolution
+from app.models.user import (
+    User,
+)  # noqa: F401 - needed for SQLAlchemy relationship resolution
 from app.services.rag.chunker import chunk_text
 from app.services.rag.embeddings import get_rag_embedding
 

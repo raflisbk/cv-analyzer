@@ -341,7 +341,11 @@ class KoboiLLMService:
             )
             try:
                 repaired = repair_json(raw_json, return_objects=True)
-                data = repaired if isinstance(repaired, dict) else json.loads(repair_json(raw_json))
+                data = (
+                    repaired
+                    if isinstance(repaired, dict)
+                    else json.loads(repair_json(raw_json))
+                )
             except Exception as repair_err:
                 logger.error(
                     "llm_json_repair_failed",

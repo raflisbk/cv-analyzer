@@ -28,24 +28,32 @@ def get_all_dynamic_anchors(role_title: str) -> dict[str, list[str]] | None:
     try:
         from app.core.config import get_settings
 
-        r = redis_sync.from_url(get_settings().CV_ANALYZER_REDIS_URL, decode_responses=True)
+        r = redis_sync.from_url(
+            get_settings().CV_ANALYZER_REDIS_URL, decode_responses=True
+        )
         cached = r.get(cache_key)
         if cached:
             logger.info("dynamic_anchors_cache_hit", role=role_title, key=cache_key)
             return json.loads(cached)
     except Exception as e:
-        logger.warning("dynamic_anchors_cache_read_failed", role=role_title, error=str(e))
+        logger.warning(
+            "dynamic_anchors_cache_read_failed", role=role_title, error=str(e)
+        )
 
     result = _generate_via_llm(role_title)
     if result:
         try:
             from app.core.config import get_settings
 
-            r = redis_sync.from_url(get_settings().CV_ANALYZER_REDIS_URL, decode_responses=True)
+            r = redis_sync.from_url(
+                get_settings().CV_ANALYZER_REDIS_URL, decode_responses=True
+            )
             r.setex(cache_key, _ANCHOR_CACHE_TTL, json.dumps(result))
             logger.info("dynamic_anchors_cached", role=role_title, key=cache_key)
         except Exception as e:
-            logger.warning("dynamic_anchors_cache_write_failed", role=role_title, error=str(e))
+            logger.warning(
+                "dynamic_anchors_cache_write_failed", role=role_title, error=str(e)
+            )
 
     return result
 
@@ -65,7 +73,7 @@ def _generate_via_llm(role_title: str) -> dict[str, list[str]] | None:
         f"- impact: quantified achievements with specific numbers relevant to {role_title}\n"
         f"- completeness: all expected sections for a {role_title} CV\n"
         f"- relevance: key skills, tools, certifications, and domain knowledge for {role_title}\n\n"
-        f'Return ONLY a JSON object with this exact structure:\n'
+        f"Return ONLY a JSON object with this exact structure:\n"
         f'{{"clarity": ["...", "...", "..."], "impact": ["...", "...", "..."], '
         f'"completeness": ["...", "...", "..."], "relevance": ["...", "...", "..."]}}'
     )
@@ -74,7 +82,9 @@ def _generate_via_llm(role_title: str) -> dict[str, list[str]] | None:
         with httpx.Client(timeout=30.0) as client:
             resp = client.post(
                 f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
+                headers={
+                    "Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"
+                },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
                     "messages": [{"role": "user", "content": prompt}],
@@ -87,7 +97,9 @@ def _generate_via_llm(role_title: str) -> dict[str, list[str]] | None:
 
             match = re.search(r"\{.*\}", content, re.DOTALL)
             if not match:
-                logger.warning("dynamic_anchors_no_json", role=role_title, content=content[:200])
+                logger.warning(
+                    "dynamic_anchors_no_json", role=role_title, content=content[:200]
+                )
                 return None
 
             data = json.loads(match.group())

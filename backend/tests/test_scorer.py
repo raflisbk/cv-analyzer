@@ -42,9 +42,12 @@ _FAKE_LLM_RESULT = {
 
 def _mock_score_cv(text: str, **kw) -> dict:
     """Run score_cv with LLM and settings mocked out."""
-    with patch("app.core.config.get_settings") as mock_settings, patch(
-        "app.services.scoring.llm_scorer.score_cv_with_llm",
-        return_value=_FAKE_LLM_RESULT.copy(),
+    with (
+        patch("app.core.config.get_settings") as mock_settings,
+        patch(
+            "app.services.scoring.llm_scorer.score_cv_with_llm",
+            return_value=_FAKE_LLM_RESULT.copy(),
+        ),
     ):
         mock_settings.return_value.CV_ANALYZER_KOBOI_API_KEY = "test-key"
         mock_settings.return_value.CV_ANALYZER_SCORING_ENSEMBLE_RUNS = 1
@@ -54,6 +57,7 @@ def _mock_score_cv(text: str, **kw) -> dict:
 # ---------------------------------------------------------------------------
 # scorer.py integration
 # ---------------------------------------------------------------------------
+
 
 def test_score_cv_returns_dict_with_all_keys() -> None:
     result = _mock_score_cv("Sample CV text for testing")
@@ -73,8 +77,15 @@ def test_score_cv_includes_metrics_and_reasonings() -> None:
 
 def test_score_cv_all_score_values_in_range() -> None:
     _NON_NUMERIC = {
-        "scoring_method", "provider", "jd_relevance", "target_role",
-        "benchmark", "reasonings", "metrics", "score_ranges", "ensemble_runs",
+        "scoring_method",
+        "provider",
+        "jd_relevance",
+        "target_role",
+        "benchmark",
+        "reasonings",
+        "metrics",
+        "score_ranges",
+        "ensemble_runs",
         "version_delta",
     }
     result = _mock_score_cv("Sample CV text")
@@ -89,6 +100,7 @@ def test_score_cv_all_score_values_in_range() -> None:
 # ---------------------------------------------------------------------------
 # llm_scorer helpers
 # ---------------------------------------------------------------------------
+
 
 def test_median_int_odd() -> None:
     assert _median_int([60, 70, 80]) == 70
@@ -196,10 +208,14 @@ def test_contact_signals_full() -> None:
 
 
 def test_section_coverage_with_nlp() -> None:
-    nlp = {"sections": [
-        {"type": "experience"}, {"type": "education"},
-        {"type": "skills"}, {"type": "contact"},
-    ]}
+    nlp = {
+        "sections": [
+            {"type": "experience"},
+            {"type": "education"},
+            {"type": "skills"},
+            {"type": "contact"},
+        ]
+    }
     result = _section_coverage(nlp)
     assert "experience" in result["found"]
     assert result["score"] > 0
@@ -221,9 +237,16 @@ def test_employment_gaps_detects_gap() -> None:
 def test_compute_deterministic_metrics_returns_all_keys() -> None:
     result = compute_deterministic_metrics(_SAMPLE_CV)
     for key in (
-        "bullet_count", "word_count", "quantification_ratio", "action_verb_ratio",
-        "passive_voice_ratio", "avg_bullet_length_words", "section_coverage",
-        "skill_presence_in_experience", "employment_gaps", "contact_signals",
+        "bullet_count",
+        "word_count",
+        "quantification_ratio",
+        "action_verb_ratio",
+        "passive_voice_ratio",
+        "avg_bullet_length_words",
+        "section_coverage",
+        "skill_presence_in_experience",
+        "employment_gaps",
+        "contact_signals",
         "objective_score",
     ):
         assert key in result, f"Missing metric key: {key}"
@@ -237,6 +260,7 @@ def test_objective_score_in_range() -> None:
 # ---------------------------------------------------------------------------
 # embeddings utility (still present, used by other modules)
 # ---------------------------------------------------------------------------
+
 
 def test_cosine_similarity_same_vectors() -> None:
     vec = [0.5, 0.5, 0.5, 0.5]
@@ -254,5 +278,6 @@ def test_cosine_similarity_zero_vector() -> None:
 try:
     from pytest import approx as pytest_approx
 except ImportError:
+
     def pytest_approx(x, **_):  # type: ignore[misc]
         return x

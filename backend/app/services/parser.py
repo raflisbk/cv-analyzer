@@ -24,7 +24,11 @@ except ImportError:
 from app.core.logging import structured_logger as logger
 from app.services.ocr import EASYOCR_AVAILABLE, perform_ocr
 from app.services.validation import validate_extraction_quality
-from app.services.vision import VISION_AVAILABLE, extract_text_from_image, extract_text_from_scanned_pdf
+from app.services.vision import (
+    VISION_AVAILABLE,
+    extract_text_from_image,
+    extract_text_from_scanned_pdf,
+)
 
 
 class ParsingError(Exception):
@@ -200,8 +204,9 @@ class DocumentParser:
             msg = f"Failed to extract text from DOCX: {e!s}"
             raise ParsingError(msg) from e
 
-
-    def parse_image(self, content: bytes, mime_type: str = "image/jpeg") -> tuple[str, dict]:
+    def parse_image(
+        self, content: bytes, mime_type: str = "image/jpeg"
+    ) -> tuple[str, dict]:
         """Extract text from image (JPG/PNG) using Granite Vision."""
         if not VISION_AVAILABLE:
             msg = "Vision service not available — CV_ANALYZER_REPLICATE_API_TOKEN not configured or replicate not installed"

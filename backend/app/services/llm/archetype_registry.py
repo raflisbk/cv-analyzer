@@ -934,19 +934,16 @@ REGISTRY: dict[str, dict] = {
             "startup_growth_hacker": "growth hacking, viral loop, referral, retention, 0-to-1 growth",
             "product_manager_startup": "PM startup, discovery, prioritization, north star, sprint",
             "startup_ops_chief_of_staff": "chief of staff, ops startup, OKR, cross-function, founder support",
-
             # Digital health & telemedicine
             "telemedicine_doctor": "dokter telemed, Halodoc/Alodokter/KlikDokter, konsul online, e-resep",
             "digital_health_pm": "health app PM, EHR/EMR, HL7/FHIR, SATUSEHAT, interoperabilitas",
             "health_informatics": "informatika kesehatan, SIMRS, data klinik, rekam medis digital",
             "mental_health_digital": "kesehatan jiwa digital, platform konseling, Into The Light",
-
             # EdTech
             "edtech_pm": "EdTech PM, platform belajar, engagement, LMS, Ruangguru/Zenius/Quipper",
             "instructional_designer": "instructional design, ADDIE, learning objective, e-learning module",
             "edtech_content_creator": "konten edukasi digital, video tutorial, animasi belajar, micro-learning",
             "online_course_manager": "course manager platform, kurikulum digital, kelas live, LMS admin",
-
             # Fintech & neobank
             "neobank_product": "neobank PM, digital wallet, tabungan digital, GoPay/OVO/DANA feature",
             "crypto_web3_engineer": "kripto, DeFi, smart contract, Solidity, Web3, token, NFT",
@@ -955,7 +952,6 @@ REGISTRY: dict[str, dict] = {
             "open_banking_engineer": "open banking, API banking, SNAP BI, agregator rekening, BaaS",
             "insurtech_pm": "InsurTech PM, micro asuransi, klaim otomatis, embedded insurance",
             "wealthtech_analyst": "WealthTech, robo-advisor, reksa dana digital, portofolio, SPPEI",
-
             # Marketplace & super app
             "marketplace_ops": "marketplace ops, trust & safety, fraud, seller management, dispute",
             "super_app_pm": "super app PM, ekosistem multi-layanan, Gojek/Grab/Shopee ecosystem",
@@ -963,18 +959,15 @@ REGISTRY: dict[str, dict] = {
             "ecommerce_manager": "e-commerce manager, marketplace strategy, omnichannel, D2C",
             "live_commerce_manager": "live commerce manager, host management, GMV, Shopee/TikTok Shop",
             "d2c_brand_manager": "D2C brand, direct-to-consumer, brand.com, own channel, CRM D2C",
-
             # Digital transformation (lintas industri)
             "chief_digital_officer": "CDO, transformasi digital korporat, roadmap, legacy modernization",
             "digital_transformation_consultant": "konsultan digitalisasi, BPR, ERP, change management",
             "enterprise_digitization": "digitalisasi proses, workflow otomasi, paperless, RPA",
             "govtech_developer": "SPBE, aplikasi Pemda, GovTech, OSS, portal layanan publik",
             "smart_city_analyst": "smart city, IoT kota, dashboard Pemda, data perkotaan",
-
             # PropTech & AgriTech digital
             "proptech_pm": "PropTech PM, platform properti, virtual tour, Lamudi/Rumah123/99.co",
             "agritech_pm": "AgriTech PM, platform petani, Jala/TaniHub/eFarm, precision farming",
-
             # Creator economy & digital media
             "creator_economy_manager": "creator economy, brand deal manager, platform kreator, monetisasi",
             "talent_manager_digital": "talent manager digital, manajemen artis digital, KOL agency",
@@ -1377,10 +1370,7 @@ for _domain, _entries in _EXPANSIONS.items():
 
 def get_domain_list() -> str:
     """Formatted domain list for tier-1 LLM prompt."""
-    return "\n".join(
-        f"{key}: {data['display_name']}"
-        for key, data in REGISTRY.items()
-    )
+    return "\n".join(f"{key}: {data['display_name']}" for key, data in REGISTRY.items())
 
 
 def get_archetype_keys(domain: str) -> list[str]:

@@ -12,38 +12,136 @@ import statistics
 # ---------------------------------------------------------------------------
 
 _STRONG_VERBS: set[str] = {
-    "accelerated", "achieved", "architected", "automated", "boosted",
-    "built", "championed", "conceptualized", "created", "decreased",
-    "delivered", "deployed", "designed", "developed", "directed",
-    "doubled", "drove", "eliminated", "engineered", "enhanced",
-    "established", "exceeded", "executed", "expanded", "founded",
-    "generated", "grew", "implemented", "improved", "increased",
-    "initiated", "innovated", "integrated", "launched", "led",
-    "leveraged", "managed", "maximized", "mentored", "minimized",
-    "modernized", "negotiated", "optimized", "orchestrated", "outperformed",
-    "overhauled", "pioneered", "produced", "refactored", "reduced",
-    "restructured", "revamped", "scaled", "secured", "shaped",
-    "shipped", "simplified", "spearheaded", "standardized", "streamlined",
-    "transformed", "upgraded", "won",
+    "accelerated",
+    "achieved",
+    "architected",
+    "automated",
+    "boosted",
+    "built",
+    "championed",
+    "conceptualized",
+    "created",
+    "decreased",
+    "delivered",
+    "deployed",
+    "designed",
+    "developed",
+    "directed",
+    "doubled",
+    "drove",
+    "eliminated",
+    "engineered",
+    "enhanced",
+    "established",
+    "exceeded",
+    "executed",
+    "expanded",
+    "founded",
+    "generated",
+    "grew",
+    "implemented",
+    "improved",
+    "increased",
+    "initiated",
+    "innovated",
+    "integrated",
+    "launched",
+    "led",
+    "leveraged",
+    "managed",
+    "maximized",
+    "mentored",
+    "minimized",
+    "modernized",
+    "negotiated",
+    "optimized",
+    "orchestrated",
+    "outperformed",
+    "overhauled",
+    "pioneered",
+    "produced",
+    "refactored",
+    "reduced",
+    "restructured",
+    "revamped",
+    "scaled",
+    "secured",
+    "shaped",
+    "shipped",
+    "simplified",
+    "spearheaded",
+    "standardized",
+    "streamlined",
+    "transformed",
+    "upgraded",
+    "won",
     # Indonesian — comprehensive coverage for CV in Bahasa Indonesia
-    "membangun", "mengembangkan", "meningkatkan", "mengoptimalkan",
-    "memimpin", "merancang", "menciptakan", "mengimplementasikan",
-    "meluncurkan", "mengelola", "mendirikan", "memperluas", "mencapai",
-    "mengurangi", "memotong", "menyederhanakan", "mempercepat",
-    "mengintegrasikan", "mengotomasi", "menghasilkan", "memenangkan",
-    "menegosiasikan", "melatih", "membimbing", "memproduksi",
-    "mengoperasikan", "mengaudit", "memantau", "merestrukturisasi",
-    "mengkoordinasikan", "menyelesaikan", "mengadvokasi", "mempublikasikan",
-    "merekrut", "menstandarisasi", "memvalidasi", "mendistribusikan",
-    "memfasilitasi", "mensertifikasi", "memperbaiki", "mendigitalisasi",
-    "mentransformasikan", "memangkas", "mengkomersialkan", "menyusun",
-    "mengkalibrasi", "mendeploy", "merenovasi", "memperkenalkan",
-    "mengkoordinir", "mendampingi", "merintis", "memprakarsai",
+    "membangun",
+    "mengembangkan",
+    "meningkatkan",
+    "mengoptimalkan",
+    "memimpin",
+    "merancang",
+    "menciptakan",
+    "mengimplementasikan",
+    "meluncurkan",
+    "mengelola",
+    "mendirikan",
+    "memperluas",
+    "mencapai",
+    "mengurangi",
+    "memotong",
+    "menyederhanakan",
+    "mempercepat",
+    "mengintegrasikan",
+    "mengotomasi",
+    "menghasilkan",
+    "memenangkan",
+    "menegosiasikan",
+    "melatih",
+    "membimbing",
+    "memproduksi",
+    "mengoperasikan",
+    "mengaudit",
+    "memantau",
+    "merestrukturisasi",
+    "mengkoordinasikan",
+    "menyelesaikan",
+    "mengadvokasi",
+    "mempublikasikan",
+    "merekrut",
+    "menstandarisasi",
+    "memvalidasi",
+    "mendistribusikan",
+    "memfasilitasi",
+    "mensertifikasi",
+    "memperbaiki",
+    "mendigitalisasi",
+    "mentransformasikan",
+    "memangkas",
+    "mengkomersialkan",
+    "menyusun",
+    "mengkalibrasi",
+    "mendeploy",
+    "merenovasi",
+    "memperkenalkan",
+    "mengkoordinir",
+    "mendampingi",
+    "merintis",
+    "memprakarsai",
 }
 
 _WEAK_VERBS: set[str] = {
-    "helped", "assisted", "supported", "worked", "participated",
-    "involved", "contributed", "responsible", "tasked", "handled",
+    "helped",
+    "assisted",
+    "supported",
+    "worked",
+    "participated",
+    "involved",
+    "contributed",
+    "responsible",
+    "tasked",
+    "handled",
     "provided",
 }
 
@@ -53,26 +151,67 @@ _PASSIVE_PATTERN = re.compile(
 # Traditional bullet chars
 _EXPLICIT_BULLET = re.compile(r"^[\s]*[-•●◆▪▸►*]\s+(.+)$", re.MULTILINE)
 # Numbered list: 1. text or (1) text
-_NUMBERED_BULLET = re.compile(r"^\s*\(\d+\)\s+(.+)$|\s*\d+\.\s+([A-Z].+)$", re.MULTILINE)
+_NUMBERED_BULLET = re.compile(
+    r"^\s*\(\d+\)\s+(.+)$|\s*\d+\.\s+([A-Z].+)$", re.MULTILINE
+)
 _NUMBER_IN_TEXT = re.compile(r"\d+(?:[.,]\d+)?(?:\s*[%xX×])?|\$[\d,]+|Rp[\s\d,.]+")
 # Year ranges — used for employment gap detection
-_YEAR_RANGE = re.compile(r"(\d{4})\s*[-–—]\s*(\d{4}|present|current|now|sekarang)", re.IGNORECASE)
+_YEAR_RANGE = re.compile(
+    r"(\d{4})\s*[-–—]\s*(\d{4}|present|current|now|sekarang)", re.IGNORECASE
+)
 _LINKEDIN = re.compile(r"linkedin\.com/in/", re.IGNORECASE)
 _GITHUB = re.compile(r"github\.com/", re.IGNORECASE)
-_PORTFOLIO = re.compile(r"https?://(?!github|linkedin)[\w.-]+\.[a-z]{2,}", re.IGNORECASE)
+_PORTFOLIO = re.compile(
+    r"https?://(?!github|linkedin)[\w.-]+\.[a-z]{2,}", re.IGNORECASE
+)
 
-_DEFAULT_SECTIONS = {"experience", "education", "skills", "summary", "contact", "projects"}
+_DEFAULT_SECTIONS = {
+    "experience",
+    "education",
+    "skills",
+    "summary",
+    "contact",
+    "projects",
+}
 # Design/creative (portfolio-centric): projects + certifications > traditional experience section
-_DESIGN_SECTIONS  = {"projects", "education", "skills", "summary", "contact", "certifications"}
+_DESIGN_SECTIONS = {
+    "projects",
+    "education",
+    "skills",
+    "summary",
+    "contact",
+    "certifications",
+}
 # Creative media: same portfolio-centric pattern — portfolio/reel replaces experience
 _CREATIVE_SECTIONS = {"projects", "summary", "contact", "skills", "certifications"}
 # DevOps/SRE/infra: certifications (AWS/GCP/Azure) critical; projects less expected
-_DEVOPS_SECTIONS  = {"experience", "education", "skills", "certifications", "contact", "summary"}
+_DEVOPS_SECTIONS = {
+    "experience",
+    "education",
+    "skills",
+    "certifications",
+    "contact",
+    "summary",
+}
 # Finance/accounting: certifications (CPA/CFA/CMA) expected; projects rarely present
-_FINANCE_SECTIONS = {"experience", "education", "skills", "certifications", "contact", "summary"}
+_FINANCE_SECTIONS = {
+    "experience",
+    "education",
+    "skills",
+    "certifications",
+    "contact",
+    "summary",
+}
 # Certification-focused domains: healthcare, manufacturing, construction, education, legal, beauty,
 # mining, government — certifications are as important as experience
-_CERTIF_FOCUSED_SECTIONS = {"experience", "education", "certifications", "skills", "contact", "summary"}
+_CERTIF_FOCUSED_SECTIONS = {
+    "experience",
+    "education",
+    "certifications",
+    "skills",
+    "contact",
+    "summary",
+}
 
 # Maps archetype domain → expected section set.
 # Domains not listed fall through to role-text matching then _DEFAULT_SECTIONS.
@@ -106,21 +245,81 @@ def _expected_sections_for_role(
     if not target_role:
         return _DEFAULT_SECTIONS
     r = target_role.lower()
-    if any(w in r for w in ["design", "ux", "ui ", "ui/ux", "visual", "brand", "graphic", "illustrat"]):
+    if any(
+        w in r
+        for w in [
+            "design",
+            "ux",
+            "ui ",
+            "ui/ux",
+            "visual",
+            "brand",
+            "graphic",
+            "illustrat",
+        ]
+    ):
         return _DESIGN_SECTIONS
-    if any(w in r for w in ["photographer", "videographer", "filmmaker", "animator", "content creator", "kreator"]):
+    if any(
+        w in r
+        for w in [
+            "photographer",
+            "videographer",
+            "filmmaker",
+            "animator",
+            "content creator",
+            "kreator",
+        ]
+    ):
         return _CREATIVE_SECTIONS
-    if any(w in r for w in ["devops", "sre", "site reliability", "infrastructure", "platform engineer", "cloud engineer", "devsecops"]):
+    if any(
+        w in r
+        for w in [
+            "devops",
+            "sre",
+            "site reliability",
+            "infrastructure",
+            "platform engineer",
+            "cloud engineer",
+            "devsecops",
+        ]
+    ):
         return _DEVOPS_SECTIONS
-    if any(w in r for w in ["financial analyst", "finance", "accountant", "accounting", "banking", "audit", "treasury", "controller"]):
+    if any(
+        w in r
+        for w in [
+            "financial analyst",
+            "finance",
+            "accountant",
+            "accounting",
+            "banking",
+            "audit",
+            "treasury",
+            "controller",
+        ]
+    ):
         return _FINANCE_SECTIONS
-    if any(w in r for w in ["dokter", "doctor", "nurse", "perawat", "bidan", "apoteker", "fisioterapis"]):
+    if any(
+        w in r
+        for w in [
+            "dokter",
+            "doctor",
+            "nurse",
+            "perawat",
+            "bidan",
+            "apoteker",
+            "fisioterapis",
+        ]
+    ):
         return _CERTIF_FOCUSED_SECTIONS
-    if any(w in r for w in ["guru", "teacher", "dosen", "lecturer", "trainer", "instruktur"]):
+    if any(
+        w in r
+        for w in ["guru", "teacher", "dosen", "lecturer", "trainer", "instruktur"]
+    ):
         return _CERTIF_FOCUSED_SECTIONS
     if any(w in r for w in ["legal", "lawyer", "advokat", "notaris", "hukum"]):
         return _CERTIF_FOCUSED_SECTIONS
     return _DEFAULT_SECTIONS
+
 
 # Section keywords used to identify experience text from free text
 _EXP_SECTION_KEYWORDS = re.compile(
@@ -136,6 +335,7 @@ _EDU_SECTION_KEYWORDS = re.compile(
 # ---------------------------------------------------------------------------
 # Bullet / achievement line extraction
 # ---------------------------------------------------------------------------
+
 
 def _extract_bullets(text: str, nlp_result: dict | None = None) -> list[str]:
     """Extract achievement lines from CV text.
@@ -182,7 +382,10 @@ def _extract_bullets(text: str, nlp_result: dict | None = None) -> list[str]:
 # Individual metric helpers
 # ---------------------------------------------------------------------------
 
-def _quantification_ratio(bullets: list[str], exp_bullets: list[str] | None = None) -> float:
+
+def _quantification_ratio(
+    bullets: list[str], exp_bullets: list[str] | None = None
+) -> float:
     """Fraction of achievement bullets that contain a number/metric.
 
     Uses experience+projects bullets when available (passed as exp_bullets) because
@@ -271,6 +474,7 @@ def _employment_gaps(text: str, nlp_result: dict | None = None) -> dict:
     false positives from education dates.
     """
     import datetime
+
     _PRESENT_YEAR = datetime.date.today().year
 
     # Prefer experience section text to avoid education date false-positives
@@ -293,7 +497,11 @@ def _employment_gaps(text: str, nlp_result: dict | None = None) -> dict:
     for start, end in year_ranges:
         try:
             s = int(start)
-            e = _PRESENT_YEAR if str(end).lower() in {"present", "current", "now", "sekarang"} else int(end)
+            e = (
+                _PRESENT_YEAR
+                if str(end).lower() in {"present", "current", "now", "sekarang"}
+                else int(end)
+            )
             if 1990 <= s <= _PRESENT_YEAR and s <= e:
                 pairs.append((s, e))
         except ValueError:
@@ -328,32 +536,37 @@ def _contact_signals(text: str) -> dict:
 
 
 def _objective_score(metrics: dict) -> int:
-    q_ratio    = metrics.get("quantification_ratio", 0)
-    verb       = metrics.get("action_verb_ratio", {})
-    strong_r   = verb.get("strong_ratio", 0)
-    weak_r     = verb.get("weak_ratio", 0)
-    passive    = metrics.get("passive_voice_ratio", 0)
-    section    = metrics.get("section_coverage", {}).get("score", 0) / 100
+    q_ratio = metrics.get("quantification_ratio", 0)
+    verb = metrics.get("action_verb_ratio", {})
+    strong_r = verb.get("strong_ratio", 0)
+    weak_r = verb.get("weak_ratio", 0)
+    passive = metrics.get("passive_voice_ratio", 0)
+    section = metrics.get("section_coverage", {}).get("score", 0) / 100
     skill_pres = metrics.get("skill_presence_in_experience", 0)
-    contact    = metrics.get("contact_signals", {})
-    gap        = metrics.get("employment_gaps", {}).get("longest_gap_months", 0)
+    contact = metrics.get("contact_signals", {})
+    gap = metrics.get("employment_gaps", {}).get("longest_gap_months", 0)
 
-    contact_score = sum([
-        contact.get("has_email", False),
-        contact.get("has_phone", False),
-        contact.get("has_linkedin", False),
-    ]) / 3
+    contact_score = (
+        sum(
+            [
+                contact.get("has_email", False),
+                contact.get("has_phone", False),
+                contact.get("has_linkedin", False),
+            ]
+        )
+        / 3
+    )
 
     gap_penalty = min(gap / 24, 0.5)  # max 50-pt penalty at 24 months gap
 
     raw = (
-        q_ratio    * 25 +
-        strong_r   * 20 +
-        (1 - weak_r) * 10 +
-        (1 - passive) * 10 +
-        section    * 20 +
-        skill_pres * 10 +
-        contact_score * 5
+        q_ratio * 25
+        + strong_r * 20
+        + (1 - weak_r) * 10
+        + (1 - passive) * 10
+        + section * 20
+        + skill_pres * 10
+        + contact_score * 5
     ) - gap_penalty * 20
 
     return max(0, min(100, int(raw)))
@@ -363,7 +576,12 @@ def _objective_score(metrics: dict) -> int:
 # Score adjustment layer
 # ---------------------------------------------------------------------------
 
-_SCORE_WEIGHTS = {"impact": 0.35, "clarity": 0.30, "relevance": 0.20, "completeness": 0.15}
+_SCORE_WEIGHTS = {
+    "impact": 0.35,
+    "clarity": 0.30,
+    "relevance": 0.20,
+    "completeness": 0.15,
+}
 
 
 def apply_score_adjustments(
@@ -385,20 +603,20 @@ def apply_score_adjustments(
         return adjusted, low_confidence
 
     quant_ratio = metrics.get("quantification_ratio", 0.0)
-    verb        = metrics.get("action_verb_ratio", {})
-    strong_r    = verb.get("strong_ratio", 0.0)
-    passive_r   = metrics.get("passive_voice_ratio", 0.0)
-    avg_len     = metrics.get("avg_bullet_length_words", 12.0)
-    sec_score   = metrics.get("section_coverage", {}).get("score", 50) / 100
+    verb = metrics.get("action_verb_ratio", {})
+    strong_r = verb.get("strong_ratio", 0.0)
+    passive_r = metrics.get("passive_voice_ratio", 0.0)
+    avg_len = metrics.get("avg_bullet_length_words", 12.0)
+    sec_score = metrics.get("section_coverage", {}).get("score", 50) / 100
 
     # --- Impact: quantification & action verb signals ---
     impact_adj = 0
     if quant_ratio < 0.10:
-        impact_adj -= 7   # nearly no numbers → can't justify high impact
+        impact_adj -= 7  # nearly no numbers → can't justify high impact
     elif quant_ratio >= 0.50:
-        impact_adj += 3   # well quantified
+        impact_adj += 3  # well quantified
     if strong_r < 0.20:
-        impact_adj -= 4   # mostly weak/passive verbs
+        impact_adj -= 4  # mostly weak/passive verbs
     elif strong_r >= 0.60:
         impact_adj += 2
     impact_adj = max(-10, min(10, impact_adj))
@@ -421,14 +639,17 @@ def apply_score_adjustments(
         completeness_adj += 3
     completeness_adj = max(-10, min(10, completeness_adj))
 
-    adjusted["impact"]       = max(0, min(100, adjusted.get("impact", 50)       + impact_adj))
-    adjusted["clarity"]      = max(0, min(100, adjusted.get("clarity", 50)      + clarity_adj))
-    adjusted["completeness"] = max(0, min(100, adjusted.get("completeness", 50) + completeness_adj))
+    adjusted["impact"] = max(0, min(100, adjusted.get("impact", 50) + impact_adj))
+    adjusted["clarity"] = max(0, min(100, adjusted.get("clarity", 50) + clarity_adj))
+    adjusted["completeness"] = max(
+        0, min(100, adjusted.get("completeness", 50) + completeness_adj)
+    )
 
     # Recompute overall
-    adjusted["overall"] = max(0, min(100, int(
-        sum(adjusted.get(d, 50) * w for d, w in _SCORE_WEIGHTS.items())
-    )))
+    adjusted["overall"] = max(
+        0,
+        min(100, int(sum(adjusted.get(d, 50) * w for d, w in _SCORE_WEIGHTS.items()))),
+    )
 
     # Consistency guard: flag when LLM impact >> deterministic proxy
     det_impact_proxy = quant_ratio * 50 + strong_r * 50
@@ -441,6 +662,7 @@ def apply_score_adjustments(
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def compute_deterministic_metrics(
     cv_text: str,
@@ -466,7 +688,9 @@ def compute_deterministic_metrics(
         "action_verb_ratio": _action_verb_ratio(bullets),
         "passive_voice_ratio": _passive_voice_ratio(cv_text),
         "avg_bullet_length_words": _avg_bullet_length(bullets),
-        "section_coverage": _section_coverage(nlp_result, target_role, archetype_domain),
+        "section_coverage": _section_coverage(
+            nlp_result, target_role, archetype_domain
+        ),
         "skill_presence_in_experience": _skill_presence_in_experience(nlp_result),
         "employment_gaps": _employment_gaps(cv_text, nlp_result),
         "contact_signals": _contact_signals(cv_text),

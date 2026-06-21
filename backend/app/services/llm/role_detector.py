@@ -36,10 +36,14 @@ def detect_role_from_cv(cv_text: str) -> str | None:
         with httpx.Client(timeout=20.0) as client:
             resp = client.post(
                 f"{settings.CV_ANALYZER_KOBOI_BASE_URL}/chat/completions",
-                headers={"Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"},
+                headers={
+                    "Authorization": f"Bearer {settings.CV_ANALYZER_KOBOI_API_KEY}"
+                },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
-                    "messages": [{"role": "user", "content": _PROMPT.format(cv_text=snippet)}],
+                    "messages": [
+                        {"role": "user", "content": _PROMPT.format(cv_text=snippet)}
+                    ],
                     "max_tokens": 20,
                     "temperature": 0.1,
                 },

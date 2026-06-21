@@ -67,7 +67,9 @@ class Job(Base, TimestampMixin):
         nullable=True,
         index=True,
     )
-    parent_job = relationship("Job", remote_side="Job.id", foreign_keys="Job.parent_job_id")
+    parent_job = relationship(
+        "Job", remote_side="Job.id", foreign_keys="Job.parent_job_id"
+    )
 
     workspace_draft = Column(JSONB, nullable=True)
     cv_document = Column(JSONB, nullable=True)

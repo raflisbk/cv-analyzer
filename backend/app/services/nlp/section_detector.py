@@ -183,25 +183,42 @@ _HEADING_UPPER_RE = re.compile(
 )
 
 # "Strong" sections: main CV body — never leave these for a weak section without a preceding blank line.
-_STRONG_SECTION_TYPES = frozenset({"experience", "education", "skills", "projects", "certifications", "summary"})
+_STRONG_SECTION_TYPES = frozenset(
+    {"experience", "education", "skills", "projects", "certifications", "summary"}
+)
 
 # "Weak" section types that commonly appear as sub-headings inside experience/projects
 # (e.g. "ACHIEVEMENTS:" inside a job entry).  Only recognised as a real section
 # when preceded by at least one blank line.
-_WEAK_SECTION_TYPES = frozenset({"awards", "organizations", "volunteer", "interests", "publications", "references"})
+_WEAK_SECTION_TYPES = frozenset(
+    {"awards", "organizations", "volunteer", "interests", "publications", "references"}
+)
 
 # These keywords appear so commonly as sub-headings within job entries that they
 # should NEVER cause a section switch when we are inside a strong section,
 # regardless of whether a blank line precedes them.
 # e.g. "ACHIEVEMENTS:" or "RESPONSIBILITIES:" inside an experience entry.
-_EXPERIENCE_SUBHEADING_KEYWORDS = frozenset({
-    "achievements", "accomplishments", "responsibilities",
-    "key responsibilities", "highlights", "deliverables",
-    # Common "recognition" sub-headings within a job entry — not standalone sections
-    "recognition", "honors", "production impact", "impact", "contributions",
-    # Training/development headings that appear inside experience blocks
-    "training", "learning", "development", "career development",
-})
+_EXPERIENCE_SUBHEADING_KEYWORDS = frozenset(
+    {
+        "achievements",
+        "accomplishments",
+        "responsibilities",
+        "key responsibilities",
+        "highlights",
+        "deliverables",
+        # Common "recognition" sub-headings within a job entry — not standalone sections
+        "recognition",
+        "honors",
+        "production impact",
+        "impact",
+        "contributions",
+        # Training/development headings that appear inside experience blocks
+        "training",
+        "learning",
+        "development",
+        "career development",
+    }
+)
 
 
 @dataclass
