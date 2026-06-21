@@ -211,7 +211,18 @@ export interface JdRedFlag {
   detail: string;
 }
 
+export type ArchetypeDomain =
+  | "engineering"
+  | "ai_ml"
+  | "data"
+  | "design"
+  | "product"
+  | "marketing"
+  | "finance"
+  | "management";
+
 export interface ArchetypeResult {
+  domain: ArchetypeDomain | string;
   type: string;
   confidence: "high" | "medium" | "low";
   reasoning: string;

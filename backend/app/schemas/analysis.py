@@ -129,6 +129,7 @@ class ScoreVersion(BaseModel):
 
 
 class ArchetypeResult(BaseModel):
+    domain: str = "unknown"
     type: str
     confidence: str = "medium"
     reasoning: str = ""
