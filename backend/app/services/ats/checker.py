@@ -596,7 +596,7 @@ _DEFAULT_CHECK_WEIGHT = 2  # unweighted checks
 
 
 def compute_ats_score(ats_checks: list[dict]) -> int:
-    """Convert ATS checklist to a numeric score 0–100.
+    """Convert ATS checklist to a numeric score 0-100.
 
     pass=full weight, warn=half weight, fail=0.
     """
@@ -616,5 +616,3 @@ def compute_ats_score(ats_checks: list[dict]) -> int:
     # Normalize to 100 using expected max from defined weights
     max_score = sum(_CHECK_WEIGHTS.values())
     return min(100, int(score / max_score * 100))
-
-    return results

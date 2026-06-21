@@ -42,7 +42,7 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
         _section = card.get("section", "unknown")
         card_suggestions = card.get("suggestions", [])
 
-        for idx, suggestion in enumerate(card_suggestions):
+        for _, suggestion in enumerate(card_suggestions):
             if "type" not in suggestion or not suggestion["type"]:
                 text_lower = suggestion.get("text", "").lower()
                 if any(

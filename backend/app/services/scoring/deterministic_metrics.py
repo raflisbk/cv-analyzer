@@ -5,7 +5,6 @@ the LLM subjective score. The same CV always produces the same numbers.
 """
 
 import re
-import statistics
 
 # ---------------------------------------------------------------------------
 # Verb lists
@@ -235,45 +234,24 @@ _DOMAIN_TO_SECTIONS: dict[str, set[str]] = {
 _SECTION_TYPE_ALIASES: dict[str, str] = {"header": "contact"}
 
 
-def _expected_sections_for_role(
-    target_role: str | None,
-    archetype_domain: str | None = None,
-) -> set[str]:
-    # Archetype domain lookup takes priority — it's more precise
-    if archetype_domain and archetype_domain in _DOMAIN_TO_SECTIONS:
-        return _DOMAIN_TO_SECTIONS[archetype_domain]
-    if not target_role:
-        return _DEFAULT_SECTIONS
-    r = target_role.lower()
-    if any(
-        w in r
-        for w in [
-            "design",
-            "ux",
-            "ui ",
-            "ui/ux",
-            "visual",
-            "brand",
-            "graphic",
-            "illustrat",
-        ]
-    ):
-        return _DESIGN_SECTIONS
-    if any(
-        w in r
-        for w in [
+_ROLE_SECTION_MAP: list[tuple[list[str], set[str]]] = [
+    (
+        ["design", "ux", "ui ", "ui/ux", "visual", "brand", "graphic", "illustrat"],
+        _DESIGN_SECTIONS,
+    ),
+    (
+        [
             "photographer",
             "videographer",
             "filmmaker",
             "animator",
             "content creator",
             "kreator",
-        ]
-    ):
-        return _CREATIVE_SECTIONS
-    if any(
-        w in r
-        for w in [
+        ],
+        _CREATIVE_SECTIONS,
+    ),
+    (
+        [
             "devops",
             "sre",
             "site reliability",
@@ -281,12 +259,11 @@ def _expected_sections_for_role(
             "platform engineer",
             "cloud engineer",
             "devsecops",
-        ]
-    ):
-        return _DEVOPS_SECTIONS
-    if any(
-        w in r
-        for w in [
+        ],
+        _DEVOPS_SECTIONS,
+    ),
+    (
+        [
             "financial analyst",
             "finance",
             "accountant",
@@ -295,12 +272,11 @@ def _expected_sections_for_role(
             "audit",
             "treasury",
             "controller",
-        ]
-    ):
-        return _FINANCE_SECTIONS
-    if any(
-        w in r
-        for w in [
+        ],
+        _FINANCE_SECTIONS,
+    ),
+    (
+        [
             "dokter",
             "doctor",
             "nurse",
@@ -308,16 +284,35 @@ def _expected_sections_for_role(
             "bidan",
             "apoteker",
             "fisioterapis",
-        ]
-    ):
-        return _CERTIF_FOCUSED_SECTIONS
-    if any(
-        w in r
-        for w in ["guru", "teacher", "dosen", "lecturer", "trainer", "instruktur"]
-    ):
-        return _CERTIF_FOCUSED_SECTIONS
-    if any(w in r for w in ["legal", "lawyer", "advokat", "notaris", "hukum"]):
-        return _CERTIF_FOCUSED_SECTIONS
+            "guru",
+            "teacher",
+            "dosen",
+            "lecturer",
+            "trainer",
+            "instruktur",
+            "legal",
+            "lawyer",
+            "advokat",
+            "notaris",
+            "hukum",
+        ],
+        _CERTIF_FOCUSED_SECTIONS,
+    ),
+]
+
+
+def _expected_sections_for_role(
+    target_role: str | None,
+    archetype_domain: str | None = None,
+) -> set[str]:
+    if archetype_domain and archetype_domain in _DOMAIN_TO_SECTIONS:
+        return _DOMAIN_TO_SECTIONS[archetype_domain]
+    if not target_role:
+        return _DEFAULT_SECTIONS
+    r = target_role.lower()
+    for keywords, sections in _ROLE_SECTION_MAP:
+        if any(w in r for w in keywords):
+            return sections
     return _DEFAULT_SECTIONS
 
 
@@ -475,7 +470,7 @@ def _employment_gaps(text: str, nlp_result: dict | None = None) -> dict:
     """
     import datetime
 
-    _PRESENT_YEAR = datetime.date.today().year
+    _PRESENT_YEAR = datetime.datetime.now(datetime.UTC).year
 
     # Prefer experience section text to avoid education date false-positives
     exp_text = text

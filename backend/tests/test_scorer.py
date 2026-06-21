@@ -1,6 +1,6 @@
 """Tests for CV scoring services (LLM-based scorer + deterministic metrics)."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from app.services.scoring.deterministic_metrics import (
     _action_verb_ratio,
@@ -270,14 +270,3 @@ def test_cosine_similarity_same_vectors() -> None:
 def test_cosine_similarity_zero_vector() -> None:
     vec = [0.0, 0.0, 0.0]
     assert cosine_similarity(vec, vec) == 0.0
-
-
-# ---------------------------------------------------------------------------
-# pytest import needed for approx
-# ---------------------------------------------------------------------------
-try:
-    from pytest import approx as pytest_approx
-except ImportError:
-
-    def pytest_approx(x, **_):  # type: ignore[misc]
-        return x

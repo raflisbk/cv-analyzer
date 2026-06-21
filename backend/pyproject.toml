@@ -155,6 +155,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Allow unused imports in __init__.py
 "tests/*" = ["ARG", "PLR2004"]  # Allow magic values in tests
+"scripts/*" = ["E402", "F401", "ERA001"]  # Scripts use sys.path hacks before imports
 
 [tool.ruff.lint.isort]
 known-first-party = ["app"]

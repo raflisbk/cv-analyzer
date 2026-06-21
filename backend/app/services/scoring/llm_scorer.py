@@ -328,32 +328,14 @@ def _cache_set(key: str, data: dict, settings) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _role_category(role: str | None, archetype_domain: str | None = None) -> str:
-    # Archetype domain is more precise than free-text role matching — use it first
-    if archetype_domain and archetype_domain in _DOMAIN_TO_CATEGORY:
-        return _DOMAIN_TO_CATEGORY[archetype_domain]
-    if not role:
-        return "general"
-    r = role.lower()
-    if any(
-        w in r
-        for w in [
-            "design",
-            "ux",
-            "ui ",
-            "ui/ux",
-            "visual",
-            "creative",
-            "brand",
-            "graphic",
-        ]
-    ):
-        return "design"
-    if any(w in r for w in ["marketing", "growth", "seo", "social media", "copywrite"]):
-        return "marketing"
-    if any(
-        w in r
-        for w in [
+_ROLE_CATEGORY_MAP: list[tuple[list[str], str]] = [
+    (
+        ["design", "ux", "ui ", "ui/ux", "visual", "creative", "brand", "graphic"],
+        "design",
+    ),
+    (["marketing", "growth", "seo", "social media", "copywrite"], "marketing"),
+    (
+        [
             "devops",
             "sre",
             "site reliability",
@@ -361,12 +343,11 @@ def _role_category(role: str | None, archetype_domain: str | None = None) -> str
             "platform engineer",
             "cloud engineer",
             "devsecops",
-        ]
-    ):
-        return "devops"
-    if any(
-        w in r
-        for w in [
+        ],
+        "devops",
+    ),
+    (
+        [
             "data analyst",
             "data scientist",
             "data engineer",
@@ -375,12 +356,11 @@ def _role_category(role: str | None, archetype_domain: str | None = None) -> str
             "analytics engineer",
             "mlops",
             "ml ops",
-        ]
-    ):
-        return "data"
-    if any(
-        w in r
-        for w in [
+        ],
+        "data",
+    ),
+    (
+        [
             "financial analyst",
             "finance manager",
             "accountant",
@@ -391,23 +371,21 @@ def _role_category(role: str | None, archetype_domain: str | None = None) -> str
             "treasury",
             "controller",
             "cfo",
-        ]
-    ):
-        return "finance"
-    if any(
-        w in r
-        for w in [
+        ],
+        "finance",
+    ),
+    (
+        [
             "product manager",
             "project manager",
             "scrum master",
             "program manager",
             "operations manager",
-        ]
-    ):
-        return "management"
-    if any(
-        w in r
-        for w in [
+        ],
+        "management",
+    ),
+    (
+        [
             "doctor",
             "nurse",
             "dokter",
@@ -416,63 +394,52 @@ def _role_category(role: str | None, archetype_domain: str | None = None) -> str
             "farmasi",
             "apoteker",
             "fisioterapis",
-        ]
-    ):
-        return "healthcare"
-    if any(
-        w in r
-        for w in [
-            "teacher",
-            "guru",
-            "lecturer",
-            "dosen",
-            "trainer",
-            "pengajar",
-            "instruktur",
-        ]
-    ):
-        return "education"
-    if any(
-        w in r
-        for w in ["lawyer", "legal", "advokat", "notaris", "hukum", "counsel", "jaksa"]
-    ):
-        return "legal"
-    if any(
-        w in r
-        for w in [
-            "journalist",
-            "reporter",
-            "jurnalis",
-            "wartawan",
-            "redaktur",
-            "editor media",
-        ]
-    ):
-        return "journalism"
-    if any(
-        w in r
-        for w in [
+        ],
+        "healthcare",
+    ),
+    (
+        ["teacher", "guru", "lecturer", "dosen", "trainer", "pengajar", "instruktur"],
+        "education",
+    ),
+    (["lawyer", "legal", "advokat", "notaris", "hukum", "counsel", "jaksa"], "legal"),
+    (
+        ["journalist", "reporter", "jurnalis", "wartawan", "redaktur", "editor media"],
+        "journalism",
+    ),
+    (
+        [
             "photographer",
             "videographer",
             "filmmaker",
             "animator",
             "content creator",
             "kreator",
-        ]
-    ):
-        return "creative"
-    if any(
-        w in r
-        for w in [
+        ],
+        "creative",
+    ),
+    (
+        [
             "hr ",
             "human resource",
             "hrga",
             "recruitment",
             "people ops",
             "talent acquisition",
-        ]
-    ):
-        return "hr"
+        ],
+        "hr",
+    ),
+]
+
+
+def _role_category(role: str | None, archetype_domain: str | None = None) -> str:
+    if archetype_domain and archetype_domain in _DOMAIN_TO_CATEGORY:
+        return _DOMAIN_TO_CATEGORY[archetype_domain]
+    if not role:
+        return "general"
+    r = role.lower()
+    for keywords, category in _ROLE_CATEGORY_MAP:
+        if any(w in r for w in keywords):
+            return category
     return "engineering"
 
 

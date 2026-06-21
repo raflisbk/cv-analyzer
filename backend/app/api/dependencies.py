@@ -48,6 +48,7 @@ def check_job_access(job: "Any", current_user: User | None) -> None:
     Anonymous jobs (user_id=NULL) are publicly accessible via UUID-as-secret.
     User-owned jobs require the requesting user to be the owner.
     """
-    if job.user_id is not None:
-        if current_user is None or str(current_user.id) != str(job.user_id):
-            raise HTTPException(status_code=403, detail="Access denied.")
+    if job.user_id is not None and (
+        current_user is None or str(current_user.id) != str(job.user_id)
+    ):
+        raise HTTPException(status_code=403, detail="Access denied.")

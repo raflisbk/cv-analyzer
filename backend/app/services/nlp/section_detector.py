@@ -300,7 +300,7 @@ def detect_sections(text: str) -> list[CvSection]:
 
 
 def _deduplicate_sections(sections: list[CvSection]) -> list[CvSection]:
-    """Merge repeated sections of the same type (e.g. skills × 3 → skills × 1).
+    """Merge repeated sections of the same type (e.g. skills x 3 -> skills x 1).
 
     Sub-headings inside a section often re-trigger the detector for the same
     type.  Collapsing duplicates into the first occurrence keeps downstream

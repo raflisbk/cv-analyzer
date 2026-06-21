@@ -6,6 +6,20 @@ from datetime import UTC, datetime
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+import sentry_sdk
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
+from app.api.v1.endpoints.yjs import yjs_asgi_app
+from app.api.v1.router import router as api_v1_router
+from app.core.config import get_settings
+from app.core.limiter import limiter
+from app.core.logging import structured_logger as logger
+
 
 class _SuppressReloadNoise(logging.Filter):
     """Suppress known-harmless Windows reload artifacts from uvicorn error logger."""
@@ -22,20 +36,6 @@ class _SuppressReloadNoise(logging.Filter):
 
 
 logging.getLogger("uvicorn.error").addFilter(_SuppressReloadNoise())
-
-import sentry_sdk
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from prometheus_fastapi_instrumentator import Instrumentator
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-
-from app.api.v1.endpoints.yjs import yjs_asgi_app
-from app.api.v1.router import router as api_v1_router
-from app.core.config import get_settings
-from app.core.limiter import limiter
-from app.core.logging import structured_logger as logger
 
 settings = get_settings()
 

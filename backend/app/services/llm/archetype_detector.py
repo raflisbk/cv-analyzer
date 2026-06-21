@@ -1,7 +1,7 @@
 """Two-tier universal archetype detection from CV text.
 
-Tier 1 — detect domain (30 options, short prompt)
-Tier 2 — detect archetype within that domain (20–70 options, compact prompt)
+Tier 1 - detect domain (30 options, short prompt)
+Tier 2 - detect archetype within that domain (20-70 options, compact prompt)
 
 Total: 2 LLM calls per CV, each fast (max_tokens 60 / 120).
 Covers all Indonesian professional roles from blue-collar to executive.
@@ -21,7 +21,6 @@ from app.services.llm.archetype_registry import (
     get_description,
     get_display_name,
     get_domain_list,
-    total_archetypes,
 )
 
 # Re-export ARCHETYPES as alias for backward-compat (old tests may import it)

@@ -56,9 +56,9 @@ async def chat_stream(
     check_job_access(job_check, current_user)
 
     async def stream_chat_response() -> AsyncGenerator[str]:
-        async with async_session_maker() as db:
-            result = await db.execute(select(Job).where(Job.id == job_id))
-            job = result.scalar_one_or_none()
+        async with async_session_maker() as session:
+            row = await session.execute(select(Job).where(Job.id == job_id))
+            job = row.scalar_one_or_none()
 
         if not job:
             yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"

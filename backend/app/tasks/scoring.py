@@ -1,7 +1,7 @@
 import asyncio
 
 from celery import Task
-from sqlalchemy import func, select
+from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
@@ -129,7 +129,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                         delta: dict[str, int] = {
                             d: scores.get(d, 0) - parent_job.scores.get(d, 0)
                             for d in dims
-                            if isinstance(parent_job.scores.get(d), (int, float))
+                            if isinstance(parent_job.scores.get(d), int | float)
                         }
                         parent_alg = parent_job.scores.get(
                             "scoring_algorithm_version", ""

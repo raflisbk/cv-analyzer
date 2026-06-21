@@ -258,7 +258,7 @@ def rank_skill_gaps(missing_skills: list[str]) -> list[dict]:
                     "skill": skill,
                     "priority": "low",
                     "category": "General",
-                    "why_important": f"Listed as required in the target job description.",
+                    "why_important": "Listed as required in the target job description.",
                     "resources": [],
                 }
             )

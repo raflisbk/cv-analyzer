@@ -13,7 +13,7 @@ Extract ALL text from this CV/resume image. Preserve the structure exactly:
 """
 
 try:
-    import replicate as _replicate_lib
+    import replicate  # noqa: F401
 
     VISION_AVAILABLE = True
 except ImportError:
@@ -71,9 +71,9 @@ def extract_text_from_scanned_pdf(pdf_bytes: bytes) -> str:
     """
     try:
         import fitz
-    except ImportError:
+    except ImportError as e:
         msg = "PyMuPDF not installed"
-        raise RuntimeError(msg)
+        raise RuntimeError(msg) from e
 
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     pages_text: list[str] = []
