@@ -22,7 +22,7 @@ from app.services.scoring.text_normalizer import normalize_cv_text
 
 # Bump this when the prompt or weights change significantly.
 # Changing this string automatically invalidates all cached scores.
-SCORING_VERSION = "v4"
+SCORING_VERSION = "v5"
 
 _WEIGHTS = {
     "impact": 0.35,
