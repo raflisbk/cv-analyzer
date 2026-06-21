@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     CV_ANALYZER_EMBEDDING_MODEL: str = "openai/text-embedding-3-large"
     CV_ANALYZER_EMBEDDING_DIMENSIONS: int = 3072
     # Number of LLM calls per scoring (1 = fast, 3 = ensemble/median, reduces variance)
-    CV_ANALYZER_SCORING_ENSEMBLE_RUNS: int = 1
+    CV_ANALYZER_SCORING_ENSEMBLE_RUNS: int = 3
 
     CV_ANALYZER_CORS_ORIGINS: str = "http://localhost:3000"
 

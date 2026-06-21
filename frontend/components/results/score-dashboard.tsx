@@ -56,9 +56,13 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       : null;
   const hasMetrics = scores.metrics && scores.metrics.bullet_count !== undefined;
 
+  const deltaEntries = scores.version_delta
+    ? Object.entries(scores.version_delta).filter(([k]) => k !== "_algorithm_changed")
+    : [];
+
   return (
     <div className="space-y-6">
-      {/* Fallback warning — shown when LLM scoring failed entirely */}
+      {/* Fallback warning */}
       {isFallback && (
         <div className="rounded-xl border border-[#FF4FCB]/40 bg-[#FF4FCB]/8 px-4 py-3">
           <p className="text-xs font-bold text-[#FF4FCB]">
@@ -68,6 +72,47 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
             The AI scorer could not process this CV. All scores shown (50/100) are
             defaults and do not reflect the actual quality of the CV. Try re-analyzing.
           </p>
+        </div>
+      )}
+
+      {/* Low confidence warning */}
+      {scores.low_confidence && (
+        <div className="rounded-xl border border-[#FF8C42]/30 bg-[#FF8C42]/8 px-4 py-3">
+          <p className="text-xs font-bold text-[#FF8C42]">⚠ Score confidence: moderate</p>
+          <p className="text-[11px] text-[#F5F2D8]/60 mt-0.5">
+            Deterministic signals and LLM score diverge significantly. Scores may be less reliable.
+          </p>
+        </div>
+      )}
+
+      {/* Version delta banner — visible when re-uploading from a previous version */}
+      {deltaEntries.length > 0 && (
+        <div className="rounded-xl border border-white/10 bg-white/4 px-4 py-3">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[#F5F2D8]/40 mb-2">
+            Changes vs previous version
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {deltaEntries.map(([dim, delta]) => (
+              <span
+                key={dim}
+                className="rounded-full px-2.5 py-1 text-[11px] font-bold border"
+                style={{
+                  color: delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "#F5F2D8",
+                  borderColor:
+                    delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "rgba(255,255,255,0.1)",
+                  backgroundColor:
+                    delta > 0
+                      ? "rgba(202,255,67,0.08)"
+                      : delta < 0
+                        ? "rgba(255,79,203,0.08)"
+                        : "transparent",
+                }}
+              >
+                {dim}: {delta > 0 ? "+" : ""}
+                {delta}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
@@ -191,8 +236,6 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
           <MetricsPanel
             metrics={scores.metrics!}
             jdKeywordGap={scores.jd_keyword_gap}
-            lowConfidence={scores.low_confidence}
-            versionDelta={scores.version_delta}
             grammarClarityPenalty={scores.grammar_clarity_penalty}
           />
         </div>
