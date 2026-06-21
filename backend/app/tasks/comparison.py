@@ -100,6 +100,16 @@ def compare_cv_task(
         validated = ComparisonResult(**result["comparison"])
         comparison_dict = validated.model_dump()
 
+        # JD red flags analysis (non-blocking — failure does not break comparison)
+        try:
+            from app.services.llm.jd_analyzer import analyze_jd_red_flags
+            red_flags_data = analyze_jd_red_flags(jd_text)
+            if red_flags_data:
+                comparison_dict["red_flags"] = red_flags_data.get("red_flags", [])
+                comparison_dict["jd_quality"] = red_flags_data.get("overall_quality")
+        except Exception as rf_err:
+            logger.warning("jd_red_flags_failed", job_id=job_id, error=str(rf_err))
+
         redis_client.setex(cache_key, cache_ttl, json.dumps(comparison_dict))
 
         await _save_comparison(comparison_dict, "complete")

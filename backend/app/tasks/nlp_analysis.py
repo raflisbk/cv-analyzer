@@ -56,6 +56,12 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
         from app.services.llm.role_detector import detect_role_from_cv
         detected_role = detect_role_from_cv(text)
 
+        self.update_progress(
+            job_id, "detecting_archetype", 88, "Detecting AI role archetype..."
+        )
+        from app.services.llm.archetype_detector import detect_archetype
+        archetype = detect_archetype(text, detected_role)
+
         nlp_result = {
             "sections": [
                 {"type": s.type, "text": s.text, "entities": s.entities}
@@ -64,6 +70,7 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
             "skills": skills,
             "entities": entities,
             "detected_role": detected_role,
+            "archetype": archetype,
         }
 
         # Save results

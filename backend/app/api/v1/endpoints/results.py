@@ -11,10 +11,12 @@ from app.models.job import Job
 from app.models.user import User
 from app.schemas.analysis import (
     AnalysisResult,
+    ArchetypeResult,
     AtsCheck,
     BenchmarkResult,
     ComparisonResult,
     GrammarIssue,
+    JdRedFlag,
     ScoreResult,
     ScoreVersion,
     SectionResult,
@@ -99,6 +101,9 @@ async def get_job_results(
 
         skills = (job.nlp_result or {}).get("skills", [])
 
+        raw_archetype = (job.nlp_result or {}).get("archetype")
+        archetype = ArchetypeResult(**raw_archetype) if isinstance(raw_archetype, dict) else None
+
         grammar_issues = [
             GrammarIssue(
                 text=issue.get("text", ""),
@@ -151,7 +156,12 @@ async def get_job_results(
                 raw_comp.pop("skill_gaps", None)  # computed below, not stored
                 missing = raw_comp.get("missing_skills", [])
                 skill_gaps = [SkillGapItem(**g) for g in rank_skill_gaps(missing)]
-                comparison_result = ComparisonResult(**raw_comp, skill_gaps=skill_gaps)
+                # Coerce red_flags dicts to JdRedFlag instances
+                raw_red_flags = raw_comp.pop("red_flags", []) or []
+                red_flags = [JdRedFlag(**f) if isinstance(f, dict) else f for f in raw_red_flags]
+                comparison_result = ComparisonResult(
+                    **raw_comp, skill_gaps=skill_gaps, red_flags=red_flags
+                )
             except Exception:
                 logger.warning("malformed_comparison_jsonb", job_id=job_id)
                 comparison_result = None
@@ -202,6 +212,7 @@ async def get_job_results(
                 comparison_status=safe_comparison_status,
                 parent_job_id=str(job.parent_job_id) if job.parent_job_id else None,
                 version_history=version_history,
+                archetype=archetype,
             ),
             meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
         )

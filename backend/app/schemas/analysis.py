@@ -86,6 +86,12 @@ class SkillGapItem(BaseModel):
     resources: list[dict[str, str]] = []
 
 
+class JdRedFlag(BaseModel):
+    flag: str
+    severity: Literal["warning", "info"] = "info"
+    detail: str = ""
+
+
 class ComparisonResult(BaseModel):
 
     match_pct: int
@@ -95,6 +101,8 @@ class ComparisonResult(BaseModel):
     missing_experience: list[str]
     overall_recommendation: str
     skill_gaps: list[SkillGapItem] = []
+    red_flags: list[JdRedFlag] = []
+    jd_quality: str | None = None
 
 
 class SkillGapGroup(BaseModel):
@@ -120,6 +128,13 @@ class ScoreVersion(BaseModel):
     delta: int | None = None  # overall score change vs previous version
 
 
+class ArchetypeResult(BaseModel):
+    type: str
+    confidence: str = "medium"
+    reasoning: str = ""
+    description: str = ""
+
+
 class AnalysisResult(BaseModel):
 
     job_id: str
@@ -140,3 +155,5 @@ class AnalysisResult(BaseModel):
 
     parent_job_id: str | None = None
     version_history: list[ScoreVersion] = []
+
+    archetype: ArchetypeResult | None = None

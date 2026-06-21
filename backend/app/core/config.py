@@ -49,6 +49,8 @@ class Settings(BaseSettings):
 
     CV_ANALYZER_LOG_LEVEL: str = "INFO"
 
+    CV_ANALYZER_REPLICATE_API_TOKEN: str = ""
+
     CV_ANALYZER_GOOGLE_CLIENT_ID: str = ""
     CV_ANALYZER_JWT_SECRET: str = "change-me-in-production-min-32-chars"
     CV_ANALYZER_JWT_ALGORITHM: str = "HS256"

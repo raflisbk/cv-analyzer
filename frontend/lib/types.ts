@@ -182,6 +182,7 @@ export interface AnalysisResult {
   comparison_status?: "pending" | "comparing" | "complete" | "failed" | null;
   parent_job_id?: string | null;
   version_history?: ScoreVersion[];
+  archetype?: ArchetypeResult | null;
 }
 
 export const SUPPORTED_ROLES = [
@@ -204,6 +205,19 @@ export interface SkillGapItem {
   resources: Array<{ title: string; url: string }>;
 }
 
+export interface JdRedFlag {
+  flag: string;
+  severity: "warning" | "info";
+  detail: string;
+}
+
+export interface ArchetypeResult {
+  type: string;
+  confidence: "high" | "medium" | "low";
+  reasoning: string;
+  description?: string;
+}
+
 export interface ScoreVersion {
   job_id: string;
   version: number;
@@ -220,6 +234,8 @@ export interface ComparisonResult {
   missing_experience: string[];
   overall_recommendation: string;
   skill_gaps?: SkillGapItem[];
+  red_flags?: JdRedFlag[];
+  jd_quality?: "good" | "fair" | "poor" | null;
 }
 
 export interface SkillGapGroup {

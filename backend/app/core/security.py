@@ -7,17 +7,21 @@ from app.core.logging import structured_logger as logger
 
 settings = get_settings()
 
-ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx"}
+ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"}
 ALLOWED_MIME_TYPES = {
     "application/pdf",
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "application/zip",
+    "image/jpeg",
+    "image/png",
 }
 MAGIC_BYTES = {
     b"%PDF": "application/pdf",
     b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1": "application/msword",
     b"PK\x03\x04": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    b"\xff\xd8\xff": "image/jpeg",
+    b"\x89PNG": "image/png",
 }
 
 
@@ -38,7 +42,7 @@ async def validate_file(filename: str, content: bytes) -> dict:
         )
         raise FileValidationError(
             code="INVALID_FILE_TYPE",
-            message="File type not supported. Only PDF, DOC, and DOCX files are allowed.",
+            message="File type not supported. Allowed: PDF, DOC, DOCX, JPG, PNG.",
         )
 
     file_size = len(content)
@@ -62,6 +66,7 @@ async def validate_file(filename: str, content: bytes) -> dict:
         if content.startswith(magic_prefix) and (
             mime == expected_mime
             or (magic_prefix == b"PK\x03\x04" and mime == "application/zip")
+            or (magic_prefix == b"\xff\xd8\xff" and mime in ("image/jpeg", "image/jpg"))
         ):
             magic_byte_valid = True
             break
