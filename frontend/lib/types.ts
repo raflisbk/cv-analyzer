@@ -212,18 +212,43 @@ export interface JdRedFlag {
 }
 
 export type ArchetypeDomain =
-  | "engineering"
+  | "healthcare"
+  | "technology"
   | "ai_ml"
   | "data"
   | "design"
   | "product"
   | "marketing"
-  | "finance"
-  | "management";
+  | "finance_banking"
+  | "government_public"
+  | "manufacturing"
+  | "construction"
+  | "hospitality_fnb"
+  | "retail"
+  | "logistics_transport"
+  | "creative_media"
+  | "agriculture"
+  | "education"
+  | "beauty_wellness"
+  | "gig_freelance"
+  | "journalism_media"
+  | "legal_professional"
+  | "mining_energy"
+  | "human_resources"
+  | "social_ngo"
+  | "religious_services"
+  | "property_realestate"
+  | "telecom_infrastructure"
+  | "environment_sustainability"
+  | "domestic_household"
+  | "arts_entertainment_sports"
+  | (string & {});
 
 export interface ArchetypeResult {
-  domain: ArchetypeDomain | string;
+  domain: ArchetypeDomain;
+  domain_display?: string;
   type: string;
+  display_name?: string;
   confidence: "high" | "medium" | "low";
   reasoning: string;
   description?: string;
