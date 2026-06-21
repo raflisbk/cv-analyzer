@@ -1,9 +1,27 @@
 import asyncio
+import logging
 import sys
 from datetime import UTC, datetime
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
+class _SuppressReloadNoise(logging.Filter):
+    """Suppress known-harmless Windows reload artifacts from uvicorn error logger."""
+
+    _NOISE = (
+        "CancelledError",
+        "cannot release un-acquired lock",
+        "asyncio.exceptions.CancelledError",
+    )
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        text = record.getMessage() + str(record.exc_info or "")
+        return not any(s in text for s in self._NOISE)
+
+
+logging.getLogger("uvicorn.error").addFilter(_SuppressReloadNoise())
 
 import sentry_sdk
 from fastapi import FastAPI
