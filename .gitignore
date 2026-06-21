@@ -322,6 +322,13 @@ backend/test_db.py
 backend/check_*.py
 backend/debug_*.py
 
+# Local dev launcher scripts (Windows/bash helpers — local only)
+/scripts/
+/START_APP.bat
+/START_WITH_DOCKER_CHECK.bat
+/start_backend.ps1
+/start_frontend.ps1
+
 # Environment files
 .env
 .env.local

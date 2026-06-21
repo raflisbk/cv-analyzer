@@ -56,6 +56,11 @@ export function ResultsTabs({ result, jobRoles = [], onCompareComplete }: Result
         >
           <SpellCheck className="h-4 w-4" />
           Grammar
+          {result.grammar_issues.length > 0 && (
+            <span className="ml-0.5 rounded-full bg-[#FF4FCB] text-white text-[9px] font-extrabold min-w-[18px] h-[18px] flex items-center justify-center px-1">
+              {result.grammar_issues.length > 99 ? "99+" : result.grammar_issues.length}
+            </span>
+          )}
         </TabsTrigger>
         <TabsTrigger
           value="compare"

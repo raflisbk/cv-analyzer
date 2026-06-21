@@ -40,52 +40,14 @@ function SignalDot({ pass }: { pass: boolean }) {
 interface MetricsPanelProps {
   metrics: DeterministicMetrics;
   jdKeywordGap?: JdKeywordGap | null;
-  lowConfidence?: boolean;
-  versionDelta?: Record<string, number> | null;
   grammarClarityPenalty?: number | null;
 }
 
-export function MetricsPanel({ metrics, jdKeywordGap, lowConfidence, versionDelta, grammarClarityPenalty }: MetricsPanelProps) {
+export function MetricsPanel({ metrics, jdKeywordGap, grammarClarityPenalty }: MetricsPanelProps) {
   const { action_verb_ratio, section_coverage, contact_signals, employment_gaps } = metrics;
 
   return (
     <div className="space-y-4">
-      {/* Low confidence warning */}
-      {lowConfidence && (
-        <div className="rounded-xl border border-[#FF8C42]/30 bg-[#FF8C42]/8 px-4 py-3">
-          <p className="text-xs font-bold text-[#FF8C42]">
-            ⚠ Score confidence: moderate
-          </p>
-          <p className="text-[11px] text-[#F5F2D8]/60 mt-0.5">
-            Deterministic signals and LLM score diverge significantly. Scores may be less reliable.
-          </p>
-        </div>
-      )}
-
-      {/* Version delta */}
-      {versionDelta && Object.keys(versionDelta).length > 0 && (
-        <div className="rounded-xl border border-white/8 bg-white/3 px-4 py-3">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-[#F5F2D8]/40 mb-2">
-            Change vs previous version
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(versionDelta).map(([dim, delta]) => (
-              <span
-                key={dim}
-                className="rounded-full px-2.5 py-1 text-[11px] font-bold border"
-                style={{
-                  color: delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "#F5F2D8",
-                  borderColor: delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "rgba(255,255,255,0.1)",
-                  backgroundColor: delta > 0 ? "rgba(202,255,67,0.08)" : delta < 0 ? "rgba(255,79,203,0.08)" : "transparent",
-                }}
-              >
-                {dim}: {delta > 0 ? "+" : ""}{delta}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Objective score summary */}
       <div className="rounded-xl border border-white/8 bg-white/3 px-4 py-3 flex items-center justify-between">
         <div>
