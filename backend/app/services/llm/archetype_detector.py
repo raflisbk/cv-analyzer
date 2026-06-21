@@ -156,7 +156,7 @@ def detect_archetype(cv_text: str, detected_role: str | None = None) -> dict | N
         logger.info("archetype_domain_not_detected", role=detected_role)
         return None
 
-    domain, domain_confidence = domain_result
+    domain, _ = domain_result
 
     archetype_result = _detect_archetype_in_domain(cv_text, domain, settings)
     if not archetype_result:
