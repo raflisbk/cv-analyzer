@@ -11,7 +11,7 @@ const PRIORITY_STYLES: Record<string, { badge: string; dot: string; label: strin
 };
 
 function SkillGapReport({ gaps }: { gaps: SkillGapItem[] }) {
-  if (!gaps || gaps.length === 0) return null;
+  if (!gaps || gaps.length === 0) { return null; }
   return (
     <div className="bg-[#1C1C1C] rounded-2xl border border-white/5 p-6 md:p-8 space-y-4">
       <div>

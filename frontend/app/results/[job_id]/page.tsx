@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useJobResults } from "@/hooks/use-job-results";
-import type { JobRole, SuggestionCard } from "@/lib/types";
+import type { JobRole, ScoreVersion, SuggestionCard } from "@/lib/types";
 import { apiFetch } from "@/lib/api";
 import { ExportStickyBar } from "@/components/results/export-sticky-bar";
 import { ResultsError } from "@/components/results/results-error";
@@ -14,10 +14,9 @@ import { ResultsTabs } from "@/components/results/results-tabs";
 import { ScoreRangeBadge } from "@/components/results/score-range-badge";
 import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
 import { getWorkspaceRoute } from "@/lib/job-routes";
-import type { ScoreVersion } from "@/lib/types";
 
 function VersionHistoryBar({ versions, currentJobId }: { versions: ScoreVersion[]; currentJobId: string }) {
-  if (!versions || versions.length < 2) return null;
+  if (!versions || versions.length < 2) { return null; }
   return (
     <div className="rounded-2xl border border-white/8 bg-[#1C1C1C] px-6 py-4">
       <p className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 mb-3">Version History</p>
