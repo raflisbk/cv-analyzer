@@ -1,0 +1,165 @@
+# Docker Compose — CV Analyzer full-stack local development
+#
+# Prerequisites:
+#   cp backend/.env.example backend/.env   # fill in your real values
+#
+# Usage:
+#   docker compose up -d                   # Start all services
+#   docker compose up -d postgres redis    # Infrastructure only
+#   docker compose run --rm migrate        # Run DB migrations
+#   docker compose run --rm test           # Run backend test suite
+#   docker compose down                    # Stop services
+#   docker compose down -v                 # Stop + delete volumes
+
+services:
+
+  # ── Infrastructure ────────────────────────────────────────────────────────
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: cv-analyzer-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cv_analyzer
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cv_analyzer"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cv-analyzer-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── Backend ────────────────────────────────────────────────────────────────
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cv-analyzer-api
+    env_file: backend/.env
+    environment:
+      CV_ANALYZER_DB_HOST: postgres
+      CV_ANALYZER_DB_PORT: "5432"
+      CV_ANALYZER_DB_USER: postgres
+      CV_ANALYZER_DB_PASSWORD: postgres
+      CV_ANALYZER_DB_NAME: cv_analyzer
+      CV_ANALYZER_REDIS_URL: redis://redis:6379/0
+      CV_ANALYZER_ENV: production
+      CV_ANALYZER_CORS_ORIGINS: "http://localhost:3000,http://frontend:3000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cv-analyzer-worker
+    command: >
+      celery -A app.tasks.celery_app worker
+      --loglevel=info
+      --pool=solo
+      --concurrency=1
+    env_file: backend/.env
+    environment:
+      CV_ANALYZER_DB_HOST: postgres
+      CV_ANALYZER_DB_PORT: "5432"
+      CV_ANALYZER_DB_USER: postgres
+      CV_ANALYZER_DB_PASSWORD: postgres
+      CV_ANALYZER_DB_NAME: cv_analyzer
+      CV_ANALYZER_REDIS_URL: redis://redis:6379/0
+      CV_ANALYZER_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Frontend ───────────────────────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+        NEXT_PUBLIC_WS_URL: ws://localhost:8000/yjs
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
+        BACKEND_URL: http://api:8000
+    container_name: cv-analyzer-frontend
+    environment:
+      BACKEND_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # ── One-off tasks ──────────────────────────────────────────────────────────
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: alembic upgrade head
+    env_file: backend/.env
+    environment:
+      CV_ANALYZER_DB_HOST: postgres
+      CV_ANALYZER_DB_PORT: "5432"
+      CV_ANALYZER_DB_USER: postgres
+      CV_ANALYZER_DB_PASSWORD: postgres
+      CV_ANALYZER_DB_NAME: cv_analyzer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: python -m pytest tests/ -v --tb=short
+    environment:
+      CV_ANALYZER_DB_HOST: postgres
+      CV_ANALYZER_DB_PORT: "5432"
+      CV_ANALYZER_DB_USER: postgres
+      CV_ANALYZER_DB_PASSWORD: postgres
+      CV_ANALYZER_DB_NAME: cv_analyzer
+      CV_ANALYZER_REDIS_URL: redis://redis:6379/0
+      CV_ANALYZER_JWT_SECRET: test-secret-at-least-32-chars-long
+      CV_ANALYZER_KOBOI_API_KEY: test-key
+      CV_ANALYZER_CORS_ORIGINS: "http://localhost:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+  redis_data:

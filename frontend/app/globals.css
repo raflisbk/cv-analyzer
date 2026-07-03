@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === MATHICAL DESIGN SYSTEM — Phase 9 === */
+    --background: 54 59% 90%;       /* cream #F5F2D8 */
+    --foreground: 0 0% 4%;          /* #0A0A0A */
+    --card: 54 59% 90%;
+    --card-foreground: 0 0% 4%;
+    --primary: 77 100% 63%;         /* lime #CAFF43 */
+    --primary-foreground: 0 0% 8%;  /* dark text on lime */
+    --secondary: 0 0% 8%;           /* dark #141414 ⚠️ bg-secondary now dark */
+    --secondary-foreground: 54 59% 90%;
+    --muted: 54 30% 85%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 77 100% 63%;          /* lime */
+    --accent-foreground: 0 0% 8%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 54 20% 80%;
+    --input: 54 20% 80%;
+    --ring: 77 100% 63%;
+    --radius: 0.75rem;              /* rounder — was 0.5rem */
+
+    /* Direct hex tokens for arbitrary Tailwind values */
+    --color-cream: #F5F2D8;
+    --color-dark: #141414;
+    --color-dark-card: #1C1C1C;
+    --color-lime: #CAFF43;
+    --color-pink: #FF4FCB;
+    --color-orange: #FF8C42;
+    --color-purple: #8B5CF6;
+
+    /* Standardized text opacity levels (4 levels only)
+       On dark bg:  use rgba(245,242,216, x) = #F5F2D8
+       On light bg: use rgba(17,17,17, x)    = #141414
+       Primary   = 1.00 (full)
+       Secondary = 0.60
+       Tertiary  = 0.40
+       Ghost     = 0.20 */
+
+    /* Standardized border tokens
+       Dark background cards:  rgba(255,255,255,0.07)
+       Light background cards: rgba(17,17,17,0.10)
+       Accent borders:         keep per-color with /15 opacity */
+    --border-dark-card: rgba(255,255,255,0.07);
+    --border-light-card: rgba(17,17,17,0.10);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Accessibility: respect prefers-reduced-motion (per UI-SPEC section 9) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Scroll-reveal: class-level reduced-motion overrides.
+   The * selector above reduces timing but does not force opacity:1 on opacity-0 baseline.
+   These overrides ensure scroll-reveal elements are always visible under reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-in,
+  .fade-in-0,
+  .slide-in-from-bottom-4 {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   WORKSPACE-V2 THEME TOKENS (Phase 13)
+   Scoped ke [data-workspace-v2] — tidak override landing page tokens
+   Cream/light palette — matches landing page visual language
+   ============================================================ */
+[data-workspace-v2] {
+  /* Shell surfaces — cream light, matching landing page */
+  --ws-bg:             #F5F2D8;   /* cream outer shell — same as landing page body */
+  --ws-surface:        rgba(255, 255, 255, 0.82);  /* glass panel */
+  --ws-surface-hover:  rgba(255, 255, 255, 0.96);
+  --ws-surface-active: rgba(17, 17, 17, 0.05);
+
+  /* Borders — dark-on-light (matches mockup --line) */
+  --ws-border:         rgba(17, 17, 17, 0.08);
+  --ws-border-accent:  rgba(202, 255, 67, 0.38);
+  --ws-border-strong:  rgba(17, 17, 17, 0.14);
+
+  /* PDF Paper */
+  --ws-paper:          #FFFDF4;
+  --ws-paper-shadow:   0 8px 48px rgba(17, 17, 17, 0.10);
+
+  /* Typography — dark on cream */
+  --ws-ink:            #111111;
+  --ws-ink-secondary:  rgba(17, 17, 17, 0.60);
+  --ws-ink-ghost:      rgba(17, 17, 17, 0.40);
+
+  /* Accent */
+  --ws-accent:         #CAFF43;
+  --ws-accent-fg:      #111111;
+  --ws-accent-muted:   rgba(202, 255, 67, 0.28);
+
+  /* Destructive */
+  --ws-destructive:    hsl(0 84.2% 60.2%);
+}

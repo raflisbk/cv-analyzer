@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Remove any Co-authored-by trailer before commit is finalized.
+COMMIT_MSG_FILE="$1"
+
+if [ -z "$COMMIT_MSG_FILE" ] || [ ! -f "$COMMIT_MSG_FILE" ]; then
+  exit 0
+fi
+
+TMP_FILE="${COMMIT_MSG_FILE}.tmp"
+
+awk 'BEGIN { IGNORECASE = 1 } !/^Co-authored-by:/' "$COMMIT_MSG_FILE" > "$TMP_FILE"
+mv "$TMP_FILE" "$COMMIT_MSG_FILE"

@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "dev"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install backend dependencies and QA tools
+        run: |
+          uv pip install --system -e backend
+          uv pip install --system "black>=26.0" "ruff>=0.15" pytest pytest-asyncio
+
+      - name: Backend formatting (Black)
+        run: black --check backend
+
+      - name: Backend lint (Ruff)
+        run: ruff check backend
+
+      - name: Backend tests (Pytest)
+        env:
+          CV_ANALYZER_HF_API_KEY: ci-dummy-key
+          CV_ANALYZER_DB_HOST: localhost
+          CV_ANALYZER_DB_NAME: cv-analyzer
+          CV_ANALYZER_DB_USER: postgres
+          CV_ANALYZER_DB_PASSWORD: dummy
+          CV_ANALYZER_REDIS_URL: redis://localhost:6379/0
+        run: pytest backend/tests
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Frontend lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Frontend build
+        working-directory: frontend
+        run: npm run build
