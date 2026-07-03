@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { loginWithGoogle } from "@/lib/auth";
 import { useAuthStore } from "@/stores/auth-store";
+import { cn } from "@/lib/utils";
 
 interface GoogleLoginButtonProps {
   onSuccess?: () => void;
@@ -37,22 +38,33 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
     <button
       onClick={() => login()}
       disabled={isLoading}
-      className={`flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold transition-all duration-150
-        border border-[#141414]/[0.13] bg-[#141414]/[0.06] text-[#141414]/[0.75]
-        hover:bg-[#141414]/[0.10] hover:text-[#141414]/[0.95]
-        disabled:cursor-not-allowed disabled:opacity-50 ${className ?? ""}`}
-    >
-      {isLoading ? (
-        <span
-          className="h-4 w-4 animate-spin rounded-full border-2"
-          style={{
-            borderColor: "rgba(17,17,17,0.15)",
-            borderTopColor: "rgba(17,17,17,0.70)",
-          }}
-        />
-      ) : (
-        <GoogleIcon />
+      className={cn(
+        "group relative flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold",
+        "transition-all duration-200 active:scale-[0.97]",
+        "border border-[#141414]/10 bg-white text-[#141414]/80",
+        "shadow-[0_1px_2px_rgba(20,20,20,0.04),0_2px_10px_rgba(20,20,20,0.06)]",
+        "hover:-translate-y-0.5 hover:border-[#141414]/[0.16] hover:text-[#141414]",
+        "hover:shadow-[0_1px_2px_rgba(20,20,20,0.05),0_6px_20px_rgba(20,20,20,0.10)]",
+        "disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50",
+        className
       )}
+    >
+      <span
+        className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-[#141414]/[0.04] transition-colors duration-200 group-hover:bg-[#141414]/[0.07]"
+        aria-hidden="true"
+      >
+        {isLoading ? (
+          <span
+            className="h-3 w-3 animate-spin rounded-full border-2"
+            style={{
+              borderColor: "rgba(17,17,17,0.15)",
+              borderTopColor: "rgba(17,17,17,0.70)",
+            }}
+          />
+        ) : (
+          <GoogleIcon />
+        )}
+      </span>
       <span>{isLoading ? "Signing in..." : "Sign in with Google"}</span>
     </button>
   );
@@ -60,7 +72,7 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
 
 function GoogleIcon() {
   return (
-    <svg className="h-4 w-4 flex-none" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="h-3.5 w-3.5 flex-none" viewBox="0 0 24 24" aria-hidden="true">
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
         fill="#4285F4"

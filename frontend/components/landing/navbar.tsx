@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, ArrowRight, Sparkles, X } from "lucide-react";
 import {
@@ -12,6 +13,10 @@ import {
 import { useRouter } from "next/navigation";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 import { UserMenu } from "@/components/auth/user-menu";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
+import { useAuthStore } from "@/stores/auth-store";
+import { logoutApi } from "@/lib/auth";
+import { sanitizeUrl } from "@/lib/sanitize";
 
 const NAV_LINKS = [
   { href: "/cv-builder", label: "CV Builder", badge: null },
@@ -23,12 +28,18 @@ export default function Navbar() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, setUser } = useAuthStore();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  async function handleMobileLogout() {
+    await logoutApi();
+    setUser(null);
+  }
 
   return (
     <header
@@ -202,6 +213,57 @@ export default function Navbar() {
                 }}
                 aria-hidden="true"
               />
+
+              {user ? (
+                <div
+                  className="mb-4 flex items-center gap-3 rounded-2xl border px-4 py-3"
+                  style={{
+                    borderColor: "rgba(17,17,17,0.08)",
+                    background: "rgba(17,17,17,0.03)",
+                  }}
+                >
+                  {(() => {
+                    const safeSrc = user.picture ? sanitizeUrl(user.picture) : "";
+                    return safeSrc ? (
+                      <Image
+                        src={safeSrc}
+                        alt={user.name ?? user.email}
+                        width={36}
+                        height={36}
+                        className="h-9 w-9 flex-none rounded-full object-cover"
+                        style={{ boxShadow: "0 0 0 2px rgba(202,255,67,0.5)" }}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div
+                        className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-black"
+                        style={{ background: "#141414", color: "#F5F2D8" }}
+                      >
+                        {(user.name ?? user.email).charAt(0).toUpperCase()}
+                      </div>
+                    );
+                  })()}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-bold text-[#141414]/85">
+                      {user.name ?? user.email}
+                    </p>
+                    <p className="text-[11px] font-medium text-[#141414]/45">
+                      Signed in
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleMobileLogout}
+                    className="flex-none rounded-full px-3 py-1.5 text-[12px] font-bold text-[#141414]/45 transition-colors hover:bg-[#141414]/[0.06] hover:text-[#141414]/75"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <GoogleLoginButton
+                  onSuccess={() => setMobileOpen(false)}
+                  className="mb-4 w-full justify-center py-3"
+                />
+              )}
 
               <button
                 className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl px-5 py-4 text-[14px] font-black tracking-wide transition-all duration-200 active:scale-[0.98]"
