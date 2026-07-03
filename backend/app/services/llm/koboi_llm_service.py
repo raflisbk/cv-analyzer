@@ -305,6 +305,29 @@ class KoboiLLMService:
             "completion_tokens": completion_tokens,
         }
 
+    def chat_stream(
+        self,
+        system_prompt: str,
+        messages: list[dict],
+        temperature: float = 0.7,
+        max_tokens: int | None = None,
+    ):
+        """Sync streaming generator for multi-turn chat (OpenAI SDK `stream=True`)."""
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                *messages,
+            ],
+            temperature=temperature,
+            max_tokens=max_tokens or self.max_tokens,
+            stream=True,
+        )
+        for chunk in response:
+            delta = chunk.choices[0].delta.content if chunk.choices else None
+            if delta:
+                yield delta
+
     async def generate_suggestions_stream(
         self,
         system_prompt: str,

@@ -8,6 +8,7 @@ from app.core.config import get_settings
 # Import the Base and all models
 from app.db.base import Base
 from app.models.job import Job  # noqa: F401
+from app.models.job_memory_chunk import JobMemoryChunk  # noqa: F401
 from app.models.knowledge_chunk import KnowledgeChunk  # noqa: F401
 from app.models.user import User  # noqa: F401
 

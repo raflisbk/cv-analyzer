@@ -13,8 +13,12 @@ from app.db.session import AsyncSession, async_session_maker, get_db
 from app.models.job import Job
 from app.models.user import User
 from app.services.llm.chat_context_builder import build_chat_system_prompt
+from app.services.llm.koboi_llm_service import KoboiLLMService
+from app.services.memory.indexer import index_chat_message
+from app.services.memory.retriever import retrieve_job_memory
 
 router = APIRouter()
+_llm_service = KoboiLLMService()
 
 
 async def _save_messages(job_id: str, messages: list[dict]) -> None:
@@ -31,15 +35,29 @@ async def _save_messages(job_id: str, messages: list[dict]) -> None:
             )
 
 
-async def _stream_mock_response(user_message: str) -> AsyncGenerator[str]:
-    response = (
-        f"I understand you're asking about: {user_message}. "
-        "This is a mock response — actual LLM streaming will be implemented "
-        "when HF InferenceClient supports it."
-    )
-    for char in response:
-        await asyncio.sleep(0.02)
-        yield char
+async def _index_chat_turn(
+    job_id: str, user_id: str | None, user_message: str, assistant_message: str
+) -> None:
+    async with async_session_maker() as session:
+        await index_chat_message(job_id, user_id, "user", user_message, session)
+        await index_chat_message(
+            job_id, user_id, "assistant", assistant_message, session
+        )
+
+
+async def _stream_llm_response(
+    system_prompt: str, history: list[dict]
+) -> AsyncGenerator[str]:
+    """Collects the full LLM response off-thread (sync SDK), then replays it as a
+    stream. Not true token-by-token real-time, but keeps the event loop unblocked.
+    """
+
+    def _collect() -> list[str]:
+        return list(_llm_service.chat_stream(system_prompt, history))
+
+    tokens = await asyncio.to_thread(_collect)
+    for token in tokens:
+        yield token
 
 
 @router.post("/jobs/{job_id}/chat")
@@ -64,7 +82,9 @@ async def chat_stream(
             yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"
             return
 
-        _system_prompt = build_chat_system_prompt(job)
+        user_id = str(job.user_id) if job.user_id else None
+        memory_chunks = await retrieve_job_memory(job_id, message, limit=5)
+        _system_prompt = build_chat_system_prompt(job, memory_chunks)
 
         messages = list(job.messages) if job.messages else []
 
@@ -86,10 +106,16 @@ async def chat_stream(
 
         yield f"data: {json.dumps({'type': 'connected', 'job_id': job_id})}\n\n"
 
+        history = [
+            {"role": m["role"], "content": m["content"]}
+            for m in messages[:-1]
+            if m.get("status") == "complete"
+        ]
+
         try:
 
             assistant_content: list[str] = []
-            async for token in _stream_mock_response(message):
+            async for token in _stream_llm_response(_system_prompt, history):
                 assistant_content.append(token)
                 yield f"data: {json.dumps({'token': token})}\n\n"
 
@@ -98,6 +124,10 @@ async def chat_stream(
             yield f"data: {json.dumps({'type': 'complete'})}\n\n"
 
             await _save_messages(job_id, messages)
+
+            asyncio.ensure_future(
+                _index_chat_turn(job_id, user_id, message, assistant_msg["content"])
+            )
 
         except Exception as e:
             logger.error(

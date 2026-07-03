@@ -25,9 +25,16 @@ Your rewrite should help them stand out to recruiters and hiring managers."""
 
 
 def _build_user_prompt(
-    selected_text: str, user_prompt: str, cv_context: dict[str, Any] | None
+    selected_text: str,
+    user_prompt: str,
+    cv_context: dict[str, Any] | None,
+    cv_text: str | None = None,
+    memory_chunks: list[str] | None = None,
 ) -> str:
     parts = [f"Selected text from CV:\n{selected_text}"]
+
+    if cv_text:
+        parts.append(f"\nFull CV text (for context):\n{cv_text[:6000]}")
 
     if cv_context:
 
@@ -39,6 +46,12 @@ def _build_user_prompt(
         if cv_context.get("skills"):
             skills_list = cv_context["skills"][:5]
             parts.append(f"\nKey skills in CV: {', '.join(skills_list)}")
+
+    if memory_chunks:
+        parts.append(
+            "\nRelevant prior context from this job:\n"
+            + "\n".join(f"- {c}" for c in memory_chunks)
+        )
 
     parts.append(f"\nUser instruction: {user_prompt}")
     parts.append("\nRewrite the selected text according to the instruction above.")
@@ -54,7 +67,12 @@ class InlineEditService:
 
     @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=1, max=4))
     def rewrite(
-        self, selected_text: str, prompt: str, cv_context: dict[str, Any] | None
+        self,
+        selected_text: str,
+        prompt: str,
+        cv_context: dict[str, Any] | None,
+        cv_text: str | None = None,
+        memory_chunks: list[str] | None = None,
     ) -> InlineEditResponse:
         if not selected_text or not selected_text.strip():
             return InlineEditResponse(
@@ -63,15 +81,17 @@ class InlineEditService:
                 error="No text selected for editing",
             )
 
-        if len(selected_text) > 500:
+        if len(selected_text) > 1000:
             return InlineEditResponse(
                 originalText=selected_text,
                 rewrittenText="",
-                error="Text selection too long. Please select 500 characters or less.",
+                error="Text selection too long. Please select 1000 characters or less.",
             )
 
         try:
-            user_prompt = _build_user_prompt(selected_text, prompt, cv_context)
+            user_prompt = _build_user_prompt(
+                selected_text, prompt, cv_context, cv_text, memory_chunks
+            )
 
             logger.info(
                 "inline_edit_rewrite_generating",
@@ -82,7 +102,7 @@ class InlineEditService:
                 system_prompt=_SYSTEM_PROMPT,
                 user_prompt=user_prompt,
                 temperature=0.7,
-                max_tokens=300,
+                max_tokens=1000,
             )
 
             rewritten_text = rewritten_text.strip()

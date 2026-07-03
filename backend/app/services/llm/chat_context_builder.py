@@ -2,7 +2,7 @@ from app.models.job import Job
 from app.schemas.analysis import ScoreResult
 
 
-def build_chat_system_prompt(job: Job) -> str:
+def build_chat_system_prompt(job: Job, memory_chunks: list[str] | None = None) -> str:
     context_parts = [
         "## CV Analysis Context",
     ]
@@ -78,6 +78,10 @@ def build_chat_system_prompt(job: Job) -> str:
                 context_parts.append(
                     f"- {section_type.title()}: {section_title or items_count} items"
                 )
+
+    if memory_chunks:
+        context_parts.append("\n## Relevant Prior Context")
+        context_parts.extend(f"- {chunk}" for chunk in memory_chunks)
 
     return (
         "You are a CV optimization assistant. The user's CV has been analyzed with the following context:\n\n"

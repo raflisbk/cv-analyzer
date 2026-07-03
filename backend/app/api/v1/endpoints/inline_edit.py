@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from datetime import UTC, datetime
 from typing import Any
@@ -5,11 +6,13 @@ from typing import Any
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
-from app.db.session import AsyncSession, get_db
+from app.db.session import AsyncSession, async_session_maker, get_db
 from app.models.job import Job
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 from app.schemas.inline_edit import InlineEditRequest, InlineEditResponse
 from app.services.llm.inline_edit_service import InlineEditService
+from app.services.memory.indexer import index_edit
+from app.services.memory.retriever import retrieve_job_memory
 
 router = APIRouter()
 
@@ -46,15 +49,37 @@ async def inline_edit(
         )
 
     cv_context = _build_cv_context(job)
+    cv_text = job.result.get("text") if job.result else None
+    user_id = str(job.user_id) if job.user_id else None
+
+    memory_chunks = await retrieve_job_memory(
+        job_id, f"{request.selectedText} {request.prompt}", limit=3
+    )
 
     service = InlineEditService()
     response = service.rewrite(
         selected_text=request.selectedText,
         prompt=request.prompt,
         cv_context=cv_context,
+        cv_text=cv_text,
+        memory_chunks=memory_chunks,
     )
+
+    if not response.error:
+        asyncio.ensure_future(
+            _index_edit_fire_and_forget(
+                job_id, user_id, response.originalText, response.rewrittenText
+            )
+        )
 
     return WrappedResponse(
         data=response,
         meta=ResponseMeta(request_id=request_id, timestamp=timestamp),
     )
+
+
+async def _index_edit_fire_and_forget(
+    job_id: str, user_id: str | None, original_text: str, rewritten_text: str
+) -> None:
+    async with async_session_maker() as session:
+        await index_edit(job_id, user_id, original_text, rewritten_text, session)

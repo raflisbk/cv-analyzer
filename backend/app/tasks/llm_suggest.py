@@ -13,6 +13,7 @@ from app.models import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
 from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.services.llm.protocol import SuggestionsOutput  # noqa: TC001
+from app.services.memory.indexer import index_analysis_summary, index_cv_sections
 from app.services.rag.embeddings import get_rag_embedding
 from app.services.rag.ingestor import ingest_cv_for_user
 from app.services.rag.retriever import retrieve_relevant_chunks
@@ -281,6 +282,23 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         await _persist_results(
             job_id, suggestions_list, total_tokens, file_id, nlp_result, scores
         )
+
+        # Job Memory indexing — best-effort, must never block completion
+        try:
+            async with async_session_maker() as memory_session:
+                if sections:
+                    await index_cv_sections(
+                        job_id, user_id, sections, memory_session
+                    )
+                if scores or suggestions_list:
+                    await index_analysis_summary(
+                        job_id, user_id, scores, suggestions_list, memory_session
+                    )
+        except Exception as memory_error:
+            logger.warning(
+                "job_memory_indexing_failed", job_id=job_id, error=str(memory_error)
+            )
+
         self.update_progress(job_id, "complete", 100, "Analysis complete!")
         return {
             "status": (
