@@ -1,7 +1,10 @@
 CONDA_ENV = sbk-cv-analyzer
 CONDA = conda run -n $(CONDA_ENV) --no-capture-output
 
-.PHONY: dev backend celery frontend migrate lint format test
+.PHONY: local dev backend celery frontend migrate lint format test
+
+local:
+	./dev.sh
 
 dev:
 	powershell -ExecutionPolicy Bypass -File dev.ps1
@@ -13,7 +16,7 @@ celery:
 	cd backend && $(CONDA) celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
 
 frontend:
-	cd frontend && npm run dev
+	cd frontend && rm -rf .next && npm run dev
 
 migrate:
 	cd backend && $(CONDA) alembic upgrade head

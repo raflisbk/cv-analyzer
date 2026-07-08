@@ -2,6 +2,7 @@
 const nextConfig = {
   output: process.env.NEXT_OUTPUT || undefined,
   reactStrictMode: true,
+  devIndicators: false,
   images: {
     remotePatterns: [
       {
