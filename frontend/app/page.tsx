@@ -8,6 +8,7 @@ import StatsSection from "@/components/landing/stats-section";
 import TestimonialsSection from "@/components/landing/testimonials-section";
 import SeeItInActionSection from "@/components/landing/see-it-in-action-section";
 import FloatingFooter from "@/components/landing/floating-footer";
+import HeroMascot from "@/components/landing/hero-mascot";
 import Footer from "@/components/landing/footer";
 import { LoginRequiredDialog } from "@/components/auth/login-required-dialog";
 
@@ -29,6 +30,8 @@ export default function Home() {
       </main>
       <Footer />
       <FloatingFooter />
+      {/* Living CV mascot roaming the whole page, walking on the marquee bar */}
+      <HeroMascot />
     </>
   );
 }
