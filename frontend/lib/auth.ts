@@ -42,14 +42,20 @@ export async function getMe(): Promise<AuthUser | null> {
 
     if (res.status === 401) {
       const refreshed = await refreshTokens();
-      if (!refreshed) return null;
+      if (!refreshed) {
+        return null;
+      }
 
       const retry = await fetch(`${API_BASE}/auth/me`, { credentials: "include" });
-      if (!retry.ok) return null;
+      if (!retry.ok) {
+        return null;
+      }
       return retry.json() as Promise<AuthUser>;
     }
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return null;
+    }
     return res.json() as Promise<AuthUser>;
   } catch {
     return null;

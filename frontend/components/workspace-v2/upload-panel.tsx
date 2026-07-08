@@ -245,7 +245,7 @@ export function UploadPanel() {
           {isDragOver ? "Drop it!" : parentJobId ? "Drop your updated CV" : "Drop your CV here"}
         </h2>
         <p className="text-xs text-[#F5F2D8]/40 mb-5 max-w-[220px]">
-          AI scores your CV on clarity, keywords, impact &amp; ATS compatibility
+          AI scores your CV on clarity, impact, completeness &amp; relevance
         </p>
 
         <button

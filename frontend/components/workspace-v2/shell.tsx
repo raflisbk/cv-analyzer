@@ -249,7 +249,7 @@ export function WorkspaceV2Shell({
               </span>
             </div>
             <div className="text-[10px] text-[#141414]/40 font-medium">
-              PDF or DOCX · Max 5 MB · No sign-up required
+              PDF or DOCX · Max 5 MB
             </div>
           </div>
         </footer>

@@ -76,7 +76,7 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
         {isDragOver ? "Drop it!" : "Drop your CV here"}
       </h2>
       <p className="text-sm text-[#F5F2D8]/50 mb-6 text-center max-w-xs">
-        AI scores your CV on clarity, keywords, impact & ATS compatibility
+        AI scores your CV on clarity, impact, completeness & relevance
       </p>
 
       <div className="flex items-center gap-2 mb-6 flex-wrap justify-center">

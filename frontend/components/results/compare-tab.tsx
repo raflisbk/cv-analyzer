@@ -217,7 +217,7 @@ export function CompareTab({
             aria-label="Job Description"
           />
           <p className={`text-xs mt-1.5 text-right ${jdText.trim().length >= 50 ? "text-[#CAFF43]/60" : "text-[#F5F2D8]/30"}`}>
-            {jdText.length} chars {jdText.trim().length < 50 ? `(${50 - jdText.trim().length} more to enable)` : "✓"}
+            {jdText.length} chars {jdText.trim().length < 50 ? `(${50 - jdText.trim().length} more to enable)` : "[ok]"}
           </p>
         </div>
 

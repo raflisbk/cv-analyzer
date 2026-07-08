@@ -9,7 +9,7 @@ import UploadZoneCTA from "@/components/cv-analyzer/upload-zone-cta";
 export const metadata: Metadata = {
   title: "CV Analyzer — Path Karir",
   description:
-    "AI-powered CV scoring across clarity, impact, ATS compatibility, and keyword relevance. Free and instant.",
+    "AI-powered CV scoring across clarity, impact, completeness, and relevance. Instant results, sign-in required.",
 };
 
 const features = [
@@ -20,7 +20,7 @@ const features = [
     color: "lime" as const,
     title: "AI Scoring",
     description:
-      "Multi-dimensional score across clarity, impact, completeness, and ATS compatibility.",
+      "Multi-dimensional score across clarity, impact, completeness, and relevance.",
   },
   {
     Icon: SkillGapIcon,
@@ -44,7 +44,7 @@ const features = [
 
 const steps = [
   { color: "lime" as const, number: "1", title: "Upload", description: "Drag & drop your CV. Supports PDF and DOCX." },
-  { color: "pink" as const, number: "2", title: "Analyze", description: "AI scores across clarity, impact, ATS formatting, and keywords." },
+  { color: "pink" as const, number: "2", title: "Analyze", description: "AI scores across clarity, impact, completeness, and relevance." },
   { color: "orange" as const, number: "3", title: "Compare", description: "Paste a job description to get your match score and skill gap list." },
   { color: "purple" as const, number: "4", title: "Export", description: "Download a PDF report with all scores, suggestions, and action items." },
 ];
@@ -74,7 +74,7 @@ export default function CVAnalyzerPage() {
               AI-powered CV scoring. Skill gap detection. Job match comparison.
               Get actionable feedback instantly.
             </p>
-            <p className="font-sans text-sm text-[#F5F2D8]/50 mt-2">Free · Instant · No sign-up required</p>
+            <p className="font-sans text-sm text-[#F5F2D8]/50 mt-2">Free · Instant · Sign in to get started</p>
 
             <div className="mt-10">
               <UploadZoneCTA />

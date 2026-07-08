@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface AccentPillProps {
-  color: "lime" | "pink" | "orange" | "purple" | "white" | "dark";
+  color: "lime" | "pink" | "orange" | "purple" | "blue" | "white" | "dark";
   size?: "sm" | "md" | "hero";
   children: React.ReactNode;
   className?: string;
@@ -12,6 +12,7 @@ const colorMap: Record<AccentPillProps["color"], string> = {
   pink:   "bg-[#FF4FCB] text-[#141414]",
   orange: "bg-[#FF8C42] text-[#141414]",
   purple: "bg-[#8B5CF6] text-[#F5F2D8]",
+  blue:   "bg-[#22D3EE] text-[#141414]",
   white:  "bg-white text-[#141414]",
   dark:   "bg-[#141414] text-[#F5F2D8]",
 };

@@ -25,7 +25,13 @@ export function LeftPanelToggle({ className }: LeftPanelToggleProps) {
         className
       )}
     >
-      <span className="text-[11px] font-bold">{isOpen ? "←" : "→"}</span>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+        {isOpen ? (
+          <path d="M7 1L3 5L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        ) : (
+          <path d="M3 1L7 5L3 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        )}
+      </svg>
     </button>
   );
 }
