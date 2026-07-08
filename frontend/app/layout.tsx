@@ -1,23 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, Bricolage_Grotesque } from "next/font/google";
+
+// Self-hosted fonts (no Google Fonts download at build time — the dev
+// machine's network kept timing out and pages fell back to system fonts)
+import "@fontsource-variable/inter";
+import "@fontsource-variable/bricolage-grotesque";
 
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
-
-const inter = Inter({ 
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-display",
-  weight: ["700", "800"],
-});
 
 export const metadata: Metadata = {
   title: "pathkr — AI-Powered Career Tools",
@@ -30,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${bricolageGrotesque.variable}`}>
+    <html lang="en">
       <body className="font-sans antialiased">
         <QueryProvider>
           <AuthProvider>
