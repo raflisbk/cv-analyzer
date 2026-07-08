@@ -2,25 +2,6 @@ import { AuthUser } from "@/stores/auth-store";
 
 const API_BASE = "/api/v1";
 
-// Deduplication: if many concurrent requests trigger a refresh simultaneously,
-// only one actual POST /auth/refresh is sent; all callers await the same promise.
-let _refreshPromise: Promise<boolean> | null = null;
-
-export async function refreshTokens(): Promise<boolean> {
-  if (!_refreshPromise) {
-    _refreshPromise = fetch(`${API_BASE}/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((r) => r.ok)
-      .catch(() => false)
-      .finally(() => {
-        _refreshPromise = null;
-      });
-  }
-  return _refreshPromise;
-}
-
 export async function loginWithGoogle(accessToken: string): Promise<AuthUser> {
   const res = await fetch(`${API_BASE}/auth/google`, {
     method: "POST",
@@ -38,20 +19,9 @@ export async function loginWithGoogle(accessToken: string): Promise<AuthUser> {
 
 export async function getMe(): Promise<AuthUser | null> {
   try {
+    // Auth is a single JWT cookie — there is no refresh-token endpoint on
+    // the backend, so a 401 simply means "not signed in".
     const res = await fetch(`${API_BASE}/auth/me`, { credentials: "include" });
-
-    if (res.status === 401) {
-      const refreshed = await refreshTokens();
-      if (!refreshed) {
-        return null;
-      }
-
-      const retry = await fetch(`${API_BASE}/auth/me`, { credentials: "include" });
-      if (!retry.ok) {
-        return null;
-      }
-      return retry.json() as Promise<AuthUser>;
-    }
 
     if (!res.ok) {
       return null;

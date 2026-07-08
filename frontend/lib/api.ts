@@ -1,4 +1,3 @@
-import { refreshTokens } from "@/lib/auth";
 import { WrappedResponse } from "./types";
 import type { AnalysisResult } from "./types";
 
@@ -17,8 +16,7 @@ export class ApiError extends Error {
 
 export async function apiFetch<T>(
   endpoint: string,
-  options?: RequestInit,
-  _isRetry = false
+  options?: RequestInit
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`;
   const isFormData = options?.body instanceof FormData;
@@ -42,16 +40,10 @@ export async function apiFetch<T>(
     );
   }
 
-  // On 401: attempt a silent token refresh and replay the original request once.
-  // Both paths (first attempt + retry) must clear auth state and throw UNAUTHORIZED
-  // so the UI can redirect to login — do NOT fall through to JSON parsing on 401.
+  // On 401: auth is a single JWT cookie (no refresh endpoint on the backend),
+  // so clear auth state and throw UNAUTHORIZED — the UI redirects to login.
+  // Do NOT fall through to JSON parsing on 401.
   if (response.status === 401) {
-    if (!_isRetry) {
-      const refreshed = await refreshTokens();
-      if (refreshed) {
-        return apiFetch<T>(endpoint, options, true);
-      }
-    }
     const { useAuthStore } = await import("@/stores/auth-store");
     useAuthStore.getState().setUser(null);
     throw new ApiError("UNAUTHORIZED", "Session expired. Please log in again.");
