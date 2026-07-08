@@ -51,6 +51,11 @@
 }
 
 @layer base {
+  :root {
+    /* Self-hosted variable fonts (see app/layout.tsx imports) */
+    --font-inter: "Inter Variable";
+    --font-display: "Bricolage Grotesque Variable";
+  }
   * {
     @apply border-border;
   }
@@ -125,6 +130,11 @@
   display: flex;
   animation: marquee 30s linear infinite;
   width: max-content;
+}
+
+/* Hero: slowly rotating diamond accents */
+@keyframes hero-spin {
+  to { transform: rotate(360deg); }
 }
 
 .gradient-text-lime {
