@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { loadGsap, type GsapCtx } from "@/lib/gsap-loader";
 import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/feature-icons";
 
 const features = [
@@ -28,51 +32,106 @@ const features = [
 ];
 
 export default function FeaturesSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const ctxRef = useRef<GsapCtx | null>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) {
+      return;
+    }
+    let ctx: GsapCtx | null = null;
+    loadGsap().then(({ gsap }) => {
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          ".features-heading",
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: ".features-heading",
+              start: "top 85%",
+              once: true,
+            },
+          }
+        );
+
+        gsap.fromTo(
+          ".feature-card",
+          { opacity: 0, y: 40, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "power3.out",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: ".feature-card",
+              start: "top 85%",
+              once: true,
+            },
+          }
+        );
+      }, sectionRef);
+      ctxRef.current = ctx;
+    });
+    return () => {
+      ctx?.revert();
+    };
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       aria-labelledby="features-heading"
-      className="bg-[#F5F2D8] py-20 md:py-32"
+      className="snap-section bg-[#F5F2D8]"
     >
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
-        <div className="mb-16 text-center">
-          <h2
-            id="features-heading"
-            className="mb-5 font-display text-3xl md:text-5xl font-extrabold tracking-tight text-[#141414]"
-          >
-            What CV Analyzer can do
-          </h2>
-          <p className="mx-auto max-w-2xl text-base md:text-lg font-medium tracking-wide text-[#141414]/60">
-            AI-powered analysis across 4 dimensions — clarity, impact, ATS compatibility,
-            and keyword relevance.
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {features.map(({ Icon, iconBg, iconColor, title, description }) => (
-            <div
-              key={title}
-              className="group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5"
-              style={{
-                background: "#FFFDF4",
-                boxShadow: "0 8px 32px rgba(17,17,17,0.06), 0 1px 2px rgba(17,17,17,0.04)",
-                border: "1px solid rgba(17,17,17,0.07)",
-              }}
+      <div className="flex-1 flex items-center overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 w-full">
+          <div className="features-heading mb-10 text-center">
+            <h2
+              id="features-heading"
+              className="mb-5 font-display text-3xl md:text-5xl font-extrabold tracking-tight text-[#141414]"
             >
+              What CV Analyzer can do
+            </h2>
+            <p className="mx-auto max-w-2xl text-base md:text-lg font-medium tracking-wide text-[#141414]/60">
+              AI-powered analysis across 4 dimensions — clarity, impact, ATS
+              compatibility, and keyword relevance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {features.map(({ Icon, iconBg, iconColor, title, description }) => (
               <div
-                className={`mb-8 inline-flex h-14 w-14 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${iconBg}`}
+                key={title}
+                className="feature-card group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5"
+                style={{
+                  background: "#FFFDF4",
+                  boxShadow:
+                    "0 8px 32px rgba(17,17,17,0.06), 0 1px 2px rgba(17,17,17,0.04)",
+                  border: "1px solid rgba(17,17,17,0.07)",
+                }}
               >
-                <Icon size={28} className={iconColor} />
+                <div
+                  className={`mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${iconBg}`}
+                >
+                  <Icon size={28} className={iconColor} />
+                </div>
+
+                <h3 className="mb-3 font-display text-xl font-bold tracking-tight text-[#141414]">
+                  {title}
+                </h3>
+
+                <p className="text-[15px] leading-relaxed text-[#141414]/60">
+                  {description}
+                </p>
               </div>
-              
-              <h3 className="mb-3 font-display text-xl font-bold tracking-tight text-[#141414]">
-                {title}
-              </h3>
-              
-              <p className="text-[15px] leading-relaxed text-[#141414]/60">
-                {description}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
