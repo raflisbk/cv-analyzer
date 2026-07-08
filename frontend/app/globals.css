@@ -56,9 +56,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    padding-bottom: 36px;
   }
   html {
     scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
   }
 }
 
@@ -84,6 +86,79 @@
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+/* Scroll-snap landing page sections */
+.snap-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  scroll-margin-top: 60px;
+}
+
+.snap-section > .flex-1 {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.snap-section > .flex-1 {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  min-height: 0;
+}
+
+/* Landing page animations */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.marquee-track {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+
+.gradient-text-lime {
+  background: linear-gradient(135deg, #CAFF43 0%, #8BFF43 50%, #CAFF43 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(202,255,67,0.2), rgba(139,92,246,0.2));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
 /* ============================================================

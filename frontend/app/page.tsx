@@ -5,8 +5,10 @@ import ProductsSection from "@/components/landing/products-section";
 import FeaturesSection from "@/components/landing/features-section";
 import HowItWorksSection from "@/components/landing/how-it-works-section";
 import StatsSection from "@/components/landing/stats-section";
+import TestimonialsSection from "@/components/landing/testimonials-section";
+import SeeItInActionSection from "@/components/landing/see-it-in-action-section";
+import FloatingFooter from "@/components/landing/floating-footer";
 import Footer from "@/components/landing/footer";
-import ScrollReveal from "@/components/landing/scroll-reveal";
 import { LoginRequiredDialog } from "@/components/auth/login-required-dialog";
 
 export default function Home() {
@@ -17,27 +19,16 @@ export default function Home() {
       </Suspense>
       <Navbar />
       <main>
-        <ScrollReveal delay={0}>
-          <HeroSection />
-        </ScrollReveal>
-
-        <ScrollReveal delay={100}>
-          <ProductsSection />
-        </ScrollReveal>
-
-        <ScrollReveal delay={100}>
-          <FeaturesSection />
-        </ScrollReveal>
-
-        <ScrollReveal delay={100}>
-          <HowItWorksSection />
-        </ScrollReveal>
-
-        <ScrollReveal delay={100}>
-          <StatsSection />
-        </ScrollReveal>
+        <HeroSection />
+        <ProductsSection />
+        <FeaturesSection />
+        <HowItWorksSection />
+        <StatsSection />
+        <TestimonialsSection />
+        <SeeItInActionSection />
       </main>
       <Footer />
+      <FloatingFooter />
     </>
   );
 }
