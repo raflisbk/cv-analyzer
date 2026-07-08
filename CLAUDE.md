@@ -32,7 +32,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Tech Stack:**
 - Backend: FastAPI + PostgreSQL (pgvector) + Redis/Celery + Cloudflare R2
-- Frontend: Next.js 15 + shadcn/ui + Tailwind CSS + Tiptap v3
+- Frontend: Next.js 15 + shadcn/ui + Tailwind CSS + Tiptap v3 + GSAP (landing animations)
 - AI: KoboiLLM (OpenAI-compatible API) for LLM + embeddings; spaCy for NLP
 - Deploy: Vercel (frontend) + Railway (backend)
 
@@ -40,13 +40,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Celery task chain (5 stages) with `ProgressTask` base class publishing progress to Redis pub/sub (`job:updates:{job_id}`)
 - Server-Sent Events (SSE) at `/api/v1/stream/{job_id}` reads Redis pub/sub for real-time progress
 - RAG with `pgvector` — `KnowledgeChunk` model stores text + `Vector(3072)` embeddings
-- **Job Memory System** — `job_memory_chunks` table stores per-job activity (cv_section, analysis, edit, chat) as `Vector(3072)` embeddings. Indexed post-analysis; queried by inline edit and chat for contextual LLM calls. ⚠️ As of 2026-07-03 the implementation files (`models/job_memory_chunk.py`, `services/memory/indexer.py`, `services/memory/retriever.py`, the `job_memory_chunks` migration) are missing from the working tree and unrecoverable from local git history — the table/API surface described here is the intended design, not a verified-present implementation. Verify these files exist before relying on this system.
+- **Job Memory System** — `job_memory_chunks` table stores per-job activity (cv_section, analysis, edit, chat) as `Vector(3072)` embeddings. Indexed post-analysis; queried by inline edit and chat for contextual LLM calls. Implementation: `models/job_memory_chunk.py`, `services/memory/indexer.py`, `services/memory/retriever.py`, migration `20260621_0001_add_job_memory_chunks.py`.
 - Scoring is **fully LLM-based** (`services/scoring/llm_scorer.py`), not anchor/embedding similarity — `anchors.py`/`embeddings.py`/`dynamic_anchors.py`/`role_anchors.py`/`hf_embeddings.py` in the same directory are dead code for scoring (only `embeddings.py::get_embedding` is still used, by `rag/`, unrelated to scoring). Current `SCORING_VERSION = "v5"`, weights impact 35% / clarity 30% / relevance 20% / completeness 15%. Ensemble: N runs (`CV_ANALYZER_SCORING_ENSEMBLE_RUNS`) per CV, median taken per dimension. Redis-cached by `llm_score:{SCORING_VERSION}:{hash}`. Overlaid with `deterministic_metrics.py` (rule-based ±10pt adjustment: quantified bullets, action verbs, passive voice, section coverage, gaps) and archetype-aware impact guidance (`llm/archetype_detector.py`, 2-tier: domain then archetype within domain, 2 LLM calls).
 - Grammar check is LLM-based (KoboiLLM), not LanguageTool
 - Workspace editor: Tiptap v3 + Y.js (pycrdt-websocket on backend, y-websocket on frontend) for collaborative editing
-- **Chat is still mocked** — `POST /api/v1/jobs/{id}/chat` calls `_stream_mock_response()` in `chat.py`, not a real KoboiLLM call, despite the system prompt/job-memory scaffolding being real. Don't assume chat responses reflect actual CV content.
+- Chat is a real LLM call — `POST /api/v1/jobs/{id}/chat` calls `KoboiLLMService.chat_stream()` via `_stream_llm_response()` (collect off-thread, then replay as SSE — see Non-Obvious Patterns)
 
 ## Essential Commands
+
+### Run everything (Linux)
+
+```bash
+./dev.sh    # Opens Backend API, Celery worker, and Frontend in Konsole tabs
+            # (wraps scripts/run-backend.sh, run-celery.sh, run-frontend.sh)
+            # Prerequisites: Postgres + Redis already running
+```
 
 ### Backend (Python/FastAPI)
 
@@ -108,7 +116,10 @@ pip install -e backend   # From project root
 ```bash
 cd frontend
 npm run dev              # http://localhost:3000
-npm run build            # Production build
+npm run build            # Production build — NEVER run while `npm run dev` is up:
+                         # both share .next/, the dev server serves stale chunk refs
+                         # (404 main-app.js → no hydration, ssr:false components never mount).
+                         # Stop dev first; afterwards `rm -rf .next` and restart dev.
 npm run test             # Vitest (run all)
 npm run test:watch       # Watch mode
 npm run lint             # ESLint
@@ -189,7 +200,7 @@ Y.js WebSocket is mounted at root `/yjs/{job_id}` (NOT under `/api/v1/`).
 
 | Method | Path | Paradigm | Notes |
 |--------|------|----------|-------|
-| `POST` | `/api/v1/jobs/{job_id}/chat` | **SSE** | `text/event-stream`. Retrieves job memory → builds system prompt → **streams a hardcoded mock response**, not a real `KoboiLLMService.chat_stream()` call (see Non-Obvious Patterns). Emits `{token}` events then `{type: "complete"}`. Indexes both turns to job memory. |
+| `POST` | `/api/v1/jobs/{job_id}/chat` | **SSE** | `text/event-stream`. Retrieves job memory → builds system prompt → `KoboiLLMService.chat_stream()` (collected off-thread, replayed as SSE — see Non-Obvious Patterns). Emits `{token}` events then `{type: "complete"}`. Indexes both turns to job memory. |
 
 ### Y.js WebSocket (mounted at root, not `/api/v1/`)
 
@@ -228,8 +239,8 @@ Y.js WebSocket is mounted at root `/yjs/{job_id}` (NOT under `/api/v1/`).
 - `scoring/anchors.py`, `dynamic_anchors.py`, `role_anchors.py`, `embeddings.py`, `hf_embeddings.py` — **dead code for scoring** (pre-v3 anchor/embedding approach); only `embeddings.py::get_embedding` is still used, by `rag/`, unrelated to scoring
 - `grammar/checker.py` — LLM-based grammar/spelling checker (NOT LanguageTool)
 - `ats/checker.py` — ATS compatibility checker
-- `memory/indexer.py` — Job Memory indexer: `index_cv_sections`, `index_analysis_summary`, `index_edit`, `index_chat_message`. ⚠️ File is currently missing from the working tree — see Architecture section
-- `memory/retriever.py` — `retrieve_job_memory(job_id, query, limit, content_types?)` — cosine similarity over `job_memory_chunks`. ⚠️ File is currently missing from the working tree — see Architecture section
+- `memory/indexer.py` — Job Memory indexer: `index_cv_sections`, `index_analysis_summary`, `index_edit`, `index_chat_message`
+- `memory/retriever.py` — `retrieve_job_memory(job_id, query, limit, content_types?)` — cosine similarity over `job_memory_chunks`
 - `rag/embeddings.py` — RAG embedding calls
 - `rag/retriever.py` — Retrieves top-K chunks from pgvector (`knowledge_chunks`)
 - `rag/chunker.py` — Chunks knowledge base text for ingestion
@@ -238,7 +249,7 @@ Y.js WebSocket is mounted at root `/yjs/{job_id}` (NOT under `/api/v1/`).
 - `llm/protocol.py` — `LLMService` Protocol + `SuggestionsOutput` Pydantic schema
 - `llm/score_explainer.py` — Explains scores in natural language
 - `llm/inline_edit_service.py` — Rewrites CV text; accepts `cv_text` (full) + `memory_chunks` for context
-- `llm/chat_context_builder.py` — Builds chat system prompt from job scores + cv_document + `memory_chunks` (feeds a mock chat endpoint today — see Non-Obvious Patterns)
+- `llm/chat_context_builder.py` — Builds chat system prompt from job scores + cv_document + `memory_chunks`
 - `llm/archetype_detector.py` — 2-tier LLM archetype detection: domain first (31 choices), then archetype within domain (up to ~79 choices)
 - `llm/hf_llm_service.py` — Hugging Face Inference API client. **Dead code** — zero call sites in the app; do not assume it's the fallback path
 - `llm/metrics.py` — LLM token usage counter (Prometheus)
@@ -301,6 +312,8 @@ Copy `backend/.env.example` → `backend/.env`. Settings are loaded via `pydanti
 
 **`job.scores` type safety** — In the chat context builder, `job.scores` (JSONB dict) is wrapped as `ScoreResult(**job.scores)` for type-safe attribute access.
 
+**GSAP via `lib/gsap-loader.ts` only** — Landing-page animations load GSAP + ScrollTrigger through the async `loadGsap()` dynamic import (keeps GSAP out of the initial bundle, avoids SSR issues). Do not `import gsap from "gsap"` statically in components, and do not re-add framer-motion — it was deliberately removed in favor of GSAP.
+
 **Tiptap `immediatelyRender: false`** — Required on ALL `useEditor()` calls to prevent Next.js 15 SSR hydration mismatch with ProseMirror.
 
 **`SuggestionTooltip` uses portal** — ProseMirror marks are raw DOM nodes, not React components. Radix `TooltipTrigger asChild` cannot wrap them. Use portal rendering to `document.body` + event delegation via `mouseover` on `[data-suggestion-id]`.
@@ -317,9 +330,9 @@ Copy `backend/.env.example` → `backend/.env`. Settings are loaded via `pydanti
 
 **Two inline-edit endpoints exist** — `POST /api/v1/jobs/{id}/inline-edit` (in `inline_edit.py`, has job context + full cv_text + job memory, used by `InlineEditPopover` in PDF viewer) and `POST /api/v1/ai/improve` (in `workspace.py`, legacy, no job context, used by `InlineAIPopup` in `rich-text-editor.tsx`). The PDF-viewer path is the primary workspace flow.
 
-**Chat is still a mock** — `POST /api/v1/jobs/{id}/chat` (`chat.py`) calls `_stream_mock_response()`, a hardcoded string streamed character-by-character via `asyncio.sleep(0.02)`. `KoboiLLMService.chat_stream()` exists and is wired for scoring/grammar/etc., but chat does not call it yet. The system prompt and job-memory retrieval scaffolding around it are real — only the final LLM call is a placeholder.
+**Chat streaming is collect-then-replay, not token-by-token** — `_stream_llm_response()` in `chat.py` runs the sync `KoboiLLMService.chat_stream()` generator to completion via `asyncio.to_thread`, then replays the collected tokens as SSE. Keeps the event loop unblocked, but the first byte arrives only after the full LLM response is ready.
 
-**Job Memory System** — `job_memory_chunks` table (4 `content_type`: `cv_section`, `analysis`, `edit`, `chat`). Indexed automatically after `llm_suggest_task` completes. Queried via `retrieve_job_memory(job_id, query)` in inline edit + chat. The HNSW index uses `halfvec` cast — do NOT use `vector_cosine_ops` for >2000 dims. See the ⚠️ note under Architecture — the implementation files for this system are currently missing from the working tree.
+**Job Memory System** — `job_memory_chunks` table (4 `content_type`: `cv_section`, `analysis`, `edit`, `chat`). Indexed automatically after `llm_suggest_task` completes. Queried via `retrieve_job_memory(job_id, query)` in inline edit + chat. The HNSW index uses `halfvec` cast — do NOT use `vector_cosine_ops` for >2000 dims.
 
 **HNSW index for >2000 dims** — pgvector HNSW rejects `vector_cosine_ops` if column dimension > 2000. Use halfvec cast: `USING hnsw ((embedding::halfvec(3072)) halfvec_cosine_ops)`. Both `knowledge_chunks` and `job_memory_chunks` use this pattern.
 
