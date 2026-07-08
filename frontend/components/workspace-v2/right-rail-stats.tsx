@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Send, Bot, BarChart2, Lightbulb, LayoutDashboard, CheckCircle2, Layers, ExternalLink } from "lucide-react";
+import { ChevronDown, Send, Bot, BarChart2, Lightbulb, LayoutDashboard, CheckCircle2, Layers, ExternalLink, type LucideIcon } from "lucide-react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +41,7 @@ interface AccordionSectionProps {
   title: string;
   subtitle: string;
   accentColor: string;
-  Icon: React.ElementType;
+  Icon: LucideIcon;
   children: React.ReactNode;
 }
 
