@@ -62,7 +62,7 @@ export default function Navbar() {
 
       <nav
         aria-label="Main navigation"
-        className="relative mx-auto flex h-[60px] max-w-7xl items-center px-4 md:px-8"
+        className="relative flex h-[60px] w-full items-center px-4 md:px-6 lg:px-8"
       >
         {/* Left: Logo */}
         <Link href="/" aria-label="Path Karir home" className="group flex-none">
