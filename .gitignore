@@ -427,3 +427,4 @@ mockup/
 
 # Test fixtures (PDFs, sample files)
 tests/fixtures/*.pdf
+dev-tmux.sh
