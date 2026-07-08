@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Menu, ArrowRight, Sparkles, X } from "lucide-react";
 import {
@@ -12,11 +11,8 @@ import {
 } from "@/components/ui/sheet";
 import { useRouter } from "next/navigation";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
-import { UserMenu } from "@/components/auth/user-menu";
-import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { useAuthStore } from "@/stores/auth-store";
 import { logoutApi } from "@/lib/auth";
-import { sanitizeUrl } from "@/lib/sanitize";
 
 const NAV_LINKS = [
   { href: "/cv-builder", label: "CV Builder", badge: null },
@@ -66,15 +62,17 @@ export default function Navbar() {
 
       <nav
         aria-label="Main navigation"
-        className="relative mx-auto flex h-[60px] max-w-6xl items-center justify-between px-4 md:px-8"
+        className="relative mx-auto flex h-[60px] max-w-7xl items-center px-4 md:px-8"
       >
+        {/* Left: Logo */}
         <Link href="/" aria-label="Path Karir home" className="group flex-none">
           <div className="transition-transform duration-200 group-hover:scale-[1.04]">
             <PathkrLogo size="md" variant="light" />
           </div>
         </Link>
 
-        <div className="hidden md:flex items-center gap-0.5">
+        {/* Center: Nav links */}
+        <div className="hidden md:flex flex-1 items-center justify-center gap-0.5">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -106,7 +104,8 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-2">
+        {/* Right: Get Started */}
+        <div className="hidden md:flex items-center">
           <button
             onClick={() => router.push("/workspace-v2/new")}
             className="group relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-2 text-[13px] font-black tracking-wide transition-all duration-200 hover:opacity-92 active:scale-[0.97]"
@@ -134,22 +133,15 @@ export default function Navbar() {
               />
             </span>
           </button>
-
-          <div
-            className="h-5 w-px"
-            style={{ background: "rgba(17,17,17,0.13)" }}
-            aria-hidden="true"
-          />
-
-          <UserMenu />
         </div>
 
+        {/* Mobile: hamburger */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <button
               aria-label="Open navigation menu"
               aria-expanded={mobileOpen}
-              className="md:hidden flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-150 text-[#141414]/60 bg-[#141414]/[0.06] border border-[#141414]/[0.09]"
+              className="md:hidden ml-auto flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-150 text-[#141414]/60 bg-[#141414]/[0.06] border border-[#141414]/[0.09]"
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
@@ -214,7 +206,7 @@ export default function Navbar() {
                 aria-hidden="true"
               />
 
-              {user ? (
+              {user && (
                 <div
                   className="mb-4 flex items-center gap-3 rounded-2xl border px-4 py-3"
                   style={{
@@ -222,27 +214,12 @@ export default function Navbar() {
                     background: "rgba(17,17,17,0.03)",
                   }}
                 >
-                  {(() => {
-                    const safeSrc = user.picture ? sanitizeUrl(user.picture) : "";
-                    return safeSrc ? (
-                      <Image
-                        src={safeSrc}
-                        alt={user.name ?? user.email}
-                        width={36}
-                        height={36}
-                        className="h-9 w-9 flex-none rounded-full object-cover"
-                        style={{ boxShadow: "0 0 0 2px rgba(202,255,67,0.5)" }}
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <div
-                        className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-black"
-                        style={{ background: "#141414", color: "#F5F2D8" }}
-                      >
-                        {(user.name ?? user.email).charAt(0).toUpperCase()}
-                      </div>
-                    );
-                  })()}
+                  <div
+                    className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-black"
+                    style={{ background: "#141414", color: "#F5F2D8" }}
+                  >
+                    {(user.name ?? user.email).charAt(0).toUpperCase()}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-bold text-[#141414]/85">
                       {user.name ?? user.email}
@@ -258,11 +235,6 @@ export default function Navbar() {
                     Logout
                   </button>
                 </div>
-              ) : (
-                <GoogleLoginButton
-                  onSuccess={() => setMobileOpen(false)}
-                  className="mb-4 w-full justify-center py-3"
-                />
               )}
 
               <button
@@ -294,9 +266,11 @@ export default function Navbar() {
                 </span>
               </button>
 
-              <p className="mt-3 text-center text-[11px] font-medium text-[#141414]/40">
-                Free. Instant. No sign-up required.
-              </p>
+              {!user && (
+                <p className="mt-3 text-center text-[11px] font-medium text-[#141414]/40">
+                  Free. Instant. Login on first use.
+                </p>
+              )}
             </div>
           </SheetContent>
         </Sheet>
