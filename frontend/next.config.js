@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: process.env.NEXT_OUTPUT || undefined,
+  // A stray lockfile in the home directory makes Next mis-detect the
+  // workspace root; pin it here.
+  outputFileTracingRoot: __dirname,
   reactStrictMode: true,
   devIndicators: false,
   images: {
