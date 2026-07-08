@@ -1,9 +1,14 @@
 CONDA_ENV = sbk-cv-analyzer
 CONDA = conda run -n $(CONDA_ENV) --no-capture-output
 
-.PHONY: local dev backend celery frontend migrate lint format test
+.PHONY: local local-tabs dev backend celery frontend migrate lint format test
 
+# All services in ONE terminal — Ctrl+C stops everything (backend, celery, frontend)
 local:
+	bash scripts/local.sh
+
+# Old behavior: each service in its own Konsole tab
+local-tabs:
 	./dev.sh
 
 dev:
