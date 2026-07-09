@@ -121,13 +121,48 @@ export default function HeroMascot() {
           }
         };
 
-        // Walk-in intro: enter from off-screen left, stop at the hero card's
-        // corner, kick it awake (fires MASCOT_KICK_EVENT — the hero's reveal
-        // timeline starts on it), then begin patrolling
-        gsap.set(char, { x: -80 });
+        // Paper-drop intro: the sheet is released above the viewport and
+        // falls like real paper — swaying side to side in decaying arcs,
+        // banking into each swing, legs trailing — flops onto the floor,
+        // walks to the hero card's corner and kicks it awake
+        // (MASCOT_KICK_EVENT starts the hero's reveal timeline).
+        walkTweens.forEach((tween) => tween.pause());
+        gsap.set([legL, legR], { rotation: 14 });
+        const dropHeight = Math.max(root.getBoundingClientRect().top + 60, 300);
+        const dropAnchorX = 150;
+        gsap.set(char, { x: dropAnchorX, y: -dropHeight });
+
+        const drop = { t: 0 };
+        const SWAYS = 2.6; // how many half-arcs on the way down
         gsap
           .timeline()
-          .to(char, { x: 16, duration: 1.5, ease: "power1.inOut" })
+          .to(drop, {
+            t: 1,
+            duration: 2.4,
+            ease: "sine.in",
+            onUpdate: () => {
+              const t = drop.t;
+              const decay = 1 - t * 0.55;
+              gsap.set(char, {
+                x: dropAnchorX + Math.sin(t * Math.PI * SWAYS) * 85 * decay,
+                y:
+                  -dropHeight * (1 - t) +
+                  Math.sin(t * Math.PI * SWAYS * 2) * 7 * decay,
+              });
+              // bank into the swing (fastest sideways = most tilted)
+              gsap.set(flip, {
+                rotation: Math.cos(t * Math.PI * SWAYS) * 24 * decay,
+              });
+            },
+          })
+          // Flop on landing: squash, dust, legs down
+          .add(() => puff(dropAnchorX + CHAR_W / 2, 84))
+          .to(flip, { scaleY: 0.8, y: 5, rotation: -5, duration: 0.11, ease: "power2.in" })
+          .to(flip, { scaleY: 1, y: 0, rotation: 0, duration: 0.35, ease: "back.out(2.2)" })
+          .set([legL, legR], { rotation: 0 })
+          // Dust itself off, then walk to the card's corner
+          .add(() => walkTweens.forEach((tween) => tween.resume()))
+          .to(char, { x: 16, duration: 0.7, ease: "power1.inOut" })
           .add(() => {
             walkTweens.forEach((tween) => tween.pause());
             gsap.set([legL, legR], { rotation: 0 });
@@ -191,13 +226,22 @@ export default function HeroMascot() {
           const currentX = Number(gsap.getProperty(char, "x"));
           const flightDir = targetX > currentX ? 1 : -1;
 
+          // Organic flight paths instead of straight tweens:
+          // ascent = quadratic bezier swoop (peaks above the target) with a
+          // decaying perpendicular wobble; descent = the same paper-fall
+          // sway physics as the intro drop (integer sway count so it lands
+          // exactly on targetX).
+          const controlX = (currentX + targetX) / 2;
+          const controlY = targetY - 85;
+          const ascend = { t: 0 };
+          const fall = { t: 0 };
+
           gsap
             .timeline({
               onComplete: () => {
                 dangle.kill();
                 gsap.set([legL, legR], { rotation: 0 });
                 gsap.to(pupils, { x: 0, y: 0, duration: 0.3 });
-                walkTweens.forEach((tween) => tween.resume());
                 patrol.resume();
                 visiting = false;
               },
@@ -219,17 +263,29 @@ export default function HeroMascot() {
               ease: "power2.out",
             })
             .to(flip, { scaleY: 1, duration: 0.2 }, "<0.08")
-            // Arc up to the element, fluttering like a sheet of paper
-            .to(char, { x: targetX, duration: 1.1, ease: "power1.inOut" }, "<")
-            .to(char, { y: targetY, duration: 1.1, ease: "power2.out" }, "<")
+            // Swooping ascent along the bezier, wobble fading as it homes in
             .to(
-              flip,
+              ascend,
               {
-                rotation: 7,
-                duration: 0.28,
-                yoyo: true,
-                repeat: 3,
-                ease: "sine.inOut",
+                t: 1,
+                duration: 1.25,
+                ease: "power1.inOut",
+                onUpdate: () => {
+                  const t = ascend.t;
+                  const inv = 1 - t;
+                  const bezierX =
+                    inv * inv * currentX + 2 * inv * t * controlX + t * t * targetX;
+                  const bezierY = 2 * inv * t * controlY + t * t * targetY;
+                  const wobble = Math.sin(t * Math.PI * 3.2) * 12 * inv;
+                  gsap.set(char, {
+                    x: bezierX + wobble * 0.35,
+                    y: bezierY + wobble,
+                  });
+                  gsap.set(flip, {
+                    rotation:
+                      Math.cos(t * Math.PI * 3.2) * 10 * (0.35 + inv * 0.65),
+                  });
+                },
               },
               "<",
             )
@@ -258,17 +314,42 @@ export default function HeroMascot() {
               repeat: 1,
               ease: "back.out(2)",
             })
-            // Admire the effect for a beat, then glide back to the floor
-            .to(char, { y: 0, duration: 1.0, ease: "power2.in" }, "+=0.7")
+            // Delighted double-hop: the effect it just triggered is playing
+            .to(flip, {
+              y: -7,
+              duration: 0.14,
+              ease: "power2.out",
+              yoyo: true,
+              repeat: 3,
+            })
+            // Let go and fall like a sheet of paper (decaying sways)
             .to(
-              flip,
-              { rotation: 0, y: 0, duration: 0.35, ease: "sine.out" },
-              "<",
+              fall,
+              {
+                t: 1,
+                duration: 1.4,
+                ease: "sine.in",
+                onUpdate: () => {
+                  const t = fall.t;
+                  const decay = 1 - t * 0.45;
+                  gsap.set(char, {
+                    x: targetX + Math.sin(t * Math.PI * 2) * 30 * decay,
+                    y:
+                      targetY * (1 - t) +
+                      Math.sin(t * Math.PI * 4) * 5 * decay,
+                  });
+                  gsap.set(flip, {
+                    rotation: Math.cos(t * Math.PI * 2) * 14 * decay,
+                  });
+                },
+              },
+              "+=0.45",
             )
             // Landing: squash into the floor with a dust puff, pop back up
             .to(flip, {
               scaleY: 0.84,
               y: 4,
+              rotation: 0,
               duration: 0.1,
               ease: "power2.in",
             })
@@ -278,6 +359,17 @@ export default function HeroMascot() {
               y: 0,
               duration: 0.3,
               ease: "back.out(2.5)",
+            })
+            // Walk back to where the patrol left off, then hand control back
+            .add(() => {
+              dangle.kill();
+              gsap.set([legL, legR], { rotation: 0 });
+              walkTweens.forEach((tween) => tween.resume());
+            })
+            .to(char, {
+              x: currentX,
+              duration: Math.min(1.3, Math.abs(targetX - currentX) / 260 + 0.25),
+              ease: "none",
             });
         };
 
