@@ -234,7 +234,10 @@ export default function RagExplainerSection() {
               </p>
             </div>
 
-            <div className="relative h-[440px] xl:h-[520px]">
+            <div
+              className="relative h-[440px] xl:h-[520px]"
+              data-mascot-zone="rag-graph"
+            >
               {/* Typographic watermark behind the graph */}
               <div
                 aria-hidden="true"

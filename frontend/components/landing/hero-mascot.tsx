@@ -9,11 +9,18 @@ import { loadGsap } from "@/lib/gsap-loader";
    - pupils track the cursor
    - cursor coming close startles it (stops, squash-stretch hop, arm wave)
    - click makes it somersault
-   - passing the right side fires `pathkr:mascot-greet`, which the hero RAG
-     graph listens to (pulse/orbit burst)
+   - ZONE CONDUCTOR: any element tagged `data-mascot-zone="<name>"` becomes
+     an instrument — when the mascot walks under it (and it's on screen),
+     the mascot waves and fires `pathkr:mascot-zone` with that zone name;
+     the owning component plays its effect. This is how the mascot "runs"
+     the site: sections opt in by tagging elements, the mascot never needs
+     to know what the effects are. Current zones: card-stub / hero-rows /
+     hero-stamp (hero) and rag-graph (explainer burst).
    Hidden on mobile; does nothing under prefers-reduced-motion (static pose). */
 
-const GREET_EVENT = "pathkr:mascot-greet";
+export const MASCOT_ZONE_EVENT = "pathkr:mascot-zone";
+const ZONE_COOLDOWN_MS = 6000;
+const ZONE_SCAN_MS = 250;
 const INK = "#141414";
 const CREAM = "#F5F2D8";
 
@@ -82,35 +89,60 @@ export default function HeroMascot() {
         });
         const walkTweens = [bob, stepL, stepR];
 
-        // Face the walking direction + greet the graph when passing under it
+        const wave = () => {
+          gsap
+            .timeline()
+            .to(arm, {
+              rotation: -120,
+              transformOrigin: "top center",
+              duration: 0.25,
+              ease: "back.out(2)",
+            })
+            .to(arm, { rotation: -90, duration: 0.15, yoyo: true, repeat: 3 })
+            .to(arm, { rotation: 0, duration: 0.3, ease: "power2.in" });
+        };
+
+        // Face the walking direction + conduct any zone we walk under
         let lastX = 0;
-        let lastGreet = 0;
+        let lastZoneScan = 0;
+        const zoneCooldown = new Map<string, number>();
         const tick = () => {
           const x = Number(gsap.getProperty(char, "x"));
           if (Math.abs(x - lastX) > 0.1) {
             gsap.set(flip, { scaleX: x > lastX ? 1 : -1 });
           }
-          // Greet zone: right area, under the RAG graph
-          const now = performance.now();
-          if (
-            x > root.clientWidth * 0.72 &&
-            now - lastGreet > 8000 &&
-            !patrol.paused()
-          ) {
-            lastGreet = now;
-            window.dispatchEvent(new CustomEvent(GREET_EVENT));
-            gsap
-              .timeline()
-              .to(arm, {
-                rotation: -120,
-                transformOrigin: "top center",
-                duration: 0.25,
-                ease: "back.out(2)",
-              })
-              .to(arm, { rotation: -90, duration: 0.15, yoyo: true, repeat: 3 })
-              .to(arm, { rotation: 0, duration: 0.3, ease: "power2.in" });
-          }
           lastX = x;
+
+          const now = performance.now();
+          if (now - lastZoneScan < ZONE_SCAN_MS || patrol.paused()) {
+            return;
+          }
+          lastZoneScan = now;
+          const charX = x + CHAR_W / 2;
+          document
+            .querySelectorAll<HTMLElement>("[data-mascot-zone]")
+            .forEach((el) => {
+              const zone = el.dataset.mascotZone;
+              if (!zone) {
+                return;
+              }
+              const rect = el.getBoundingClientRect();
+              const onScreen =
+                rect.width > 0 &&
+                rect.top < window.innerHeight - 100 &&
+                rect.bottom > 0;
+              if (!onScreen || charX < rect.left || charX > rect.right) {
+                return;
+              }
+              if (now - (zoneCooldown.get(zone) ?? 0) < ZONE_COOLDOWN_MS) {
+                return;
+              }
+              zoneCooldown.set(zone, now);
+              window.dispatchEvent(
+                new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
+              );
+              wave();
+            });
         };
         gsap.ticker.add(tick);
 

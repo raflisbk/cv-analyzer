@@ -67,6 +67,73 @@ export default function HeroSection() {
           stagger: 0.08,
           delay: 0.8,
         });
+
+        // The mascot conducts these zones when it walks under them
+        const onMascotZone = (event: Event) => {
+          const zone = (event as CustomEvent).detail?.zone;
+          if (zone === "card-stub") {
+            const stub = sectionRef.current?.querySelector(".hero-stub");
+            if (stub) {
+              gsap.fromTo(
+                ".hero-stub-sweep",
+                { x: 0 },
+                { x: stub.clientWidth + 160, duration: 0.9, ease: "power2.inOut" },
+              );
+            }
+            gsap.fromTo(
+              ".hero-dot",
+              { scale: 1 },
+              { scale: 2, duration: 0.14, yoyo: true, repeat: 5 },
+            );
+          } else if (zone === "hero-rows") {
+            // Explicit up-then-down timeline; overwrite kills any tween
+            // still holding y on these elements (e.g. the intro reveal)
+            gsap
+              .timeline()
+              .to(".hero-row", {
+                y: -6,
+                duration: 0.22,
+                stagger: 0.16,
+                ease: "power2.out",
+                overwrite: "auto",
+              })
+              .to(".hero-row", {
+                y: 0,
+                duration: 0.35,
+                stagger: 0.16,
+                ease: "bounce.out",
+              });
+            gsap.fromTo(
+              ".row-no",
+              { backgroundColor: "rgba(202,255,67,0)", color: "rgba(17,17,17,0.35)" },
+              {
+                backgroundColor: "#CAFF43",
+                color: "#141414",
+                duration: 0.25,
+                stagger: 0.16,
+                yoyo: true,
+                repeat: 1,
+                clearProps: "backgroundColor,color",
+              },
+            );
+          } else if (zone === "hero-stamp") {
+            gsap.fromTo(
+              ".hero-stamp",
+              { scale: 1.45, rotation: -10, opacity: 0.4 },
+              {
+                scale: 1,
+                rotation: 0,
+                opacity: 1,
+                duration: 0.55,
+                ease: "elastic.out(1, 0.5)",
+              },
+            );
+          }
+        };
+        window.addEventListener("pathkr:mascot-zone", onMascotZone);
+        return () => {
+          window.removeEventListener("pathkr:mascot-zone", onMascotZone);
+        };
       });
     });
 
@@ -292,11 +359,22 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              {/* Tear-off ticket stub: barcode + boarding info */}
+              {/* Tear-off ticket stub: barcode + boarding info.
+                  Mascot zone: walking under the card "scans" the barcode */}
               <div
-                className="relative z-10 flex h-11 items-center justify-between gap-4 overflow-hidden px-6 md:px-10"
+                data-mascot-zone="card-stub"
+                className="hero-stub relative z-10 flex h-11 items-center justify-between gap-4 overflow-hidden px-6 md:px-10"
                 style={{ borderTop: "2px dashed rgba(245,242,216,0.16)" }}
               >
+                {/* Scan sweep played when the mascot passes */}
+                <span
+                  aria-hidden="true"
+                  className="hero-stub-sweep pointer-events-none absolute inset-y-0 -left-24 w-20"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(202,255,67,0.22), transparent)",
+                  }}
+                />
                 {/* Barcode + seat hide on the smallest screens so the stub
                     row's min-content never widens the card past the viewport */}
                 <div
@@ -315,7 +393,7 @@ export default function HeroSection() {
                   <span className="hidden sm:inline">Seat 01-A</span>
                   <span className="text-[#CAFF43]/40">{diamond}</span>
                   <span className="flex items-center gap-1.5 text-[#CAFF43]/80">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#CAFF43]" />
+                    <span className="hero-dot h-1.5 w-1.5 animate-pulse rounded-full bg-[#CAFF43]" />
                     Boarding Now
                   </span>
                 </div>
@@ -364,7 +442,10 @@ export default function HeroSection() {
               </svg>
 
               {/* Rotating passport stamp */}
-              <div className="absolute left-[30%] top-[54%] hidden h-28 w-28 min-[1780px]:block">
+              <div
+                data-mascot-zone="hero-stamp"
+                className="hero-stamp absolute left-[30%] top-[54%] hidden h-28 w-28 min-[1780px]:block"
+              >
                 <svg
                   className="h-full w-full"
                   viewBox="0 0 112 112"
@@ -455,7 +536,10 @@ export default function HeroSection() {
               </span>
             </div>
 
-            <div className="w-full max-w-[340px] 2xl:max-w-[420px]">
+            <div
+              data-mascot-zone="hero-rows"
+              className="w-full max-w-[340px] 2xl:max-w-[420px]"
+            >
               <p className="hero-fade mb-2 flex items-center justify-end gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
                 Why it works
                 <span aria-hidden="true" className="text-[#141414]/30">
@@ -491,10 +575,10 @@ export default function HeroSection() {
                       .getElementById(row.target)
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="hero-fade group block w-full border-t border-dashed border-[#141414]/20 py-5 text-right"
+                  className="hero-fade hero-row group block w-full border-t border-dashed border-[#141414]/20 py-5 text-right"
                 >
                   <p className="mb-1.5 font-mono text-[10px] tracking-[0.2em] text-[#141414]/35">
-                    <span className="rounded-sm px-1 py-0.5 transition-colors duration-200 group-hover:bg-[#CAFF43] group-hover:text-[#141414]">
+                    <span className="row-no rounded-sm px-1 py-0.5 transition-colors duration-200 group-hover:bg-[#CAFF43] group-hover:text-[#141414]">
                       {row.no}
                     </span>
                   </p>

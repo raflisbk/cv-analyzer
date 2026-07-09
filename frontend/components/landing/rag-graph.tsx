@@ -285,13 +285,15 @@ function RagScene({ mode, selectedIndex, onSelect }: RagSceneProps) {
   const burstRef = useRef(0);
   const { viewport } = useThree();
 
-  // The mascot waves at the graph when it walks by → everything gets excited
+  // The mascot walking under the graph (zone "rag-graph") excites everything
   useEffect(() => {
-    const onGreet = () => {
-      burstRef.current = 1;
+    const onZone = (event: Event) => {
+      if ((event as CustomEvent).detail?.zone === "rag-graph") {
+        burstRef.current = 1;
+      }
     };
-    window.addEventListener("pathkr:mascot-greet", onGreet);
-    return () => window.removeEventListener("pathkr:mascot-greet", onGreet);
+    window.addEventListener("pathkr:mascot-zone", onZone);
+    return () => window.removeEventListener("pathkr:mascot-zone", onZone);
   }, []);
 
   // Chips are clickable in both modes — show it
