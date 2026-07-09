@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { RAG_NODES } from "@/lib/rag-node-content";
 
 /* RAG personalization graph — monochrome editorial style (ink on cream).
    Structure: central "You" node inside faint orbital rings; six labeled
@@ -11,8 +12,22 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
    satellite dots (knowledge chunks) that slowly orbit it, tethered by
    hairlines. Mouse tilts the constellation; hovering a chip scales it and
    speeds up its pulse. Flat/unlit rendering, no color.
-   Decorative only (aria-hidden); static SVG fallback for reduced-motion /
-   no-WebGL. */
+
+   Two modes:
+   - "ambient"     — hero teaser: clicking any node just reports the index
+                     (the hero uses it to scroll to the explainer section)
+   - "interactive" — explainer section: clicking a node selects it — the
+                     camera eases toward its cluster, everything else dims,
+                     its pulse speeds up; empty space / same node deselects.
+   Node labels come from lib/rag-node-content.ts (shared with the explainer
+   panels). Canvas stays aria-hidden; the explainer mirrors selection with
+   accessible HTML chips. Static SVG fallback for reduced-motion/no-WebGL. */
+
+export interface RagGraphProps {
+  mode?: "ambient" | "interactive";
+  selectedIndex?: number | null;
+  onSelect?: (index: number | null) => void;
+}
 
 const INK = "#141414";
 const CREAM = "#F5F2D8";
@@ -136,39 +151,20 @@ interface PrimarySpec {
   pulseSpeed: number;
 }
 
-const PRIMARY_SPECS: PrimarySpec[] = [
-  {
-    label: "CV Sections",
-    inverted: false,
-    pos: [-1.9, 1.2, -0.2],
-    pulseSpeed: 0.3,
-  },
-  {
-    label: "Job Memory",
-    inverted: true,
-    pos: [0.2, 1.8, 0.25],
-    pulseSpeed: 0.22,
-  },
-  { label: "Skills", inverted: false, pos: [2.0, 1.15, 0.2], pulseSpeed: 0.26 },
-  {
-    label: "JD Match",
-    inverted: true,
-    pos: [2.1, -0.75, -0.2],
-    pulseSpeed: 0.32,
-  },
-  {
-    label: "Knowledge",
-    inverted: true,
-    pos: [-1.75, -1.1, 0.3],
-    pulseSpeed: 0.24,
-  },
-  {
-    label: "AI Score",
-    inverted: false,
-    pos: [0.5, -1.85, 0.1],
-    pulseSpeed: 0.28,
-  },
+// Layout only — labels come from RAG_NODES (index-aligned)
+const PRIMARY_LAYOUT: Array<Omit<PrimarySpec, "label">> = [
+  { inverted: false, pos: [-1.9, 1.2, -0.2], pulseSpeed: 0.3 }, // CV Sections
+  { inverted: true, pos: [0.2, 1.8, 0.25], pulseSpeed: 0.22 }, // Job Memory
+  { inverted: false, pos: [2.0, 1.15, 0.2], pulseSpeed: 0.26 }, // Skills
+  { inverted: true, pos: [2.1, -0.75, -0.2], pulseSpeed: 0.32 }, // JD Match
+  { inverted: true, pos: [-1.75, -1.1, 0.3], pulseSpeed: 0.24 }, // Knowledge
+  { inverted: false, pos: [0.5, -1.85, 0.1], pulseSpeed: 0.28 }, // AI Score
 ];
+
+const PRIMARY_SPECS: PrimarySpec[] = PRIMARY_LAYOUT.map((layout, i) => ({
+  label: RAG_NODES[i].label,
+  ...layout,
+}));
 
 const SATELLITES_PER_NODE = 3;
 const SATELLITE_COUNT = PRIMARY_SPECS.length * SATELLITES_PER_NODE;
@@ -205,14 +201,9 @@ const SATELLITE_SPECS: SatelliteSpec[] = Array.from(
 
 // Labeled sub-nodes: two concrete children per primary node, placed on the
 // side of the parent facing away from the center so they never cross a spoke
-const SUB_LABELS: string[][] = [
-  ["Experience", "Education"], // CV Sections
-  ["Edits", "Chats"], // Job Memory
-  ["Python", "Figma"], // Skills
-  ["Keywords", "Gaps"], // JD Match
-  ["Guides", "Patterns"], // Knowledge
-  ["Impact", "Clarity"], // AI Score
-];
+const SUB_LABELS: string[][] = RAG_NODES.map((node) =>
+  node.subs.map((sub) => sub.label),
+);
 
 interface SubSpec {
   parent: number;
@@ -271,7 +262,13 @@ const DUST_SPECS = Array.from({ length: DUST_COUNT }, (_, i) => ({
 
 // ---------- scene ----------
 
-function RagScene() {
+interface RagSceneProps {
+  mode: "ambient" | "interactive";
+  selectedIndex: number | null;
+  onSelect?: (index: number | null) => void;
+}
+
+function RagScene({ mode, selectedIndex, onSelect }: RagSceneProps) {
   const group = useRef<THREE.Group>(null);
   const centerRef = useRef<THREE.Mesh>(null);
   const outerArcRef = useRef<THREE.Mesh>(null);
@@ -296,6 +293,14 @@ function RagScene() {
     window.addEventListener("pathkr:mascot-greet", onGreet);
     return () => window.removeEventListener("pathkr:mascot-greet", onGreet);
   }, []);
+
+  // Chips are clickable in both modes — show it
+  useEffect(() => {
+    document.body.style.cursor = hoveredIndex !== null ? "pointer" : "";
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, [hoveredIndex]);
 
   const centerTexture = useMemo(() => makeCenterTexture(), []);
   const subChips = useMemo(
@@ -429,21 +434,40 @@ function RagScene() {
     burstRef.current = THREE.MathUtils.damp(burstRef.current, 0, 0.7, delta);
     const burst = burstRef.current;
 
+    const focused = mode === "interactive" && selectedIndex !== null;
+
     if (group.current) {
-      // Fit the constellation to the available column width
+      // Fit the constellation to the available column width; when a node is
+      // selected in interactive mode, ease toward its cluster and zoom in
       const fit = THREE.MathUtils.clamp(viewport.width / 5.8, 0.55, 1);
+      const targetScale = focused ? fit * 1.28 : fit;
       group.current.scale.setScalar(
-        THREE.MathUtils.damp(group.current.scale.x, fit, 4, delta),
+        THREE.MathUtils.damp(group.current.scale.x, targetScale, 4, delta),
+      );
+      const focusPos = focused ? PRIMARY_SPECS[selectedIndex].pos : null;
+      const scale = group.current.scale.x;
+      group.current.position.x = THREE.MathUtils.damp(
+        group.current.position.x,
+        focusPos ? -focusPos[0] * scale * 0.55 : 0,
+        4,
+        delta,
+      );
+      group.current.position.y = THREE.MathUtils.damp(
+        group.current.position.y,
+        focusPos ? -focusPos[1] * scale * 0.55 : 0,
+        4,
+        delta,
       );
       group.current.rotation.y = THREE.MathUtils.damp(
         group.current.rotation.y,
-        pointer.x * 0.22 + Math.sin(t * 0.15) * 0.04,
+        (focused ? pointer.x * 0.08 : pointer.x * 0.22) +
+          Math.sin(t * 0.15) * 0.04,
         4,
         delta,
       );
       group.current.rotation.x = THREE.MathUtils.damp(
         group.current.rotation.x,
-        -pointer.y * 0.24,
+        -pointer.y * (focused ? 0.08 : 0.24),
         4,
         delta,
       );
@@ -460,19 +484,44 @@ function RagScene() {
       innerArcRef.current.rotation.z -= (0.2 + burst * 1.0) * delta;
     }
 
-    // Hovered chip scales up
+    // Chips: hover/selection scale + dim everything that isn't selected
     chipsRef.current?.children.forEach((chip, i) => {
-      const target = hoveredIndex === i ? 1.12 : 1;
+      const isSelected = focused && selectedIndex === i;
+      const target = isSelected ? 1.18 : hoveredIndex === i ? 1.12 : 1;
       chip.scale.setScalar(
         THREE.MathUtils.damp(chip.scale.x, target, 8, delta),
+      );
+      const material = (chip as THREE.Mesh).material as THREE.MeshBasicMaterial;
+      material.opacity = THREE.MathUtils.damp(
+        material.opacity,
+        focused && selectedIndex !== i ? 0.22 : 1,
+        6,
+        delta,
+      );
+    });
+
+    // Spokes: highlight the selected one, fade the rest
+    spokes.forEach((spokeLine, i) => {
+      const material = spokeLine.material as THREE.LineDashedMaterial;
+      const target = !focused ? 0.32 : selectedIndex === i ? 0.6 : 0.08;
+      material.opacity = THREE.MathUtils.damp(material.opacity, target, 6, delta);
+    });
+    crossLines.forEach((crossLine) => {
+      const material = crossLine.material as THREE.LineBasicMaterial;
+      material.opacity = THREE.MathUtils.damp(
+        material.opacity,
+        focused ? 0.035 : 0.09,
+        6,
+        delta,
       );
     });
 
     // Retrieval pulses along the spokes
     pulsesRef.current?.children.forEach((dot, i) => {
       const spec = PRIMARY_SPECS[i];
+      const excited = hoveredIndex === i || (focused && selectedIndex === i);
       const speed =
-        (hoveredIndex === i ? spec.pulseSpeed * 2.4 : spec.pulseSpeed) *
+        (excited ? spec.pulseSpeed * 2.4 : spec.pulseSpeed) *
         (1 + burst * 2.5);
       const progress = (t * speed + i * 0.37) % 1;
       dot.position.set(
@@ -481,7 +530,8 @@ function RagScene() {
         spec.pos[2] * (1 - progress),
       );
       const material = (dot as THREE.Mesh).material as THREE.MeshBasicMaterial;
-      material.opacity = Math.sin(progress * Math.PI) * 0.9;
+      const dim = focused && selectedIndex !== i ? 0.12 : 1;
+      material.opacity = Math.sin(progress * Math.PI) * 0.9 * dim;
     });
 
     // Slower pulses wandering along the cross-links, alternating direction
@@ -537,12 +587,26 @@ function RagScene() {
       satellites.instanceMatrix.needsUpdate = true;
     }
 
-    // Labeled sub-nodes: gentle bob, hairlines follow (same shared buffer)
+    // Labeled sub-nodes: gentle bob, hairlines follow (same shared buffer);
+    // when a primary is selected its children stay bright, the rest fade
     subsRef.current?.children.forEach((sub, i) => {
       const spec = SUB_SPECS[i];
       const parent = PRIMARY_SPECS[spec.parent].pos;
       const y = spec.pos[1] + Math.sin(t * 0.9 + spec.phase) * 0.035;
       sub.position.set(spec.pos[0], y, spec.pos[2]);
+
+      const isKin = focused && spec.parent === selectedIndex;
+      const subScale = isKin ? 1.15 : 1;
+      sub.scale.setScalar(
+        THREE.MathUtils.damp(sub.scale.x, subScale, 6, delta),
+      );
+      const material = (sub as THREE.Mesh).material as THREE.MeshBasicMaterial;
+      material.opacity = THREE.MathUtils.damp(
+        material.opacity,
+        focused && !isKin ? 0.15 : 1,
+        6,
+        delta,
+      );
 
       const offset = (SATELLITE_COUNT + i) * 2;
       positions.setXYZ(offset, spec.pos[0], y, spec.pos[2]);
@@ -662,6 +726,12 @@ function RagScene() {
             onPointerOut={() =>
               setHoveredIndex((current) => (current === i ? null : current))
             }
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect?.(
+                mode === "interactive" && selectedIndex === i ? null : i,
+              );
+            }}
           >
             <planeGeometry args={[0.28 * chip.aspect, 0.28]} />
             <meshBasicMaterial map={chip.texture} transparent />
@@ -674,14 +744,20 @@ function RagScene() {
 
 // ---------- static fallback (reduced motion / no WebGL) ----------
 
-const FALLBACK_NODES = [
-  { label: "CV Sections", inverted: false, x: 10, y: 20 },
-  { label: "Job Memory", inverted: true, x: 48, y: 8 },
-  { label: "Skills", inverted: false, x: 78, y: 20 },
-  { label: "JD Match", inverted: true, x: 80, y: 62 },
-  { label: "Knowledge", inverted: true, x: 12, y: 66 },
-  { label: "AI Score", inverted: false, x: 50, y: 86 },
+const FALLBACK_LAYOUT = [
+  { x: 10, y: 20 },
+  { x: 48, y: 8 },
+  { x: 78, y: 20 },
+  { x: 80, y: 62 },
+  { x: 12, y: 66 },
+  { x: 50, y: 86 },
 ];
+
+const FALLBACK_NODES = FALLBACK_LAYOUT.map((layout, i) => ({
+  label: RAG_NODES[i].label,
+  inverted: PRIMARY_SPECS[i].inverted,
+  ...layout,
+}));
 
 function StaticFallback() {
   return (
@@ -738,8 +814,12 @@ function StaticFallback() {
 
 // ---------- wrapper ----------
 
-export default function HeroRagNodes() {
-  const [mode, setMode] = useState<"init" | "3d" | "fallback">("init");
+export default function RagGraph({
+  mode = "ambient",
+  selectedIndex = null,
+  onSelect,
+}: RagGraphProps) {
+  const [render, setRender] = useState<"init" | "3d" | "fallback">("init");
 
   useEffect(() => {
     const reducedMotion = window.matchMedia(
@@ -754,14 +834,14 @@ export default function HeroRagNodes() {
     } catch {
       hasWebgl = false;
     }
-    setMode(reducedMotion || !hasWebgl ? "fallback" : "3d");
+    setRender(reducedMotion || !hasWebgl ? "fallback" : "3d");
   }, []);
 
-  if (mode === "init") {
+  if (render === "init") {
     return null;
   }
 
-  if (mode === "fallback") {
+  if (render === "fallback") {
     return <StaticFallback />;
   }
 
@@ -772,8 +852,15 @@ export default function HeroRagNodes() {
         camera={{ position: [0, 0, 6.0], fov: 40 }}
         dpr={[1, 1.75]}
         gl={{ alpha: true, antialias: true }}
+        onPointerMissed={
+          mode === "interactive" ? () => onSelect?.(null) : undefined
+        }
       >
-        <RagScene />
+        <RagScene
+          mode={mode}
+          selectedIndex={selectedIndex}
+          onSelect={onSelect}
+        />
       </Canvas>
     </div>
   );
