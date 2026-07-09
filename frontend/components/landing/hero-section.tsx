@@ -173,23 +173,24 @@ export default function HeroSection() {
         const onMascotZone = (event: Event) => {
           const zone = (event as CustomEvent).detail?.zone;
           if (zone === "card-stub") {
-            // The tap lands on the card itself: it hops up and settles
+            // Street-sign spin: the tap sends the whole boarding pass
+            // whirling around its vertical axis like a placard hit by wind,
+            // then it wobbles back to rest (720° = lands facing front)
             gsap
               .timeline()
               .to(".hero-card-wrap", {
-                y: -10,
-                rotation: 0.5,
-                transformOrigin: "bottom center",
-                duration: 0.16,
-                ease: "power2.out",
+                transformPerspective: 1600,
+                rotationY: 620,
+                duration: 1.15,
+                ease: "power2.in",
                 overwrite: "auto",
               })
               .to(".hero-card-wrap", {
-                y: 0,
-                rotation: 0,
-                duration: 0.7,
-                ease: "elastic.out(1, 0.45)",
-              });
+                rotationY: 720,
+                duration: 1.1,
+                ease: "elastic.out(1, 0.35)",
+              })
+              .set(".hero-card-wrap", { rotationY: 0, clearProps: "transformPerspective" });
             const stub = sectionRef.current?.querySelector(".hero-stub");
             if (stub) {
               gsap.fromTo(
@@ -236,6 +237,46 @@ export default function HeroSection() {
                 clearProps: "backgroundColor,color",
               },
             );
+            // Snap! — the titles get highlighted like marker strokes
+            gsap.fromTo(
+              ".row-title",
+              { backgroundColor: "rgba(202,255,67,0)" },
+              {
+                backgroundColor: "#CAFF43",
+                duration: 0.3,
+                stagger: { each: 0.16, from: "end" },
+                yoyo: true,
+                repeat: 1,
+                repeatDelay: 0.5,
+                clearProps: "backgroundColor",
+              },
+            );
+          } else if (zone === "cv-artifact") {
+            // Flashlight scan: the CV glows lime under the beam and
+            // straightens slightly, as if held up to the light
+            gsap
+              .timeline()
+              .to(".hero-artifact-wrap", {
+                scale: 1.04,
+                filter: "drop-shadow(0 0 28px rgba(202,255,67,0.5))",
+                duration: 0.4,
+                ease: "power2.out",
+                overwrite: "auto",
+              })
+              .to(".hero-artifact-wrap", {
+                rotate: "-=1.5",
+                duration: 0.5,
+                yoyo: true,
+                repeat: 1,
+                ease: "sine.inOut",
+              })
+              .to(".hero-artifact-wrap", {
+                scale: 1,
+                filter: "drop-shadow(0 0 0px rgba(202,255,67,0))",
+                duration: 0.6,
+                ease: "power2.inOut",
+                clearProps: "filter",
+              });
           } else if (zone === "hero-stamp") {
             gsap.fromTo(
               ".hero-stamp",
@@ -717,7 +758,7 @@ export default function HeroSection() {
                     </span>
                   </p>
                   <p className="flex items-center justify-end gap-3">
-                    <span className="font-display text-3xl font-extrabold leading-none tracking-tight text-[#141414] transition-transform duration-300 group-hover:-translate-x-1 2xl:text-4xl">
+                    <span className="row-title rounded-md px-1.5 font-display text-3xl font-extrabold leading-none tracking-tight text-[#141414] transition-transform duration-300 group-hover:-translate-x-1 2xl:text-4xl">
                       {row.title}
                     </span>
                     <ArrowRight
@@ -736,7 +777,10 @@ export default function HeroSection() {
           {/* CV artifact straddling the card's right edge (lg+) — the hero's
               featured animation now that the RAG graph lives in its own
               section below; slightly scaled up to own the open space */}
-          <div className="pointer-events-none absolute left-[62%] top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 scale-105 lg:block xl:left-[760px] xl:scale-[1.18]">
+          <div
+            data-mascot-zone="cv-artifact"
+            className="pointer-events-none absolute left-[62%] top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 scale-105 lg:block xl:left-[760px] xl:scale-[1.18]"
+          >
             {/* Ornament behind the CV: dashed scan rings + plus marks */}
             <svg
               aria-hidden="true"
@@ -785,7 +829,7 @@ export default function HeroSection() {
                 fill="rgba(17,17,17,0.2)"
               />
             </svg>
-            <div className="pointer-events-auto">
+            <div className="hero-artifact-wrap pointer-events-auto">
               <HeroCvArtifact />
             </div>
           </div>

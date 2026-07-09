@@ -54,7 +54,12 @@ export default function HeroMascot() {
         const legL = char.querySelector<SVGGElement>(".m-leg-l")!;
         const legR = char.querySelector<SVGGElement>(".m-leg-r")!;
         const arm = char.querySelector<SVGGElement>(".m-arm")!;
+        const cape = char.querySelector<SVGPathElement>(".m-cape")!;
+        const torch = char.querySelector<SVGGElement>(".m-torch")!;
+        const spark = char.querySelector<SVGPathElement>(".m-spark")!;
         const pupils = char.querySelectorAll<SVGGElement>(".m-pupil");
+        gsap.set(cape, { transformOrigin: "100% 12%" });
+        gsap.set(spark, { transformOrigin: "50% 50%" });
 
         const CHAR_W = 64;
         const maxX = () => Math.max(root.clientWidth - CHAR_W - 32, 200);
@@ -134,6 +139,9 @@ export default function HeroMascot() {
 
         const drop = { t: 0 };
         const SWAYS = 2.6; // how many half-arcs on the way down
+        // A dropped sheet lies FLAT: horizontal base pose, the sway only
+        // rocks it a little around that plane
+        gsap.set(flip, { transformOrigin: "50% 55%" });
         gsap
           .timeline()
           .to(drop, {
@@ -149,15 +157,22 @@ export default function HeroMascot() {
                   -dropHeight * (1 - t) +
                   Math.sin(t * Math.PI * SWAYS * 2) * 7 * decay,
               });
-              // bank into the swing (fastest sideways = most tilted)
+              // lying horizontal, rocking into each swing
               gsap.set(flip, {
-                rotation: Math.cos(t * Math.PI * SWAYS) * 24 * decay,
+                rotation: -86 + Math.cos(t * Math.PI * SWAYS) * 16 * decay,
               });
             },
           })
-          // Flop on landing: squash, dust, legs down
+          // Flop on landing: swing upright onto the feet, squash, dust
           .add(() => puff(dropAnchorX + CHAR_W / 2, 84))
-          .to(flip, { scaleY: 0.8, y: 5, rotation: -5, duration: 0.11, ease: "power2.in" })
+          .to(flip, {
+            rotation: 0,
+            scaleY: 0.8,
+            y: 5,
+            transformOrigin: "50% 100%",
+            duration: 0.22,
+            ease: "power2.in",
+          })
           .to(flip, { scaleY: 1, y: 0, rotation: 0, duration: 0.35, ease: "back.out(2.2)" })
           .set([legL, legR], { rotation: 0 })
           // Dust itself off, then walk to the card's corner
@@ -236,16 +251,25 @@ export default function HeroMascot() {
           const ascend = { t: 0 };
           const fall = { t: 0 };
 
-          gsap
-            .timeline({
-              onComplete: () => {
-                dangle.kill();
-                gsap.set([legL, legR], { rotation: 0 });
-                gsap.to(pupils, { x: 0, y: 0, duration: 0.3 });
-                patrol.resume();
-                visiting = false;
-              },
-            })
+          // Zone-specific gesture at the moment of contact
+          const gesture =
+            zone === "cv-artifact"
+              ? "torch"
+              : zone === "hero-rows"
+                ? "snap"
+                : "tap";
+
+          const tl = gsap.timeline({
+            onComplete: () => {
+              dangle.kill();
+              gsap.set([legL, legR], { rotation: 0 });
+              gsap.to(pupils, { x: 0, y: 0, duration: 0.3 });
+              patrol.resume();
+              visiting = false;
+            },
+          });
+
+          tl
             // Anticipation: crouch, eyes lock onto the target, then launch
             .to(flip, { scaleY: 0.8, y: 6, duration: 0.16, ease: "power2.in" })
             .add(() =>
@@ -263,6 +287,31 @@ export default function HeroMascot() {
               ease: "power2.out",
             })
             .to(flip, { scaleY: 1, duration: 0.2 }, "<0.08")
+            // SUPERMAN: body tips horizontal into the flight direction, the
+            // leading arm punches out past the head, the cape streams back
+            .set(flip, { transformOrigin: "50% 55%" })
+            .to(
+              arm,
+              {
+                rotation: -158,
+                transformOrigin: "top center",
+                duration: 0.28,
+                ease: "power2.out",
+              },
+              "<",
+            )
+            .to(cape, { rotation: 42, scaleY: 1.35, duration: 0.3 }, "<")
+            .to(
+              cape,
+              {
+                rotation: 30,
+                duration: 0.16,
+                yoyo: true,
+                repeat: 7,
+                ease: "sine.inOut",
+              },
+              "<0.3",
+            )
             // Swooping ascent along the bezier, wobble fading as it homes in
             .to(
               ascend,
@@ -281,39 +330,78 @@ export default function HeroMascot() {
                     x: bezierX + wobble * 0.35,
                     y: bezierY + wobble,
                   });
+                  // horizontal superman pose + a light aerodynamic rock;
+                  // eases back toward upright as it arrives
                   gsap.set(flip, {
                     rotation:
-                      Math.cos(t * Math.PI * 3.2) * 10 * (0.35 + inv * 0.65),
+                      76 * flightDir * (0.25 + inv * 0.75) +
+                      Math.cos(t * Math.PI * 3.2) * 7 * inv,
                   });
                 },
               },
               "<",
             )
-            // Contact: lunge into the element — the effect fires at the
-            // exact frame the tap lands, with a dust puff at the head
-            .to(flip, { y: -10, duration: 0.12, ease: "power3.out" })
-            .add(() => {
-              window.dispatchEvent(
-                new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
-              );
-              puff(targetX + CHAR_W / 2, targetY + 4, 1.2);
-            })
-            .to(flip, {
-              rotation: -14,
-              y: -4,
-              duration: 0.16,
-              yoyo: true,
-              repeat: 1,
-              ease: "power2.out",
-            })
-            .to(arm, {
-              rotation: -110,
+            // Arrive: swing upright, cape settles, arm comes down
+            .to(flip, { rotation: 0, duration: 0.22, ease: "back.out(1.8)" })
+            .to(cape, { rotation: 0, scaleY: 1, duration: 0.3, overwrite: "auto" }, "<")
+            .to(arm, { rotation: 0, duration: 0.2 }, "<");
+
+          // ---- Contact gesture (the zone event fires mid-gesture) ----
+          const touch = () => {
+            window.dispatchEvent(
+              new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
+            );
+            puff(targetX + CHAR_W / 2, targetY + 4, 1.2);
+          };
+
+          if (gesture === "torch") {
+            // Pull out the flashlight and sweep its beam over the CV
+            tl.to(torch, { opacity: 1, duration: 0.18 })
+              .add(touch)
+              .to(torch, {
+                rotation: -16,
+                transformOrigin: "58px 48px",
+                duration: 0.5,
+                yoyo: true,
+                repeat: 2,
+                ease: "sine.inOut",
+              })
+              .to(torch, { opacity: 0, duration: 0.25 });
+          } else if (gesture === "snap") {
+            // Snap the fingers — spark! — and the rows light up
+            tl.to(arm, {
+              rotation: -128,
               transformOrigin: "top center",
-              duration: 0.2,
-              yoyo: true,
-              repeat: 1,
-              ease: "back.out(2)",
+              duration: 0.16,
+              ease: "power3.out",
             })
+              .add(touch)
+              .to(spark, { opacity: 1, scale: 1.7, duration: 0.12, ease: "power2.out" })
+              .to(spark, { opacity: 0, scale: 0.5, duration: 0.28 })
+              .to(arm, { rotation: 0, duration: 0.22 }, "<");
+          } else {
+            // Default: lunge in and tap
+            tl.to(flip, { y: -10, duration: 0.12, ease: "power3.out" })
+              .add(touch)
+              .to(flip, {
+                rotation: -14,
+                y: -4,
+                duration: 0.16,
+                yoyo: true,
+                repeat: 1,
+                ease: "power2.out",
+              })
+              .to(arm, {
+                rotation: -110,
+                transformOrigin: "top center",
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1,
+                ease: "back.out(2)",
+              });
+          }
+
+          tl
             // Delighted double-hop: the effect it just triggered is playing
             .to(flip, {
               y: -7,
@@ -322,35 +410,34 @@ export default function HeroMascot() {
               yoyo: true,
               repeat: 3,
             })
-            // Let go and fall like a sheet of paper (decaying sways)
-            .to(
-              fall,
-              {
-                t: 1,
-                duration: 1.4,
-                ease: "sine.in",
-                onUpdate: () => {
-                  const t = fall.t;
-                  const decay = 1 - t * 0.45;
-                  gsap.set(char, {
-                    x: targetX + Math.sin(t * Math.PI * 2) * 30 * decay,
-                    y:
-                      targetY * (1 - t) +
-                      Math.sin(t * Math.PI * 4) * 5 * decay,
-                  });
-                  gsap.set(flip, {
-                    rotation: Math.cos(t * Math.PI * 2) * 14 * decay,
-                  });
-                },
+            // Let go and fall like a sheet of paper — lying flat on its
+            // back, rocking with each decaying sway
+            .set(flip, { transformOrigin: "50% 55%" }, "+=0.45")
+            .to(fall, {
+              t: 1,
+              duration: 1.4,
+              ease: "sine.in",
+              onUpdate: () => {
+                const t = fall.t;
+                const decay = 1 - t * 0.45;
+                gsap.set(char, {
+                  x: targetX + Math.sin(t * Math.PI * 2) * 30 * decay,
+                  y:
+                    targetY * (1 - t) +
+                    Math.sin(t * Math.PI * 4) * 5 * decay,
+                });
+                gsap.set(flip, {
+                  rotation: -86 + Math.cos(t * Math.PI * 2) * 13 * decay,
+                });
               },
-              "+=0.45",
-            )
-            // Landing: squash into the floor with a dust puff, pop back up
+            })
+            // Landing: swing upright onto the feet, squash with a dust puff
             .to(flip, {
               scaleY: 0.84,
               y: 4,
               rotation: 0,
-              duration: 0.1,
+              transformOrigin: "50% 100%",
+              duration: 0.2,
               ease: "power2.in",
             })
             .add(() => puff(targetX + CHAR_W / 2, 84))
@@ -514,15 +601,24 @@ export default function HeroMascot() {
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-x-0 bottom-[34px] z-50 hidden h-24 md:block"
+      className="pointer-events-none fixed inset-x-0 bottom-[34px] z-[90] hidden h-24 md:block"
     >
       <div
         ref={charRef}
         className="pointer-events-auto absolute bottom-0 cursor-pointer select-none"
         style={{ width: 64, height: 88 }}
       >
+        {/* overflow-visible everywhere: rotated poses (superman flight,
+            horizontal paper-fall) swing the artwork outside the 64×88 box —
+            the svg viewport must never clip the head/cape */}
         <div className="m-flip origin-bottom">
-          <svg width="64" height="88" viewBox="0 0 64 88" fill="none">
+          <svg
+            width="64"
+            height="88"
+            viewBox="0 0 64 88"
+            fill="none"
+            className="overflow-visible"
+          >
             {/* Legs */}
             <g className="m-leg-l">
               <rect
@@ -553,8 +649,42 @@ export default function HeroMascot() {
               <circle cx="57.6" cy="50" r="2.6" fill={INK} />
             </g>
 
+            {/* Flashlight + beam — shown only while "scanning" the CV */}
+            <g className="m-torch" opacity="0">
+              <polygon
+                points="60,44 108,6 118,28 66,56"
+                fill="rgba(202,255,67,0.32)"
+              />
+              <rect
+                x="53"
+                y="42"
+                width="10"
+                height="13"
+                rx="2.5"
+                fill={INK}
+                transform="rotate(-38 58 48)"
+              />
+            </g>
+
+            {/* Finger-snap spark — flashes when it snaps at the rows */}
+            <path
+              className="m-spark"
+              d="M60 34 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4 Z"
+              fill="#CAFF43"
+              stroke={INK}
+              strokeWidth="1.2"
+              opacity="0"
+            />
+
             {/* Paper body */}
             <g className="m-body">
+              {/* Superhero cape — behind the sheet, flutters in flight */}
+              <path
+                className="m-cape"
+                d="M13 20 C -10 28 -14 48 -4 64 C 1 52 5 38 14 31 Z"
+                fill={INK}
+                opacity="0.88"
+              />
               <rect
                 x="6"
                 y="2"
