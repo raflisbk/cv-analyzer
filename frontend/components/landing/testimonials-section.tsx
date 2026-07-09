@@ -83,7 +83,7 @@ export default function TestimonialsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="snap-section" style={{ background: "#141414" }}>
+    <section id="testimonials" ref={sectionRef} className="snap-section" style={{ background: "#141414" }}>
       <div className="flex-1 flex items-center overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 md:px-8 w-full">
           <div className="testimonials-heading mb-10 text-center">

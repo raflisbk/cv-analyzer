@@ -100,6 +100,7 @@ export default function ProductsSection() {
 
   return (
     <section
+      id="products"
       ref={sectionRef}
       className="snap-section"
       style={{

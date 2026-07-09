@@ -85,6 +85,7 @@ export default function FeaturesSection() {
 
   return (
     <section
+      id="features"
       ref={sectionRef}
       aria-labelledby="features-heading"
       className="snap-section bg-[#F5F2D8]"

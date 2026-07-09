@@ -183,6 +183,7 @@ export default function StatsSection() {
 
   return (
     <section
+      id="stats"
       ref={sectionRef}
       className="snap-section"
       style={{

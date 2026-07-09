@@ -209,6 +209,7 @@ export default function HowItWorksSection() {
 
   return (
     <section
+      id="how-it-works"
       ref={sectionRef}
       aria-labelledby="hiws-heading"
       className="snap-section bg-[#F5F2D8]"

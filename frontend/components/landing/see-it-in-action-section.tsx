@@ -168,6 +168,7 @@ export default function SeeItInActionSection() {
 
   return (
     <section
+      id="see-it-in-action"
       ref={sectionRef}
       aria-labelledby="sia-heading"
       className="snap-section bg-[#F5F2D8]"
