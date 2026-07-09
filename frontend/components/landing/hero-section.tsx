@@ -173,36 +173,94 @@ export default function HeroSection() {
         const onMascotZone = (event: Event) => {
           const zone = (event as CustomEvent).detail?.zone;
           if (zone === "card-stub") {
-            // Street-sign spin: the tap sends the whole boarding pass
-            // whirling around its vertical axis like a placard hit by wind,
-            // then it wobbles back to rest (720° = lands facing front)
+            // The punch lands on the card's right edge: one continuous
+            // impulse — shoved sideways while whirling like a placard hit
+            // by a fist (3 turns, expo decay = hard strike + friction, no
+            // eased-tween seams), drifting past front, settling elastically,
+            // all while rocking on its hanging axis. The barcode scan only
+            // resumes once the card has stopped spinning.
             gsap
               .timeline()
+              // impact shove + spin impulse land on the same frame
               .to(".hero-card-wrap", {
-                transformPerspective: 1600,
-                rotationY: 620,
-                duration: 1.15,
-                ease: "power2.in",
+                x: -16,
+                duration: 0.09,
+                ease: "power3.out",
                 overwrite: "auto",
               })
+              .to(
+                ".hero-card-wrap",
+                { x: 0, duration: 1.5, ease: "elastic.out(1, 0.32)" },
+                0.09,
+              )
+              .to(
+                ".hero-card-wrap",
+                {
+                  transformPerspective: 1600,
+                  rotationY: 1046,
+                  duration: 2.4,
+                  ease: "expo.out",
+                },
+                0,
+              )
+              // momentum carries it just past front...
               .to(".hero-card-wrap", {
-                rotationY: 720,
-                duration: 1.1,
-                ease: "elastic.out(1, 0.35)",
+                rotationY: 1088,
+                duration: 0.45,
+                ease: "power1.inOut",
               })
-              .set(".hero-card-wrap", { rotationY: 0, clearProps: "transformPerspective" });
+              // ...and it swings back to rest (1080° ≡ facing front)
+              .to(".hero-card-wrap", {
+                rotationY: 1080,
+                duration: 1.0,
+                ease: "elastic.out(1, 0.25)",
+              })
+              .set(".hero-card-wrap", {
+                rotationY: 0,
+                clearProps: "transformPerspective",
+              });
+            // Hanging-axis rock, decaying alongside the spin
+            gsap
+              .timeline({ delay: 0.09 })
+              .to(".hero-card-wrap", {
+                rotation: 1.3,
+                transformOrigin: "top center",
+                duration: 0.38,
+                ease: "sine.inOut",
+              })
+              .to(".hero-card-wrap", {
+                rotation: -0.9,
+                duration: 0.42,
+                ease: "sine.inOut",
+              })
+              .to(".hero-card-wrap", {
+                rotation: 0.5,
+                duration: 0.46,
+                ease: "sine.inOut",
+              })
+              .to(".hero-card-wrap", {
+                rotation: 0,
+                duration: 0.6,
+                ease: "sine.out",
+              });
+            // Boarding resumes after the whirl dies down
             const stub = sectionRef.current?.querySelector(".hero-stub");
             if (stub) {
               gsap.fromTo(
                 ".hero-stub-sweep",
                 { x: 0 },
-                { x: stub.clientWidth + 160, duration: 0.9, ease: "power2.inOut" },
+                {
+                  x: stub.clientWidth + 160,
+                  duration: 0.9,
+                  ease: "power2.inOut",
+                  delay: 2.5,
+                },
               );
             }
             gsap.fromTo(
               ".hero-dot",
               { scale: 1 },
-              { scale: 2, duration: 0.14, yoyo: true, repeat: 5 },
+              { scale: 2, duration: 0.14, yoyo: true, repeat: 5, delay: 2.5 },
             );
           } else if (zone === "hero-rows") {
             // Domino from the BOTTOM row — the mascot taps the block from

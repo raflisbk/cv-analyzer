@@ -106,6 +106,24 @@ export default function HeroMascot() {
         });
         const walkTweens = [bob, stepL, stepR];
 
+        // Expanding shockwave ring for hard impacts (the punch)
+        const impactRing = (leftPx: number, topPx: number) => {
+          const ring = document.createElement("span");
+          ring.style.cssText = `position:absolute;left:${leftPx - 20}px;top:${topPx - 20}px;width:40px;height:40px;border:3px solid rgba(17,17,17,0.55);border-radius:50%;pointer-events:none;`;
+          root.appendChild(ring);
+          gsap.fromTo(
+            ring,
+            { scale: 0.2, opacity: 1 },
+            {
+              scale: 1.8,
+              opacity: 0,
+              duration: 0.55,
+              ease: "power2.out",
+              onComplete: () => ring.remove(),
+            },
+          );
+        };
+
         // Little ink-dust burst at a root-relative point — spawned at every
         // physical contact (kick, tap, landing) so touches read as real
         const puff = (leftPx: number, topPx: number, strength = 1) => {
@@ -214,8 +232,15 @@ export default function HeroMascot() {
 
           const rect = el.getBoundingClientRect();
           const rootRect = root.getBoundingClientRect();
+          // The punch (card-stub) is thrown at the card's RIGHT EDGE so the
+          // strike visibly torques it into the spin; everything else hovers
+          // at the element's center
+          const anchorX =
+            zone === "card-stub"
+              ? rect.right - CHAR_W * 0.15
+              : rect.left + rect.width / 2 - CHAR_W / 2;
           const targetX = Math.min(
-            Math.max(rect.left + rect.width / 2 - CHAR_W / 2, 8),
+            Math.max(anchorX, 8),
             root.clientWidth - CHAR_W - 8,
           );
           // Hover with the paper's top edge kissing the element's bottom
@@ -253,11 +278,13 @@ export default function HeroMascot() {
 
           // Zone-specific gesture at the moment of contact
           const gesture =
-            zone === "cv-artifact"
-              ? "torch"
-              : zone === "hero-rows"
-                ? "snap"
-                : "tap";
+            zone === "card-stub"
+              ? "punch"
+              : zone === "cv-artifact"
+                ? "torch"
+                : zone === "hero-rows"
+                  ? "snap"
+                  : "tap";
 
           const tl = gsap.timeline({
             onComplete: () => {
@@ -289,7 +316,11 @@ export default function HeroMascot() {
             .to(flip, { scaleY: 1, duration: 0.2 }, "<0.08")
             // SUPERMAN: body tips horizontal into the flight direction, the
             // leading arm punches out past the head, the cape streams back
-            .set(flip, { transformOrigin: "50% 55%" })
+            // (facing is set explicitly — the tick won't flip it mid-visit)
+            .set(flip, {
+              transformOrigin: "50% 55%",
+              scaleX: flightDir < 0 ? -1 : 1,
+            })
             .to(
               arm,
               {
@@ -354,7 +385,66 @@ export default function HeroMascot() {
             puff(targetX + CHAR_W / 2, targetY + 4, 1.2);
           };
 
-          if (gesture === "torch") {
+          if (gesture === "punch") {
+            // Square up to the card (it's on the left), WIND UP — torso
+            // twists away, fist cocked, a beat of anticipation — then a
+            // straight cross into the card's edge. The zone event fires on
+            // the exact impact frame; the reaction shoves the mascot back.
+            const punchX = targetX - 10;
+            const punchY = targetY + 42;
+            tl.set(flip, { scaleX: -1 })
+              .to(flip, { rotation: 10, duration: 0.24, ease: "power2.out" })
+              .to(char, { x: "+=9", duration: 0.24, ease: "power2.out" }, "<")
+              .to(
+                arm,
+                {
+                  rotation: 42,
+                  transformOrigin: "top center",
+                  duration: 0.22,
+                  ease: "power2.out",
+                },
+                "<",
+              )
+              .to(flip, { scaleY: 0.93, duration: 0.12, ease: "power2.in" }, "<0.1")
+              // ...hold the wind-up for a beat...
+              .to(flip, { rotation: 12, duration: 0.18, ease: "sine.inOut" }, "+=0.15")
+              // STRIKE
+              .to(char, { x: "-=32", duration: 0.09, ease: "power4.in" })
+              .to(
+                flip,
+                { rotation: -7, scaleY: 1.03, duration: 0.09, ease: "power4.in" },
+                "<",
+              )
+              .to(
+                arm,
+                { rotation: -96, duration: 0.07, ease: "power4.in" },
+                "<",
+              )
+              .add(() => {
+                window.dispatchEvent(
+                  new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
+                );
+                impactRing(punchX, punchY);
+                puff(punchX, punchY, 1.7);
+              })
+              // Recoil: Newton pushes back — shoved away, wobbling
+              .to(char, { x: "+=23", duration: 0.55, ease: "power3.out" })
+              .to(
+                flip,
+                { rotation: 7, duration: 0.45, ease: "elastic.out(1, 0.4)" },
+                "<",
+              )
+              .to(arm, { rotation: 0, duration: 0.3, ease: "power2.inOut" }, "<0.12")
+              .to(flip, { rotation: 0, duration: 0.35, ease: "sine.out" })
+              // Eyes chase the card whirling around in front of it
+              .to(pupils, {
+                x: -2.2,
+                duration: 0.32,
+                yoyo: true,
+                repeat: 5,
+                ease: "sine.inOut",
+              });
+          } else if (gesture === "torch") {
             // Pull out the flashlight and sweep its beam over the CV
             tl.to(torch, { opacity: 1, duration: 0.18 })
               .add(touch)
@@ -466,7 +556,9 @@ export default function HeroMascot() {
         const zoneCooldown = new Map<string, number>();
         const tick = () => {
           const x = Number(gsap.getProperty(char, "x"));
-          if (Math.abs(x - lastX) > 0.1) {
+          // While visiting, facing is choreographed (e.g. squared up to the
+          // card for the punch) — movement must not flip it mid-gesture
+          if (!visiting && Math.abs(x - lastX) > 0.1) {
             gsap.set(flip, { scaleX: x > lastX ? 1 : -1 });
           }
           lastX = x;
