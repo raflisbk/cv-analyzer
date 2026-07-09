@@ -40,33 +40,74 @@ export default function HeroSection() {
       mm = media;
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
-        // Editorial per-line reveal: lines slide up out of clipped wrappers.
-        gsap.from(".hero-line", {
-          yPercent: 115,
-          duration: 1.05,
-          ease: "power4.out",
-          stagger: 0.1,
-          delay: 0.15,
-        });
+        // Master reveal: the boarding pass "prints" (card rises, barcode
+        // prints left→right), then headline/copy/CTAs. Starts when the
+        // mascot kicks the card (MASCOT_KICK_EVENT) — or after a fallback
+        // timeout on viewports where the mascot is hidden.
+        const intro = gsap
+          .timeline({ paused: true })
+          .from(".hero-card-wrap", {
+            y: 90,
+            opacity: 0,
+            rotation: -1.2,
+            transformOrigin: "bottom left",
+            duration: 0.8,
+            ease: "power3.out",
+          })
+          .fromTo(
+            ".hero-barcode",
+            { scaleX: 0 },
+            {
+              scaleX: 1,
+              duration: 0.5,
+              ease: "power2.inOut",
+              transformOrigin: "left center",
+            },
+            "-=0.25",
+          )
+          .from(
+            ".hero-line",
+            {
+              yPercent: 115,
+              duration: 1.05,
+              ease: "power4.out",
+              stagger: 0.1,
+            },
+            "-=0.55",
+          )
+          .from(
+            ".hero-fade",
+            {
+              opacity: 0,
+              y: 24,
+              duration: 0.9,
+              ease: "power3.out",
+              stagger: 0.1,
+            },
+            "-=0.8",
+          )
+          .from(
+            ".hero-cta",
+            {
+              opacity: 0,
+              y: 16,
+              scale: 0.96,
+              duration: 0.7,
+              ease: "back.out(1.4)",
+              stagger: 0.08,
+            },
+            "-=0.9",
+          );
 
-        gsap.from(".hero-fade", {
-          opacity: 0,
-          y: 24,
-          duration: 0.9,
-          ease: "power3.out",
-          stagger: 0.1,
-          delay: 0.55,
-        });
-
-        gsap.from(".hero-cta", {
-          opacity: 0,
-          y: 16,
-          scale: 0.96,
-          duration: 0.7,
-          ease: "back.out(1.4)",
-          stagger: 0.08,
-          delay: 0.8,
-        });
+        let started = false;
+        const startIntro = () => {
+          if (!started) {
+            started = true;
+            intro.play();
+          }
+        };
+        window.addEventListener("pathkr:mascot-kick", startIntro);
+        const fallback = window.setTimeout(startIntro, 2600);
 
         // The mascot conducts these zones when it walks under them
         const onMascotZone = (event: Event) => {
@@ -133,6 +174,8 @@ export default function HeroSection() {
         window.addEventListener("pathkr:mascot-zone", onMascotZone);
         return () => {
           window.removeEventListener("pathkr:mascot-zone", onMascotZone);
+          window.removeEventListener("pathkr:mascot-kick", startIntro);
+          window.clearTimeout(fallback);
         };
       });
     });
@@ -211,7 +254,7 @@ export default function HeroSection() {
               + perforation line above the marquee "tear-off stub".
               Shadow lives on the unmasked wrapper (the mask would clip it). */}
           <div
-            className="relative w-full rounded-2xl"
+            className="hero-card-wrap relative w-full rounded-2xl"
             style={{ boxShadow: "0 12px 64px rgba(0,0,0,0.18)" }}
           >
             <div
@@ -379,7 +422,7 @@ export default function HeroSection() {
                     row's min-content never widens the card past the viewport */}
                 <div
                   aria-hidden="true"
-                  className="hidden h-5 w-24 flex-none opacity-45 sm:block"
+                  className="hero-barcode hidden h-5 w-24 flex-none opacity-45 sm:block"
                   style={{
                     background:
                       "repeating-linear-gradient(90deg, #F5F2D8 0 2px, transparent 2px 4px, #F5F2D8 4px 5px, transparent 5px 9px, #F5F2D8 9px 12px, transparent 12px 14px, #F5F2D8 14px 15px, transparent 15px 18px)",

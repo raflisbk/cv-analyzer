@@ -19,6 +19,10 @@ import { loadGsap } from "@/lib/gsap-loader";
    Hidden on mobile; does nothing under prefers-reduced-motion (static pose). */
 
 export const MASCOT_ZONE_EVENT = "pathkr:mascot-zone";
+/* Fired once, the moment the mascot kicks the hero card during its walk-in
+   intro — the hero's master reveal timeline starts on this signal (with a
+   timeout fallback for mobile, where the mascot is hidden) */
+export const MASCOT_KICK_EVENT = "pathkr:mascot-kick";
 const ZONE_COOLDOWN_MS = 6000;
 const ZONE_SCAN_MS = 250;
 const INK = "#141414";
@@ -54,11 +58,18 @@ export default function HeroMascot() {
         const CHAR_W = 64;
         const maxX = () => Math.max(root.clientWidth - CHAR_W - 32, 200);
 
-        // Patrol walk, left <-> right
+        // Patrol walk, left <-> right — starts after the walk-in intro
         const patrol = gsap.fromTo(
           char,
           { x: 16 },
-          { x: maxX, duration: 30, ease: "none", yoyo: true, repeat: -1 },
+          {
+            x: maxX,
+            duration: 30,
+            ease: "none",
+            yoyo: true,
+            repeat: -1,
+            paused: true,
+          },
         );
         const resizeObserver = new ResizeObserver(() => patrol.invalidate());
         resizeObserver.observe(root);
@@ -88,6 +99,33 @@ export default function HeroMascot() {
           ease: "sine.inOut",
         });
         const walkTweens = [bob, stepL, stepR];
+
+        // Walk-in intro: enter from off-screen left, stop at the hero card's
+        // corner, kick it awake (fires MASCOT_KICK_EVENT — the hero's reveal
+        // timeline starts on it), then begin patrolling
+        gsap.set(char, { x: -80 });
+        gsap
+          .timeline()
+          .to(char, { x: 16, duration: 1.5, ease: "power1.inOut" })
+          .add(() => {
+            walkTweens.forEach((tween) => tween.pause());
+            gsap.set([legL, legR], { rotation: 0 });
+          })
+          .to(flip, { rotation: -8, y: 2, duration: 0.16, ease: "power2.in" })
+          .to(legR, {
+            rotation: -70,
+            duration: 0.12,
+            ease: "power3.out",
+            transformOrigin: "top center",
+          })
+          .add(() => window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT)))
+          .to(flip, { rotation: 4, y: -6, duration: 0.18, ease: "power2.out" }, "<")
+          .to(legR, { rotation: 0, duration: 0.25, ease: "power2.inOut" })
+          .to(flip, { rotation: 0, y: 0, duration: 0.25, ease: "bounce.out" }, "<")
+          .add(() => {
+            walkTweens.forEach((tween) => tween.resume());
+            patrol.play();
+          });
 
         const wave = () => {
           gsap
