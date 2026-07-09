@@ -58,7 +58,8 @@ export default function HeroMascot() {
         const torch = char.querySelector<SVGGElement>(".m-torch")!;
         const spark = char.querySelector<SVGPathElement>(".m-spark")!;
         const pupils = char.querySelectorAll<SVGGElement>(".m-pupil");
-        gsap.set(cape, { transformOrigin: "100% 12%" });
+        // Cape pivots where it attaches: the neck (top center)
+        gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
 
         const CHAR_W = 64;
@@ -104,7 +105,63 @@ export default function HeroMascot() {
           repeat: -1,
           ease: "sine.inOut",
         });
-        const walkTweens = [bob, stepL, stepR];
+        // Cape sways gently with the walk cycle
+        const capeSway = gsap.to(cape, {
+          rotation: 4,
+          duration: 0.44,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+        });
+        const walkTweens = [bob, stepL, stepR, capeSway];
+
+        // Falling-paper physics: real dropped sheets don't drift in a sine —
+        // each swing is a U-shaped glide: stall at the edge (slow, high),
+        // dive down-and-across gaining speed, then lift pulls the sheet UP
+        // at the far side into the next stall, where it flips tilt and
+        // glides back. `pts` are the stall x-positions (last one = where it
+        // lands); y drops linearly across the whole fall with a U-dip per
+        // swing; pitch noses down into each dive, flat at the stalls.
+        const paperFall = (opts: {
+          pts: number[];
+          startY: number;
+          endY: number;
+          uDepth: number;
+          tilt: number;
+          duration: number;
+        }) => {
+          const proxy = { t: 0 };
+          const swings = opts.pts.length - 1;
+          return gsap.to(proxy, {
+            t: 1,
+            duration: opts.duration,
+            ease: "none",
+            onUpdate: () => {
+              const gt = proxy.t * swings;
+              const i = Math.min(Math.floor(gt), swings - 1);
+              const lt = gt - i;
+              // slow-fast-slow across the swing (stall → dive → stall)
+              const glide = 0.5 - 0.5 * Math.cos(Math.PI * lt);
+              const x0 = opts.pts[i];
+              const x1 = opts.pts[i + 1];
+              const dir = Math.sign(x1 - x0) || 1;
+              // final glide: the dive flattens out (ground effect) so the
+              // sheet never plunges through the floor
+              const dipScale = i === swings - 1 ? 1 - lt : 1;
+              const y = Math.min(
+                opts.startY +
+                  ((opts.endY - opts.startY) * gt) / swings +
+                  opts.uDepth * Math.sin(Math.PI * lt) * dipScale,
+                0,
+              );
+              gsap.set(char, { x: x0 + (x1 - x0) * glide, y });
+              // lying flat, nosing down into the dive, level at the stalls
+              gsap.set(flip, {
+                rotation: -86 + dir * opts.tilt * Math.sin(Math.PI * lt),
+              });
+            },
+          });
+        };
 
         // Expanding shockwave ring for hard impacts (the punch)
         const impactRing = (leftPx: number, topPx: number) => {
@@ -153,36 +210,48 @@ export default function HeroMascot() {
         gsap.set([legL, legR], { rotation: 14 });
         const dropHeight = Math.max(root.getBoundingClientRect().top + 60, 300);
         const dropAnchorX = 150;
-        gsap.set(char, { x: dropAnchorX, y: -dropHeight });
+        // start at the first stall point of the paper-fall (thrown in
+        // slightly right of where it will land)
+        gsap.set(char, { x: dropAnchorX + 75, y: -dropHeight });
 
-        const drop = { t: 0 };
-        const SWAYS = 2.6; // how many half-arcs on the way down
-        // A dropped sheet lies FLAT: horizontal base pose, the sway only
-        // rocks it a little around that plane
+        // A dropped sheet lies FLAT and glides down in U-shaped swoops
         gsap.set(flip, { transformOrigin: "50% 55%" });
+        // Air drag ripples the cape upward the whole way down
+        const introCapeFlutter = gsap.to(cape, {
+          rotation: 15,
+          scaleY: 1.16,
+          duration: 0.28,
+          yoyo: true,
+          repeat: -1,
+          ease: "sine.inOut",
+        });
         gsap
           .timeline()
-          .to(drop, {
-            t: 1,
-            duration: 2.4,
-            ease: "sine.in",
-            onUpdate: () => {
-              const t = drop.t;
-              const decay = 1 - t * 0.55;
-              gsap.set(char, {
-                x: dropAnchorX + Math.sin(t * Math.PI * SWAYS) * 85 * decay,
-                y:
-                  -dropHeight * (1 - t) +
-                  Math.sin(t * Math.PI * SWAYS * 2) * 7 * decay,
-              });
-              // lying horizontal, rocking into each swing
-              gsap.set(flip, {
-                rotation: -86 + Math.cos(t * Math.PI * SWAYS) * 16 * decay,
-              });
-            },
-          })
+          .add(
+            paperFall({
+              // stall points: thrown in from the right of the anchor, three
+              // decaying glides, landing exactly on the anchor
+              pts: [
+                dropAnchorX + 75,
+                dropAnchorX - 100,
+                dropAnchorX + 60,
+                dropAnchorX,
+              ],
+              startY: -dropHeight,
+              endY: 0,
+              // deep enough that lift genuinely raises the sheet at each
+              // stall (needs > dropPerSwing/π to reverse the descent)
+              uDepth: (dropHeight / 3) * 0.42,
+              tilt: 26,
+              duration: 3.4,
+            }),
+          )
           // Flop on landing: swing upright onto the feet, squash, dust
-          .add(() => puff(dropAnchorX + CHAR_W / 2, 84))
+          .add(() => {
+            introCapeFlutter.kill();
+            gsap.set(cape, { rotation: 0, scaleY: 1 });
+            puff(dropAnchorX + CHAR_W / 2, 84);
+          })
           .to(flip, {
             rotation: 0,
             scaleY: 0.8,
@@ -274,7 +343,6 @@ export default function HeroMascot() {
           const controlX = (currentX + targetX) / 2;
           const controlY = targetY - 85;
           const ascend = { t: 0 };
-          const fall = { t: 0 };
 
           // Zone-specific gesture at the moment of contact
           const gesture =
@@ -331,11 +399,11 @@ export default function HeroMascot() {
               },
               "<",
             )
-            .to(cape, { rotation: 42, scaleY: 1.35, duration: 0.3 }, "<")
+            .to(cape, { rotation: 32, scaleY: 1.26, duration: 0.3 }, "<")
             .to(
               cape,
               {
-                rotation: 30,
+                rotation: 20,
                 duration: 0.16,
                 yoyo: true,
                 repeat: 7,
@@ -500,27 +568,30 @@ export default function HeroMascot() {
               yoyo: true,
               repeat: 3,
             })
-            // Let go and fall like a sheet of paper — lying flat on its
-            // back, rocking with each decaying sway
+            // Let go and glide down in U-shaped paper swoops, the cape
+            // rippling upward against the airflow
             .set(flip, { transformOrigin: "50% 55%" }, "+=0.45")
-            .to(fall, {
-              t: 1,
-              duration: 1.4,
-              ease: "sine.in",
-              onUpdate: () => {
-                const t = fall.t;
-                const decay = 1 - t * 0.45;
-                gsap.set(char, {
-                  x: targetX + Math.sin(t * Math.PI * 2) * 30 * decay,
-                  y:
-                    targetY * (1 - t) +
-                    Math.sin(t * Math.PI * 4) * 5 * decay,
-                });
-                gsap.set(flip, {
-                  rotation: -86 + Math.cos(t * Math.PI * 2) * 13 * decay,
-                });
-              },
+            .add(() => {
+              gsap.to(cape, {
+                rotation: 13,
+                scaleY: 1.14,
+                duration: 0.26,
+                yoyo: true,
+                repeat: 7,
+                ease: "sine.inOut",
+              });
             })
+            .add(
+              paperFall({
+                pts: [targetX, targetX - 52, targetX + 34, targetX],
+                startY: targetY,
+                endY: 0,
+                uDepth: (Math.abs(targetY) / 3) * 0.42,
+                tilt: 22,
+                duration: 1.9,
+              }),
+            )
+            .set(cape, { rotation: 0, scaleY: 1 })
             // Landing: swing upright onto the feet, squash with a dust puff
             .to(flip, {
               scaleY: 0.84,
@@ -770,12 +841,23 @@ export default function HeroMascot() {
 
             {/* Paper body */}
             <g className="m-body">
-              {/* Superhero cape — behind the sheet, flutters in flight */}
+              {/* Superhero cape — hangs straight down BEHIND the sheet,
+                  from the neck to ~3/4 of the legs, peeking out on both
+                  sides, with a cloud/wave scalloped hem */}
               <path
                 className="m-cape"
-                d="M13 20 C -10 28 -14 48 -4 64 C 1 52 5 38 14 31 Z"
+                d="M11 16
+                   C 3 28 0 46 2 64
+                   Q 4 74 8 67
+                   Q 12 77 17 68
+                   Q 22 79 27 69
+                   Q 32 79 37 69
+                   Q 42 78 47 68
+                   Q 52 76 56 66
+                   C 60 46 59 28 53 16
+                   Z"
                 fill={INK}
-                opacity="0.88"
+                opacity="0.9"
               />
               <rect
                 x="6"
