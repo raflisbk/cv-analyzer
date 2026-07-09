@@ -61,10 +61,11 @@ export default function HeroMascot() {
         const standG = char.querySelector<SVGGElement>(".m-stand")!;
         const fallG = char.querySelector<SVGGElement>(".m-fall")!;
         const fallCape = char.querySelector<SVGPathElement>(".m-fall-cape")!;
+        const fallLines = char.querySelector<SVGGElement>(".m-fall-lines")!;
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
-        gsap.set(fallG, { transformOrigin: "50% 52%" });
+        gsap.set(fallG, { transformOrigin: "50% 56%" });
         gsap.set(fallCape, { transformOrigin: "50% 100%" });
 
         // Pose swap: falling uses a dedicated asset instead of contorting
@@ -167,13 +168,17 @@ export default function HeroMascot() {
                 0,
               );
               gsap.set(char, { x: x0 + (x1 - x0) * glide, y });
-              // the falling-sheet asset banks into the dive and its U-bow
-              // flexes deepest at full speed (the standing art stays put —
-              // this pose is its own drawing)
+              // THE paper cue is foreshortening: the sheet knifes edge-on
+              // (thin) at full dive speed and opens flat at each stall —
+              // plus banking into the dive and a fast micro-flutter jitter
+              const dive = Math.sin(Math.PI * lt);
               gsap.set(fallG, {
-                rotation: dir * opts.tilt * Math.sin(Math.PI * lt),
-                scaleY: 1 + 0.12 * Math.sin(Math.PI * lt),
+                rotation:
+                  dir * opts.tilt * dive + Math.sin(proxy.t * 55) * 3 * dive,
+                scaleY: 0.24 + 0.76 * Math.abs(Math.cos(Math.PI * lt)),
               });
+              // air rush lines only while diving
+              gsap.set(fallLines, { opacity: dive * 0.85 });
             },
           });
         };
@@ -257,7 +262,9 @@ export default function HeroMascot() {
               // stall (needs > dropPerSwing/π to reverse the descent)
               uDepth: (dropHeight / 3) * 0.42,
               tilt: 26,
-              duration: 3.4,
+              // real paper falls SLOWLY — the leisurely pace is part of
+              // what makes it read as paper
+              duration: 5.2,
             }),
           )
           // Touch down: pop back to the standing pose, squash, dust
@@ -610,7 +617,7 @@ export default function HeroMascot() {
                 endY: 0,
                 uDepth: (Math.abs(targetY) / 3) * 0.42,
                 tilt: 22,
-                duration: 1.9,
+                duration: 2.6,
               }),
             )
             // Touch down: back to the standing pose, squash with a puff
@@ -826,61 +833,106 @@ export default function HeroMascot() {
                  peeking over the edge, cape dragged upward, feet trailing.
                  Swapped in during paperFall, back out on landing. ===== */}
             <g className="m-fall" opacity="0">
-              {/* cape dragged straight up by the airflow, wavy hem on top */}
+              {/* air rush lines above the sheet — fade in during the dive,
+                  gone at the stalls (opacity driven from paperFall) */}
+              <g className="m-fall-lines" opacity="0">
+                <path
+                  d="M12 24 q 3 -9 1 -17"
+                  stroke="rgba(17,17,17,0.4)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M32 20 q 2 -8 0 -15"
+                  stroke="rgba(17,17,17,0.3)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M52 24 q 3 -9 1 -17"
+                  stroke="rgba(17,17,17,0.4)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </g>
+              {/* slim cape ribbon trailing up — small, so the PAPER stays
+                  the star of the silhouette */}
               <path
                 className="m-fall-cape"
-                d="M22 45
-                   C 16 34 14 26 17 15
-                   Q 20 21 23 15
-                   Q 26 22 30 16
-                   Q 33 23 37 17
-                   Q 39 24 42 20
-                   C 44 30 43 38 40 45
-                   Z"
+                d="M28 32 C 26 22 27 14 31 7 Q 33 12 35 8 Q 36 14 39 11 C 40 19 38 26 36 32 Z"
                 fill={INK}
-                opacity="0.9"
+                opacity="0.85"
               />
-              {/* the sheet itself, bowed into a U */}
-              <path
-                d="M4 42 Q 32 60 60 42 L 60 49 Q 32 67 4 49 Z"
+              {/* the sheet itself: a full landscape page with its content
+                  clearly visible — unmistakably a piece of paper */}
+              <rect
+                x="2"
+                y="30"
+                width="60"
+                height="38"
+                rx="6"
                 fill={CREAM}
                 stroke={INK}
                 strokeWidth="3"
-                strokeLinejoin="round"
               />
-              {/* folded corner at the leading tip */}
-              <path d="M60 42 L60 49 L53 47 Z" fill={INK} />
+              {/* folded corner */}
+              <path d="M49 31.5 L60.5 43 L49 43 Z" fill={INK} />
               {/* score sticker */}
               <circle
-                cx="12"
-                cy="46"
-                r="4"
+                cx="11"
+                cy="39"
+                r="4.5"
                 fill="#CAFF43"
                 stroke={INK}
                 strokeWidth="2"
               />
-              {/* eyes peeking over the top edge, watching the ground */}
+              {/* face — mouth a little "o" (whee!) */}
               <circle
-                cx="38"
-                cy="46"
-                r="4.6"
+                cx="26"
+                cy="43"
+                r="5"
                 fill="#FFFFFF"
                 stroke={INK}
                 strokeWidth="2.4"
               />
               <circle
-                cx="48"
-                cy="43.5"
-                r="4.6"
+                cx="40"
+                cy="43"
+                r="5"
                 fill="#FFFFFF"
                 stroke={INK}
                 strokeWidth="2.4"
               />
-              <circle cx="38.6" cy="47.8" r="1.9" fill={INK} />
-              <circle cx="48.6" cy="45.3" r="1.9" fill={INK} />
-              {/* tiny feet trailing off the back edge */}
-              <ellipse cx="12" cy="56" rx="4.2" ry="2.1" fill={INK} />
-              <ellipse cx="20" cy="58.5" rx="4.2" ry="2.1" fill={INK} />
+              <circle cx="26.5" cy="44.6" r="2" fill={INK} />
+              <circle cx="40.5" cy="44.6" r="2" fill={INK} />
+              <circle
+                cx="33"
+                cy="53"
+                r="2.2"
+                stroke={INK}
+                strokeWidth="2"
+                fill="none"
+              />
+              {/* CV text lines */}
+              <rect
+                x="10"
+                y="58.5"
+                width="24"
+                height="3"
+                rx="1.5"
+                fill="rgba(17,17,17,0.28)"
+              />
+              <rect
+                x="38"
+                y="58.5"
+                width="15"
+                height="3"
+                rx="1.5"
+                fill="rgba(17,17,17,0.18)"
+              />
             </g>
 
             {/* ===== STANDING POSE (walking / flying / gesturing) ===== */}
