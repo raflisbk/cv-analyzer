@@ -4,20 +4,12 @@ import { useEffect, useRef } from "react";
 import { loadGsap } from "@/lib/gsap-loader";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowRight, Send } from "lucide-react";
-import dynamic from "next/dynamic";
+import { ArrowRight, Scissors, Send } from "lucide-react";
 import { AccentPill } from "@/components/ui/accent-pill";
 import { PathkrInline } from "@/components/ui/pathkr-logo";
 
 import HeroCvArtifact from "@/components/landing/hero-cv-artifact";
 
-// three.js chunk only loads in the browser, and only on this page
-const HeroRagNodes = dynamic(
-  () => import("@/components/landing/hero-rag-nodes"),
-  {
-    ssr: false,
-  },
-);
 
 const diamond = (
   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
@@ -84,7 +76,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="snap-section relative bg-[#F5F2D8]">
+    <section id="hero" ref={sectionRef} className="snap-section relative bg-[#F5F2D8]">
       {/* Slowly spinning diamond accents */}
       <span
         aria-hidden="true"
@@ -122,8 +114,10 @@ export default function HeroSection() {
             </span>
             <span>Score · Fix · Match</span>
           </div>
-          {/* Dashed flight path bridging meta → manifesto (ticket motif) */}
-          <div className="relative mx-10 hidden h-10 flex-1 self-end xl:block">
+          {/* Dashed flight path flying off toward the right edge (ticket
+              motif) — the manifesto it used to land on now heads the RAG
+              explainer section below */}
+          <div className="relative ml-10 hidden h-10 flex-1 self-end xl:block">
             <svg
               aria-hidden="true"
               className="absolute inset-0 h-full w-full"
@@ -142,15 +136,6 @@ export default function HeroSection() {
               aria-hidden="true"
               className="absolute -right-1 top-1 h-3.5 w-3.5 rotate-12 text-[#141414]/35"
             />
-          </div>
-
-          <div className="max-w-2xl text-right">
-            <p className="font-display text-2xl font-extrabold leading-tight tracking-tight text-[#141414] lg:text-3xl">
-              An AI that actually knows you.
-            </p>
-            <p className="mt-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
-              Powered by RAG — every node below is you
-            </p>
           </div>
         </div>
 
@@ -192,8 +177,10 @@ export default function HeroSection() {
                 From lg up the artifact moves to the overlay straddling the
                 card's right edge (see below), so copy takes the full width
                 with right padding reserved for the overlay. */}
-              <div className="relative z-10 grid items-center gap-8 px-8 pt-10 pb-8 md:grid-cols-[1.1fr_0.9fr] md:px-12 md:pt-12 lg:grid-cols-1 lg:px-10 lg:pr-44 xl:px-12 xl:pr-48">
-                <div>
+              <div className="relative z-10 grid items-center gap-8 px-6 pt-10 pb-8 md:grid-cols-[1.1fr_0.9fr] md:px-12 md:pt-12 lg:grid-cols-1 lg:px-10 lg:pr-44 xl:px-12 xl:pr-48">
+                {/* min-w-0: let the column shrink below its content's
+                    min-content width so the card never overflows on mobile */}
+                <div className="min-w-0">
                   <p className="hero-fade mb-5 font-display text-sm font-extrabold uppercase tracking-[0.25em] text-[#F5F2D8]/45">
                     <PathkrInline variant="dark" />
                   </p>
@@ -310,9 +297,11 @@ export default function HeroSection() {
                 className="relative z-10 flex h-11 items-center justify-between gap-4 overflow-hidden px-6 md:px-10"
                 style={{ borderTop: "2px dashed rgba(245,242,216,0.16)" }}
               >
+                {/* Barcode + seat hide on the smallest screens so the stub
+                    row's min-content never widens the card past the viewport */}
                 <div
                   aria-hidden="true"
-                  className="h-5 w-24 flex-none opacity-45"
+                  className="hidden h-5 w-24 flex-none opacity-45 sm:block"
                   style={{
                     background:
                       "repeating-linear-gradient(90deg, #F5F2D8 0 2px, transparent 2px 4px, #F5F2D8 4px 5px, transparent 5px 9px, #F5F2D8 9px 12px, transparent 12px 14px, #F5F2D8 14px 15px, transparent 15px 18px)",
@@ -320,8 +309,10 @@ export default function HeroSection() {
                 />
                 <div className="flex items-center gap-3 whitespace-nowrap text-[9px] font-black uppercase tracking-[0.2em] text-[#F5F2D8]/40 md:gap-5 md:text-[10px]">
                   <span>Gate AI</span>
-                  <span className="text-[#CAFF43]/40">{diamond}</span>
-                  <span>Seat 01-A</span>
+                  <span className="hidden text-[#CAFF43]/40 sm:inline">
+                    {diamond}
+                  </span>
+                  <span className="hidden sm:inline">Seat 01-A</span>
                   <span className="text-[#CAFF43]/40">{diamond}</span>
                   <span className="flex items-center gap-1.5 text-[#CAFF43]/80">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#CAFF43]" />
@@ -332,32 +323,202 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right: interactive RAG personalization graph, outside the card */}
-          <div className="relative hidden h-[480px] lg:block xl:h-[540px]">
-            {/* Typographic watermark behind the graph */}
+          {/* Right column: "Why it works" — three big interactive rows that
+              double as story navigation (each scrolls to its section).
+              xl+ only — below that the CV artifact needs the room. */}
+          <div className="relative hidden xl:flex flex-col items-end justify-center pr-10">
+            {/* Ornaments filling the gap between the CV artifact and the
+                rows (only when the gap actually exists, ≥1780px): ticket
+                perforation + scissors framing the rows as a tear-off stub,
+                a dashed trajectory from the artifact toward the rows, and a
+                slowly rotating passport stamp */}
             <div
               aria-hidden="true"
-              className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
+              className="pointer-events-none absolute inset-y-10 left-0 right-[400px] 2xl:right-[480px] hidden min-[1780px]:block"
             >
-              <span
-                className="select-none whitespace-nowrap font-display font-black uppercase tracking-tight"
-                style={{
-                  fontSize: "clamp(72px, 9vw, 150px)",
-                  WebkitTextStroke: "2px rgba(17,17,17,0.09)",
-                  color: "transparent",
-                }}
+              {/* Perforation line just left of the rows */}
+              <div className="absolute inset-y-8 right-0 border-r border-dashed border-[#141414]/15" />
+              <Scissors className="absolute -right-2 top-2 h-4 w-4 rotate-90 text-[#141414]/25" />
+
+              {/* Dashed trajectory: artifact → rows */}
+              <svg
+                className="absolute left-[6%] top-[24%] h-40 w-[76%]"
+                viewBox="0 0 400 160"
+                preserveAspectRatio="none"
+                fill="none"
               >
-                For You
+                <path
+                  d="M8 132 Q 180 8 392 64"
+                  stroke="rgba(17,17,17,0.16)"
+                  strokeWidth="1.5"
+                  strokeDasharray="5 7"
+                />
+                <circle cx="392" cy="64" r="3" fill="rgba(17,17,17,0.3)" />
+                <circle
+                  cx="8"
+                  cy="132"
+                  r="2.5"
+                  stroke="rgba(17,17,17,0.3)"
+                  strokeWidth="1.5"
+                />
+              </svg>
+
+              {/* Rotating passport stamp */}
+              <div className="absolute left-[30%] top-[54%] h-28 w-28">
+                <svg
+                  className="h-full w-full"
+                  viewBox="0 0 112 112"
+                  style={{ animation: "hero-spin 45s linear infinite" }}
+                >
+                  <defs>
+                    <path
+                      id="hero-stamp-arc"
+                      d="M56,56 m-41,0 a41,41 0 1,1 82,0 a41,41 0 1,1 -82,0"
+                      fill="none"
+                    />
+                  </defs>
+                  <circle
+                    cx="56"
+                    cy="56"
+                    r="50"
+                    stroke="rgba(17,17,17,0.22)"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 6"
+                    fill="none"
+                  />
+                  <circle
+                    cx="56"
+                    cy="56"
+                    r="32"
+                    stroke="rgba(17,17,17,0.16)"
+                    strokeWidth="1"
+                    fill="none"
+                  />
+                  <text
+                    fontSize="9.5"
+                    fontWeight="800"
+                    letterSpacing="2.5"
+                    fill="rgba(17,17,17,0.3)"
+                  >
+                    <textPath href="#hero-stamp-arc">
+                      PATH KARIR ✦ CAREER PASS ✦ APPROVED
+                    </textPath>
+                  </text>
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center font-display text-xl font-black text-[#141414]/30">
+                  87
+                </span>
+              </div>
+
+              {/* Scattered plus marks + micro meta */}
+              <svg
+                className="absolute left-[14%] top-[14%]"
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <path
+                  d="M7 1v12M1 7h12"
+                  stroke="rgba(17,17,17,0.25)"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <svg
+                className="absolute left-[64%] top-[80%]"
+                width="10"
+                height="10"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <path
+                  d="M7 1v12M1 7h12"
+                  stroke="rgba(17,17,17,0.18)"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className="absolute left-[52%] top-[8%] font-mono text-[9px] tracking-[0.3em] text-[#141414]/25">
+                GATE AI → ROWS 01–03
+              </span>
+              <span
+                className="absolute bottom-[6%] left-[18%]"
+                style={{ animation: "hero-spin 38s linear infinite reverse" }}
+              >
+                <svg width="11" height="11" viewBox="0 0 8 8" fill="none">
+                  <path
+                    d="M4 0L5 3L8 4L5 5L4 8L3 5L0 4L3 3Z"
+                    fill="rgba(17,17,17,0.22)"
+                  />
+                </svg>
               </span>
             </div>
-            <div className="relative z-10 h-full w-full">
-              <HeroRagNodes />
+
+            <div className="w-full max-w-[340px] 2xl:max-w-[420px]">
+              <p className="hero-fade mb-2 flex items-center justify-end gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
+                Why it works
+                <span aria-hidden="true" className="text-[#141414]/30">
+                  {diamond}
+                </span>
+              </p>
+              {[
+                {
+                  no: "01",
+                  title: "Score",
+                  copy: "Four dimensions, judged by an AI ensemble — not a keyword counter.",
+                  target: "rag-explainer",
+                },
+                {
+                  no: "02",
+                  title: "Fix",
+                  copy: "Grammar, impact, ATS — rewritten with you, right inside the editor.",
+                  target: "see-it-in-action",
+                },
+                {
+                  no: "03",
+                  title: "Match",
+                  copy: "Measured against the job you're actually chasing, not an average one.",
+                  target: "features",
+                },
+              ].map((row) => (
+                <button
+                  key={row.no}
+                  type="button"
+                  aria-label={`${row.title} — jump to section`}
+                  onClick={() =>
+                    document
+                      .getElementById(row.target)
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="hero-fade group block w-full border-t border-dashed border-[#141414]/20 py-5 text-right"
+                >
+                  <p className="mb-1.5 font-mono text-[10px] tracking-[0.2em] text-[#141414]/35">
+                    <span className="rounded-sm px-1 py-0.5 transition-colors duration-200 group-hover:bg-[#CAFF43] group-hover:text-[#141414]">
+                      {row.no}
+                    </span>
+                  </p>
+                  <p className="flex items-center justify-end gap-3">
+                    <span className="font-display text-3xl font-extrabold leading-none tracking-tight text-[#141414] transition-transform duration-300 group-hover:-translate-x-1 2xl:text-4xl">
+                      {row.title}
+                    </span>
+                    <ArrowRight
+                      aria-hidden="true"
+                      className="h-5 w-5 -translate-x-2 text-[#141414] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                    />
+                  </p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-[#141414]/55">
+                    {row.copy}
+                  </p>
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* CV artifact straddling the card's right edge (lg+): the CV
-              visually "feeds" the RAG graph beside it */}
-          <div className="pointer-events-none absolute left-[58%] top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 lg:block xl:left-[680px]">
+          {/* CV artifact straddling the card's right edge (lg+) — the hero's
+              featured animation now that the RAG graph lives in its own
+              section below; slightly scaled up to own the open space */}
+          <div className="pointer-events-none absolute left-[62%] top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 scale-105 lg:block xl:left-[760px] xl:scale-[1.18]">
             {/* Ornament behind the CV: dashed scan rings + plus marks */}
             <svg
               aria-hidden="true"
