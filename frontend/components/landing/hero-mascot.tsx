@@ -323,27 +323,37 @@ export default function HeroMascot() {
           const rect = el.getBoundingClientRect();
           const rootRect = root.getBoundingClientRect();
           // The punch (card-stub) is thrown at the card's RIGHT EDGE so the
-          // strike visibly torques it into the spin; everything else hovers
-          // at the element's center
+          // strike visibly torques it into the spin; the torch scan
+          // (cv-artifact) hovers BESIDE the CV's right edge; everything
+          // else hovers at the element's center
           const anchorX =
             zone === "card-stub"
               ? rect.right - CHAR_W * 0.15
-              : rect.left + rect.width / 2 - CHAR_W / 2;
+              : zone === "cv-artifact"
+                ? rect.right + 12
+                : rect.left + rect.width / 2 - CHAR_W / 2;
           const targetX = Math.min(
             Math.max(anchorX, 8),
             root.clientWidth - CHAR_W - 8,
           );
-          // The torch is shone from ABOVE the CV (beam points down); every
-          // other zone is approached from below, the paper's top edge
-          // kissing the element's bottom
+          // The torch scan starts level with the CV's TOP edge (it will
+          // ride down the side); every other zone is approached from below,
+          // the paper's top edge kissing the element's bottom
           const desiredBottom =
             zone === "cv-artifact"
-              ? rect.top - 10
+              ? rect.top + 66
               : Math.min(rect.bottom + 34, rootRect.bottom - 4);
           const targetY = Math.max(
             desiredBottom - rootRect.bottom,
             150 - rootRect.bottom, // never higher than just below the navbar
           );
+          // Scanner end point: level with the CV's bottom edge
+          const scanEndY = Math.min(
+            rect.bottom + 26 - rootRect.bottom,
+            -20,
+          );
+          // Where the descent starts from — the torch releases lower down
+          const releaseY = zone === "cv-artifact" ? scanEndY : targetY;
 
           // Legs dangle while airborne
           const dangle = gsap.to([legL, legR], {
@@ -536,24 +546,25 @@ export default function HeroMascot() {
                 ease: "sine.inOut",
               });
           } else if (gesture === "torch") {
-            // Hovering above the CV: pull out the flashlight and sweep the
-            // yellow beam down across the document (puff lands on the CV)
-            tl.to(torch, { opacity: 1, duration: 0.18 })
+            // Beside the CV's right edge: face the page, switch the torch
+            // on (beam shines sideways onto it), then RIDE DOWN the edge —
+            // the lit band sweeps the document top-to-bottom like a
+            // scanner head. The zone event fires as the light hits.
+            tl.set(flip, { scaleX: -1 })
+              .to(torch, { opacity: 1, duration: 0.18 })
               .add(() => {
                 window.dispatchEvent(
                   new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
                 );
-                puff(targetX + CHAR_W / 2, targetY + 108, 1.2);
+                puff(targetX - 12, targetY + 52, 1.1);
               })
-              .to(torch, {
-                rotation: -11,
-                transformOrigin: "32px 50px",
-                duration: 0.55,
-                yoyo: true,
-                repeat: 3,
+              .to(char, {
+                y: scanEndY,
+                duration: 1.9,
                 ease: "sine.inOut",
               })
-              .to(torch, { opacity: 0, duration: 0.25 });
+              .to(torch, { opacity: 0, duration: 0.25 })
+              .set(flip, { scaleX: 1 });
           } else if (gesture === "snap") {
             // Snap the fingers — spark! — and the rows light up
             tl.to(arm, {
@@ -613,9 +624,9 @@ export default function HeroMascot() {
             .add(
               paperFall({
                 pts: [targetX, targetX - 52, targetX + 34, targetX],
-                startY: targetY,
+                startY: releaseY,
                 endY: 0,
-                uDepth: (Math.abs(targetY) / 3) * 0.42,
+                uDepth: (Math.abs(releaseY) / 3) * 0.42,
                 tilt: 22,
                 duration: 2.6,
               }),
@@ -967,37 +978,31 @@ export default function HeroMascot() {
               <circle cx="57.6" cy="50" r="2.6" fill={INK} />
             </g>
 
-            {/* Flashlight pointing DOWN — held under the body while the
-                mascot hovers above the CV; black & white torch, warm
-                yellow beam sweeping the document below */}
+            {/* Flashlight held out FORWARD (facing direction) — the mascot
+                hovers beside the CV and rides down its edge, the horizontal
+                yellow beam sweeping the page top-to-bottom like a scanner
+                head. Drawn pointing +x; the facing flip mirrors it. */}
             <g className="m-torch" opacity="0">
               {/* outer beam */}
               <polygon
-                points="24,58 -2,220 66,220 40,58"
+                points="62,38 235,2 235,88 62,50"
                 fill="rgba(255,214,70,0.26)"
               />
               {/* hot inner core */}
               <polygon
-                points="27,58 13,220 51,220 37,58"
+                points="62,40 235,24 235,66 62,48"
                 fill="rgba(255,232,130,0.4)"
               />
-              {/* torch: ink body, white grip band, wider head */}
-              <rect x="28" y="30" width="8" height="16" rx="2.5" fill={INK} />
+              {/* torch: ink body, white grip band, wider head, cream lens */}
+              <rect x="41" y="40" width="13" height="8" rx="2" fill={INK} />
+              <rect x="44.5" y="41.5" width="4.5" height="5" rx="1" fill="#FFFFFF" />
+              <rect x="54" y="37" width="7.5" height="14" rx="2" fill={INK} />
               <rect
-                x="28.8"
-                y="35"
-                width="6.4"
-                height="4"
+                x="61"
+                y="38.5"
+                width="2.6"
+                height="11"
                 rx="1.2"
-                fill="#FFFFFF"
-              />
-              <rect x="24.5" y="45" width="15" height="9" rx="2.5" fill={INK} />
-              <rect
-                x="26.5"
-                y="54"
-                width="11"
-                height="3"
-                rx="1.5"
                 fill="#FFF7D6"
               />
             </g>

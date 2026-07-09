@@ -310,31 +310,40 @@ export default function HeroSection() {
               },
             );
           } else if (zone === "cv-artifact") {
-            // Flashlight scan: the CV glows warm yellow under the beam
-            // shone from above and straightens slightly
+            // Scanner pass: warm glow while the yellow band travels down
+            // the page, tracking the mascot riding down the CV's edge
             gsap
               .timeline()
               .to(".hero-artifact-wrap", {
                 scale: 1.04,
                 filter: "drop-shadow(0 0 30px rgba(255,214,70,0.55))",
-                duration: 0.4,
+                duration: 0.35,
                 ease: "power2.out",
                 overwrite: "auto",
               })
-              .to(".hero-artifact-wrap", {
-                rotate: "-=1.5",
-                duration: 0.5,
-                yoyo: true,
-                repeat: 1,
-                ease: "sine.inOut",
-              })
-              .to(".hero-artifact-wrap", {
-                scale: 1,
-                filter: "drop-shadow(0 0 0px rgba(255,214,70,0))",
-                duration: 0.6,
-                ease: "power2.inOut",
-                clearProps: "filter",
-              });
+              .fromTo(
+                ".hero-artifact-scan",
+                { top: "-10%", opacity: 0 },
+                { opacity: 1, duration: 0.25 },
+                "<",
+              )
+              .to(
+                ".hero-artifact-scan",
+                { top: "92%", duration: 1.9, ease: "sine.inOut" },
+                "<",
+              )
+              .to(".hero-artifact-scan", { opacity: 0, duration: 0.3 }, ">-0.15")
+              .to(
+                ".hero-artifact-wrap",
+                {
+                  scale: 1,
+                  filter: "drop-shadow(0 0 0px rgba(255,214,70,0))",
+                  duration: 0.6,
+                  ease: "power2.inOut",
+                  clearProps: "filter",
+                },
+                ">-0.1",
+              );
           } else if (zone === "hero-stamp") {
             gsap.fromTo(
               ".hero-stamp",
@@ -887,8 +896,18 @@ export default function HeroSection() {
                 fill="rgba(17,17,17,0.2)"
               />
             </svg>
-            <div className="hero-artifact-wrap pointer-events-auto">
+            <div className="hero-artifact-wrap pointer-events-auto relative">
               <HeroCvArtifact />
+              {/* Scanner band — travels top→bottom in sync with the mascot
+                  riding down the CV's edge with its flashlight */}
+              <div
+                aria-hidden="true"
+                className="hero-artifact-scan pointer-events-none absolute inset-x-0 top-0 h-14 opacity-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, transparent, rgba(255,220,90,0.5), rgba(255,232,130,0.35), transparent)",
+                }}
+              />
             </div>
           </div>
         </div>
