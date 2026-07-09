@@ -147,13 +147,46 @@ export default function HeroSection() {
             intro.play();
           }
         };
-        window.addEventListener("pathkr:mascot-kick", startIntro);
+        // The kick has to LAND: besides starting the reveal, the card takes
+        // a physical impact shudder (x wiggle — a prop the intro timeline
+        // doesn't touch, so the two can overlap safely)
+        const onKick = () => {
+          startIntro();
+          gsap.timeline({ delay: 0.05 }).to(".hero-card-wrap", {
+            keyframes: [
+              { x: -8, duration: 0.06 },
+              { x: 6, duration: 0.06 },
+              { x: -4, duration: 0.06 },
+              { x: 2, duration: 0.06 },
+              { x: 0, duration: 0.1 },
+            ],
+            ease: "none",
+          });
+        };
+        window.addEventListener("pathkr:mascot-kick", onKick);
         const fallback = window.setTimeout(startIntro, 2600);
 
         // The mascot conducts these zones when it walks under them
         const onMascotZone = (event: Event) => {
           const zone = (event as CustomEvent).detail?.zone;
           if (zone === "card-stub") {
+            // The tap lands on the card itself: it hops up and settles
+            gsap
+              .timeline()
+              .to(".hero-card-wrap", {
+                y: -10,
+                rotation: 0.5,
+                transformOrigin: "bottom center",
+                duration: 0.16,
+                ease: "power2.out",
+                overwrite: "auto",
+              })
+              .to(".hero-card-wrap", {
+                y: 0,
+                rotation: 0,
+                duration: 0.7,
+                ease: "elastic.out(1, 0.45)",
+              });
             const stub = sectionRef.current?.querySelector(".hero-stub");
             if (stub) {
               gsap.fromTo(
@@ -216,7 +249,7 @@ export default function HeroSection() {
         return () => {
           gsapRef.current = null;
           window.removeEventListener("pathkr:mascot-zone", onMascotZone);
-          window.removeEventListener("pathkr:mascot-kick", startIntro);
+          window.removeEventListener("pathkr:mascot-kick", onKick);
           window.clearTimeout(fallback);
         };
       });
