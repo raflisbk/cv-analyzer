@@ -310,13 +310,13 @@ export default function HeroSection() {
               },
             );
           } else if (zone === "cv-artifact") {
-            // Flashlight scan: the CV glows lime under the beam and
-            // straightens slightly, as if held up to the light
+            // Flashlight scan: the CV glows warm yellow under the beam
+            // shone from above and straightens slightly
             gsap
               .timeline()
               .to(".hero-artifact-wrap", {
                 scale: 1.04,
-                filter: "drop-shadow(0 0 28px rgba(202,255,67,0.5))",
+                filter: "drop-shadow(0 0 30px rgba(255,214,70,0.55))",
                 duration: 0.4,
                 ease: "power2.out",
                 overwrite: "auto",
@@ -330,7 +330,7 @@ export default function HeroSection() {
               })
               .to(".hero-artifact-wrap", {
                 scale: 1,
-                filter: "drop-shadow(0 0 0px rgba(202,255,67,0))",
+                filter: "drop-shadow(0 0 0px rgba(255,214,70,0))",
                 duration: 0.6,
                 ease: "power2.inOut",
                 clearProps: "filter",

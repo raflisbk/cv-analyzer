@@ -326,11 +326,13 @@ export default function HeroMascot() {
             Math.max(anchorX, 8),
             root.clientWidth - CHAR_W - 8,
           );
-          // Hover with the paper's top edge kissing the element's bottom
-          const desiredBottom = Math.min(
-            rect.bottom + 34,
-            rootRect.bottom - 4,
-          );
+          // The torch is shone from ABOVE the CV (beam points down); every
+          // other zone is approached from below, the paper's top edge
+          // kissing the element's bottom
+          const desiredBottom =
+            zone === "cv-artifact"
+              ? rect.top - 10
+              : Math.min(rect.bottom + 34, rootRect.bottom - 4);
           const targetY = Math.max(
             desiredBottom - rootRect.bottom,
             150 - rootRect.bottom, // never higher than just below the navbar
@@ -527,15 +529,21 @@ export default function HeroMascot() {
                 ease: "sine.inOut",
               });
           } else if (gesture === "torch") {
-            // Pull out the flashlight and sweep its beam over the CV
+            // Hovering above the CV: pull out the flashlight and sweep the
+            // yellow beam down across the document (puff lands on the CV)
             tl.to(torch, { opacity: 1, duration: 0.18 })
-              .add(touch)
+              .add(() => {
+                window.dispatchEvent(
+                  new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
+                );
+                puff(targetX + CHAR_W / 2, targetY + 108, 1.2);
+              })
               .to(torch, {
-                rotation: -16,
-                transformOrigin: "58px 48px",
-                duration: 0.5,
+                rotation: -11,
+                transformOrigin: "32px 50px",
+                duration: 0.55,
                 yoyo: true,
-                repeat: 2,
+                repeat: 3,
                 ease: "sine.inOut",
               })
               .to(torch, { opacity: 0, duration: 0.25 });
@@ -638,7 +646,13 @@ export default function HeroMascot() {
             });
         };
 
-        // Face the walking direction + visit any zone we walk under
+        // Face the walking direction + visit any zone we walk under.
+        // Hero zones follow a fixed ROUTINE so the show has a narrative —
+        // punch the card, walk, scan the CV, walk, snap at the rows, loop —
+        // instead of re-punching the card on every pass. Zones outside the
+        // routine (rag-graph, hero-stamp) stay opportunistic.
+        const ROUTINE = ["card-stub", "cv-artifact", "hero-rows"];
+        let routineIndex = 0;
         let lastX = 0;
         let lastZoneScan = 0;
         const zoneCooldown = new Map<string, number>();
@@ -678,6 +692,13 @@ export default function HeroMascot() {
             }
             if (now - (zoneCooldown.get(zone) ?? 0) < ZONE_COOLDOWN_MS) {
               continue;
+            }
+            const seqPos = ROUTINE.indexOf(zone);
+            if (seqPos !== -1 && seqPos !== routineIndex) {
+              continue; // routine zone, but it's not its turn yet
+            }
+            if (seqPos !== -1) {
+              routineIndex = (routineIndex + 1) % ROUTINE.length;
             }
             zoneCooldown.set(zone, now);
             visitZone(el, zone);
@@ -894,20 +915,38 @@ export default function HeroMascot() {
               <circle cx="57.6" cy="50" r="2.6" fill={INK} />
             </g>
 
-            {/* Flashlight + beam — shown only while "scanning" the CV */}
+            {/* Flashlight pointing DOWN — held under the body while the
+                mascot hovers above the CV; black & white torch, warm
+                yellow beam sweeping the document below */}
             <g className="m-torch" opacity="0">
+              {/* outer beam */}
               <polygon
-                points="60,44 108,6 118,28 66,56"
-                fill="rgba(202,255,67,0.32)"
+                points="24,58 -2,220 66,220 40,58"
+                fill="rgba(255,214,70,0.26)"
               />
+              {/* hot inner core */}
+              <polygon
+                points="27,58 13,220 51,220 37,58"
+                fill="rgba(255,232,130,0.4)"
+              />
+              {/* torch: ink body, white grip band, wider head */}
+              <rect x="28" y="30" width="8" height="16" rx="2.5" fill={INK} />
               <rect
-                x="53"
-                y="42"
-                width="10"
-                height="13"
-                rx="2.5"
-                fill={INK}
-                transform="rotate(-38 58 48)"
+                x="28.8"
+                y="35"
+                width="6.4"
+                height="4"
+                rx="1.2"
+                fill="#FFFFFF"
+              />
+              <rect x="24.5" y="45" width="15" height="9" rx="2.5" fill={INK} />
+              <rect
+                x="26.5"
+                y="54"
+                width="11"
+                height="3"
+                rx="1.5"
+                fill="#FFF7D6"
               />
             </g>
 
