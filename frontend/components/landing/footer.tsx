@@ -90,7 +90,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between">
           <p className="text-xs font-medium text-[#F5F2D8]/40">
-            © {new Date().getFullYear()} Pathkr Inc. All rights reserved.
+            © {new Date().getFullYear()} Mohamad Rafli Agung Subekti. All rights reserved.
           </p>
           <div className="mt-4 md:mt-0 flex gap-3">
             <a
