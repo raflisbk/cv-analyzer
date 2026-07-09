@@ -334,7 +334,7 @@ export default function HeroSection() {
                 slowly rotating passport stamp */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-10 left-0 right-[400px] 2xl:right-[480px] hidden min-[1780px]:block"
+              className="pointer-events-none absolute inset-y-10 left-0 right-[400px] 2xl:right-[480px] hidden 2xl:block"
             >
               {/* Perforation line just left of the rows */}
               <div className="absolute inset-y-8 right-0 border-r border-dashed border-[#141414]/15" />
@@ -342,7 +342,7 @@ export default function HeroSection() {
 
               {/* Dashed trajectory: artifact → rows */}
               <svg
-                className="absolute left-[6%] top-[24%] h-40 w-[76%]"
+                className="absolute left-[6%] top-[24%] hidden h-40 w-[76%] min-[1780px]:block"
                 viewBox="0 0 400 160"
                 preserveAspectRatio="none"
                 fill="none"
@@ -364,7 +364,7 @@ export default function HeroSection() {
               </svg>
 
               {/* Rotating passport stamp */}
-              <div className="absolute left-[30%] top-[54%] h-28 w-28">
+              <div className="absolute left-[30%] top-[54%] hidden h-28 w-28 min-[1780px]:block">
                 <svg
                   className="h-full w-full"
                   viewBox="0 0 112 112"
@@ -412,7 +412,7 @@ export default function HeroSection() {
 
               {/* Scattered plus marks + micro meta */}
               <svg
-                className="absolute left-[14%] top-[14%]"
+                className="absolute left-[14%] top-[14%] hidden min-[1780px]:block"
                 width="14"
                 height="14"
                 viewBox="0 0 14 14"
@@ -439,11 +439,11 @@ export default function HeroSection() {
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="absolute left-[52%] top-[8%] font-mono text-[9px] tracking-[0.3em] text-[#141414]/25">
+              <span className="absolute left-[52%] top-[8%] hidden min-[1780px]:block font-mono text-[9px] tracking-[0.3em] text-[#141414]/25">
                 GATE AI → ROWS 01–03
               </span>
               <span
-                className="absolute bottom-[6%] left-[18%]"
+                className="absolute bottom-[6%] left-[18%] hidden min-[1780px]:block"
                 style={{ animation: "hero-spin 38s linear infinite reverse" }}
               >
                 <svg width="11" height="11" viewBox="0 0 8 8" fill="none">
