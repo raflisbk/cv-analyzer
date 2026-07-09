@@ -101,6 +101,26 @@ export default function HeroMascot() {
         });
         const walkTweens = [bob, stepL, stepR];
 
+        // Little ink-dust burst at a root-relative point — spawned at every
+        // physical contact (kick, tap, landing) so touches read as real
+        const puff = (leftPx: number, topPx: number, strength = 1) => {
+          for (let i = 0; i < 6; i++) {
+            const dot = document.createElement("span");
+            dot.style.cssText = `position:absolute;left:${leftPx}px;top:${topPx}px;width:5px;height:5px;border-radius:50%;background:rgba(17,17,17,0.45);pointer-events:none;`;
+            root.appendChild(dot);
+            const angle = (i / 6) * Math.PI * 2 + Math.random() * 0.7;
+            gsap.to(dot, {
+              x: Math.cos(angle) * (14 + Math.random() * 16) * strength,
+              y: Math.sin(angle) * (10 + Math.random() * 12) * strength,
+              opacity: 0,
+              scale: 0.3,
+              duration: 0.5 + Math.random() * 0.25,
+              ease: "power2.out",
+              onComplete: () => dot.remove(),
+            });
+          }
+        };
+
         // Walk-in intro: enter from off-screen left, stop at the hero card's
         // corner, kick it awake (fires MASCOT_KICK_EVENT — the hero's reveal
         // timeline starts on it), then begin patrolling
@@ -119,7 +139,11 @@ export default function HeroMascot() {
             ease: "power3.out",
             transformOrigin: "top center",
           })
-          .add(() => window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT)))
+          .add(() => {
+            window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT));
+            // dust off the front foot right where the kick lands
+            puff(16 + CHAR_W - 2, 82);
+          })
           .to(flip, { rotation: 4, y: -6, duration: 0.18, ease: "power2.out" }, "<")
           .to(legR, { rotation: 0, duration: 0.25, ease: "power2.inOut" })
           .to(flip, { rotation: 0, y: 0, duration: 0.25, ease: "bounce.out" }, "<")
@@ -164,19 +188,40 @@ export default function HeroMascot() {
             ease: "sine.inOut",
           });
 
+          const currentX = Number(gsap.getProperty(char, "x"));
+          const flightDir = targetX > currentX ? 1 : -1;
+
           gsap
             .timeline({
               onComplete: () => {
                 dangle.kill();
                 gsap.set([legL, legR], { rotation: 0 });
+                gsap.to(pupils, { x: 0, y: 0, duration: 0.3 });
                 walkTweens.forEach((tween) => tween.resume());
                 patrol.resume();
                 visiting = false;
               },
             })
-            // Take off in an arc, fluttering like a sheet of paper
-            .to(char, { x: targetX, duration: 1.2, ease: "power1.inOut" })
-            .to(char, { y: targetY, duration: 1.2, ease: "power2.out" }, "<")
+            // Anticipation: crouch, eyes lock onto the target, then launch
+            .to(flip, { scaleY: 0.8, y: 6, duration: 0.16, ease: "power2.in" })
+            .add(() =>
+              gsap.to(pupils, {
+                x: flightDir * 2.2,
+                y: -1.6,
+                duration: 0.2,
+                overwrite: "auto",
+              }),
+            )
+            .to(flip, {
+              scaleY: 1.06,
+              y: -12,
+              duration: 0.18,
+              ease: "power2.out",
+            })
+            .to(flip, { scaleY: 1, duration: 0.2 }, "<0.08")
+            // Arc up to the element, fluttering like a sheet of paper
+            .to(char, { x: targetX, duration: 1.1, ease: "power1.inOut" }, "<")
+            .to(char, { y: targetY, duration: 1.1, ease: "power2.out" }, "<")
             .to(
               flip,
               {
@@ -188,15 +233,18 @@ export default function HeroMascot() {
               },
               "<",
             )
-            // Contact: tap the element, the effect fires right now
-            .add(() =>
+            // Contact: lunge into the element — the effect fires at the
+            // exact frame the tap lands, with a dust puff at the head
+            .to(flip, { y: -10, duration: 0.12, ease: "power3.out" })
+            .add(() => {
               window.dispatchEvent(
                 new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
-              ),
-            )
+              );
+              puff(targetX + CHAR_W / 2, targetY + 4, 1.2);
+            })
             .to(flip, {
               rotation: -14,
-              y: -8,
+              y: -4,
               duration: 0.16,
               yoyo: true,
               repeat: 1,
@@ -216,7 +264,21 @@ export default function HeroMascot() {
               flip,
               { rotation: 0, y: 0, duration: 0.35, ease: "sine.out" },
               "<",
-            );
+            )
+            // Landing: squash into the floor with a dust puff, pop back up
+            .to(flip, {
+              scaleY: 0.84,
+              y: 4,
+              duration: 0.1,
+              ease: "power2.in",
+            })
+            .add(() => puff(targetX + CHAR_W / 2, 84))
+            .to(flip, {
+              scaleY: 1,
+              y: 0,
+              duration: 0.3,
+              ease: "back.out(2.5)",
+            });
         };
 
         // Face the walking direction + visit any zone we walk under
@@ -275,16 +337,19 @@ export default function HeroMascot() {
           const dy = event.clientY - cy;
           const dist = Math.hypot(dx, dy);
 
-          const angle = Math.atan2(dy, dx);
-          const reach = Math.min(2.4, dist / 40);
-          pupils.forEach((pupil) => {
-            gsap.to(pupil, {
-              x: Math.cos(angle) * reach,
-              y: Math.sin(angle) * reach,
-              duration: 0.2,
-              overwrite: "auto",
+          // While visiting, the eyes stay locked on the flight target
+          if (!visiting) {
+            const angle = Math.atan2(dy, dx);
+            const reach = Math.min(2.4, dist / 40);
+            pupils.forEach((pupil) => {
+              gsap.to(pupil, {
+                x: Math.cos(angle) * reach,
+                y: Math.sin(angle) * reach,
+                duration: 0.2,
+                overwrite: "auto",
+              });
             });
-          });
+          }
 
           if (dist < 110 && !alerted && !visiting) {
             alerted = true;

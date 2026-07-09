@@ -201,21 +201,23 @@ export default function HeroSection() {
               { scale: 2, duration: 0.14, yoyo: true, repeat: 5 },
             );
           } else if (zone === "hero-rows") {
-            // Explicit up-then-down timeline; overwrite kills any tween
-            // still holding y on these elements (e.g. the intro reveal)
+            // Domino from the BOTTOM row — the mascot taps the block from
+            // below, so the nearest row reacts first. Explicit up-then-down
+            // timeline; overwrite kills any tween still holding y on these
+            // elements (e.g. the intro reveal).
             gsap
               .timeline()
               .to(".hero-row", {
                 y: -6,
                 duration: 0.22,
-                stagger: 0.16,
+                stagger: { each: 0.16, from: "end" },
                 ease: "power2.out",
                 overwrite: "auto",
               })
               .to(".hero-row", {
                 y: 0,
                 duration: 0.35,
-                stagger: 0.16,
+                stagger: { each: 0.16, from: "end" },
                 ease: "bounce.out",
               });
             gsap.fromTo(
@@ -225,7 +227,7 @@ export default function HeroSection() {
                 backgroundColor: "#CAFF43",
                 color: "#141414",
                 duration: 0.25,
-                stagger: 0.16,
+                stagger: { each: 0.16, from: "end" },
                 yoyo: true,
                 repeat: 1,
                 clearProps: "backgroundColor,color",
