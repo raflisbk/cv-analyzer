@@ -58,9 +58,21 @@ export default function HeroMascot() {
         const torch = char.querySelector<SVGGElement>(".m-torch")!;
         const spark = char.querySelector<SVGPathElement>(".m-spark")!;
         const pupils = char.querySelectorAll<SVGGElement>(".m-pupil");
+        const standG = char.querySelector<SVGGElement>(".m-stand")!;
+        const fallG = char.querySelector<SVGGElement>(".m-fall")!;
+        const fallCape = char.querySelector<SVGPathElement>(".m-fall-cape")!;
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
+        gsap.set(fallG, { transformOrigin: "50% 52%" });
+        gsap.set(fallCape, { transformOrigin: "50% 100%" });
+
+        // Pose swap: falling uses a dedicated asset instead of contorting
+        // the standing art
+        const setPose = (pose: "stand" | "fall") => {
+          gsap.set(standG, { autoAlpha: pose === "stand" ? 1 : 0 });
+          gsap.set(fallG, { autoAlpha: pose === "fall" ? 1 : 0 });
+        };
 
         const CHAR_W = 64;
         const maxX = () => Math.max(root.clientWidth - CHAR_W - 32, 200);
@@ -155,9 +167,12 @@ export default function HeroMascot() {
                 0,
               );
               gsap.set(char, { x: x0 + (x1 - x0) * glide, y });
-              // lying flat, nosing down into the dive, level at the stalls
-              gsap.set(flip, {
-                rotation: -86 + dir * opts.tilt * Math.sin(Math.PI * lt),
+              // the falling-sheet asset banks into the dive and its U-bow
+              // flexes deepest at full speed (the standing art stays put —
+              // this pose is its own drawing)
+              gsap.set(fallG, {
+                rotation: dir * opts.tilt * Math.sin(Math.PI * lt),
+                scaleY: 1 + 0.12 * Math.sin(Math.PI * lt),
               });
             },
           });
@@ -207,20 +222,19 @@ export default function HeroMascot() {
         // walks to the hero card's corner and kicks it awake
         // (MASCOT_KICK_EVENT starts the hero's reveal timeline).
         walkTweens.forEach((tween) => tween.pause());
-        gsap.set([legL, legR], { rotation: 14 });
         const dropHeight = Math.max(root.getBoundingClientRect().top + 60, 300);
         const dropAnchorX = 150;
         // start at the first stall point of the paper-fall (thrown in
         // slightly right of where it will land)
         gsap.set(char, { x: dropAnchorX + 75, y: -dropHeight });
 
-        // A dropped sheet lies FLAT and glides down in U-shaped swoops
-        gsap.set(flip, { transformOrigin: "50% 55%" });
-        // Air drag ripples the cape upward the whole way down
-        const introCapeFlutter = gsap.to(cape, {
-          rotation: 15,
-          scaleY: 1.16,
-          duration: 0.28,
+        // Enter in the dedicated falling-sheet pose; air drag ripples its
+        // upward-dragged cape the whole way down
+        setPose("fall");
+        const introCapeFlutter = gsap.to(fallCape, {
+          rotation: 9,
+          scaleY: 1.12,
+          duration: 0.26,
           yoyo: true,
           repeat: -1,
           ease: "sine.inOut",
@@ -246,21 +260,21 @@ export default function HeroMascot() {
               duration: 3.4,
             }),
           )
-          // Flop on landing: swing upright onto the feet, squash, dust
+          // Touch down: pop back to the standing pose, squash, dust
           .add(() => {
             introCapeFlutter.kill();
-            gsap.set(cape, { rotation: 0, scaleY: 1 });
+            gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+            setPose("stand");
             puff(dropAnchorX + CHAR_W / 2, 84);
           })
           .to(flip, {
-            rotation: 0,
             scaleY: 0.8,
             y: 5,
             transformOrigin: "50% 100%",
-            duration: 0.22,
+            duration: 0.14,
             ease: "power2.in",
           })
-          .to(flip, { scaleY: 1, y: 0, rotation: 0, duration: 0.35, ease: "back.out(2.2)" })
+          .to(flip, { scaleY: 1, y: 0, duration: 0.35, ease: "back.out(2.2)" })
           .set([legL, legR], { rotation: 0 })
           // Dust itself off, then walk to the card's corner
           .add(() => walkTweens.forEach((tween) => tween.resume()))
@@ -568,19 +582,19 @@ export default function HeroMascot() {
               yoyo: true,
               repeat: 3,
             })
-            // Let go and glide down in U-shaped paper swoops, the cape
-            // rippling upward against the airflow
-            .set(flip, { transformOrigin: "50% 55%" }, "+=0.45")
+            // Let go: swap to the falling-sheet pose and glide down in
+            // U-shaped paper swoops, its cape rippling against the airflow
             .add(() => {
-              gsap.to(cape, {
-                rotation: 13,
-                scaleY: 1.14,
-                duration: 0.26,
+              setPose("fall");
+              gsap.to(fallCape, {
+                rotation: 8,
+                scaleY: 1.1,
+                duration: 0.24,
                 yoyo: true,
-                repeat: 7,
+                repeat: 9,
                 ease: "sine.inOut",
               });
-            })
+            }, "+=0.45")
             .add(
               paperFall({
                 pts: [targetX, targetX - 52, targetX + 34, targetX],
@@ -591,14 +605,17 @@ export default function HeroMascot() {
                 duration: 1.9,
               }),
             )
-            .set(cape, { rotation: 0, scaleY: 1 })
-            // Landing: swing upright onto the feet, squash with a dust puff
+            // Touch down: back to the standing pose, squash with a puff
+            .add(() => {
+              gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+              setPose("stand");
+            })
             .to(flip, {
               scaleY: 0.84,
               y: 4,
               rotation: 0,
               transformOrigin: "50% 100%",
-              duration: 0.2,
+              duration: 0.14,
               ease: "power2.in",
             })
             .add(() => puff(targetX + CHAR_W / 2, 84))
@@ -782,6 +799,71 @@ export default function HeroMascot() {
             fill="none"
             className="overflow-visible"
           >
+            {/* ===== FALLING POSE — a dedicated asset, not the standing
+                 art rotated: a horizontal sheet bowed into a gentle U by
+                 air resistance (real dropped paper flexes like this), eyes
+                 peeking over the edge, cape dragged upward, feet trailing.
+                 Swapped in during paperFall, back out on landing. ===== */}
+            <g className="m-fall" opacity="0">
+              {/* cape dragged straight up by the airflow, wavy hem on top */}
+              <path
+                className="m-fall-cape"
+                d="M22 45
+                   C 16 34 14 26 17 15
+                   Q 20 21 23 15
+                   Q 26 22 30 16
+                   Q 33 23 37 17
+                   Q 39 24 42 20
+                   C 44 30 43 38 40 45
+                   Z"
+                fill={INK}
+                opacity="0.9"
+              />
+              {/* the sheet itself, bowed into a U */}
+              <path
+                d="M4 42 Q 32 60 60 42 L 60 49 Q 32 67 4 49 Z"
+                fill={CREAM}
+                stroke={INK}
+                strokeWidth="3"
+                strokeLinejoin="round"
+              />
+              {/* folded corner at the leading tip */}
+              <path d="M60 42 L60 49 L53 47 Z" fill={INK} />
+              {/* score sticker */}
+              <circle
+                cx="12"
+                cy="46"
+                r="4"
+                fill="#CAFF43"
+                stroke={INK}
+                strokeWidth="2"
+              />
+              {/* eyes peeking over the top edge, watching the ground */}
+              <circle
+                cx="38"
+                cy="46"
+                r="4.6"
+                fill="#FFFFFF"
+                stroke={INK}
+                strokeWidth="2.4"
+              />
+              <circle
+                cx="48"
+                cy="43.5"
+                r="4.6"
+                fill="#FFFFFF"
+                stroke={INK}
+                strokeWidth="2.4"
+              />
+              <circle cx="38.6" cy="47.8" r="1.9" fill={INK} />
+              <circle cx="48.6" cy="45.3" r="1.9" fill={INK} />
+              {/* tiny feet trailing off the back edge */}
+              <ellipse cx="12" cy="56" rx="4.2" ry="2.1" fill={INK} />
+              <ellipse cx="20" cy="58.5" rx="4.2" ry="2.1" fill={INK} />
+            </g>
+
+            {/* ===== STANDING POSE (walking / flying / gesturing) ===== */}
+            <g className="m-stand">
             {/* Legs */}
             <g className="m-leg-l">
               <rect
@@ -931,6 +1013,7 @@ export default function HeroMascot() {
                 rx="1.5"
                 fill="rgba(17,17,17,0.18)"
               />
+            </g>
             </g>
           </svg>
         </div>
