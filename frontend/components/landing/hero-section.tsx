@@ -19,6 +19,46 @@ const diamond = (
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  // Set only under prefers-reduced-motion: no-preference — the stub
+  // tear-off click handler no-ops when this stays null
+  const gsapRef = useRef<typeof import("gsap").gsap | null>(null);
+  const tearingRef = useRef(false);
+
+  function tearOffStub() {
+    const gsap = gsapRef.current;
+    const stub = sectionRef.current?.querySelector(".hero-stub");
+    if (!gsap || !stub || tearingRef.current) {
+      return;
+    }
+    tearingRef.current = true;
+    gsap
+      .timeline({
+        onComplete: () => {
+          tearingRef.current = false;
+        },
+      })
+      .to(stub, {
+        rotation: 3,
+        y: 10,
+        duration: 0.16,
+        ease: "power2.in",
+        transformOrigin: "left top",
+      })
+      .to(stub, { y: 90, rotation: 8, opacity: 0, duration: 0.45, ease: "power2.in" })
+      .set(stub, { y: -18, rotation: 0 })
+      .to(stub, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" })
+      .fromTo(
+        ".hero-barcode",
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          transformOrigin: "left center",
+          duration: 0.45,
+          ease: "power2.inOut",
+        },
+        "-=0.15",
+      );
+  }
 
   function showComingSoon(feature: string) {
     toast("Coming Soon", {
@@ -40,6 +80,7 @@ export default function HeroSection() {
       mm = media;
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
+        gsapRef.current = gsap;
         // Master reveal: the boarding pass "prints" (card rises, barcode
         // prints left→right), then headline/copy/CTAs. Starts when the
         // mascot kicks the card (MASCOT_KICK_EVENT) — or after a fallback
@@ -173,6 +214,7 @@ export default function HeroSection() {
         };
         window.addEventListener("pathkr:mascot-zone", onMascotZone);
         return () => {
+          gsapRef.current = null;
           window.removeEventListener("pathkr:mascot-zone", onMascotZone);
           window.removeEventListener("pathkr:mascot-kick", startIntro);
           window.clearTimeout(fallback);
@@ -403,10 +445,21 @@ export default function HeroSection() {
               </div>
 
               {/* Tear-off ticket stub: barcode + boarding info.
-                  Mascot zone: walking under the card "scans" the barcode */}
+                  Mascot zone: walking under the card "scans" the barcode.
+                  Clicking tears it off along the perforation and reprints. */}
               <div
                 data-mascot-zone="card-stub"
-                className="hero-stub relative z-10 flex h-11 items-center justify-between gap-4 overflow-hidden px-6 md:px-10"
+                role="button"
+                tabIndex={0}
+                aria-label="Tear off and reprint the boarding stub"
+                onClick={tearOffStub}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    tearOffStub();
+                  }
+                }}
+                className="hero-stub relative z-10 flex h-11 cursor-pointer items-center justify-between gap-4 overflow-hidden px-6 md:px-10"
                 style={{ borderTop: "2px dashed rgba(245,242,216,0.16)" }}
               >
                 {/* Scan sweep played when the mascot passes */}
