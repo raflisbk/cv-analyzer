@@ -10,12 +10,13 @@ import { loadGsap } from "@/lib/gsap-loader";
    - cursor coming close startles it (stops, squash-stretch hop, arm wave)
    - click makes it somersault
    - ZONE CONDUCTOR: any element tagged `data-mascot-zone="<name>"` becomes
-     an instrument — when the mascot walks under it (and it's on screen),
-     the mascot waves and fires `pathkr:mascot-zone` with that zone name;
-     the owning component plays its effect. This is how the mascot "runs"
-     the site: sections opt in by tagging elements, the mascot never needs
-     to know what the effects are. Current zones: card-stub / hero-rows /
-     hero-stamp (hero) and rag-graph (explainer burst).
+     an instrument — when the mascot walks under one that's on screen, it
+     FLIES UP to the element (paper flutter, legs dangling), taps it — the
+     `pathkr:mascot-zone` event fires at the moment of contact so the
+     effect reads as caused by the mascot — then glides back down and
+     resumes patrolling. Sections opt in by tagging elements; the mascot
+     never needs to know what the effects are. Current zones: card-stub /
+     hero-rows / hero-stamp (hero) and rag-graph (explainer burst).
    Hidden on mobile; does nothing under prefers-reduced-motion (static pose). */
 
 export const MASCOT_ZONE_EVENT = "pathkr:mascot-zone";
@@ -23,7 +24,7 @@ export const MASCOT_ZONE_EVENT = "pathkr:mascot-zone";
    intro — the hero's master reveal timeline starts on this signal (with a
    timeout fallback for mobile, where the mascot is hidden) */
 export const MASCOT_KICK_EVENT = "pathkr:mascot-kick";
-const ZONE_COOLDOWN_MS = 6000;
+const ZONE_COOLDOWN_MS = 12000;
 const ZONE_SCAN_MS = 250;
 const INK = "#141414";
 const CREAM = "#F5F2D8";
@@ -127,20 +128,98 @@ export default function HeroMascot() {
             patrol.play();
           });
 
-        const wave = () => {
+        // Fly up to a zone element, touch it (the zone event fires at the
+        // moment of contact, so the effect reads as caused by the mascot),
+        // then flutter back down to the floor and resume patrolling.
+        let visiting = false;
+        const visitZone = (el: HTMLElement, zone: string) => {
+          visiting = true;
+          patrol.pause();
+          walkTweens.forEach((tween) => tween.pause());
+          gsap.set([legL, legR], { rotation: 0 });
+
+          const rect = el.getBoundingClientRect();
+          const rootRect = root.getBoundingClientRect();
+          const targetX = Math.min(
+            Math.max(rect.left + rect.width / 2 - CHAR_W / 2, 8),
+            root.clientWidth - CHAR_W - 8,
+          );
+          // Hover with the paper's top edge kissing the element's bottom
+          const desiredBottom = Math.min(
+            rect.bottom + 34,
+            rootRect.bottom - 4,
+          );
+          const targetY = Math.max(
+            desiredBottom - rootRect.bottom,
+            150 - rootRect.bottom, // never higher than just below the navbar
+          );
+
+          // Legs dangle while airborne
+          const dangle = gsap.to([legL, legR], {
+            rotation: (i: number) => (i === 0 ? 9 : -9),
+            transformOrigin: "top center",
+            duration: 0.4,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut",
+          });
+
           gsap
-            .timeline()
+            .timeline({
+              onComplete: () => {
+                dangle.kill();
+                gsap.set([legL, legR], { rotation: 0 });
+                walkTweens.forEach((tween) => tween.resume());
+                patrol.resume();
+                visiting = false;
+              },
+            })
+            // Take off in an arc, fluttering like a sheet of paper
+            .to(char, { x: targetX, duration: 1.2, ease: "power1.inOut" })
+            .to(char, { y: targetY, duration: 1.2, ease: "power2.out" }, "<")
+            .to(
+              flip,
+              {
+                rotation: 7,
+                duration: 0.28,
+                yoyo: true,
+                repeat: 3,
+                ease: "sine.inOut",
+              },
+              "<",
+            )
+            // Contact: tap the element, the effect fires right now
+            .add(() =>
+              window.dispatchEvent(
+                new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
+              ),
+            )
+            .to(flip, {
+              rotation: -14,
+              y: -8,
+              duration: 0.16,
+              yoyo: true,
+              repeat: 1,
+              ease: "power2.out",
+            })
             .to(arm, {
-              rotation: -120,
+              rotation: -110,
               transformOrigin: "top center",
-              duration: 0.25,
+              duration: 0.2,
+              yoyo: true,
+              repeat: 1,
               ease: "back.out(2)",
             })
-            .to(arm, { rotation: -90, duration: 0.15, yoyo: true, repeat: 3 })
-            .to(arm, { rotation: 0, duration: 0.3, ease: "power2.in" });
+            // Admire the effect for a beat, then glide back to the floor
+            .to(char, { y: 0, duration: 1.0, ease: "power2.in" }, "+=0.7")
+            .to(
+              flip,
+              { rotation: 0, y: 0, duration: 0.35, ease: "sine.out" },
+              "<",
+            );
         };
 
-        // Face the walking direction + conduct any zone we walk under
+        // Face the walking direction + visit any zone we walk under
         let lastX = 0;
         let lastZoneScan = 0;
         const zoneCooldown = new Map<string, number>();
@@ -152,35 +231,37 @@ export default function HeroMascot() {
           lastX = x;
 
           const now = performance.now();
-          if (now - lastZoneScan < ZONE_SCAN_MS || patrol.paused()) {
+          if (
+            now - lastZoneScan < ZONE_SCAN_MS ||
+            visiting ||
+            patrol.paused()
+          ) {
             return;
           }
           lastZoneScan = now;
           const charX = x + CHAR_W / 2;
-          document
-            .querySelectorAll<HTMLElement>("[data-mascot-zone]")
-            .forEach((el) => {
-              const zone = el.dataset.mascotZone;
-              if (!zone) {
-                return;
-              }
-              const rect = el.getBoundingClientRect();
-              const onScreen =
-                rect.width > 0 &&
-                rect.top < window.innerHeight - 100 &&
-                rect.bottom > 0;
-              if (!onScreen || charX < rect.left || charX > rect.right) {
-                return;
-              }
-              if (now - (zoneCooldown.get(zone) ?? 0) < ZONE_COOLDOWN_MS) {
-                return;
-              }
-              zoneCooldown.set(zone, now);
-              window.dispatchEvent(
-                new CustomEvent(MASCOT_ZONE_EVENT, { detail: { zone } }),
-              );
-              wave();
-            });
+          for (const el of document.querySelectorAll<HTMLElement>(
+            "[data-mascot-zone]",
+          )) {
+            const zone = el.dataset.mascotZone;
+            if (!zone) {
+              continue;
+            }
+            const rect = el.getBoundingClientRect();
+            const onScreen =
+              rect.width > 0 &&
+              rect.top < window.innerHeight - 100 &&
+              rect.bottom > 0;
+            if (!onScreen || charX < rect.left || charX > rect.right) {
+              continue;
+            }
+            if (now - (zoneCooldown.get(zone) ?? 0) < ZONE_COOLDOWN_MS) {
+              continue;
+            }
+            zoneCooldown.set(zone, now);
+            visitZone(el, zone);
+            break; // one visit at a time
+          }
         };
         gsap.ticker.add(tick);
 
@@ -205,7 +286,7 @@ export default function HeroMascot() {
             });
           });
 
-          if (dist < 110 && !alerted) {
+          if (dist < 110 && !alerted && !visiting) {
             alerted = true;
             patrol.pause();
             walkTweens.forEach((tween) => tween.pause());
@@ -241,7 +322,7 @@ export default function HeroMascot() {
         // Click: somersault
         let flipping = false;
         const onClick = () => {
-          if (flipping) {
+          if (flipping || visiting) {
             return;
           }
           flipping = true;
