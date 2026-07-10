@@ -408,12 +408,16 @@ export default function HeroSection() {
         {/* Editorial band above the card: stacked meta (left) +
             typographic manifesto (right) */}
         <div className="hero-fade hidden items-end justify-between gap-8 md:flex">
-          <div className="flex flex-col gap-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
-            <span className="flex items-center gap-2.5">
+          {/* Same typographic recipe as the "Why it works" rows: tiny
+              kicker on top, big display line underneath */}
+          <div className="flex flex-col gap-1">
+            <span className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
               <span className="text-[#141414]/30">{diamond}</span>
               AI Career Platform
             </span>
-            <span>Score · Fix · Match</span>
+            <span className="font-display text-2xl font-extrabold leading-none tracking-tight text-[#141414] 2xl:text-3xl">
+              Score · Fix · Match
+            </span>
           </div>
           {/* Dashed flight path flying off toward the right edge (ticket
               motif) — the manifesto it used to land on now heads the RAG

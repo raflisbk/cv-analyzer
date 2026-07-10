@@ -62,6 +62,8 @@ export default function HeroMascot() {
         const fallG = char.querySelector<SVGGElement>(".m-fall")!;
         const fallCape = char.querySelector<SVGPathElement>(".m-fall-cape")!;
         const fallLines = char.querySelector<SVGGElement>(".m-fall-lines")!;
+        const shades = char.querySelector<SVGGElement>(".m-shades")!;
+        const armsCrossed = char.querySelector<SVGGElement>(".m-arms-crossed")!;
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
@@ -566,7 +568,9 @@ export default function HeroMascot() {
               .to(torch, { opacity: 0, duration: 0.25 })
               .set(flip, { scaleX: 1 });
           } else if (gesture === "snap") {
-            // Snap the fingers — spark! — and the rows light up
+            // Snap the fingers — spark! — the rows light up, then strike
+            // the Mbappé celebration: shades drop on, arms fold across the
+            // belly, a cocky lean-back, hold... and release.
             tl.to(arm, {
               rotation: -128,
               transformOrigin: "top center",
@@ -576,7 +580,29 @@ export default function HeroMascot() {
               .add(touch)
               .to(spark, { opacity: 1, scale: 1.7, duration: 0.12, ease: "power2.out" })
               .to(spark, { opacity: 0, scale: 0.5, duration: 0.28 })
-              .to(arm, { rotation: 0, duration: 0.22 }, "<");
+              .to(arm, { rotation: 0, duration: 0.22 }, "<")
+              // celebration: shades slide down from above the eyes
+              .fromTo(
+                shades,
+                { opacity: 0, y: -9 },
+                { opacity: 1, y: 0, duration: 0.24, ease: "back.out(2.2)" },
+              )
+              .set(arm, { opacity: 0 })
+              .to(armsCrossed, { opacity: 1, duration: 0.14 }, "<")
+              .to(flip, { rotation: -5, duration: 0.25, ease: "power2.out" }, "<")
+              // proud little chest bob while holding the stance
+              .to(flip, {
+                y: -3,
+                duration: 0.4,
+                yoyo: true,
+                repeat: 3,
+                ease: "sine.inOut",
+              })
+              // release the pose
+              .to(shades, { opacity: 0, y: -8, duration: 0.2 }, "+=0.5")
+              .to(armsCrossed, { opacity: 0, duration: 0.15 }, "<")
+              .set(arm, { opacity: 1 })
+              .to(flip, { rotation: 0, duration: 0.22 }, "<");
           } else {
             // Default: lunge in and tap
             tl.to(flip, { y: -10, duration: 0.12, ease: "power3.out" })
@@ -599,15 +625,19 @@ export default function HeroMascot() {
               });
           }
 
-          tl
-            // Delighted double-hop: the effect it just triggered is playing
-            .to(flip, {
+          // Delighted double-hop — except after the snap, where the Mbappé
+          // celebration IS the celebration
+          if (gesture !== "snap") {
+            tl.to(flip, {
               y: -7,
               duration: 0.14,
               ease: "power2.out",
               yoyo: true,
               repeat: 3,
-            })
+            });
+          }
+
+          tl
             // Let go: swap to the falling-sheet pose and glide down in
             // U-shaped paper swoops, its cape rippling against the airflow
             .add(() => {
@@ -1111,6 +1141,45 @@ export default function HeroMascot() {
                 strokeLinecap="round"
                 fill="none"
               />
+
+              {/* Black sunglasses — dropped on for the Mbappé celebration */}
+              <g className="m-shades" opacity="0">
+                <rect x="16.5" y="25" width="14" height="10" rx="3.5" fill={INK} />
+                <rect x="33.5" y="25" width="14" height="10" rx="3.5" fill={INK} />
+                <rect x="29" y="27.5" width="6" height="2.5" rx="1.25" fill={INK} />
+                <rect x="12" y="27" width="5.5" height="2.5" rx="1.25" fill={INK} />
+                <rect x="46.5" y="27" width="5.5" height="2.5" rx="1.25" fill={INK} />
+                <path
+                  d="M19.5 28 l4 0"
+                  stroke="rgba(255,255,255,0.65)"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              </g>
+
+              {/* Arms folded across the belly — the celebration stance */}
+              <g className="m-arms-crossed" opacity="0">
+                <rect
+                  x="11"
+                  y="48"
+                  width="32"
+                  height="6.5"
+                  rx="3.25"
+                  fill={INK}
+                  transform="rotate(11 27 51)"
+                />
+                <rect
+                  x="21"
+                  y="48"
+                  width="32"
+                  height="6.5"
+                  rx="3.25"
+                  fill={INK}
+                  transform="rotate(-11 37 51)"
+                />
+                <circle cx="44" cy="54.5" r="3.2" fill={INK} />
+                <circle cx="20" cy="54.5" r="3.2" fill={INK} />
+              </g>
 
               {/* CV skeleton lines */}
               <rect
