@@ -779,11 +779,18 @@ export default function HeroMascot() {
               duration: 0.3,
               ease: "back.out(2.5)",
             })
-            // Fold back into the plane and glide home to where the patrol
-            // left off (the cruise physics take over the bobbing)
+            // Fold into flight and glide home to where the patrol left
+            // off. The heading MUST match the actual glide direction —
+            // facing is frozen during visits and gestures may have left
+            // scaleX pointing anywhere (the punch squares up backwards),
+            // so it's set explicitly from the geometry: nobody flies
+            // backwards.
             .add(() => {
               dangle.kill();
               gsap.set([legL, legR], { rotation: 0 });
+              const homeDir = Math.sign(currentX - targetX) || 1;
+              facing = homeDir;
+              gsap.set(flip, { scaleX: homeDir });
               foldTo("cruise");
             }, "+=0.1")
             .to(
