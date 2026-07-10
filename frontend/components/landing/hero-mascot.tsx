@@ -64,18 +64,61 @@ export default function HeroMascot() {
         const fallLines = char.querySelector<SVGGElement>(".m-fall-lines")!;
         const shades = char.querySelector<SVGGElement>(".m-shades")!;
         const armsCrossed = char.querySelector<SVGGElement>(".m-arms-crossed")!;
+        const cruiseG = char.querySelector<SVGGElement>(".m-cruise")!;
+        const contrail = char.querySelectorAll<SVGRectElement>(".m-contrail rect");
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
         gsap.set(fallG, { transformOrigin: "50% 56%" });
         gsap.set(fallCape, { transformOrigin: "50% 100%" });
 
-        // Pose swap: falling uses a dedicated asset instead of contorting
-        // the standing art
-        const setPose = (pose: "stand" | "fall") => {
-          gsap.set(standG, { autoAlpha: pose === "stand" ? 1 : 0 });
-          gsap.set(fallG, { autoAlpha: pose === "fall" ? 1 : 0 });
+        // Pose swap: each state has a dedicated asset instead of contorting
+        // one drawing. "cruise" = the folded paper plane used for patrol.
+        type Pose = "stand" | "fall" | "cruise";
+        let pose: Pose = "stand";
+        const setPose = (next: Pose) => {
+          pose = next;
+          gsap.set(standG, { autoAlpha: next === "stand" ? 1 : 0 });
+          gsap.set(fallG, { autoAlpha: next === "fall" ? 1 : 0 });
+          gsap.set(cruiseG, { autoAlpha: next === "cruise" ? 1 : 0 });
         };
+
+        // Fold/unfold transition: the paper flips through edge-on (scaleX
+        // squish, preserving facing) and comes out as the other form —
+        // reads as the sheet folding itself into a plane and back
+        let folding = false;
+        const foldTo = (next: Pose, onDone?: () => void) => {
+          folding = true;
+          const facing = Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1;
+          gsap
+            .timeline({
+              onComplete: () => {
+                folding = false;
+                onDone?.();
+              },
+            })
+            .to(flip, {
+              scaleX: 0.12 * facing,
+              duration: 0.13,
+              ease: "power2.in",
+            })
+            .add(() => setPose(next))
+            .to(flip, {
+              scaleX: facing,
+              duration: 0.2,
+              ease: "back.out(2)",
+            });
+        };
+
+        // Contrail flicker (only visible while the cruise pose is shown)
+        gsap.to(contrail, {
+          opacity: 0.06,
+          duration: 0.4,
+          yoyo: true,
+          repeat: -1,
+          stagger: 0.2,
+          ease: "sine.inOut",
+        });
 
         const CHAR_W = 64;
         const maxX = () => Math.max(root.clientWidth - CHAR_W - 32, 200);
@@ -307,10 +350,10 @@ export default function HeroMascot() {
           .to(flip, { rotation: 4, y: -6, duration: 0.18, ease: "power2.out" }, "<")
           .to(legR, { rotation: 0, duration: 0.25, ease: "power2.inOut" })
           .to(flip, { rotation: 0, y: 0, duration: 0.25, ease: "bounce.out" }, "<")
+          // Job done — fold into the paper plane and take off on patrol
           .add(() => {
-            walkTweens.forEach((tween) => tween.resume());
-            patrol.play();
-          });
+            foldTo("cruise", () => patrol.play());
+          }, "+=0.3");
 
         // Fly up to a zone element, touch it (the zone event fires at the
         // moment of contact, so the effect reads as caused by the mascot),
@@ -398,6 +441,26 @@ export default function HeroMascot() {
               visiting = false;
             },
           });
+
+          // Arriving as the paper plane: unfold back into the character
+          // before the wind-up (flip through edge-on, preserving facing)
+          if (pose === "cruise") {
+            const arriveFacing =
+              Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1;
+            tl.to(flip, {
+              scaleX: 0.12 * arriveFacing,
+              y: 0,
+              rotation: 0,
+              duration: 0.13,
+              ease: "power2.in",
+            })
+              .add(() => setPose("stand"))
+              .to(flip, {
+                scaleX: arriveFacing,
+                duration: 0.18,
+                ease: "back.out(2)",
+              });
+          }
 
           tl
             // Anticipation: crouch, eyes lock onto the target, then launch
@@ -681,17 +744,25 @@ export default function HeroMascot() {
               duration: 0.3,
               ease: "back.out(2.5)",
             })
-            // Walk back to where the patrol left off, then hand control back
+            // Fold back into the plane and glide home to where the patrol
+            // left off (the cruise physics take over the bobbing)
             .add(() => {
               dangle.kill();
               gsap.set([legL, legR], { rotation: 0 });
-              walkTweens.forEach((tween) => tween.resume());
-            })
-            .to(char, {
-              x: currentX,
-              duration: Math.min(1.3, Math.abs(targetX - currentX) / 260 + 0.25),
-              ease: "none",
-            });
+              foldTo("cruise");
+            }, "+=0.1")
+            .to(
+              char,
+              {
+                x: currentX,
+                duration: Math.min(
+                  1.3,
+                  Math.abs(targetX - currentX) / 260 + 0.25,
+                ),
+                ease: "none",
+              },
+              "+=0.35",
+            );
         };
 
         // Face the walking direction + visit any zone we walk under.
@@ -704,14 +775,50 @@ export default function HeroMascot() {
         let lastX = 0;
         let lastZoneScan = 0;
         const zoneCooldown = new Map<string, number>();
+        let facing = 1;
+        let flipping = false; // click somersault in progress
         const tick = () => {
           const x = Number(gsap.getProperty(char, "x"));
-          // While visiting, facing is choreographed (e.g. squared up to the
-          // card for the punch) — movement must not flip it mid-gesture
-          if (!visiting && Math.abs(x - lastX) > 0.1) {
-            gsap.set(flip, { scaleX: x > lastX ? 1 : -1 });
+          const dx = x - lastX;
+          // While visiting or folding, facing is choreographed (e.g.
+          // squared up to the card) — movement must not flip it mid-gesture
+          if (!visiting && !folding && Math.abs(dx) > 0.1) {
+            const dir = dx > 0 ? 1 : -1;
+            if (dir !== facing) {
+              facing = dir;
+              if (pose === "cruise") {
+                // STALL TURN — how a real paper plane reverses: it climbs,
+                // bleeds off speed, pivots through edge-on at the top, and
+                // dives back the other way
+                folding = true;
+                gsap
+                  .timeline({ onComplete: () => (folding = false) })
+                  .to(flip, { y: "-=14", duration: 0.22, ease: "power2.out" })
+                  .to(
+                    flip,
+                    { scaleX: 0.1 * -dir, duration: 0.16, ease: "power2.in" },
+                    "<0.1",
+                  )
+                  .to(flip, { scaleX: dir, duration: 0.2, ease: "power2.out" })
+                  .to(flip, { y: "+=14", duration: 0.28, ease: "power2.in" }, "<");
+              } else {
+                gsap.set(flip, { scaleX: dir });
+              }
+            }
           }
           lastX = x;
+
+          // Cruise physics: a glider porpoises — it trades height for
+          // speed on a gentle sine, and the PITCH follows the slope (nose
+          // up while climbing, down while diving). Hovers ~10px above the
+          // bar on ground effect.
+          if (pose === "cruise" && !folding && !flipping) {
+            const tAir = performance.now() / 1000;
+            gsap.set(flip, {
+              y: -10 + Math.sin(tAir * 2.3) * 5,
+              rotation: -Math.cos(tAir * 2.3) * 7,
+            });
+          }
 
           const now = performance.now();
           if (
@@ -779,41 +886,52 @@ export default function HeroMascot() {
             });
           }
 
-          if (dist < 110 && !alerted && !visiting) {
+          if (dist < 110 && !alerted && !visiting && !folding) {
             alerted = true;
             patrol.pause();
-            walkTweens.forEach((tween) => tween.pause());
             gsap.set([legL, legR], { rotation: 0 });
-            gsap
-              .timeline()
-              .to(flip, {
-                scaleY: 0.82,
-                y: 4,
-                duration: 0.1,
-                ease: "power2.in",
-              })
-              .to(flip, {
-                scaleY: 1.06,
-                y: -14,
-                duration: 0.18,
-                ease: "power2.out",
-              })
-              .to(flip, {
-                scaleY: 1,
-                y: 0,
-                duration: 0.22,
-                ease: "bounce.out",
-              });
-          } else if (dist > 190 && alerted) {
+            // startled mid-flight: pop out of the plane fold, then the
+            // classic squash-stretch jump
+            const startleHop = () => {
+              gsap
+                .timeline()
+                .to(flip, {
+                  scaleY: 0.82,
+                  y: 4,
+                  duration: 0.1,
+                  ease: "power2.in",
+                })
+                .to(flip, {
+                  scaleY: 1.06,
+                  y: -14,
+                  duration: 0.18,
+                  ease: "power2.out",
+                })
+                .to(flip, {
+                  scaleY: 1,
+                  y: 0,
+                  duration: 0.22,
+                  ease: "bounce.out",
+                });
+            };
+            if (pose === "cruise") {
+              foldTo("stand", startleHop);
+            } else {
+              startleHop();
+            }
+          } else if (dist > 190 && alerted && !folding) {
             alerted = false;
-            patrol.resume();
-            walkTweens.forEach((tween) => tween.resume());
+            // calm again: fold back into the plane and resume the patrol
+            if (pose === "stand") {
+              foldTo("cruise", () => patrol.resume());
+            } else {
+              patrol.resume();
+            }
           }
         };
         window.addEventListener("pointermove", onPointerMove);
 
         // Click: somersault
-        let flipping = false;
         const onClick = () => {
           if (flipping || visiting) {
             return;
@@ -974,6 +1092,84 @@ export default function HeroMascot() {
                 rx="1.5"
                 fill="rgba(17,17,17,0.18)"
               />
+            </g>
+
+            {/* ===== CRUISE POSE — the paper folds itself into a paper
+                 plane to travel (paper doesn't walk): dart nose pointing
+                 +x (the facing flip mirrors it), eyes near the nose, mini
+                 cape streaming off the tail, dashed contrail behind ===== */}
+            <g className="m-cruise" opacity="0">
+              <g className="m-contrail">
+                <rect
+                  x="-27"
+                  y="43"
+                  width="7"
+                  height="2.4"
+                  rx="1.2"
+                  fill="rgba(17,17,17,0.28)"
+                />
+                <rect
+                  x="-15"
+                  y="43"
+                  width="9"
+                  height="2.4"
+                  rx="1.2"
+                  fill="rgba(17,17,17,0.2)"
+                />
+              </g>
+              {/* mini cape streaming off the tail */}
+              <path
+                className="m-cruise-cape"
+                d="M9 40 C 1 36 -5 38 -11 34 Q -5 42 -11 46 C -3 46 3 44 9 46 Z"
+                fill={INK}
+                opacity="0.85"
+              />
+              {/* upper wing */}
+              <path
+                d="M62 44 L6 26 L24 44 Z"
+                fill={CREAM}
+                stroke={INK}
+                strokeWidth="3"
+                strokeLinejoin="round"
+              />
+              {/* keel */}
+              <path
+                d="M62 44 L24 44 L10 62 Z"
+                fill={CREAM}
+                stroke={INK}
+                strokeWidth="3"
+                strokeLinejoin="round"
+              />
+              {/* fold shading along the crease */}
+              <path d="M62 44 L24 44 L18 51 Z" fill="rgba(17,17,17,0.08)" />
+              {/* score sticker on the wing */}
+              <circle
+                cx="16"
+                cy="33"
+                r="4"
+                fill="#CAFF43"
+                stroke={INK}
+                strokeWidth="2"
+              />
+              {/* eyes up near the nose */}
+              <circle
+                cx="45"
+                cy="39.5"
+                r="4.4"
+                fill="#FFFFFF"
+                stroke={INK}
+                strokeWidth="2.2"
+              />
+              <circle
+                cx="54"
+                cy="41"
+                r="4.4"
+                fill="#FFFFFF"
+                stroke={INK}
+                strokeWidth="2.2"
+              />
+              <circle cx="46" cy="40.3" r="1.8" fill={INK} />
+              <circle cx="55" cy="41.8" r="1.8" fill={INK} />
             </g>
 
             {/* ===== STANDING POSE (walking / flying / gesturing) ===== */}
