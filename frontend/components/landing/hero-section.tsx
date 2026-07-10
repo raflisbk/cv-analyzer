@@ -323,13 +323,16 @@ export default function HeroSection() {
               })
               .fromTo(
                 ".hero-artifact-scan",
-                { top: "-10%", opacity: 0 },
+                // matched to the real beam geometry: the beam's center
+                // sweeps rect.top+22 → rect.bottom-18 while the mascot
+                // rides down, so the band tracks -4% → 88%
+                { top: "-4%", opacity: 0 },
                 { opacity: 1, duration: 0.25 },
                 "<",
               )
               .to(
                 ".hero-artifact-scan",
-                { top: "92%", duration: 1.9, ease: "sine.inOut" },
+                { top: "88%", duration: 1.9, ease: "sine.inOut" },
                 "<",
               )
               .to(".hero-artifact-scan", { opacity: 0, duration: 0.3 }, ">-0.15")

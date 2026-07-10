@@ -983,15 +983,35 @@ export default function HeroMascot() {
                 yellow beam sweeping the page top-to-bottom like a scanner
                 head. Drawn pointing +x; the facing flip mirrors it. */}
             <g className="m-torch" opacity="0">
-              {/* outer beam */}
+              {/* ONE beam cone with a gradient — bright at the lens,
+                  dissolving over the page. Two stacked polygons read as a
+                  "double laser" (four visible edges), so: single shape. */}
+              <defs>
+                <linearGradient
+                  id="m-torch-beam"
+                  gradientUnits="userSpaceOnUse"
+                  x1="62"
+                  y1="44"
+                  x2="380"
+                  y2="44"
+                >
+                  <stop offset="0" stopColor="rgba(255,232,130,0.55)" />
+                  <stop offset="0.45" stopColor="rgba(255,220,90,0.3)" />
+                  <stop offset="1" stopColor="rgba(255,220,90,0)" />
+                </linearGradient>
+              </defs>
               <polygon
-                points="62,38 235,2 235,88 62,50"
-                fill="rgba(255,214,70,0.26)"
+                points="62,39 380,-8 380,96 62,49"
+                fill="url(#m-torch-beam)"
               />
-              {/* hot inner core */}
-              <polygon
-                points="62,40 235,24 235,66 62,48"
-                fill="rgba(255,232,130,0.4)"
+              {/* hot glow right at the lens (source brightness, not a
+                  second cone) */}
+              <ellipse
+                cx="66"
+                cy="44"
+                rx="7"
+                ry="9"
+                fill="rgba(255,238,150,0.5)"
               />
               {/* torch: ink body, white grip band, wider head, cream lens */}
               <rect x="41" y="40" width="13" height="8" rx="2" fill={INK} />
