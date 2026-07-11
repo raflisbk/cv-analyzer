@@ -164,10 +164,11 @@ export default function HeroSection() {
           });
         };
         window.addEventListener("pathkr:mascot-kick", onKick);
-        // The mascot (md+ only) takes ~6.5s to paper-drop in and kick; wait
-        // for it where it exists, reveal almost immediately where it doesn't
+        // The mascot (md+ only) physics-drops in before kicking — worst
+        // case ~11.5s; wait for it where it exists, reveal almost
+        // immediately where it doesn't
         const mascotPresent = window.matchMedia("(min-width: 768px)").matches;
-        const fallback = window.setTimeout(startIntro, mascotPresent ? 9000 : 400);
+        const fallback = window.setTimeout(startIntro, mascotPresent ? 12500 : 400);
 
         // The mascot conducts these zones when it walks under them
         const onMascotZone = (event: Event) => {

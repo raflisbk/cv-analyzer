@@ -219,97 +219,139 @@ export default function HeroMascot() {
         // glides back. `pts` are the stall x-positions (last one = where it
         // lands); y drops linearly across the whole fall with a U-dip per
         // swing; pitch noses down into each dive, flat at the stalls.
-        const paperFall = (opts: {
-          pts: number[];
-          startY: number;
-          endY: number;
-          uDepth: number;
-          tilt: number;
-          duration: number;
+        /* Falling-paper PHYSICS SIMULATION (per-frame integration on the
+           gsap ticker) — replaces the old parametric curves. True momentum:
+           gravity, speed-dependent lift/drag, and the real falling-paper
+           limit cycle as a state machine:
+           - GLIDE: the tilted sheet slides downhill, horizontal speed
+             builds, lift (∝ vx²) progressively cancels the sink
+           - STALL: lift wins — the sheet flares nose-up, trades its speed
+             for a brief CLIMB, stops, flips over and glides back the
+             other way
+           - TUMBLE (random): it fails to catch the air and rolls end over
+             end, dropping fast, until it recovers into a glide
+           Thrown release velocity feeds straight in, so a flung mascot
+           sails before fluttering down. Lands when y reaches the floor;
+           duration/track are emergent, so callers pass an onLand. */
+        const activeSims = new Set<() => void>();
+        const paperFallSim = (opts: {
+          x: number;
+          y: number;
+          vx?: number;
+          vy?: number;
+          onLand: (impact: number, landX: number) => void;
         }) => {
-          const proxy = { t: 0 };
-          const swings = opts.pts.length - 1;
-
-          // ---- Organic variation: no two falls are ever the same ----
-          // jitter the intermediate stall points (never the landing spot)
-          const pts = opts.pts.map((p, i) =>
-            i === 0 || i === opts.pts.length - 1
-              ? p
-              : p + (Math.random() - 0.5) * Math.min(48, opts.uDepth * 0.8),
-          );
-          // uneven glide rhythm: each swing gets its own tempo
-          const weights = Array.from(
-            { length: swings },
-            () => 0.75 + Math.random() * 0.6,
-          );
-          const total = weights.reduce((a, b) => a + b, 0);
-          const cum = [0];
-          for (const w of weights) {
-            cum.push(cum[cum.length - 1] + w / total);
-          }
-          // per-swing dip depth variance
-          const depthJitter = Array.from(
-            { length: swings },
-            () => 0.8 + Math.random() * 0.4,
-          );
-          // sometimes the sheet lazily rolls right over on one glide
-          const rollSwing =
-            Math.random() < 0.55 ? Math.floor(Math.random() * swings) : -1;
-          const rollDir = Math.random() < 0.5 ? 1 : -1;
+          const G = 620;
+          let x = opts.x;
+          let y = opts.y;
+          let vx = opts.vx ?? (Math.random() - 0.5) * 90;
+          let vy = opts.vy ?? 40;
+          let dir = Math.sign(vx) || (Math.random() < 0.5 ? 1 : -1);
+          let mode: "glide" | "stall" | "tumble" = "glide";
+          let modeT = 0;
+          let elapsed = 0;
+          let rot = 0;
+          let tumbleSpin = 0;
+          const vStall = 190 + Math.random() * 70;
           const seed = Math.random() * 100;
+          const minX = 8;
+          const ceiling = 120 - root.getBoundingClientRect().bottom;
 
-          return gsap.to(proxy, {
-            t: 1,
-            duration: opts.duration,
-            ease: "none",
-            onUpdate: () => {
-              const gt01 = proxy.t;
-              // find the current swing (segments are uneven on purpose)
-              let i = 0;
-              while (i < swings - 1 && gt01 >= cum[i + 1]) {
-                i++;
+          const step = () => {
+            const dt = Math.min(gsap.ticker.deltaRatio(60) / 60, 1 / 30);
+            elapsed += dt;
+            modeT += dt;
+
+            if (mode === "glide") {
+              vx += dir * G * 0.55 * dt - vx * 0.6 * dt;
+              const lift = Math.min(1.25 * G, 0.011 * vx * vx);
+              vy += (G - lift) * dt - vy * 1.6 * dt;
+              if (Math.abs(vx) > vStall && modeT > 0.35) {
+                if (Math.random() < 0.22) {
+                  mode = "tumble";
+                  modeT = 0;
+                  tumbleSpin = dir * (7 + Math.random() * 5);
+                } else {
+                  mode = "stall";
+                  modeT = 0;
+                }
               }
-              const lt = Math.min(
-                (gt01 - cum[i]) / (cum[i + 1] - cum[i] || 1),
-                1,
-              );
-              const dive = Math.sin(Math.PI * lt);
-              // slow-fast-slow across the swing (stall → dive → stall)
-              const glide = 0.5 - 0.5 * Math.cos(Math.PI * lt);
-              const x0 = pts[i];
-              const x1 = pts[i + 1];
-              const dir = Math.sign(x1 - x0) || 1;
-              // final glide: the dive flattens out (ground effect) so the
-              // sheet never plunges through the floor
-              const dipScale = i === swings - 1 ? 1 - lt : 1;
-              // micro-turbulence, strongest at full speed
-              const turbX = Math.sin(gt01 * 47 + seed) * 2.6 * dive;
-              const turbY = Math.sin(gt01 * 39 + seed * 2) * 2.2 * dive;
-              const y = Math.min(
-                opts.startY +
-                  (opts.endY - opts.startY) * gt01 +
-                  opts.uDepth * depthJitter[i] * dive * dipScale +
-                  turbY,
-                0,
-              );
-              gsap.set(char, { x: x0 + (x1 - x0) * glide + turbX, y });
-              // THE paper cue is foreshortening: the sheet knifes edge-on
-              // (thin) at full dive speed and opens flat at each stall —
-              // plus banking into the dive, a micro-flutter, and (on the
-              // chosen glide) a full lazy tumble: 360° ends where it
-              // started, so there's no seam at the swing boundary
-              const tumble = i === rollSwing ? rollDir * 360 * glide : 0;
-              gsap.set(fallG, {
-                rotation:
-                  dir * opts.tilt * dive +
-                  tumble +
-                  Math.sin(gt01 * 55 + seed) * 3 * dive,
-                scaleY: 0.24 + 0.76 * Math.abs(Math.cos(Math.PI * lt)),
-              });
-              // air rush lines only while diving
-              gsap.set(fallLines, { opacity: dive * 0.85 });
-            },
-          });
+            } else if (mode === "stall") {
+              // flare: horizontal speed converts into a brief climb
+              vy += (G - 0.02 * vx * vx) * dt - vy * 2.2 * dt;
+              vy -= Math.abs(vx) * 3.4 * dt;
+              vx -= vx * 3.8 * dt;
+              if (Math.abs(vx) < 40 || modeT > 0.75) {
+                dir = -dir;
+                mode = "glide";
+                modeT = 0;
+              }
+            } else {
+              // tumbling: poor lift, fast drop, spinning end over end
+              vy += G * 0.75 * dt - vy * 1.1 * dt;
+              vx -= vx * 1.4 * dt;
+              if (modeT > 0.5 + Math.random() * 0.5) {
+                mode = "glide";
+                modeT = 0;
+                dir = Math.sign(tumbleSpin) || dir;
+              }
+            }
+
+            // safety: never float forever
+            if (elapsed > 9) {
+              vy = Math.max(vy, 320);
+            }
+            x += vx * dt + Math.sin(elapsed * 40 + seed) * 26 * dt;
+            y += vy * dt;
+
+            // soft walls + ceiling
+            const maxX = root.clientWidth - CHAR_W - 8;
+            if (x < minX) {
+              x = minX;
+              vx = Math.abs(vx) * 0.4;
+              dir = 1;
+            } else if (x > maxX) {
+              x = maxX;
+              vx = -Math.abs(vx) * 0.4;
+              dir = -1;
+            }
+            if (y < ceiling) {
+              y = ceiling;
+              vy = Math.max(vy, 0);
+            }
+
+            // visual: bank into the motion; stall flares nose-up; tumble
+            // spins end over end (foreshortening thins it each half-turn)
+            if (mode === "tumble") {
+              rot += tumbleSpin * 57.3 * dt;
+            } else {
+              const flare = mode === "stall" ? -dir * 24 : 0;
+              const target =
+                Math.max(-44, Math.min(44, vx * 0.1)) + flare;
+              rot += (target - rot) * Math.min(1, 8 * dt);
+            }
+            const sp = Math.hypot(vx, vy);
+            gsap.set(char, { x, y });
+            gsap.set(fallG, {
+              rotation: rot + Math.sin(elapsed * 47 + seed) * 2.5,
+              scaleY:
+                0.24 + 0.76 * Math.abs(Math.cos((rot * Math.PI) / 180)),
+            });
+            gsap.set(fallLines, {
+              opacity: Math.min(0.85, (sp / 420) * 0.85),
+            });
+
+            // touchdown
+            if (y >= 0) {
+              gsap.set(char, { x, y: 0 });
+              gsap.ticker.remove(step);
+              activeSims.delete(remove);
+              opts.onLand(Math.min(1.6, Math.max(0.6, vy / 240)), x);
+            }
+          };
+          const remove = () => gsap.ticker.remove(step);
+          activeSims.add(remove);
+          gsap.ticker.add(step);
         };
 
         // Expanding shockwave ring for hard impacts (the punch)
@@ -373,49 +415,40 @@ export default function HeroMascot() {
           repeat: -1,
           ease: "sine.inOut",
         });
-        gsap
-          .timeline()
-          .add(
-            paperFall({
-              // stall points: thrown in from the right of the anchor, three
-              // decaying glides, landing exactly on the anchor
-              pts: [
-                dropAnchorX + 75,
-                dropAnchorX - 100,
-                dropAnchorX + 60,
-                dropAnchorX,
-              ],
-              startY: -dropHeight,
-              endY: 0,
-              // deep enough that lift genuinely raises the sheet at each
-              // stall (needs > dropPerSwing/π to reverse the descent)
-              uDepth: (dropHeight / 3) * 0.42,
-              tilt: 26,
-              // real paper falls SLOWLY — the leisurely pace is part of
-              // what makes it read as paper
-              duration: 5.2,
-            }),
-          )
-          // Touch down: pop back to the standing pose, squash, dust
-          .add(() => {
-            introCapeFlutter.kill();
-            gsap.set(fallCape, { rotation: 0, scaleY: 1 });
-            setPose("stand");
-            puff(dropAnchorX + CHAR_W / 2, 84);
-          })
-          .to(flip, {
-            scaleY: 0.8,
-            y: 5,
-            transformOrigin: "50% 100%",
-            duration: 0.14,
-            ease: "power2.in",
-          })
-          .to(flip, { scaleY: 1, y: 0, duration: 0.35, ease: "back.out(2.2)" })
-          .set([legL, legR], { rotation: 0 })
-          // Dust itself off, then walk to the card's corner
-          .add(() => walkTweens.forEach((tween) => tween.resume()))
-          .to(char, { x: 16, duration: 0.7, ease: "power1.inOut" })
-          .add(() => {
+        // Physics drop-in: the sim decides the track and duration; landing
+        // continues the story (flop → walk to the card → kick)
+        paperFallSim({
+          x: dropAnchorX + 75,
+          y: -dropHeight,
+          vx: -70,
+          onLand: (impact, landX) =>
+            gsap
+              .timeline()
+              // Touch down: pop back to the standing pose, squash, dust
+              .add(() => {
+                introCapeFlutter.kill();
+                gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+                gsap.set(fallG, { rotation: 0, scaleY: 1 });
+                setPose("stand");
+                puff(landX + CHAR_W / 2, 84, impact);
+              })
+              .to(flip, {
+                scaleY: 0.8,
+                y: 5,
+                transformOrigin: "50% 100%",
+                duration: 0.14,
+                ease: "power2.in",
+              })
+              .to(flip, { scaleY: 1, y: 0, duration: 0.35, ease: "back.out(2.2)" })
+              .set([legL, legR], { rotation: 0 })
+              // Dust itself off, then walk to the card's corner
+              .add(() => walkTweens.forEach((tween) => tween.resume()))
+              .to(char, {
+                x: 16,
+                duration: Math.min(1.6, Math.abs(landX - 16) / 190 + 0.35),
+                ease: "power1.inOut",
+              })
+              .add(() => {
             walkTweens.forEach((tween) => tween.pause());
             gsap.set([legL, legR], { rotation: 0 });
           })
@@ -434,13 +467,14 @@ export default function HeroMascot() {
           .to(flip, { rotation: 4, y: -6, duration: 0.18, ease: "power2.out" }, "<")
           .to(legR, { rotation: 0, duration: 0.25, ease: "power2.inOut" })
           .to(flip, { rotation: 0, y: 0, duration: 0.25, ease: "bounce.out" }, "<")
-          // Job done — fold into flight and take off on patrol
-          .add(() => {
-            foldTo("cruise", () => {
-              introDone = true;
-              patrol.play();
-            });
-          }, "+=0.3");
+              // Job done — fold into flight and take off on patrol
+              .add(() => {
+                foldTo("cruise", () => {
+                  introDone = true;
+                  patrol.play();
+                });
+              }, "+=0.3"),
+        });
 
         // Fly up to a zone element, touch it (the zone event fires at the
         // moment of contact, so the effect reads as caused by the mascot),
@@ -484,8 +518,6 @@ export default function HeroMascot() {
             rect.bottom + 26 - rootRect.bottom,
             -20,
           );
-          // Where the descent starts from — the torch releases lower down
-          const releaseY = zone === "cv-artifact" ? scanEndY : targetY;
 
           // Legs dangle while airborne
           const dangle = gsap.to([legL, legR], {
@@ -519,15 +551,9 @@ export default function HeroMascot() {
                   ? "snap"
                   : "tap";
 
-          const tl = gsap.timeline({
-            onComplete: () => {
-              dangle.kill();
-              gsap.set([legL, legR], { rotation: 0 });
-              gsap.to(pupils, { x: 0, y: 0, duration: 0.3 });
-              patrol.resume();
-              visiting = false;
-            },
-          });
+          // completion (patrol resume etc.) happens in the sim's landing
+          // chain — the timeline itself ends when the sheet is let go
+          const tl = gsap.timeline();
 
           // Arriving in superman cruise: level out of the flight attitude
           // into the upright character before the wind-up
@@ -790,9 +816,60 @@ export default function HeroMascot() {
             });
           }
 
+          // Touchdown continuation: squash scaled by impact, then fold
+          // into flight and glide home. The heading MUST match the actual
+          // glide direction — facing is frozen during visits and gestures
+          // may have left scaleX pointing anywhere (the punch squares up
+          // backwards): nobody flies backwards.
+          const visitLand = (impact: number, landX: number) => {
+            gsap
+              .timeline()
+              .add(() => {
+                gsap.killTweensOf(fallCape);
+                gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+                gsap.set(fallG, { rotation: 0, scaleY: 1 });
+                setPose("stand");
+                puff(landX + CHAR_W / 2, 84, impact);
+              })
+              .to(flip, {
+                scaleY: Math.max(0.68, 0.92 - impact * 0.15),
+                y: 4,
+                rotation: 0,
+                transformOrigin: "50% 100%",
+                duration: 0.14,
+                ease: "power2.in",
+              })
+              .to(flip, { scaleY: 1, y: 0, duration: 0.3, ease: "back.out(2.5)" })
+              .add(() => {
+                dangle.kill();
+                gsap.set([legL, legR], { rotation: 0 });
+                gsap.to(pupils, { x: 0, y: 0, duration: 0.3 });
+                const homeDir = Math.sign(currentX - landX) || 1;
+                facing = homeDir;
+                gsap.set(flip, { scaleX: homeDir });
+                foldTo("cruise");
+              }, "+=0.1")
+              .to(
+                char,
+                {
+                  x: currentX,
+                  duration: Math.min(
+                    1.3,
+                    Math.abs(landX - currentX) / 260 + 0.25,
+                  ),
+                  ease: "none",
+                  onComplete: () => {
+                    patrol.resume();
+                    visiting = false;
+                  },
+                },
+                "+=0.35",
+              );
+          };
+
           tl
-            // Let go: swap to the falling-sheet pose and glide down in
-            // U-shaped paper swoops, its cape rippling against the airflow
+            // Let go: swap to the falling-sheet pose — from here the
+            // physics simulation owns the descent
             .add(() => {
               setPose("fall");
               gsap.to(fallCape, {
@@ -800,66 +877,16 @@ export default function HeroMascot() {
                 scaleY: 1.1,
                 duration: 0.24,
                 yoyo: true,
-                repeat: 9,
+                repeat: -1,
                 ease: "sine.inOut",
               });
-            }, "+=0.45")
-            .add(
-              paperFall({
-                pts: [targetX, targetX - 52, targetX + 34, targetX],
-                startY: releaseY,
-                endY: 0,
-                uDepth: (Math.abs(releaseY) / 3) * 0.42,
-                tilt: 22,
-                duration: 2.6,
-              }),
-            )
-            // Touch down: back to the standing pose, squash with a puff
-            .add(() => {
-              gsap.set(fallCape, { rotation: 0, scaleY: 1 });
-              setPose("stand");
-            })
-            .to(flip, {
-              scaleY: 0.84,
-              y: 4,
-              rotation: 0,
-              transformOrigin: "50% 100%",
-              duration: 0.14,
-              ease: "power2.in",
-            })
-            .add(() => puff(targetX + CHAR_W / 2, 84))
-            .to(flip, {
-              scaleY: 1,
-              y: 0,
-              duration: 0.3,
-              ease: "back.out(2.5)",
-            })
-            // Fold into flight and glide home to where the patrol left
-            // off. The heading MUST match the actual glide direction —
-            // facing is frozen during visits and gestures may have left
-            // scaleX pointing anywhere (the punch squares up backwards),
-            // so it's set explicitly from the geometry: nobody flies
-            // backwards.
-            .add(() => {
-              dangle.kill();
-              gsap.set([legL, legR], { rotation: 0 });
-              const homeDir = Math.sign(currentX - targetX) || 1;
-              facing = homeDir;
-              gsap.set(flip, { scaleX: homeDir });
-              foldTo("cruise");
-            }, "+=0.1")
-            .to(
-              char,
-              {
-                x: currentX,
-                duration: Math.min(
-                  1.3,
-                  Math.abs(targetX - currentX) / 260 + 0.25,
-                ),
-                ease: "none",
-              },
-              "+=0.35",
-            );
+              paperFallSim({
+                x: Number(gsap.getProperty(char, "x")),
+                y: Number(gsap.getProperty(char, "y")),
+                vx: (Math.random() - 0.5) * 140,
+                onLand: visitLand,
+              });
+            }, "+=0.45");
         };
 
         // Face the walking direction + visit any zone we walk under.
@@ -1064,6 +1091,10 @@ export default function HeroMascot() {
         let dragDangle: ReturnType<typeof gsap.to> | null = null;
         let grabPatrolX = 0;
         let lastClientX = 0;
+        let lastClientY = 0;
+        let lastMoveTime = 0;
+        let throwVX = 0; // smoothed release velocity (px/s) — a fling throws it
+        let throwVY = 0;
 
         const onGrab = (event: PointerEvent) => {
           if (!introDone || visiting || folding || flipping || dragging) {
@@ -1075,6 +1106,10 @@ export default function HeroMascot() {
           patrol.pause();
           grabPatrolX = Number(gsap.getProperty(char, "x"));
           lastClientX = event.clientX;
+          lastClientY = event.clientY;
+          lastMoveTime = event.timeStamp;
+          throwVX = 0;
+          throwVY = 0;
           if (pose === "cruise") {
             exitCruiseAttitude();
           }
@@ -1139,7 +1174,13 @@ export default function HeroMascot() {
           gsap.to(char, { x, y, duration: 0.18, ease: "power2.out", overwrite: "auto" });
           // pendulum: the sheet trails against the drag direction
           const vx = event.clientX - lastClientX;
+          // smoothed pointer velocity → initial conditions when released
+          const dtMove = Math.max((event.timeStamp - lastMoveTime) / 1000, 0.004);
+          throwVX = throwVX * 0.65 + ((event.clientX - lastClientX) / dtMove) * 0.35;
+          throwVY = throwVY * 0.65 + ((event.clientY - lastClientY) / dtMove) * 0.35;
           lastClientX = event.clientX;
+          lastClientY = event.clientY;
+          lastMoveTime = event.timeStamp;
           gsap.to(flip, {
             rotation: Math.max(-38, Math.min(38, -vx * 2.2)),
             duration: 0.28,
@@ -1187,10 +1228,11 @@ export default function HeroMascot() {
           };
 
           if (dropY < -40) {
-            // dropped from height: the sheet falls like paper
+            // dropped (or THROWN — the release velocity carries) from
+            // height: the physics sim owns the fall
             gsap.to(flip, { rotation: 0, duration: 0.12, overwrite: "auto" });
             setPose("fall");
-            const flutter = gsap.to(fallCape, {
+            gsap.to(fallCape, {
               rotation: 8,
               scaleY: 1.1,
               duration: 0.24,
@@ -1198,35 +1240,38 @@ export default function HeroMascot() {
               repeat: -1,
               ease: "sine.inOut",
             });
-            const sway = Math.min(Math.abs(dropY) * 0.14, 64);
-            gsap
-              .timeline()
-              .add(
-                paperFall({
-                  pts: [dropX, dropX - sway, dropX + sway * 0.6, dropX],
-                  startY: dropY,
-                  endY: 0,
-                  uDepth: (Math.abs(dropY) / 3) * 0.42,
-                  tilt: 22,
-                  duration: Math.min(3.2, Math.max(1.0, Math.abs(dropY) / 280)),
-                }),
-              )
-              .add(() => {
-                flutter.kill();
-                gsap.set(fallCape, { rotation: 0, scaleY: 1 });
-                setPose("stand");
-                puff(dropX + CHAR_W / 2, 84);
-              })
-              .to(flip, {
-                scaleY: 0.84,
-                y: 4,
-                rotation: 0,
-                transformOrigin: "50% 100%",
-                duration: 0.14,
-                ease: "power2.in",
-              })
-              .to(flip, { scaleY: 1, y: 0, duration: 0.3, ease: "back.out(2.5)" })
-              .add(goHome, "+=0.25");
+            paperFallSim({
+              x: dropX,
+              y: dropY,
+              vx: Math.max(-520, Math.min(520, throwVX)),
+              vy: Math.max(-320, Math.min(320, throwVY)),
+              onLand: (impact, landX) => {
+                gsap
+                  .timeline()
+                  .add(() => {
+                    gsap.killTweensOf(fallCape);
+                    gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+                    gsap.set(fallG, { rotation: 0, scaleY: 1 });
+                    setPose("stand");
+                    puff(landX + CHAR_W / 2, 84, impact);
+                  })
+                  .to(flip, {
+                    scaleY: Math.max(0.68, 0.92 - impact * 0.15),
+                    y: 4,
+                    rotation: 0,
+                    transformOrigin: "50% 100%",
+                    duration: 0.14,
+                    ease: "power2.in",
+                  })
+                  .to(flip, {
+                    scaleY: 1,
+                    y: 0,
+                    duration: 0.3,
+                    ease: "back.out(2.5)",
+                  })
+                  .add(goHome, "+=0.25");
+              },
+            });
           } else {
             // released near the floor: pop out of the grabbed pose, settle
             gsap
@@ -1250,6 +1295,8 @@ export default function HeroMascot() {
 
         return () => {
           gsap.ticker.remove(tick);
+          activeSims.forEach((removeSim) => removeSim());
+          activeSims.clear();
           window.removeEventListener("pointermove", onPointerMove);
           char.removeEventListener("click", onClick);
           char.removeEventListener("pointerdown", onGrab);
