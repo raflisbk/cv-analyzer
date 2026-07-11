@@ -76,6 +76,7 @@ export default function HeroMascot() {
         // reads consistently everywhere.
         type Pose = "stand" | "fall" | "cruise";
         let pose: Pose = "stand";
+        let introDone = false;
         const setPose = (next: Pose) => {
           pose = next;
           gsap.set(standG, { autoAlpha: next === "fall" ? 0 : 1 });
@@ -382,9 +383,12 @@ export default function HeroMascot() {
           .to(flip, { rotation: 4, y: -6, duration: 0.18, ease: "power2.out" }, "<")
           .to(legR, { rotation: 0, duration: 0.25, ease: "power2.inOut" })
           .to(flip, { rotation: 0, y: 0, duration: 0.25, ease: "bounce.out" }, "<")
-          // Job done — fold into the paper plane and take off on patrol
+          // Job done — fold into flight and take off on patrol
           .add(() => {
-            foldTo("cruise", () => patrol.play());
+            foldTo("cruise", () => {
+              introDone = true;
+              patrol.play();
+            });
           }, "+=0.3");
 
         // Fly up to a zone element, touch it (the zone event fires at the
@@ -979,9 +983,10 @@ export default function HeroMascot() {
         };
         window.addEventListener("pointermove", onPointerMove);
 
-        // Click: somersault
+        // Click: somersault (suppressed right after a drag)
         const onClick = () => {
-          if (flipping || visiting) {
+          if (flipping || visiting || wasDragged) {
+            wasDragged = false;
             return;
           }
           flipping = true;
@@ -998,10 +1003,176 @@ export default function HeroMascot() {
         };
         char.addEventListener("click", onClick);
 
+        // ---- Drag & drop: grab the paper — it dangles from the cursor,
+        // swinging like a sheet held by its top edge (pendulum follows the
+        // drag momentum) — and when released from height it falls with the
+        // full paper physics, then flies home and resumes patrolling. ----
+        char.style.touchAction = "none";
+        let dragging = false;
+        let wasDragged = false;
+        let dragDangle: ReturnType<typeof gsap.to> | null = null;
+        let grabPatrolX = 0;
+        let lastClientX = 0;
+
+        const onGrab = (event: PointerEvent) => {
+          if (!introDone || visiting || folding || flipping || dragging) {
+            return;
+          }
+          dragging = true;
+          wasDragged = false;
+          visiting = true; // busy-guard: no zones, no startle, facing frozen
+          patrol.pause();
+          grabPatrolX = Number(gsap.getProperty(char, "x"));
+          lastClientX = event.clientX;
+          if (pose === "cruise") {
+            setPose("stand");
+            exitCruiseAttitude();
+          }
+          gsap.to(flip, { rotation: 0, y: 0, duration: 0.15, overwrite: "auto" });
+          gsap.set([legL, legR], { rotation: 0 });
+          dragDangle = gsap.to([legL, legR], {
+            rotation: (i: number) => (i === 0 ? 10 : -10),
+            transformOrigin: "top center",
+            duration: 0.35,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut",
+          });
+          document.body.style.cursor = "grabbing";
+          event.preventDefault();
+        };
+
+        const onDragMove = (event: PointerEvent) => {
+          if (!dragging) {
+            return;
+          }
+          wasDragged = true;
+          const rootRect = root.getBoundingClientRect();
+          const x = Math.min(
+            Math.max(event.clientX - CHAR_W / 2, 8),
+            root.clientWidth - CHAR_W - 8,
+          );
+          // held by the top edge, ~12px below the cursor
+          const y = Math.min(
+            Math.max(
+              event.clientY + 12 - rootRect.bottom + 88,
+              80 - rootRect.bottom,
+            ),
+            0,
+          );
+          gsap.to(char, { x, y, duration: 0.18, ease: "power2.out", overwrite: "auto" });
+          // pendulum: the sheet trails against the drag direction
+          const vx = event.clientX - lastClientX;
+          lastClientX = event.clientX;
+          gsap.to(flip, {
+            rotation: Math.max(-38, Math.min(38, -vx * 2.2)),
+            duration: 0.28,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+        };
+
+        const onRelease = () => {
+          if (!dragging) {
+            return;
+          }
+          dragging = false;
+          dragDangle?.kill();
+          dragDangle = null;
+          gsap.set([legL, legR], { rotation: 0 });
+          document.body.style.cursor = "";
+
+          const dropX = Number(gsap.getProperty(char, "x"));
+          const dropY = Number(gsap.getProperty(char, "y"));
+
+          // after settling on the floor: fly back to the patrol position
+          const goHome = () => {
+            const landX = Number(gsap.getProperty(char, "x"));
+            const homeDir = Math.sign(grabPatrolX - landX) || 1;
+            facing = homeDir;
+            gsap.set(flip, { scaleX: homeDir });
+            foldTo("cruise", () => {
+              gsap.to(char, {
+                x: grabPatrolX,
+                duration: Math.min(
+                  1.4,
+                  Math.abs(grabPatrolX - landX) / 260 + 0.25,
+                ),
+                ease: "none",
+                onComplete: () => {
+                  visiting = false;
+                  patrol.resume();
+                },
+              });
+            });
+          };
+
+          if (dropY < -40) {
+            // dropped from height: the sheet falls like paper
+            gsap.to(flip, { rotation: 0, duration: 0.12, overwrite: "auto" });
+            setPose("fall");
+            const flutter = gsap.to(fallCape, {
+              rotation: 8,
+              scaleY: 1.1,
+              duration: 0.24,
+              yoyo: true,
+              repeat: -1,
+              ease: "sine.inOut",
+            });
+            const sway = Math.min(Math.abs(dropY) * 0.14, 64);
+            gsap
+              .timeline()
+              .add(
+                paperFall({
+                  pts: [dropX, dropX - sway, dropX + sway * 0.6, dropX],
+                  startY: dropY,
+                  endY: 0,
+                  uDepth: (Math.abs(dropY) / 3) * 0.42,
+                  tilt: 22,
+                  duration: Math.min(3.2, Math.max(1.0, Math.abs(dropY) / 280)),
+                }),
+              )
+              .add(() => {
+                flutter.kill();
+                gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+                setPose("stand");
+                puff(dropX + CHAR_W / 2, 84);
+              })
+              .to(flip, {
+                scaleY: 0.84,
+                y: 4,
+                rotation: 0,
+                transformOrigin: "50% 100%",
+                duration: 0.14,
+                ease: "power2.in",
+              })
+              .to(flip, { scaleY: 1, y: 0, duration: 0.3, ease: "back.out(2.5)" })
+              .add(goHome, "+=0.25");
+          } else {
+            // released near the floor: little settle, then off it goes
+            gsap
+              .timeline()
+              .to(char, { y: 0, duration: 0.2, ease: "power2.in" })
+              .to(flip, { rotation: 0, duration: 0.2 }, "<")
+              .to(flip, { scaleY: 0.88, y: 3, duration: 0.1, ease: "power2.in" })
+              .to(flip, { scaleY: 1, y: 0, duration: 0.25, ease: "back.out(2)" })
+              .add(goHome, "+=0.15");
+          }
+        };
+
+        char.addEventListener("pointerdown", onGrab);
+        window.addEventListener("pointermove", onDragMove);
+        window.addEventListener("pointerup", onRelease);
+        window.addEventListener("pointercancel", onRelease);
+
         return () => {
           gsap.ticker.remove(tick);
           window.removeEventListener("pointermove", onPointerMove);
           char.removeEventListener("click", onClick);
+          char.removeEventListener("pointerdown", onGrab);
+          window.removeEventListener("pointermove", onDragMove);
+          window.removeEventListener("pointerup", onRelease);
+          window.removeEventListener("pointercancel", onRelease);
           resizeObserver.disconnect();
         };
       });
