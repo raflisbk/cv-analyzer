@@ -67,6 +67,7 @@ export default function HeroMascot() {
         const grabG = char.querySelector<SVGGElement>(".m-grab")!;
         const grabSweat = char.querySelector<SVGPathElement>(".m-grab-sweat")!;
         const grabLegs = char.querySelector<SVGGElement>(".m-grab-legs")!;
+        const kickG = char.querySelector<SVGGElement>(".m-kick")!;
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
@@ -162,13 +163,13 @@ export default function HeroMascot() {
         const CHAR_W = 64;
         const maxX = () => Math.max(root.clientWidth - CHAR_W - 32, 200);
 
-        // Patrol walk, left <-> right — starts after the walk-in intro
+        // Patrol flight, left <-> right — starts after the intro
         const patrol = gsap.fromTo(
           char,
           { x: 16 },
           {
             x: maxX,
-            duration: 30,
+            duration: 13,
             ease: "none",
             yoyo: true,
             repeat: -1,
@@ -449,31 +450,56 @@ export default function HeroMascot() {
                 ease: "power1.inOut",
               })
               .add(() => {
-            walkTweens.forEach((tween) => tween.pause());
-            gsap.set([legL, legR], { rotation: 0 });
-          })
-          .to(flip, { rotation: -8, y: 2, duration: 0.16, ease: "power2.in" })
-          .to(legR, {
-            rotation: -70,
-            duration: 0.12,
-            ease: "power3.out",
-            transformOrigin: "top center",
-          })
-          .add(() => {
-            window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT));
-            // dust off the front foot right where the kick lands
-            puff(16 + CHAR_W - 2, 82);
-          })
-          .to(flip, { rotation: 4, y: -6, duration: 0.18, ease: "power2.out" }, "<")
-          .to(legR, { rotation: 0, duration: 0.25, ease: "power2.inOut" })
-          .to(flip, { rotation: 0, y: 0, duration: 0.25, ease: "bounce.out" }, "<")
+                walkTweens.forEach((tween) => tween.pause());
+                gsap.set([legL, legR], { rotation: 0 });
+              })
+              // FACE THE CARD (it's on the right — the old kick faced away,
+              // which is why it read as kicking thin air)
+              .set(flip, { scaleX: 1 })
+              // Anticipation: coil back over the support leg... hold it...
+              .to(flip, {
+                rotation: -9,
+                scaleY: 0.84,
+                y: 4,
+                transformOrigin: "50% 100%",
+                duration: 0.24,
+                ease: "power2.in",
+              })
+              // STRIKE — snap into the dedicated kick pose and lunge; the
+              // impact (event + ring + dust AT the foot) lands on the same
+              // frame, so the card visibly takes the hit
+              .add(() => {
+                gsap.set(standG, { autoAlpha: 0 });
+                gsap.set(kickG, { autoAlpha: 1 });
+                gsap.set(flip, { rotation: 0, scaleY: 1, y: 0 });
+              }, "+=0.12")
+              .to(char, { x: "+=20", duration: 0.09, ease: "power4.in" })
+              .add(() => {
+                window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT));
+                const cx = Number(gsap.getProperty(char, "x"));
+                impactRing(cx + 66, 56);
+                puff(cx + 66, 58, 1.5);
+              })
+              // hold the extended kick — a readable pose, not a twitch
+              .to(char, { x: "-=12", duration: 0.22, ease: "power2.out" }, "+=0.3")
+              .add(() => {
+                gsap.set(kickG, { autoAlpha: 0 });
+                gsap.set(standG, { autoAlpha: 1 });
+              })
+              .to(flip, {
+                scaleY: 0.9,
+                y: 3,
+                duration: 0.1,
+                ease: "power2.in",
+              })
+              .to(flip, { scaleY: 1, y: 0, rotation: 0, duration: 0.28, ease: "back.out(2)" })
               // Job done — fold into flight and take off on patrol
               .add(() => {
                 foldTo("cruise", () => {
                   introDone = true;
                   patrol.play();
                 });
-              }, "+=0.3"),
+              }, "+=0.25"),
         });
 
         // Fly up to a zone element, touch it (the zone event fires at the
@@ -911,26 +937,60 @@ export default function HeroMascot() {
             if (dir !== facing) {
               facing = dir;
               if (pose === "cruise") {
-                // STALL TURN — the flyer reverses like a glider: climbs,
-                // bleeds off speed, pivots through edge-on at the top, and
-                // dives back the other way (rotation retargeted to the new
-                // heading so the tick picks up seamlessly)
+                // WINGOVER — the turnaround flies around an imaginary
+                // circle: a half-loop whose body stays TANGENT to the arc
+                // the whole way (climb curving forward, vertical at the
+                // side, curling back over the top), the mirror flip hidden
+                // at the vertical moment, then a glide back down to cruise
+                // height already heading the other way.
                 folding = true;
+                patrol.pause();
+                const oldD = -dir;
+                const entryX = Number(gsap.getProperty(char, "x"));
+                const r = 46;
+                const arc = { th: 0 };
+                let mirrored = false;
                 gsap
-                  .timeline({ onComplete: () => (folding = false) })
-                  .to(flip, { y: "-=14", duration: 0.22, ease: "power2.out" })
-                  .to(
-                    flip,
-                    { scaleX: 0.1 * -dir, duration: 0.16, ease: "power2.in" },
-                    "<0.1",
-                  )
-                  .to(flip, {
-                    scaleX: dir,
-                    rotation: dir * 76,
-                    duration: 0.2,
-                    ease: "power2.out",
+                  .timeline({
+                    onComplete: () => {
+                      folding = false;
+                      patrol.resume();
+                    },
                   })
-                  .to(flip, { y: "+=14", duration: 0.28, ease: "power2.in" }, "<");
+                  .to(arc, {
+                    th: Math.PI,
+                    duration: 1.05,
+                    ease: "sine.inOut",
+                    onUpdate: () => {
+                      const th = arc.th;
+                      gsap.set(char, {
+                        x: entryX + oldD * Math.sin(th) * r,
+                        y: -(r - Math.cos(th) * r),
+                      });
+                      // tangent heading: level → vertical → level reversed;
+                      // the facing flip happens at the vertical instant,
+                      // where the mirrored art lines up with itself
+                      if (th <= Math.PI / 2) {
+                        gsap.set(flip, {
+                          rotation: oldD * 76 * Math.cos(th),
+                          y: 0,
+                        });
+                      } else {
+                        if (!mirrored) {
+                          mirrored = true;
+                          gsap.set(flip, { scaleX: dir });
+                        }
+                        gsap.set(flip, {
+                          rotation: dir * 76 * -Math.cos(th),
+                          y: 0,
+                        });
+                      }
+                    },
+                  })
+                  // glide back down from the top of the loop to cruise
+                  // level (x stays on the entry point so the patrol resumes
+                  // seamlessly from where it paused)
+                  .to(char, { y: 0, duration: 0.55, ease: "power1.in" });
               } else {
                 gsap.set(flip, { scaleX: dir });
               }
@@ -1441,6 +1501,129 @@ export default function HeroMascot() {
                 rx="1.5"
                 fill="rgba(17,17,17,0.18)"
               />
+            </g>
+
+            {/* ===== KICK POSE — a proper flying side-kick for the intro:
+                 body leaning back over the support leg, kicking leg fully
+                 extended into the card, arms flung for balance, determined
+                 brows, cape whipped back ===== */}
+            <g className="m-kick" opacity="0">
+              {/* cape whipped back by the strike */}
+              <path
+                d="M10 24 C 0 27 -6 34 -13 30 Q -5 40 -13 46 C -3 48 5 42 13 41 Z"
+                fill={INK}
+                opacity="0.88"
+              />
+              {/* support leg planted under the lean */}
+              <rect
+                x="19"
+                y="62"
+                width="3.6"
+                height="18"
+                rx="1.8"
+                fill={INK}
+                transform="rotate(12 21 62)"
+              />
+              <ellipse cx="18" cy="81" rx="6" ry="3" fill={INK} />
+              {/* kicking leg: fully extended forward */}
+              <rect
+                x="33"
+                y="56"
+                width="28"
+                height="4.2"
+                rx="2.1"
+                fill={INK}
+                transform="rotate(-13 33 58)"
+              />
+              <ellipse
+                cx="63"
+                cy="50"
+                rx="6.5"
+                ry="3.4"
+                fill={INK}
+                transform="rotate(-13 63 50)"
+              />
+              {/* arms flung for balance */}
+              <rect
+                x="0"
+                y="24"
+                width="15"
+                height="3.4"
+                rx="1.7"
+                fill={INK}
+                transform="rotate(-36 2 26)"
+              />
+              <rect
+                x="42"
+                y="17"
+                width="15"
+                height="3.4"
+                rx="1.7"
+                fill={INK}
+                transform="rotate(26 44 19)"
+              />
+              {/* body sheet leaning back into the kick */}
+              <g transform="rotate(-14 28 40)">
+                <rect
+                  x="4"
+                  y="6"
+                  width="48"
+                  height="58"
+                  rx="8"
+                  fill={CREAM}
+                  stroke={INK}
+                  strokeWidth="3"
+                />
+                <path d="M38 7 L51 20 L38 20 Z" fill={INK} />
+                <circle
+                  cx="13"
+                  cy="15"
+                  r="4.5"
+                  fill="#CAFF43"
+                  stroke={INK}
+                  strokeWidth="2"
+                />
+                {/* determined eyes + angry brows */}
+                <circle
+                  cx="22"
+                  cy="31"
+                  r="5.4"
+                  fill="#FFFFFF"
+                  stroke={INK}
+                  strokeWidth="2.4"
+                />
+                <circle
+                  cx="37"
+                  cy="31"
+                  r="5.4"
+                  fill="#FFFFFF"
+                  stroke={INK}
+                  strokeWidth="2.4"
+                />
+                <circle cx="23.5" cy="31.5" r="2" fill={INK} />
+                <circle cx="38.5" cy="31.5" r="2" fill={INK} />
+                <path
+                  d="M16 24.5 l9 3 M44 27.5 l-9 -3"
+                  stroke={INK}
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                />
+                {/* gritted mouth */}
+                <path
+                  d="M26 42 h8"
+                  stroke={INK}
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x="12"
+                  y="50"
+                  width="22"
+                  height="3"
+                  rx="1.5"
+                  fill="rgba(17,17,17,0.25)"
+                />
+              </g>
             </g>
 
             {/* ===== GRABBED POSE — pinched by the cursor at the top edge:
