@@ -68,6 +68,63 @@ export default function HeroMascot() {
         const grabSweat = char.querySelector<SVGPathElement>(".m-grab-sweat")!;
         const grabLegs = char.querySelector<SVGGElement>(".m-grab-legs")!;
         const kickG = char.querySelector<SVGGElement>(".m-kick")!;
+        const dizzyG = char.querySelector<SVGGElement>(".m-dizzy")!;
+        const dizzyStars = char.querySelector<SVGGElement>(".m-dizzy-stars")!;
+
+        // ---- Speech bubble: a comic-style bubble above the mascot's
+        // head (cream + ink border + tail, matching the character art).
+        // Singleton — a new line replaces whatever it was saying. ----
+        let bubbleEl: HTMLDivElement | null = null;
+        const say = (text: string, holdMs = 2600) => {
+          bubbleEl?.remove();
+          const el = document.createElement("div");
+          bubbleEl = el;
+          el.style.cssText =
+            "position:absolute;z-index:5;background:#F5F2D8;border:3px solid #141414;border-radius:12px;padding:7px 11px;font-family:var(--font-display),sans-serif;font-weight:800;font-size:13px;line-height:1.3;color:#141414;max-width:230px;box-shadow:3px 3px 0 rgba(17,17,17,0.18);pointer-events:none;";
+          el.textContent = text;
+          const tail = document.createElement("div");
+          tail.style.cssText =
+            "position:absolute;bottom:-8px;width:12px;height:12px;background:#F5F2D8;border-right:3px solid #141414;border-bottom:3px solid #141414;transform:rotate(45deg);";
+          el.appendChild(tail);
+          root.appendChild(el);
+          const cx = Number(gsap.getProperty(char, "x"));
+          const cy = Number(gsap.getProperty(char, "y"));
+          const w = el.offsetWidth;
+          const left = Math.min(Math.max(cx - 12, 8), root.clientWidth - w - 8);
+          el.style.left = `${left}px`;
+          // char's head sits at (8 + cy) relative to the root
+          el.style.top = `${8 + cy - el.offsetHeight - 14}px`;
+          tail.style.left = `${Math.max(10, Math.min(w - 26, cx + CHAR_W / 2 - left - 6))}px`;
+          gsap.fromTo(
+            el,
+            { scale: 0.5, opacity: 0, transformOrigin: "20% 100%" },
+            { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.2)" },
+          );
+          gsap.to(el, {
+            opacity: 0,
+            y: -8,
+            duration: 0.3,
+            delay: holdMs / 1000,
+            onComplete: () => {
+              el.remove();
+              if (bubbleEl === el) {
+                bubbleEl = null;
+              }
+            },
+          });
+        };
+
+        const DIZZY_LINES = [
+          "Okay ow. The room is spinning.",
+          "I'm a résumé, not a frisbee.",
+          "One more throw and I'm calling HR.",
+          "Whee— no. No, that was awful.",
+        ];
+        const IDLE_LINES = [
+          "Scrolling is free, you know.",
+          "Still here? The CV won't write itself.",
+          "That's my fifth lap. You haven't moved once.",
+        ];
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
@@ -927,6 +984,18 @@ export default function HeroMascot() {
         const zoneCooldown = new Map<string, number>();
         let facing = 1;
         let flipping = false; // click somersault in progress
+
+        // Idle satire: if the user parks without scrolling, the mascot
+        // starts heckling — escalating with each line
+        let idleSince = performance.now();
+        let idleLevel = 0;
+        const bumpActivity = () => {
+          idleSince = performance.now();
+          idleLevel = 0;
+        };
+        window.addEventListener("scroll", bumpActivity, { passive: true });
+        document.addEventListener("visibilitychange", bumpActivity);
+
         const tick = () => {
           const x = Number(gsap.getProperty(char, "x"));
           const dx = x - lastX;
@@ -1011,6 +1080,31 @@ export default function HeroMascot() {
           }
 
           const now = performance.now();
+
+          // Heckle a parked user (only while calmly cruising, tab visible);
+          // each line waits longer and lands harder than the last
+          if (
+            idleLevel < IDLE_LINES.length &&
+            now - idleSince > 40000 + idleLevel * 35000 &&
+            pose === "cruise" &&
+            !visiting &&
+            !folding &&
+            !flipping &&
+            !dragging &&
+            document.visibilityState === "visible"
+          ) {
+            const line = IDLE_LINES[idleLevel];
+            idleLevel++;
+            idleSince = now;
+            patrol.pause();
+            say(line, 2800);
+            gsap.delayedCall(3.2, () => {
+              if (!visiting && !dragging && !folding) {
+                patrol.resume();
+              }
+            });
+          }
+
           if (
             now - lastZoneScan < ZONE_SCAN_MS ||
             visiting ||
@@ -1153,6 +1247,44 @@ export default function HeroMascot() {
         let wasDragged = false;
         let dragDangle: ReturnType<typeof gsap.to> | null = null;
         let dragMoveTween: ReturnType<typeof gsap.to> | null = null;
+        // tossed around too much? (3 drops inside ~22s → dizzy)
+        const dropTimes: number[] = [];
+        let dizzyPending = false;
+
+        // Dizzy spell: X-eyes + stars orbiting the head, woozy swaying, a
+        // complaint in the bubble, then it shakes itself off and moves on
+        const playDizzy = (after: () => void) => {
+          gsap.set(dizzyG, { autoAlpha: 1 });
+          const spin = gsap.to(dizzyStars, {
+            rotation: 360,
+            duration: 1.1,
+            repeat: -1,
+            ease: "none",
+            svgOrigin: "31 -7",
+          });
+          say(DIZZY_LINES[Math.floor(Math.random() * DIZZY_LINES.length)], 2800);
+          gsap
+            .timeline({
+              onComplete: () => {
+                spin.kill();
+                gsap.set(dizzyStars, { rotation: 0 });
+                gsap.set(dizzyG, { autoAlpha: 0 });
+                after();
+              },
+            })
+            // woozy staggering sway
+            .to(flip, {
+              rotation: 7,
+              duration: 0.42,
+              yoyo: true,
+              repeat: 5,
+              ease: "sine.inOut",
+            })
+            .to(flip, { rotation: 0, duration: 0.25, ease: "power2.out" })
+            // shake it off
+            .to(flip, { rotation: -5, duration: 0.07, yoyo: true, repeat: 3 })
+            .to(flip, { rotation: 0, duration: 0.1 });
+        };
         let grabPatrolX = 0;
         let lastClientX = 0;
         let lastClientY = 0;
@@ -1278,10 +1410,30 @@ export default function HeroMascot() {
           gsap.set([legL, legR], { rotation: 0 });
           document.body.style.cursor = "";
 
+          // count this toss — three inside the window and it gets dizzy
+          const nowTs = performance.now();
+          dropTimes.push(nowTs);
+          while (dropTimes.length && nowTs - dropTimes[0] > 30000) {
+            dropTimes.shift();
+          }
+          if (dropTimes.length >= 3) {
+            dropTimes.length = 0;
+            dizzyPending = true;
+          }
+
           const dropX = Number(gsap.getProperty(char, "x"));
           const dropY = Number(gsap.getProperty(char, "y"));
 
-          // after settling on the floor: fly back to the patrol position
+          // after settling on the floor: dizzy spell first if it's been
+          // tossed around too much, then fly back to the patrol position
+          const settle = () => {
+            if (dizzyPending) {
+              dizzyPending = false;
+              playDizzy(goHome);
+            } else {
+              goHome();
+            }
+          };
           const goHome = () => {
             const landX = Number(gsap.getProperty(char, "x"));
             const homeDir = Math.sign(grabPatrolX - landX) || 1;
@@ -1345,7 +1497,7 @@ export default function HeroMascot() {
                     duration: 0.3,
                     ease: "back.out(2.5)",
                   })
-                  .add(goHome, "+=0.25");
+                  .add(settle, "+=0.25");
               },
             });
           } else {
@@ -1360,7 +1512,7 @@ export default function HeroMascot() {
               .to(flip, { rotation: 0, duration: 0.2 }, "<")
               .to(flip, { scaleY: 0.88, y: 3, duration: 0.1, ease: "power2.in" })
               .to(flip, { scaleY: 1, y: 0, duration: 0.25, ease: "back.out(2)" })
-              .add(goHome, "+=0.15");
+              .add(settle, "+=0.15");
           }
         };
 
@@ -1373,6 +1525,10 @@ export default function HeroMascot() {
           gsap.ticker.remove(tick);
           activeSims.forEach((removeSim) => removeSim());
           activeSims.clear();
+          bubbleEl?.remove();
+          bubbleEl = null;
+          window.removeEventListener("scroll", bumpActivity);
+          document.removeEventListener("visibilitychange", bumpActivity);
           window.removeEventListener("pointermove", onPointerMove);
           char.removeEventListener("click", onClick);
           char.removeEventListener("pointerdown", onGrab);
@@ -1916,6 +2072,38 @@ export default function HeroMascot() {
                 strokeLinecap="round"
                 fill="none"
               />
+
+              {/* Dizzy overlay — X eyes covering the normal ones + a ring
+                  of little stars orbiting the head (shown after the mascot
+                  has been thrown around too much) */}
+              <g className="m-dizzy" opacity="0">
+                <circle cx="24" cy="30" r="5.2" fill="#FFFFFF" />
+                <circle cx="41" cy="30" r="5.2" fill="#FFFFFF" />
+                <path
+                  d="M21 27 l6 6 M27 27 l-6 6 M38 27 l6 6 M44 27 l-6 6"
+                  stroke={INK}
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+                <g className="m-dizzy-stars">
+                  <path
+                    d="M46 -6 l1.5 3.6 3.6 1.5 -3.6 1.5 -1.5 3.6 -1.5 -3.6 -3.6 -1.5 3.6 -1.5 Z"
+                    fill={INK}
+                    opacity="0.8"
+                  />
+                  <path
+                    d="M14 -8 l1.3 3.1 3.1 1.3 -3.1 1.3 -1.3 3.1 -1.3 -3.1 -3.1 -1.3 3.1 -1.3 Z"
+                    fill="#CAFF43"
+                    stroke={INK}
+                    strokeWidth="1.2"
+                  />
+                  <path
+                    d="M30 -16 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4 Z"
+                    fill={INK}
+                    opacity="0.6"
+                  />
+                </g>
+              </g>
 
               {/* Black sunglasses — dropped on for the Mbappé celebration */}
               <g className="m-shades" opacity="0">
