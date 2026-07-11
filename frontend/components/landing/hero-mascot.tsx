@@ -64,6 +64,9 @@ export default function HeroMascot() {
         const fallLines = char.querySelector<SVGGElement>(".m-fall-lines")!;
         const shades = char.querySelector<SVGGElement>(".m-shades")!;
         const armsCrossed = char.querySelector<SVGGElement>(".m-arms-crossed")!;
+        const grabG = char.querySelector<SVGGElement>(".m-grab")!;
+        const grabSweat = char.querySelector<SVGPathElement>(".m-grab-sweat")!;
+        const grabLegs = char.querySelector<SVGGElement>(".m-grab-legs")!;
         // Cape pivots where it attaches: the neck (top center)
         gsap.set(cape, { transformOrigin: "50% 5%" });
         gsap.set(spark, { transformOrigin: "50% 50%" });
@@ -74,13 +77,16 @@ export default function HeroMascot() {
         // standing art tipped horizontal, lead arm punched out, cape
         // streaming — same attitude as the zone flights, so the character
         // reads consistently everywhere.
-        type Pose = "stand" | "fall" | "cruise";
+        type Pose = "stand" | "fall" | "cruise" | "grab";
         let pose: Pose = "stand";
         let introDone = false;
         const setPose = (next: Pose) => {
           pose = next;
-          gsap.set(standG, { autoAlpha: next === "fall" ? 0 : 1 });
+          gsap.set(standG, {
+            autoAlpha: next === "stand" || next === "cruise" ? 1 : 0,
+          });
           gsap.set(fallG, { autoAlpha: next === "fall" ? 1 : 0 });
+          gsap.set(grabG, { autoAlpha: next === "grab" ? 1 : 0 });
         };
 
         // Superman flight attitude on the standing art (applied while
@@ -223,36 +229,81 @@ export default function HeroMascot() {
         }) => {
           const proxy = { t: 0 };
           const swings = opts.pts.length - 1;
+
+          // ---- Organic variation: no two falls are ever the same ----
+          // jitter the intermediate stall points (never the landing spot)
+          const pts = opts.pts.map((p, i) =>
+            i === 0 || i === opts.pts.length - 1
+              ? p
+              : p + (Math.random() - 0.5) * Math.min(48, opts.uDepth * 0.8),
+          );
+          // uneven glide rhythm: each swing gets its own tempo
+          const weights = Array.from(
+            { length: swings },
+            () => 0.75 + Math.random() * 0.6,
+          );
+          const total = weights.reduce((a, b) => a + b, 0);
+          const cum = [0];
+          for (const w of weights) {
+            cum.push(cum[cum.length - 1] + w / total);
+          }
+          // per-swing dip depth variance
+          const depthJitter = Array.from(
+            { length: swings },
+            () => 0.8 + Math.random() * 0.4,
+          );
+          // sometimes the sheet lazily rolls right over on one glide
+          const rollSwing =
+            Math.random() < 0.55 ? Math.floor(Math.random() * swings) : -1;
+          const rollDir = Math.random() < 0.5 ? 1 : -1;
+          const seed = Math.random() * 100;
+
           return gsap.to(proxy, {
             t: 1,
             duration: opts.duration,
             ease: "none",
             onUpdate: () => {
-              const gt = proxy.t * swings;
-              const i = Math.min(Math.floor(gt), swings - 1);
-              const lt = gt - i;
+              const gt01 = proxy.t;
+              // find the current swing (segments are uneven on purpose)
+              let i = 0;
+              while (i < swings - 1 && gt01 >= cum[i + 1]) {
+                i++;
+              }
+              const lt = Math.min(
+                (gt01 - cum[i]) / (cum[i + 1] - cum[i] || 1),
+                1,
+              );
+              const dive = Math.sin(Math.PI * lt);
               // slow-fast-slow across the swing (stall → dive → stall)
               const glide = 0.5 - 0.5 * Math.cos(Math.PI * lt);
-              const x0 = opts.pts[i];
-              const x1 = opts.pts[i + 1];
+              const x0 = pts[i];
+              const x1 = pts[i + 1];
               const dir = Math.sign(x1 - x0) || 1;
               // final glide: the dive flattens out (ground effect) so the
               // sheet never plunges through the floor
               const dipScale = i === swings - 1 ? 1 - lt : 1;
+              // micro-turbulence, strongest at full speed
+              const turbX = Math.sin(gt01 * 47 + seed) * 2.6 * dive;
+              const turbY = Math.sin(gt01 * 39 + seed * 2) * 2.2 * dive;
               const y = Math.min(
                 opts.startY +
-                  ((opts.endY - opts.startY) * gt) / swings +
-                  opts.uDepth * Math.sin(Math.PI * lt) * dipScale,
+                  (opts.endY - opts.startY) * gt01 +
+                  opts.uDepth * depthJitter[i] * dive * dipScale +
+                  turbY,
                 0,
               );
-              gsap.set(char, { x: x0 + (x1 - x0) * glide, y });
+              gsap.set(char, { x: x0 + (x1 - x0) * glide + turbX, y });
               // THE paper cue is foreshortening: the sheet knifes edge-on
               // (thin) at full dive speed and opens flat at each stall —
-              // plus banking into the dive and a fast micro-flutter jitter
-              const dive = Math.sin(Math.PI * lt);
+              // plus banking into the dive, a micro-flutter, and (on the
+              // chosen glide) a full lazy tumble: 360° ends where it
+              // started, so there's no seam at the swing boundary
+              const tumble = i === rollSwing ? rollDir * 360 * glide : 0;
               gsap.set(fallG, {
                 rotation:
-                  dir * opts.tilt * dive + Math.sin(proxy.t * 55) * 3 * dive,
+                  dir * opts.tilt * dive +
+                  tumble +
+                  Math.sin(gt01 * 55 + seed) * 3 * dive,
                 scaleY: 0.24 + 0.76 * Math.abs(Math.cos(Math.PI * lt)),
               });
               // air rush lines only while diving
@@ -1025,19 +1076,44 @@ export default function HeroMascot() {
           grabPatrolX = Number(gsap.getProperty(char, "x"));
           lastClientX = event.clientX;
           if (pose === "cruise") {
-            setPose("stand");
             exitCruiseAttitude();
           }
+          // dedicated grabbed pose: pinched at the top edge — the pendulum
+          // must swing from the GRIP, so the pivot moves to the pinch point
+          setPose("grab");
+          gsap.set(flip, {
+            transformOrigin: "50% 4%",
+            scaleX: Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1,
+          });
           gsap.to(flip, { rotation: 0, y: 0, duration: 0.15, overwrite: "auto" });
-          gsap.set([legL, legR], { rotation: 0 });
-          dragDangle = gsap.to([legL, legR], {
-            rotation: (i: number) => (i === 0 ? 10 : -10),
+          // startled little jolt as it's snatched
+          gsap.fromTo(
+            grabG,
+            { scale: 0.92, transformOrigin: "50% 8%" },
+            { scale: 1, duration: 0.3, ease: "back.out(3)" },
+          );
+          // limp legs swing gently under it
+          dragDangle = gsap.to(grabLegs, {
+            rotation: 5,
             transformOrigin: "top center",
-            duration: 0.35,
+            duration: 0.5,
             yoyo: true,
             repeat: -1,
             ease: "sine.inOut",
           });
+          // a sweat drop beads off every second or so
+          gsap.fromTo(
+            grabSweat,
+            { y: 0, opacity: 0 },
+            {
+              keyframes: [
+                { opacity: 0.55, y: 3, duration: 0.3 },
+                { opacity: 0, y: 10, duration: 0.5 },
+              ],
+              repeat: -1,
+              repeatDelay: 0.7,
+            },
+          );
           document.body.style.cursor = "grabbing";
           event.preventDefault();
         };
@@ -1079,6 +1155,9 @@ export default function HeroMascot() {
           dragging = false;
           dragDangle?.kill();
           dragDangle = null;
+          gsap.killTweensOf(grabSweat);
+          gsap.set(grabSweat, { opacity: 0, y: 0 });
+          gsap.set(grabLegs, { rotation: 0 });
           gsap.set([legL, legR], { rotation: 0 });
           document.body.style.cursor = "";
 
@@ -1149,9 +1228,13 @@ export default function HeroMascot() {
               .to(flip, { scaleY: 1, y: 0, duration: 0.3, ease: "back.out(2.5)" })
               .add(goHome, "+=0.25");
           } else {
-            // released near the floor: little settle, then off it goes
+            // released near the floor: pop out of the grabbed pose, settle
             gsap
               .timeline()
+              .add(() => {
+                setPose("stand");
+                gsap.set(flip, { transformOrigin: "50% 100%" });
+              })
               .to(char, { y: 0, duration: 0.2, ease: "power2.in" })
               .to(flip, { rotation: 0, duration: 0.2 }, "<")
               .to(flip, { scaleY: 0.88, y: 3, duration: 0.1, ease: "power2.in" })
@@ -1310,6 +1393,115 @@ export default function HeroMascot() {
                 height="3"
                 rx="1.5"
                 fill="rgba(17,17,17,0.18)"
+              />
+            </g>
+
+            {/* ===== GRABBED POSE — pinched by the cursor at the top edge:
+                 the paper gathers into creases at the grip, the body hangs
+                 buckled, wide eyes dart up at whatever grabbed it, limp
+                 arms and legs dangle, a sweat drop beads off ===== */}
+            <g className="m-grab" opacity="0">
+              {/* limp arms hanging at the sides (behind the sheet) */}
+              <rect
+                x="9.5"
+                y="28"
+                width="3.2"
+                height="15"
+                rx="1.6"
+                fill={INK}
+                transform="rotate(7 11 28)"
+              />
+              <rect
+                x="51.5"
+                y="28"
+                width="3.2"
+                height="15"
+                rx="1.6"
+                fill={INK}
+                transform="rotate(-7 53 28)"
+              />
+              {/* limp dangling legs */}
+              <g className="m-grab-legs">
+                <rect x="24" y="64" width="3.4" height="16" rx="1.7" fill={INK} />
+                <ellipse cx="26" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
+                <rect x="37" y="64" width="3.4" height="16" rx="1.7" fill={INK} />
+                <ellipse cx="39" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
+              </g>
+              {/* buckled sheet hanging from the pinch point */}
+              <path
+                d="M32 5
+                   C 23 7 15 11 13 20
+                   C 9 32 13 46 10 58
+                   C 15 67 24 64 32 66
+                   C 40 64 49 67 54 58
+                   C 51 46 55 32 51 20
+                   C 49 11 41 7 32 5 Z"
+                fill={CREAM}
+                stroke={INK}
+                strokeWidth="3"
+                strokeLinejoin="round"
+              />
+              {/* creases gathering into the grip */}
+              <path
+                d="M32 6 L23 17 M32 6 L32 19 M32 6 L41 17"
+                stroke={INK}
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.45"
+              />
+              {/* score sticker */}
+              <circle
+                cx="19"
+                cy="26"
+                r="4.2"
+                fill="#CAFF43"
+                stroke={INK}
+                strokeWidth="2"
+              />
+              {/* wide startled eyes, pupils darting UP at the grip */}
+              <circle
+                cx="25"
+                cy="36"
+                r="5.6"
+                fill="#FFFFFF"
+                stroke={INK}
+                strokeWidth="2.4"
+              />
+              <circle
+                cx="41"
+                cy="36"
+                r="5.6"
+                fill="#FFFFFF"
+                stroke={INK}
+                strokeWidth="2.4"
+              />
+              <circle cx="25.5" cy="33.6" r="2" fill={INK} />
+              <circle cx="41.5" cy="33.6" r="2" fill={INK} />
+              {/* worried wobbly mouth */}
+              <path
+                d="M27 48 q 2.5 -2.5 5 0 q 2.5 2.5 5 0"
+                stroke={INK}
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* CV lines, skewed by the buckling */}
+              <rect
+                x="16"
+                y="54"
+                width="20"
+                height="3"
+                rx="1.5"
+                fill="rgba(17,17,17,0.25)"
+                transform="rotate(-3 26 55)"
+              />
+              {/* sweat drop beading off */}
+              <path
+                className="m-grab-sweat"
+                d="M52 24 q 3.6 5.2 0 7.8 q -3.6 -2.6 0 -7.8 Z"
+                fill={INK}
+                opacity="0"
               />
             </g>
 
