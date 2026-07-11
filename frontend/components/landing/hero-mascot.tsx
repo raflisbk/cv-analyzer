@@ -1109,7 +1109,10 @@ export default function HeroMascot() {
             } else {
               startleHop();
             }
-          } else if (dist > 190 && alerted && !folding) {
+            // !visiting is critical: during a fast drag the body trails far
+            // behind the cursor, and without it this branch would fire
+            // MID-DRAG and resume the patrol while the sheet is being held
+          } else if (dist > 190 && alerted && !folding && !visiting) {
             alerted = false;
             // calm again: fold back into the plane and resume the patrol
             if (pose === "stand") {
@@ -1149,6 +1152,7 @@ export default function HeroMascot() {
         let dragging = false;
         let wasDragged = false;
         let dragDangle: ReturnType<typeof gsap.to> | null = null;
+        let dragMoveTween: ReturnType<typeof gsap.to> | null = null;
         let grabPatrolX = 0;
         let lastClientX = 0;
         let lastClientY = 0;
@@ -1231,7 +1235,17 @@ export default function HeroMascot() {
             ),
             0,
           );
-          gsap.to(char, { x, y, duration: 0.18, ease: "power2.out", overwrite: "auto" });
+          // ref-kill instead of overwrite:"auto" — auto-overwrite murders
+          // ANY active tween on char.x, including the patrol tween if
+          // anything resumed it mid-drag, leaving the flight permanently
+          // dead (the stuck-after-drag bug)
+          dragMoveTween?.kill();
+          dragMoveTween = gsap.to(char, {
+            x,
+            y,
+            duration: 0.18,
+            ease: "power2.out",
+          });
           // pendulum: the sheet trails against the drag direction
           const vx = event.clientX - lastClientX;
           // smoothed pointer velocity → initial conditions when released
@@ -1256,6 +1270,8 @@ export default function HeroMascot() {
           dragging = false;
           dragDangle?.kill();
           dragDangle = null;
+          dragMoveTween?.kill();
+          dragMoveTween = null;
           gsap.killTweensOf(grabSweat);
           gsap.set(grabSweat, { opacity: 0, y: 0 });
           gsap.set(grabLegs, { rotation: 0 });
