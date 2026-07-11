@@ -238,8 +238,7 @@ export default function HeroMascot() {
         const foldTo = (next: Pose, onDone?: () => void) => {
           folding = true;
           const facing = Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1;
-          gsap
-            .timeline({
+          charTl({
               onComplete: () => {
                 folding = false;
                 onDone?.();
@@ -521,6 +520,33 @@ export default function HeroMascot() {
           repeat: -1,
           ease: "sine.inOut",
         });
+        // ---- Interrupt system: the mascot must be grabbable in ANY state.
+        // Every timeline/tween that steers the character registers itself
+        // via track(); interruptAll() kills them all (never the patrol
+        // tween itself — killing it is unrecoverable), stops any falling
+        // sim, clears state flags, and hard-resets every transient visual
+        // to a clean standing baseline. Without this, pending timeline
+        // callbacks (patrol.resume, setPose, dispatches) keep firing after
+        // a grab and fight the drag — the "erratic movement" bug. ----
+        const charAnims = new Set<{ kill: () => void }>();
+        const track = <T extends { kill: () => void; then?: unknown }>(
+          anim: T,
+        ): T => {
+          charAnims.add(anim);
+          // self-remove on natural completion (non-destructive, unlike
+          // eventCallback which would overwrite existing onComplete)
+          (anim as unknown as Promise<unknown>).then?.(
+            () => charAnims.delete(anim),
+            () => charAnims.delete(anim),
+          );
+          return anim;
+        };
+        // tracked timeline factory — every character-steering timeline
+        // goes through this so interruptAll() can kill them all
+        const charTl = (vars?: gsap.TimelineVars) => track(gsap.timeline(vars));
+        let patrolAnchorX = 16; // the patrol's true position, kept fresh
+        let interruptAll: () => void = () => {}; // real body assigned in drag section
+
         // Physics drop-in: the sim decides the track and duration; landing
         // continues the story (flop → walk to the card → kick)
         paperFallSim({
@@ -528,8 +554,7 @@ export default function HeroMascot() {
           y: -dropHeight,
           vx: -70,
           onLand: (impact, landX) =>
-            gsap
-              .timeline()
+            charTl()
               // Touch down: pop back to the standing pose, squash, dust
               .add(() => {
                 introCapeFlutter.kill();
@@ -684,7 +709,7 @@ export default function HeroMascot() {
 
           // completion (patrol resume etc.) happens in the sim's landing
           // chain — the timeline itself ends when the sheet is let go
-          const tl = gsap.timeline();
+          const tl = charTl();
 
           // Arriving in superman cruise: level out of the flight attitude
           // into the upright character before the wind-up
@@ -953,8 +978,7 @@ export default function HeroMascot() {
           // may have left scaleX pointing anywhere (the punch squares up
           // backwards): nobody flies backwards.
           const visitLand = (impact: number, landX: number) => {
-            gsap
-              .timeline()
+            charTl()
               .add(() => {
                 gsap.killTweensOf(fallCape);
                 gsap.set(fallCape, { rotation: 0, scaleY: 1 });
@@ -1050,6 +1074,9 @@ export default function HeroMascot() {
             positionBubble();
           }
           const x = Number(gsap.getProperty(char, "x"));
+          if (!patrol.paused()) {
+            patrolAnchorX = x;
+          }
           const dx = x - lastX;
           // While visiting or folding, facing is choreographed (e.g.
           // squared up to the card) — movement must not flip it mid-gesture
@@ -1071,8 +1098,7 @@ export default function HeroMascot() {
                 const r = 46;
                 const arc = { th: 0 };
                 let mirrored = false;
-                gsap
-                  .timeline({
+                charTl({
                     onComplete: () => {
                       folding = false;
                       patrol.resume();
@@ -1150,11 +1176,13 @@ export default function HeroMascot() {
             idleSince = now;
             patrol.pause();
             say(line, 2800);
-            gsap.delayedCall(3.2, () => {
-              if (!visiting && !dragging && !folding) {
-                patrol.resume();
-              }
-            });
+            track(
+              gsap.delayedCall(3.2, () => {
+                if (!visiting && !dragging && !folding) {
+                  patrol.resume();
+                }
+              }),
+            );
           }
 
           if (
@@ -1229,8 +1257,7 @@ export default function HeroMascot() {
             // startled mid-flight: pop out of the plane fold, then the
             // classic squash-stretch jump
             const startleHop = () => {
-              gsap
-                .timeline()
+              charTl()
                 .to(flip, {
                   scaleY: 0.82,
                   y: 4,
@@ -1277,8 +1304,7 @@ export default function HeroMascot() {
             return;
           }
           flipping = true;
-          gsap
-            .timeline({ onComplete: () => (flipping = false) })
+          charTl({ onComplete: () => (flipping = false) })
             .to(flip, { y: -34, duration: 0.28, ease: "power2.out" })
             .to(
               flip,
@@ -1307,16 +1333,15 @@ export default function HeroMascot() {
         // complaint in the bubble, then it shakes itself off and moves on
         const playDizzy = (after: () => void) => {
           gsap.set(dizzyG, { autoAlpha: 1 });
-          const spin = gsap.to(dizzyStars, {
+          const spin = track(gsap.to(dizzyStars, {
             rotation: 360,
             duration: 1.1,
             repeat: -1,
             ease: "none",
             svgOrigin: "31 -7",
-          });
+          }));
           say(DIZZY_LINES[Math.floor(Math.random() * DIZZY_LINES.length)], 2800);
-          gsap
-            .timeline({
+          charTl({
               onComplete: () => {
                 spin.kill();
                 gsap.set(dizzyStars, { rotation: 0 });
@@ -1344,15 +1369,87 @@ export default function HeroMascot() {
         let throwVX = 0; // smoothed release velocity (px/s) — a fling throws it
         let throwVY = 0;
 
+        // Force-stop EVERYTHING steering the character and normalize to a
+        // clean standing baseline — grabbable in any state, no leftover
+        // callbacks fighting the drag afterwards
+        interruptAll = () => {
+          charAnims.forEach((anim) => anim.kill());
+          charAnims.clear();
+          activeSims.forEach((removeSim) => removeSim());
+          activeSims.clear();
+          patrol.pause();
+          // kill stray tweens on the character — but NEVER the patrol
+          gsap.getTweensOf(char).forEach((tween) => {
+            if (tween !== patrol) {
+              tween.kill();
+            }
+          });
+          gsap.killTweensOf([
+            flip,
+            arm,
+            cape,
+            legL,
+            legR,
+            torch,
+            spark,
+            shades,
+            armsCrossed,
+            dizzyG,
+            dizzyStars,
+            fallCape,
+            fallG,
+            grabSweat,
+            grabLegs,
+          ]);
+          gsap.killTweensOf(pupils);
+          cruiseRipple?.kill();
+          cruiseRipple = null;
+          dragDangle?.kill();
+          dragDangle = null;
+          folding = false;
+          flipping = false;
+          dizzyPending = false;
+          // visual baseline: upright standing sheet, nothing transient on
+          const keepFacing =
+            Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1;
+          setPose("stand");
+          gsap.set(flip, {
+            rotation: 0,
+            y: 0,
+            scaleY: 1,
+            scaleX: keepFacing,
+            transformOrigin: "50% 100%",
+          });
+          gsap.set([legL, legR], { rotation: 0 });
+          gsap.set(arm, { rotation: 0, opacity: 1 });
+          gsap.set(cape, { rotation: 0, scaleY: 1 });
+          gsap.set(torch, { opacity: 0, rotation: 0 });
+          gsap.set(spark, { opacity: 0 });
+          gsap.set(shades, { opacity: 0, y: 0 });
+          gsap.set(armsCrossed, { opacity: 0 });
+          gsap.set(dizzyG, { autoAlpha: 0 });
+          gsap.set(dizzyStars, { rotation: 0 });
+          gsap.set(fallCape, { rotation: 0, scaleY: 1 });
+          gsap.set(fallG, { rotation: 0, scaleY: 1 });
+          gsap.set(grabSweat, { opacity: 0, y: 0 });
+          gsap.set(grabLegs, { rotation: 0 });
+        };
+
         const onGrab = (event: PointerEvent) => {
-          if (!introDone || visiting || folding || flipping || dragging) {
+          if (dragging) {
             return;
           }
+          if (!introDone) {
+            // snatched mid-intro: the page must not wait for a kick that
+            // will never come — reveal it now and skip straight to patrol
+            introDone = true;
+            window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT));
+          }
+          interruptAll();
           dragging = true;
           wasDragged = false;
           visiting = true; // busy-guard: no zones, no startle, facing frozen
-          patrol.pause();
-          grabPatrolX = Number(gsap.getProperty(char, "x"));
+          grabPatrolX = patrolAnchorX;
           lastClientX = event.clientX;
           lastClientY = event.clientY;
           lastMoveTime = event.timeStamp;
@@ -1492,7 +1589,7 @@ export default function HeroMascot() {
             facing = homeDir;
             gsap.set(flip, { scaleX: homeDir });
             foldTo("cruise", () => {
-              gsap.to(char, {
+              track(gsap.to(char, {
                 x: grabPatrolX,
                 duration: Math.min(
                   1.4,
@@ -1503,7 +1600,7 @@ export default function HeroMascot() {
                   visiting = false;
                   patrol.resume();
                 },
-              });
+              }));
             });
           };
 
@@ -1526,8 +1623,7 @@ export default function HeroMascot() {
               vx: Math.max(-520, Math.min(520, throwVX)),
               vy: Math.max(-320, Math.min(320, throwVY)),
               onLand: (impact, landX) => {
-                gsap
-                  .timeline()
+                charTl()
                   .add(() => {
                     gsap.killTweensOf(fallCape);
                     gsap.set(fallCape, { rotation: 0, scaleY: 1 });
@@ -1554,8 +1650,7 @@ export default function HeroMascot() {
             });
           } else {
             // released near the floor: pop out of the grabbed pose, settle
-            gsap
-              .timeline()
+            charTl()
               .add(() => {
                 setPose("stand");
                 gsap.set(flip, { transformOrigin: "50% 100%" });
