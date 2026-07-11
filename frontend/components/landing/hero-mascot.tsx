@@ -75,26 +75,74 @@ export default function HeroMascot() {
         // head (cream + ink border + tail, matching the character art).
         // Singleton — a new line replaces whatever it was saying. ----
         let bubbleEl: HTMLDivElement | null = null;
+        let bubbleTail: HTMLDivElement | null = null;
+        let bubbleX = 0;
+        let bubbleY = 0;
+        let bubbleInit = false;
+
+        // Re-anchor the bubble above (or, near the ceiling, below) the
+        // mascot's head — called every ticker frame while a bubble lives,
+        // so it FOLLOWS through patrol, flights, drags and falls. The tail
+        // keeps pointing at the head even when the bubble is clamped at a
+        // viewport edge; a light damp makes the follow feel organic.
+        const positionBubble = () => {
+          const el = bubbleEl;
+          const tail = bubbleTail;
+          if (!el || !tail) {
+            return;
+          }
+          const w = el.offsetWidth;
+          const h = el.offsetHeight;
+          const cx = Number(gsap.getProperty(char, "x"));
+          const cy = Number(gsap.getProperty(char, "y"));
+          const headX = cx + CHAR_W / 2;
+          const charTop = 8 + cy; // relative to root
+          const rootRect = root.getBoundingClientRect();
+          const targetX = Math.min(
+            Math.max(headX - w * 0.3, 8),
+            root.clientWidth - w - 8,
+          );
+          // prefer above the head; flip below when it would leave the screen
+          let targetY = charTop - h - 14;
+          const minY = 8 - rootRect.top; // viewport top, in root coords
+          const below = targetY < minY;
+          if (below) {
+            targetY = charTop + 88 + 14;
+            tail.style.top = "-8px";
+            tail.style.bottom = "auto";
+            tail.style.transform = "rotate(225deg)";
+          } else {
+            tail.style.bottom = "-8px";
+            tail.style.top = "auto";
+            tail.style.transform = "rotate(45deg)";
+          }
+          if (!bubbleInit) {
+            bubbleX = targetX;
+            bubbleY = targetY;
+            bubbleInit = true;
+          } else {
+            bubbleX += (targetX - bubbleX) * 0.35;
+            bubbleY += (targetY - bubbleY) * 0.35;
+          }
+          gsap.set(el, { x: bubbleX, y: bubbleY });
+          tail.style.left = `${Math.max(10, Math.min(w - 26, headX - bubbleX - 6))}px`;
+        };
+
         const say = (text: string, holdMs = 2600) => {
           bubbleEl?.remove();
           const el = document.createElement("div");
           bubbleEl = el;
+          bubbleInit = false;
           el.style.cssText =
-            "position:absolute;z-index:5;background:#F5F2D8;border:3px solid #141414;border-radius:12px;padding:7px 11px;font-family:var(--font-display),sans-serif;font-weight:800;font-size:13px;line-height:1.3;color:#141414;max-width:230px;box-shadow:3px 3px 0 rgba(17,17,17,0.18);pointer-events:none;";
+            "position:absolute;left:0;top:0;z-index:5;background:#F5F2D8;border:3px solid #141414;border-radius:12px;padding:7px 11px;font-family:var(--font-display),sans-serif;font-weight:800;font-size:13px;line-height:1.3;color:#141414;max-width:230px;box-shadow:3px 3px 0 rgba(17,17,17,0.18);pointer-events:none;";
           el.textContent = text;
           const tail = document.createElement("div");
+          bubbleTail = tail;
           tail.style.cssText =
             "position:absolute;bottom:-8px;width:12px;height:12px;background:#F5F2D8;border-right:3px solid #141414;border-bottom:3px solid #141414;transform:rotate(45deg);";
           el.appendChild(tail);
           root.appendChild(el);
-          const cx = Number(gsap.getProperty(char, "x"));
-          const cy = Number(gsap.getProperty(char, "y"));
-          const w = el.offsetWidth;
-          const left = Math.min(Math.max(cx - 12, 8), root.clientWidth - w - 8);
-          el.style.left = `${left}px`;
-          // char's head sits at (8 + cy) relative to the root
-          el.style.top = `${8 + cy - el.offsetHeight - 14}px`;
-          tail.style.left = `${Math.max(10, Math.min(w - 26, cx + CHAR_W / 2 - left - 6))}px`;
+          positionBubble();
           gsap.fromTo(
             el,
             { scale: 0.5, opacity: 0, transformOrigin: "20% 100%" },
@@ -102,13 +150,13 @@ export default function HeroMascot() {
           );
           gsap.to(el, {
             opacity: 0,
-            y: -8,
             duration: 0.3,
             delay: holdMs / 1000,
             onComplete: () => {
               el.remove();
               if (bubbleEl === el) {
                 bubbleEl = null;
+                bubbleTail = null;
               }
             },
           });
@@ -997,6 +1045,10 @@ export default function HeroMascot() {
         document.addEventListener("visibilitychange", bumpActivity);
 
         const tick = () => {
+          // the speech bubble rides along with the mascot, every frame
+          if (bubbleEl) {
+            positionBubble();
+          }
           const x = Number(gsap.getProperty(char, "x"));
           const dx = x - lastX;
           // While visiting or folding, facing is choreographed (e.g.
