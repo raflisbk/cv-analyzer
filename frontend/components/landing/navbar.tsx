@@ -15,9 +15,9 @@ import { useAuthStore } from "@/stores/auth-store";
 import { logoutApi } from "@/lib/auth";
 
 const NAV_LINKS = [
-  { href: "/cv-builder", label: "CV Builder", badge: null },
+  { href: "/cv-builder", label: "CV Builder", badge: "Soon" },
   { href: "/cv-analyzer", label: "CV Analyzer", badge: "Free" },
-  { href: "/job-finding", label: "Job Finding", badge: null },
+  { href: "/job-finding", label: "Job Finding", badge: "Soon" },
 ] as const;
 
 export default function Navbar() {
@@ -90,7 +90,14 @@ export default function Navbar() {
               {link.badge && (
                 <span
                   className="relative rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide"
-                  style={{ background: "#CAFF43", color: "#1a2900" }}
+                  style={
+                    link.badge === "Free"
+                      ? { background: "#CAFF43", color: "#1a2900" }
+                      : {
+                          background: "rgba(17,17,17,0.08)",
+                          color: "rgba(17,17,17,0.45)",
+                        }
+                  }
                 >
                   {link.badge}
                 </span>
@@ -184,7 +191,14 @@ export default function Navbar() {
                     {link.badge && (
                       <span
                         className="rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide"
-                        style={{ background: "#CAFF43", color: "#1a2900" }}
+                        style={
+                          link.badge === "Free"
+                            ? { background: "#CAFF43", color: "#1a2900" }
+                            : {
+                                background: "rgba(17,17,17,0.08)",
+                                color: "rgba(17,17,17,0.45)",
+                              }
+                        }
                       >
                         {link.badge}
                       </span>
