@@ -10,19 +10,15 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  getResultsPriorityBadgeClasses,
+  getSuggestionPriorityLabel,
+} from "@/lib/suggestion-priority";
 import type {
   SuggestionCard,
   SuggestionItem,
-  SuggestionPriority,
   SuggestionType,
 } from "@/lib/types";
-
-function getPriorityBadgeClasses(priority: SuggestionPriority): string {
-  if (priority === "high_impact") {
-    return "bg-[#FF8C42]/10 text-[#FF8C42] border-[#FF8C42]/20 shrink-0";
-  }
-  return "bg-[#CAFF43]/10 text-[#CAFF43] border-[#CAFF43]/20 shrink-0";
-}
 
 function getTypeIcon(type: SuggestionType) {
   if (type === "action_verb") {
@@ -65,9 +61,9 @@ function SuggestionItemRow({ item }: SuggestionItemRowProps) {
       </p>
       <Badge
         variant="outline"
-        className={getPriorityBadgeClasses(item.priority)}
+        className={getResultsPriorityBadgeClasses(item.priority)}
       >
-        {item.priority === "high_impact" ? "High Impact" : "Quick Win"}
+        {getSuggestionPriorityLabel(item.priority)}
       </Badge>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   ChevronUp,
   ChevronDown,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
@@ -50,6 +51,8 @@ export function WorkspaceV2Shell({
   } = useWorkspaceV2Store();
 
   const [isFooterExpanded, setIsFooterExpanded] = useState(true);
+  const [isExportingOptimized, setIsExportingOptimized] = useState(false);
+  const [isExportingReport, setIsExportingReport] = useState(false);
 
   const { statusMapRef } = useWorkspaceDoc(jobId ?? "");
 
@@ -77,10 +80,11 @@ export function WorkspaceV2Shell({
   }, [applyAllSuggestions, storeHydration, statusMapRef]);
 
   const handleExportOptimized = useCallback(async () => {
-    if (!jobId) {
+    if (!jobId || isExportingOptimized) {
       return;
     }
-    toast("Preparing PDF download...");
+    setIsExportingOptimized(true);
+    toast("Preparing PDF download…");
     try {
       await downloadJobPdf(
         `/jobs/${jobId}/export/optimized`,
@@ -92,14 +96,17 @@ export function WorkspaceV2Shell({
       toast.error(
         `PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
+    } finally {
+      setIsExportingOptimized(false);
     }
-  }, [jobId]);
+  }, [jobId, isExportingOptimized]);
 
   const handleExportReport = useCallback(async () => {
-    if (!jobId) {
+    if (!jobId || isExportingReport) {
       return;
     }
-    toast("Preparing report download...");
+    setIsExportingReport(true);
+    toast("Preparing report download…");
     try {
       await downloadJobPdf(
         `/jobs/${jobId}/export/pdf`,
@@ -111,8 +118,10 @@ export function WorkspaceV2Shell({
       toast.error(
         `Report download failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
+    } finally {
+      setIsExportingReport(false);
     }
-  }, [jobId]);
+  }, [jobId, isExportingReport]);
 
   const fetchHydration = useCallback(async () => {
     if (!jobId) {
@@ -389,28 +398,44 @@ export function WorkspaceV2Shell({
                 <button
                   type="button"
                   onClick={handleExportOptimized}
-                  className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:brightness-95 active:scale-[0.97]"
+                  disabled={isExportingOptimized}
+                  className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:brightness-95 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: "rgba(255,140,66,0.15)",
                     border: "1px solid rgba(255,140,66,0.35)",
                     color: "#6b2d00",
                   }}
                 >
-                  <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                  {isExportingOptimized ? (
+                    <Loader2
+                      className="h-3.5 w-3.5 animate-spin"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
                   Export PDF
                 </button>
 
                 <button
                   type="button"
                   onClick={handleExportReport}
-                  className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:bg-[rgba(17,17,17,0.08)] active:scale-[0.97]"
+                  disabled={isExportingReport}
+                  className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-[11px] font-black tracking-wide transition-all duration-150 hover:bg-[rgba(17,17,17,0.08)] active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     background: "rgba(17,17,17,0.05)",
                     border: "1px solid rgba(17,17,17,0.11)",
                     color: "#333333",
                   }}
                 >
-                  <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+                  {isExportingReport ? (
+                    <Loader2
+                      className="h-3.5 w-3.5 animate-spin"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+                  )}
                   Export Report
                 </button>
               </div>

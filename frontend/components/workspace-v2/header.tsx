@@ -1,14 +1,22 @@
 "use client";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChevronLeft, Download, Sparkles, Upload, Zap } from "lucide-react";
+import {
+  ChevronLeft,
+  Download,
+  Loader2,
+  Sparkles,
+  Upload,
+  Zap,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 import Link from "next/link";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { UserMenu } from "@/components/auth/user-menu";
 import { downloadJobPdf } from "@/lib/workspace";
+import { hexToRgba } from "@/lib/color-utils";
 
 interface WorkspaceV2HeaderProps {
   filename: string | null;
@@ -34,8 +42,14 @@ export function WorkspaceV2Header({
   const isReady = jobStatus === "ready";
   const isPreparing = jobStatus === "preparing";
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSavePdf = useCallback(async () => {
-    toast("Preparing PDF download...");
+    if (isSaving) {
+      return;
+    }
+    setIsSaving(true);
+    toast("Preparing PDF download…");
     try {
       await downloadJobPdf(
         `/jobs/${jobId}/export/optimized`,
@@ -47,8 +61,10 @@ export function WorkspaceV2Header({
       toast.error(
         `PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
+    } finally {
+      setIsSaving(false);
     }
-  }, [jobId]);
+  }, [jobId, isSaving]);
 
   const scoreColor =
     overallScore === null
@@ -58,6 +74,8 @@ export function WorkspaceV2Header({
         : overallScore >= 70
           ? "#FF8C42"
           : "#FF4FCB";
+  const scoreColorAlpha = (alpha: number) =>
+    scoreColor ? hexToRgba(scoreColor, alpha) : undefined;
 
   return (
     <header
@@ -186,8 +204,8 @@ export function WorkspaceV2Header({
             <div
               className="flex items-baseline gap-0.5 rounded-full px-3 py-1.5"
               style={{
-                background: `${scoreColor}18`,
-                border: `1px solid ${scoreColor}44`,
+                background: scoreColorAlpha(0.094),
+                border: `1px solid ${scoreColorAlpha(0.267)}`,
               }}
               title="Overall CV score"
             >
@@ -199,7 +217,7 @@ export function WorkspaceV2Header({
               </span>
               <span
                 className="text-[10px] font-bold"
-                style={{ color: `${scoreColor}88` }}
+                style={{ color: scoreColorAlpha(0.533) }}
               >
                 /100
               </span>
@@ -215,7 +233,8 @@ export function WorkspaceV2Header({
           <button
             type="button"
             onClick={handleSavePdf}
-            className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-black tracking-wide transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
+            disabled={isSaving}
+            className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-black tracking-wide transition-all duration-150 hover:opacity-90 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               background: "#141414",
               color: "#F5F2D8",
@@ -223,7 +242,11 @@ export function WorkspaceV2Header({
               boxShadow: "0 2px 8px rgba(0,0,0,0.20)",
             }}
           >
-            <Download className="h-3 w-3" aria-hidden="true" />
+            {isSaving ? (
+              <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+            ) : (
+              <Download className="h-3 w-3" aria-hidden="true" />
+            )}
             Save PDF
           </button>
         )}

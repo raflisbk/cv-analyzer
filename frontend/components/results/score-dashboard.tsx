@@ -207,7 +207,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       </div>
 
       {/* Dimension cards */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {DIMENSIONS.map(({ key, label, description, accentColor, weight }) => {
           const scoreVal = scores[key] ?? 0;
           const reasoning = scores.reasonings?.[key];

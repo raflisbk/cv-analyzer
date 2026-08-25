@@ -41,7 +41,7 @@ export function ExportStickyBar({
   }
 
   async function handleDownloadPdf() {
-    toast("Preparing PDF download...");
+    toast("Preparing PDF download…");
     try {
       const response = await fetch(`/api/v1/jobs/${jobId}/export/pdf`);
 

@@ -9,34 +9,12 @@ import {
   flip,
 } from "@floating-ui/react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
+import {
+  getAnnotationPriorityColor,
+  getSuggestionPriorityLabel,
+} from "@/lib/suggestion-priority";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import type { SuggestionCard } from "@/lib/types";
-
-export function priorityToColor(priority: string): {
-  bg: string;
-  border: string;
-  bgHover: string;
-  text: string;
-} {
-  const map: Record<
-    string,
-    { bg: string; border: string; bgHover: string; text: string }
-  > = {
-    high_impact: {
-      bg: "rgba(239,68,68,0.15)",
-      border: "rgba(239,68,68,0.5)",
-      bgHover: "rgba(239,68,68,0.25)",
-      text: "#ef4444",
-    },
-    quick_win: {
-      bg: "rgba(245,158,11,0.15)",
-      border: "rgba(245,158,11,0.5)",
-      bgHover: "rgba(245,158,11,0.25)",
-      text: "#f59e0b",
-    },
-  };
-  return map[priority] ?? map["quick_win"];
-}
 
 interface AnnotationHitAreaProps {
   anchor: SuggestionAnchorRecord;
@@ -73,7 +51,7 @@ function AnnotationHitArea({
   const shouldShowCard =
     activeSuggestionId === anchor.suggestion_id && !isOriginalMode;
 
-  const color = priorityToColor(anchor.priority);
+  const color = getAnnotationPriorityColor(anchor.priority);
   const cssRect = {
     left: anchor.rect.x * scale,
     top: anchor.rect.y * scale,
@@ -210,9 +188,7 @@ function AnnotationHitArea({
                     color: color.text,
                   }}
                 >
-                  {anchor.priority === "high_impact"
-                    ? "High Impact"
-                    : "Quick Win"}
+                  {getSuggestionPriorityLabel(anchor.priority)}
                 </span>
                 <span
                   className="text-[11px] font-medium"
