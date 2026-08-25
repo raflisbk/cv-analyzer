@@ -13,11 +13,15 @@ import { SkillsList } from "@/components/results/skills-list";
 type TabId = "overview" | "scores" | "suggestions" | "grammar" | "skills";
 
 const TABS: { id: TabId; label: string; subtitle: string }[] = [
-  { id: "overview",     label: "Overview",       subtitle: "ATS & narrative summary" },
-  { id: "scores",       label: "Scores",          subtitle: "Clarity, impact, structure" },
-  { id: "suggestions",  label: "AI Suggestions",  subtitle: "Rewrite candidates" },
-  { id: "grammar",      label: "Grammar",         subtitle: "Language & tone issues" },
-  { id: "skills",       label: "Skills",          subtitle: "Skill distribution" },
+  { id: "overview", label: "Overview", subtitle: "ATS & narrative summary" },
+  { id: "scores", label: "Scores", subtitle: "Clarity, impact, structure" },
+  {
+    id: "suggestions",
+    label: "AI Suggestions",
+    subtitle: "Rewrite candidates",
+  },
+  { id: "grammar", label: "Grammar", subtitle: "Language & tone issues" },
+  { id: "skills", label: "Skills", subtitle: "Skill distribution" },
 ];
 
 interface LeftDetailPanelProps {
@@ -37,8 +41,10 @@ function SuggestionsTabContent({
 }: SuggestionsTabContentProps) {
   if (!suggestions || suggestions.length === 0) {
     return (
-      <div className="rounded-2xl border border-[#F5F2D8]/[0.08] bg-[#F5F2D8]/[0.02] p-4">
-        <p className="text-xs text-[#F5F2D8]/50">No AI suggestions available yet.</p>
+      <div className="border-y border-dashed border-[#F5F2D8]/[0.15] bg-[#F5F2D8]/[0.02] p-4">
+        <p className="text-xs text-[#F5F2D8]/50">
+          No AI suggestions available yet.
+        </p>
       </div>
     );
   }
@@ -69,98 +75,119 @@ function SuggestionsTabContent({
 
   return (
     <div className="flex flex-col gap-2">
-      {allCards.map(({
-        suggestionId, section, text, explanation,
-        priority, originalText, afterText
-      }) => {
-        const isActive = activeSuggestionId === suggestionId;
-        const isHighImpact = priority === "high_impact";
+      {allCards.map(
+        ({
+          suggestionId,
+          section,
+          text,
+          explanation,
+          priority,
+          originalText,
+          afterText,
+        }) => {
+          const isActive = activeSuggestionId === suggestionId;
+          const isHighImpact = priority === "high_impact";
 
-        return (
-          <div
-            key={suggestionId}
-            ref={(el) => {
-              if (el) { cardRefs.current.set(suggestionId, el); }
-              else { cardRefs.current.delete(suggestionId); }
-            }}
-            className="rounded-2xl border p-3.5 transition-all duration-150 flex flex-col gap-2.5"
-            style={{
-              borderColor: isActive
-                ? isHighImpact
-                  ? "rgba(239,68,68,0.5)"
-                  : "rgba(245,158,11,0.5)"
-                : "var(--ws-border)",
-              background: isActive
-                ? "rgba(245,242,216,0.06)"
-                : "rgba(245,242,216,0.02)",
-              boxShadow: isActive ? "0 0 0 2px rgba(202,255,67,0.3)" : undefined,
-            }}
-          >
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#F5F2D8]/60">
-                {section}
-              </span>
-              <span
-                className="rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider"
-                style={{
-                  background: isHighImpact
-                    ? "rgba(239,68,68,0.15)"
-                    : "rgba(245,158,11,0.15)",
-                  color: isHighImpact ? "#ef4444" : "#f59e0b",
-                }}
-              >
-                {isHighImpact ? "High Impact" : "Quick Win"}
-              </span>
+          return (
+            <div
+              key={suggestionId}
+              ref={(el) => {
+                if (el) {
+                  cardRefs.current.set(suggestionId, el);
+                } else {
+                  cardRefs.current.delete(suggestionId);
+                }
+              }}
+              className="border-y border-dashed p-3.5 transition-all duration-150 flex flex-col gap-2.5"
+              style={{
+                borderColor: isActive
+                  ? isHighImpact
+                    ? "rgba(239,68,68,0.5)"
+                    : "rgba(245,158,11,0.5)"
+                  : "var(--ws-border)",
+                background: isActive
+                  ? "rgba(245,242,216,0.06)"
+                  : "rgba(245,242,216,0.02)",
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#F5F2D8]/60">
+                  {section}
+                </span>
+                <span
+                  className="rounded-full px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider"
+                  style={{
+                    background: isHighImpact
+                      ? "rgba(239,68,68,0.15)"
+                      : "rgba(245,158,11,0.15)",
+                    color: isHighImpact ? "#ef4444" : "#f59e0b",
+                  }}
+                >
+                  {isHighImpact ? "High Impact" : "Quick Win"}
+                </span>
+              </div>
+
+              <p className="text-[13px] font-medium leading-relaxed text-[#F5F2D8]">
+                {text}
+              </p>
+
+              {explanation && (
+                <div className="rounded-lg bg-[#CAFF43]/10 p-2 border border-[#CAFF43]/20">
+                  <p className="text-[11px] leading-relaxed text-[#CAFF43] font-medium">
+                    <span className="font-bold">Why: </span>
+                    {explanation}
+                  </p>
+                </div>
+              )}
+
+              {(originalText || afterText) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
+                  {originalText && (
+                    <div className="rounded p-2 bg-[#FF4FCB]/10 border border-[#FF4FCB]/20">
+                      <p className="text-[9px] font-bold text-[#FF4FCB] uppercase tracking-widest mb-1">
+                        Before
+                      </p>
+                      <p className="text-[11px] text-[#F5F2D8]/60 line-through decoration-[#FF4FCB]/50">
+                        {originalText}
+                      </p>
+                    </div>
+                  )}
+                  {afterText && (
+                    <div className="rounded p-2 bg-[#CAFF43]/10 border border-[#CAFF43]/20">
+                      <p className="text-[9px] font-bold text-[#CAFF43] uppercase tracking-widest mb-1">
+                        After
+                      </p>
+                      <p className="text-[11px] text-[#F5F2D8]/60">
+                        {afterText}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-
-            <p className="text-[13px] font-medium leading-relaxed text-[#F5F2D8]">{text}</p>
-            
-            {explanation && (
-              <div className="rounded-lg bg-[#CAFF43]/10 p-2 border border-[#CAFF43]/20">
-                <p className="text-[11px] leading-relaxed text-[#CAFF43] font-medium">
-                  <span className="font-bold">Why: </span>{explanation}
-                </p>
-              </div>
-            )}
-
-            {(originalText || afterText) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-1">
-                {originalText && (
-                  <div className="rounded p-2 bg-[#FF4FCB]/10 border border-[#FF4FCB]/20">
-                    <p className="text-[9px] font-bold text-[#FF4FCB] uppercase tracking-widest mb-1">Before</p>
-                    <p className="text-[11px] text-[#F5F2D8]/60 line-through decoration-[#FF4FCB]/50">{originalText}</p>
-                  </div>
-                )}
-                {afterText && (
-                  <div className="rounded p-2 bg-[#CAFF43]/10 border border-[#CAFF43]/20">
-                    <p className="text-[9px] font-bold text-[#CAFF43] uppercase tracking-widest mb-1">After</p>
-                    <p className="text-[11px] text-[#F5F2D8]/60">{afterText}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        );
-      })}
+          );
+        },
+      )}
     </div>
   );
 }
 
 export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
-  const {
-    activeDetailTab,
-    setActiveDetailTab,
-  } = useWorkspaceV2Store();
+  const { activeDetailTab, setActiveDetailTab } = useWorkspaceV2Store();
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const analysis = useWorkspaceV2Store((s) => s.hydration?.analysis ?? null);
-  const suggestions = (analysis?.suggestions ?? null) as SuggestionCard[] | null;
+  const suggestions = (analysis?.suggestions ?? null) as
+    | SuggestionCard[]
+    | null;
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const isDetailFocus = activeDetailTab !== null;
   const currentTab = TABS.find((t) => t.id === activeDetailTab);
 
   useEffect(() => {
-    if (!activeSuggestionId) { return; }
+    if (!activeSuggestionId) {
+      return;
+    }
     const el = cardRefs.current.get(activeSuggestionId);
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [activeSuggestionId]);
@@ -179,7 +206,11 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
               <span>PDF</span>
             </button>
 
-            <div role="tablist" aria-label="Analysis sections" className="flex flex-wrap gap-1 flex-1 min-w-0">
+            <div
+              role="tablist"
+              aria-label="Analysis sections"
+              className="flex flex-wrap gap-1 flex-1 min-w-0"
+            >
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -190,7 +221,7 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
                     "rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition-colors duration-150 flex-none",
                     activeDetailTab === tab.id
                       ? "bg-[#CAFF43] text-[#111111]"
-                      : "border border-[#F5F2D8]/[0.12] text-[#F5F2D8]/60 hover:border-[#F5F2D8]/30 hover:text-[#F5F2D8]/90"
+                      : "border border-[#F5F2D8]/[0.12] text-[#F5F2D8]/60 hover:border-[#F5F2D8]/30 hover:text-[#F5F2D8]/90",
                   )}
                 >
                   {tab.label}
@@ -216,30 +247,38 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
             ) : activeDetailTab === "scores" && analysis?.scores ? (
               <div className="space-y-4 flex flex-col">
                 <ScoreDashboard scores={analysis.scores} />
-                <div className="rounded-xl border border-[#F5F2D8]/10
+                <div
+                  className="border-y border-dashed border-[#F5F2D8]/15
                   bg-[#F5F2D8]/[0.02] p-4 text-xs text-[#F5F2D8]/70
-                  leading-relaxed mt-2">
-                  <p className="font-semibold text-[#F5F2D8]">How is this calculated?</p>
+                  leading-relaxed mt-2"
+                >
+                  <p className="font-semibold text-[#F5F2D8]">
+                    How is this calculated?
+                  </p>
                   <p className="mt-1">
-                    Scores are generated by an advanced AI
-                    (Hugging Face BGE-M3 Embeddings) representing semantic
-                    alignment with industry standards, rather than a rigid
-                    rules-based engine.
+                    Scores are generated by an advanced AI (Hugging Face BGE-M3
+                    Embeddings) representing semantic alignment with industry
+                    standards, rather than a rigid rules-based engine.
                   </p>
                 </div>
               </div>
-            ) : activeDetailTab === "grammar" && Array.isArray(analysis?.grammar_issues) ? (
+            ) : activeDetailTab === "grammar" &&
+              Array.isArray(analysis?.grammar_issues) ? (
               <div className="space-y-4">
                 <GrammarIssuesList issues={analysis.grammar_issues} />
               </div>
-            ) : activeDetailTab === "skills" && Array.isArray(analysis?.skills) ? (
+            ) : activeDetailTab === "skills" &&
+              Array.isArray(analysis?.skills) ? (
               <div className="space-y-4">
                 <SkillsList skills={analysis.skills} />
               </div>
             ) : (
-              <div className="rounded-2xl border border-[#F5F2D8]/[0.08] bg-[#F5F2D8]/[0.02] p-4">
+              <div className="border-y border-dashed border-[#F5F2D8]/[0.15] bg-[#F5F2D8]/[0.02] p-4">
                 <p className="text-xs leading-relaxed text-[#F5F2D8]/70">
-                  <strong className="text-[#F5F2D8]"> {currentTab?.label} </strong>
+                  <strong className="text-[#F5F2D8]">
+                    {" "}
+                    {currentTab?.label}{" "}
+                  </strong>
                   detail will be available once analysis data is connected.
                 </p>
               </div>
@@ -247,8 +286,8 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
           </div>
         </>
       ) : (
-        <>
-          <div className="border-b border-[#F5F2D8]/[0.08] px-4 py-3 flex-none">
+        <div className="flex h-full flex-col bg-[#F5F2D8]">
+          <div className="border-b border-dashed border-[#141414]/[0.15] px-4 py-3 flex-none">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span
                 className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold tracking-wide font-display"
@@ -265,7 +304,10 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
             </div>
           </div>
 
-          <nav className="flex-1 overflow-y-auto py-1" aria-label="Analysis tabs">
+          <nav
+            className="flex-1 overflow-y-auto py-1"
+            aria-label="Analysis tabs"
+          >
             {TABS.map((tab) => (
               <button
                 key={tab.id}
@@ -273,18 +315,18 @@ export function LeftDetailPanel({ className }: LeftDetailPanelProps) {
                 className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[#F5F2D8]/[0.04] transition-colors group"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-[#F5F2D8]/80 group-hover:text-[#F5F2D8] transition-colors truncate">
+                  <p className="text-sm font-semibold text-[#141414]/80 group-hover:text-[#141414] transition-colors truncate">
                     {tab.label}
                   </p>
-                  <p className="text-[10px] text-[#F5F2D8]/50 truncate">
+                  <p className="text-[10px] text-[#141414]/50 truncate">
                     {tab.subtitle}
                   </p>
                 </div>
-                <ChevronRight className="h-3.5 w-3.5 text-[#F5F2D8]/20 flex-none group-hover:text-[#F5F2D8]/60 transition-colors" />
+                <ChevronRight className="h-3.5 w-3.5 text-[#141414]/20 flex-none group-hover:text-[#141414]/60 transition-colors" />
               </button>
             ))}
           </nav>
-        </>
+        </div>
       )}
     </div>
   );

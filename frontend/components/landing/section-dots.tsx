@@ -19,7 +19,6 @@ const SECTIONS = [
   { id: "features", label: "Features" },
   { id: "how-it-works", label: "How it works" },
   { id: "stats", label: "Stats" },
-  { id: "testimonials", label: "Stories" },
   { id: "see-it-in-action", label: "In action" },
 ];
 

@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, ReactNode } from "react";
-import { loadGsap, type GsapCtx } from "@/lib/gsap-loader";
+import { ReactNode, useEffect, useRef } from "react";
+import { loadGsap } from "@/lib/gsap-loader";
+
+export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: no-preference)";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -21,19 +23,19 @@ export default function ScrollReveal({
   duration = 0.9,
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const ctxRef = useRef<GsapCtx | null>(null);
-
   useEffect(() => {
     const el = ref.current;
     if (!el) {
       return;
     }
-    let ctx: GsapCtx | null = null;
+    let mm: { revert: () => void } | null = null;
     loadGsap().then(({ gsap }) => {
       if (!el) {
         return;
       }
-      ctx = gsap.context(() => {
+      const media = gsap.matchMedia(el);
+      mm = media;
+      media.add(REDUCED_MOTION_QUERY, () => {
         if (stagger) {
           const items = el.children;
           gsap.fromTo(
@@ -51,7 +53,7 @@ export default function ScrollReveal({
                 start: "top 85%",
                 once: true,
               },
-            }
+            },
           );
         } else {
           gsap.fromTo(
@@ -68,14 +70,13 @@ export default function ScrollReveal({
                 start: "top 85%",
                 once: true,
               },
-            }
+            },
           );
         }
-      }, el);
-      ctxRef.current = ctx;
+      });
     });
     return () => {
-      ctx?.revert();
+      mm?.revert();
     };
   }, [delay, stagger, y, duration]);
 

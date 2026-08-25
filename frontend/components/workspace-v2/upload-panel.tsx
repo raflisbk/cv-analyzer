@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Upload, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Upload, X } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { DocumentPreview } from "@/components/upload/document-preview";
@@ -29,7 +29,11 @@ export function UploadPanel() {
 
   const uploadMutation = useUpload();
 
-  const { progress, isConnected, error: streamError } = useJobStream(jobId, {
+  const {
+    progress,
+    isConnected,
+    error: streamError,
+  } = useJobStream(jobId, {
     onComplete: (id) => {
       setCompletedJobId(id);
     },
@@ -49,13 +53,17 @@ export function UploadPanel() {
   }
 
   useEffect(() => {
-    if (!completedJobId || hasNavigatedRef.current) { return; }
+    if (!completedJobId || hasNavigatedRef.current) {
+      return;
+    }
     hasNavigatedRef.current = true;
     router.push(getWorkspaceRoute(completedJobId));
   }, [completedJobId, router]);
 
   const handleAnalyze = async () => {
-    if (!selectedFile) { return; }
+    if (!selectedFile) {
+      return;
+    }
     try {
       const result = await uploadMutation.mutateAsync({
         file: selectedFile,
@@ -101,7 +109,8 @@ export function UploadPanel() {
     accept: {
       "application/pdf": [".pdf"],
       "application/msword": [".doc"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
     },
     maxSize: 5 * 1024 * 1024,
     multiple: false,
@@ -127,8 +136,13 @@ export function UploadPanel() {
           )}
           {streamError && (
             <div className="mt-4 text-center space-y-2">
-              <p className="text-sm text-[#FF4FCB]">Connection lost. Please try again.</p>
-              <button onClick={handleReset} className="text-sm text-[#CAFF43] hover:underline">
+              <p className="text-sm text-[#FF4FCB]">
+                Connection lost. Please try again.
+              </p>
+              <button
+                onClick={handleReset}
+                className="text-sm text-[#CAFF43] hover:underline"
+              >
                 Start over
               </button>
             </div>
@@ -155,8 +169,13 @@ export function UploadPanel() {
               </p>
             </div>
           </div>
-          <div className="rounded-[1.75rem] border border-[#CAFF43]/20 bg-[#CAFF43]/10 px-5 py-4 text-center" aria-live="polite">
-            <p className="text-sm font-bold text-[#CAFF43]">Opening workspace...</p>
+          <div
+            className="rounded-[1.75rem] border border-[#CAFF43]/20 bg-[#CAFF43]/10 px-5 py-4 text-center"
+            aria-live="polite"
+          >
+            <p className="text-sm font-bold text-[#CAFF43]">
+              Opening workspace...
+            </p>
             <p className="mt-1 text-xs text-[#F5F2D8]/60">
               Loading your analysis workspace.
             </p>
@@ -171,14 +190,15 @@ export function UploadPanel() {
       <div className="flex h-full w-full items-center justify-center p-6">
         <div className="w-full max-w-md text-center space-y-5">
           <div className="w-16 h-16 rounded-full bg-[#FF4FCB]/15 border border-[#FF4FCB]/25 flex items-center justify-center mx-auto">
-            <span className="text-2xl text-[#FF4FCB]">✕</span>
+            <X className="h-7 w-7 text-[#FF4FCB]" aria-hidden="true" />
           </div>
           <div>
             <h1 className="text-xl font-display font-extrabold text-[#F5F2D8] mb-2">
               Something went wrong
             </h1>
             <p className="text-sm text-[#F5F2D8]/50">
-              {progress?.message || "An error occurred while processing your CV."}
+              {progress?.message ||
+                "An error occurred while processing your CV."}
             </p>
           </div>
           <button
@@ -216,33 +236,45 @@ export function UploadPanel() {
         "transition-all duration-200 ease-out cursor-pointer",
         isDragOver || isDragActive
           ? "bg-[#CAFF43]/5"
-          : "hover:bg-[#CAFF43]/[0.02]"
+          : "hover:bg-[#CAFF43]/[0.02]",
       )}
     >
       <input {...getInputProps()} />
 
-      <div className={cn(
-        "flex flex-col items-center justify-center text-center px-8 py-10",
-        "w-full max-w-sm"
-      )}>
-        <div className={cn(
-          "w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-200",
-          isDragOver || isDragActive
-            ? "bg-[#CAFF43] text-[#141414]"
-            : "bg-[#CAFF43]/12 text-[#CAFF43]"
-        )}>
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center text-center px-8 py-10",
+          "w-full max-w-sm",
+        )}
+      >
+        <div
+          className={cn(
+            "w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-200",
+            isDragOver || isDragActive
+              ? "bg-[#CAFF43] text-[#141414]"
+              : "bg-[#CAFF43]/12 text-[#CAFF43]",
+          )}
+        >
           <Upload className="w-7 h-7" />
         </div>
 
         {parentJobId && (
           <div className="mb-4 rounded-xl border border-[#CAFF43]/20 bg-[#CAFF43]/8 px-4 py-2.5 text-center w-full">
-            <p className="text-xs font-bold text-[#CAFF43]">Re-analyzing — upload your updated CV</p>
-            <p className="text-[10px] text-[#CAFF43]/50 mt-0.5">Score delta will appear in version history</p>
+            <p className="text-xs font-bold text-[#CAFF43]">
+              Re-analyzing — upload your updated CV
+            </p>
+            <p className="text-[10px] text-[#CAFF43]/50 mt-0.5">
+              Score delta will appear in version history
+            </p>
           </div>
         )}
 
         <h2 className="font-display font-extrabold text-lg text-[#F5F2D8] mb-1.5">
-          {isDragOver ? "Drop it!" : parentJobId ? "Drop your updated CV" : "Drop your CV here"}
+          {isDragOver
+            ? "Drop it!"
+            : parentJobId
+              ? "Drop your updated CV"
+              : "Drop your CV here"}
         </h2>
         <p className="text-xs text-[#F5F2D8]/40 mb-5 max-w-[220px]">
           AI scores your CV on clarity, impact, completeness &amp; relevance
@@ -250,7 +282,10 @@ export function UploadPanel() {
 
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); open(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            open();
+          }}
           className="rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
                      px-6 py-2.5 hover:bg-[#CAFF43]/85 active:scale-95 transition-all duration-150"
         >

@@ -67,7 +67,7 @@ export interface WorkspaceHydration {
 }
 
 export async function getWorkspaceHydration(
-  jobId: string
+  jobId: string,
 ): Promise<WorkspaceHydration> {
   return apiFetch<WorkspaceHydration>(`/jobs/${jobId}/workspace`);
 }
@@ -79,4 +79,38 @@ export interface WorkspaceFileUrl {
 
 export async function getJobFileUrl(jobId: string): Promise<WorkspaceFileUrl> {
   return apiFetch<WorkspaceFileUrl>(`/jobs/${jobId}/file`);
+}
+
+export async function downloadJobPdf(
+  endpoint: string,
+  method: "GET" | "POST",
+  fallbackFilename: string,
+): Promise<void> {
+  const response = await fetch(`/api/v1${endpoint}`, {
+    method,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`PDF generation failed: ${response.status} ${errorText}`);
+  }
+
+  const blob = await response.blob();
+  if (blob.size === 0) {
+    throw new Error("Received empty PDF");
+  }
+
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const match = disposition.match(/filename="?([^";]+)"?/);
+  const filename = match?.[1] ?? fallbackFilename;
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }

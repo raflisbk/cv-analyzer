@@ -112,15 +112,13 @@ export default function RagExplainerSection() {
         {/* ---- Manifesto header — compact version for <lg, where the graph
                 column (its real home) is hidden ---- */}
         <div className="rag-reveal mx-auto mb-8 w-full max-w-7xl lg:hidden">
-          <p className="mb-2 flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
-            <span aria-hidden="true" className="text-[#141414]/30">
-              ✦
-            </span>
-            Powered by RAG
-          </p>
           <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-[#141414]">
             An AI that actually knows you.
           </h2>
+          <div className="mt-4 flex items-center justify-between border-y border-dashed border-[#141414]/20 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/40">
+            <span>ROUTE MAP</span>
+            <span>Memory graph · 06 nodes</span>
+          </div>
         </div>
 
         <div className="mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-6 xl:mx-0 xl:max-w-none xl:grid-cols-[minmax(0,520px)_1fr]">
@@ -153,13 +151,11 @@ export default function RagExplainerSection() {
                     role="tab"
                     aria-selected={active}
                     onClick={() => setSelected(active ? null : i)}
-                    className="rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition-colors duration-200"
+                    className="rounded-sm border border-dashed px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide transition-colors duration-200"
                     style={{
                       background: active ? INK : "transparent",
                       color: active ? CREAM : "rgba(17,17,17,0.65)",
-                      border: active
-                        ? `1px solid ${INK}`
-                        : "1px solid rgba(17,17,17,0.3)",
+                      borderColor: active ? INK : "rgba(17,17,17,0.3)",
                     }}
                   >
                     {item.label}
@@ -219,15 +215,13 @@ export default function RagExplainerSection() {
           <div className="rag-reveal hidden lg:block">
             <div className="mb-2 flex items-end justify-between gap-8 xl:pr-8">
               <div>
-                <p className="mb-2 flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
-                  <span aria-hidden="true" className="text-[#141414]/30">
-                    ✦
-                  </span>
-                  Powered by RAG
-                </p>
                 <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-[#141414] xl:text-4xl">
                   An AI that actually knows you.
                 </h2>
+                <div className="mt-4 flex items-center justify-between border-y border-dashed border-[#141414]/20 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/40">
+                  <span>ROUTE MAP</span>
+                  <span>Memory graph · 06 nodes</span>
+                </div>
               </div>
               <p className="hidden max-w-[220px] pb-1 text-right text-[10px] font-bold uppercase leading-relaxed tracking-[0.25em] text-[#141414]/40 xl:block">
                 Every node in this graph is you — click one
@@ -251,7 +245,7 @@ export default function RagExplainerSection() {
                     color: "transparent",
                   }}
                 >
-                  For You
+                  Route Map
                 </span>
               </div>
               <div className="relative z-10 h-full w-full">

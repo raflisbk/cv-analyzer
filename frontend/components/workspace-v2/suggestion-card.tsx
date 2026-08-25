@@ -10,7 +10,11 @@ interface SuggestionCardProps {
   onClose: () => void;
 }
 
-export function SuggestionCard({ suggestionId, suggestions, onClose }: SuggestionCardProps) {
+export function SuggestionCard({
+  suggestionId,
+  suggestions,
+  onClose,
+}: SuggestionCardProps) {
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
 
@@ -32,9 +36,18 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
     return null;
   }
 
-  const color = item.priority === "high_impact"
-    ? { bg: "rgba(239,68,68,0.15)", border: "rgba(239,68,68,0.5)", text: "#ef4444" }
-    : { bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.5)", text: "#f59e0b" };
+  const color =
+    item.priority === "high_impact"
+      ? {
+          bg: "rgba(239,68,68,0.15)",
+          border: "rgba(239,68,68,0.5)",
+          text: "#ef4444",
+        }
+      : {
+          bg: "rgba(245,158,11,0.15)",
+          border: "rgba(245,158,11,0.5)",
+          text: "#f59e0b",
+        };
 
   return (
     <div
@@ -48,7 +61,14 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
       }}
     >
       <div style={{ marginBottom: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "6px",
+          }}
+        >
           <span
             className="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded"
             style={{
@@ -83,10 +103,13 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
             padding: "8px 10px",
             borderRadius: "6px",
             marginBottom: "12px",
-            borderLeft: `3px solid ${color.border}`,
+            borderTop: `2px solid ${color.border}`,
           }}
         >
-          <p className="text-[10px] text-gray-500 mb-1" style={{ margin: "0 0 4px 0", fontWeight: "600" }}>
+          <p
+            className="text-[10px] text-gray-500 mb-1"
+            style={{ margin: "0 0 4px 0", fontWeight: "600" }}
+          >
             CURRENT:
           </p>
           <p
@@ -98,7 +121,9 @@ export function SuggestionCard({ suggestionId, suggestions, onClose }: Suggestio
               lineHeight: "1.4",
             }}
           >
-            {"\u0022"}{item.text.slice(0, 80)}{"\u0022"}
+            {"\u0022"}
+            {item.text.slice(0, 80)}
+            {"\u0022"}
             {item.text.length > 80 ? "..." : ""}
           </p>
         </div>

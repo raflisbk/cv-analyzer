@@ -1,15 +1,27 @@
 "use client";
 
 import { useCallback, useMemo, useRef } from "react";
-import { FloatingPortal, useFloating, shift, offset, flip } from "@floating-ui/react";
+import {
+  FloatingPortal,
+  useFloating,
+  shift,
+  offset,
+  flip,
+} from "@floating-ui/react";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import type { SuggestionCard } from "@/lib/types";
 
-export function priorityToColor(
-  priority: string
-): { bg: string; border: string; bgHover: string; text: string } {
-  const map: Record<string, { bg: string; border: string; bgHover: string; text: string }> = {
+export function priorityToColor(priority: string): {
+  bg: string;
+  border: string;
+  bgHover: string;
+  text: string;
+} {
+  const map: Record<
+    string,
+    { bg: string; border: string; bgHover: string; text: string }
+  > = {
     high_impact: {
       bg: "rgba(239,68,68,0.15)",
       border: "rgba(239,68,68,0.5)",
@@ -34,16 +46,22 @@ interface AnnotationHitAreaProps {
   onDismiss?: (suggestionId: string) => void;
 }
 
-function AnnotationHitArea(
-  { anchor, scale, suggestions, onApply, onDismiss }: AnnotationHitAreaProps
-) {
-  const setActiveSuggestionId = useWorkspaceV2Store((s) => s.setActiveSuggestionId);
+function AnnotationHitArea({
+  anchor,
+  scale,
+  suggestions,
+  onApply,
+  onDismiss,
+}: AnnotationHitAreaProps) {
+  const setActiveSuggestionId = useWorkspaceV2Store(
+    (s) => s.setActiveSuggestionId,
+  );
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
   const suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const viewMode = useWorkspaceV2Store((s) => s.viewMode);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
+
   const status = suggestionStatuses[anchor.suggestion_id];
   const isApplied = status === "applied";
   const isDismissed = status === "dismissed";
@@ -52,7 +70,8 @@ function AnnotationHitArea(
   const showHighlight = !isApplied && !isOriginalMode;
   const showPatch = isApplied && !isOriginalMode;
 
-  const shouldShowCard = activeSuggestionId === anchor.suggestion_id && !isOriginalMode;
+  const shouldShowCard =
+    activeSuggestionId === anchor.suggestion_id && !isOriginalMode;
 
   const color = priorityToColor(anchor.priority);
   const cssRect = {
@@ -63,7 +82,8 @@ function AnnotationHitArea(
   };
 
   const suggestion = suggestions.get(anchor.suggestion_id);
-  const suggestionText = suggestion?.afterText || suggestion?.text || anchor.text_anchor;
+  const suggestionText =
+    suggestion?.afterText || suggestion?.text || anchor.text_anchor;
 
   const { refs, floatingStyles } = useFloating({
     placement: "top",
@@ -135,7 +155,7 @@ function AnnotationHitArea(
         </div>
       )}
 
-      {(!isOriginalMode) && (
+      {!isOriginalMode && (
         <div
           ref={refs.setReference}
           data-suggestion-id={anchor.suggestion_id}
@@ -175,7 +195,14 @@ function AnnotationHitArea(
             }}
           >
             <div style={{ marginBottom: "12px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginBottom: "6px",
+                }}
+              >
                 <span
                   className="text-[9px] font-bold uppercase tracking-wide px-2 py-0.5 rounded"
                   style={{
@@ -183,9 +210,14 @@ function AnnotationHitArea(
                     color: color.text,
                   }}
                 >
-                  {anchor.priority === "high_impact" ? "High Impact" : "Quick Win"}
+                  {anchor.priority === "high_impact"
+                    ? "High Impact"
+                    : "Quick Win"}
                 </span>
-                <span className="text-[11px] font-medium" style={{ color: "rgba(17,17,17,0.40)" }}>
+                <span
+                  className="text-[11px] font-medium"
+                  style={{ color: "rgba(17,17,17,0.40)" }}
+                >
                   {anchor.section}
                 </span>
               </div>
@@ -210,10 +242,17 @@ function AnnotationHitArea(
                   padding: "8px 10px",
                   borderRadius: "6px",
                   marginBottom: "12px",
-                  borderLeft: `3px solid ${color.border}`,
+                  borderTop: `2px solid ${color.border}`,
                 }}
               >
-                <p className="text-[10px] mb-1" style={{ margin: "0 0 4px 0", fontWeight: "600", color: "rgba(17,17,17,0.40)" }}>
+                <p
+                  className="text-[10px] mb-1"
+                  style={{
+                    margin: "0 0 4px 0",
+                    fontWeight: "600",
+                    color: "rgba(17,17,17,0.40)",
+                  }}
+                >
                   CURRENT:
                 </p>
                 <p
@@ -225,7 +264,9 @@ function AnnotationHitArea(
                     lineHeight: "1.4",
                   }}
                 >
-                  {"\u0022"}{suggestion.text.slice(0, 80)}{"\u0022"}
+                  {"\u0022"}
+                  {suggestion.text.slice(0, 80)}
+                  {"\u0022"}
                   {suggestion.text.length > 80 ? "..." : ""}
                 </p>
               </div>
@@ -319,9 +360,7 @@ export function AnnotationOverlay({
     return null;
   }
 
-  const pageAnchors = anchors.filter(
-    (a) => a.page_index === pageIndex
-  );
+  const pageAnchors = anchors.filter((a) => a.page_index === pageIndex);
 
   if (!pageAnchors.length) {
     return null;

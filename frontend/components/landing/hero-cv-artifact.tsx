@@ -40,14 +40,18 @@ export default function HeroCvArtifact() {
             ".cv-scan",
             { top: "4%", opacity: 0 },
             { opacity: 0.9, duration: 0.2 },
-            "-=0.2"
+            "-=0.2",
           )
-          .to(".cv-scan", { top: "92%", duration: 1.2, ease: "power1.inOut" }, "<")
+          .to(
+            ".cv-scan",
+            { top: "92%", duration: 1.2, ease: "power1.inOut" },
+            "<",
+          )
           .to(".cv-scan", { opacity: 0, duration: 0.25 }, "-=0.25")
           .from(
             ".cv-score",
             { scale: 0, rotate: -14, duration: 0.5, ease: "back.out(2)" },
-            "-=0.5"
+            "-=0.5",
           )
           .to(
             counter,
@@ -61,27 +65,32 @@ export default function HeroCvArtifact() {
                 }
               },
             },
-            "<"
+            "<",
           )
           .from(
             ".cv-underline",
-            { scaleX: 0, transformOrigin: "0% 50%", duration: 0.45, ease: "power2.out" },
-            "+=0.1"
+            {
+              scaleX: 0,
+              transformOrigin: "0% 50%",
+              duration: 0.45,
+              ease: "power2.out",
+            },
+            "+=0.1",
           )
           .from(
             ".cv-chip-grammar",
             { scale: 0, y: 10, duration: 0.45, ease: "back.out(1.8)" },
-            "-=0.15"
+            "-=0.15",
           )
           .from(
             ".cv-chip-ats",
             { scale: 0, rotate: 8, duration: 0.45, ease: "back.out(1.8)" },
-            "+=0.15"
+            "+=0.15",
           )
           .from(
             ".cv-chip-jd",
             { scale: 0, y: 10, duration: 0.45, ease: "back.out(1.8)" },
-            "+=0.1"
+            "+=0.1",
           );
 
         // Idle: gentle float once the story has played.
@@ -95,10 +104,22 @@ export default function HeroCvArtifact() {
         });
 
         // Periodic re-scan, starts after the main timeline is done.
-        const scanLoop = gsap.timeline({ repeat: -1, repeatDelay: 4.5, delay: 6.5 });
+        const scanLoop = gsap.timeline({
+          repeat: -1,
+          repeatDelay: 4.5,
+          delay: 6.5,
+        });
         scanLoop
-          .fromTo(".cv-scan", { top: "4%", opacity: 0 }, { opacity: 0.7, duration: 0.25 })
-          .to(".cv-scan", { top: "92%", duration: 1.4, ease: "power1.inOut" }, "<")
+          .fromTo(
+            ".cv-scan",
+            { top: "4%", opacity: 0 },
+            { opacity: 0.7, duration: 0.25 },
+          )
+          .to(
+            ".cv-scan",
+            { top: "92%", duration: 1.4, ease: "power1.inOut" },
+            "<",
+          )
           .to(".cv-scan", { opacity: 0, duration: 0.25 }, "-=0.25");
       });
     });
@@ -135,13 +156,14 @@ export default function HeroCvArtifact() {
           style={{
             background: "#CAFF43",
             color: "#1a2900",
-            boxShadow: "0 8px 24px rgba(202,255,67,0.35), 0 2px 8px rgba(0,0,0,0.2)",
+            boxShadow:
+              "0 8px 24px rgba(202,255,67,0.35), 0 2px 8px rgba(0,0,0,0.2)",
           }}
         >
           <span className="cv-score-num font-display text-xl font-black leading-none">
             87
           </span>
-          <span className="text-[8px] font-black uppercase tracking-[0.18em]">
+          <span className="text-[11px] font-black uppercase tracking-[0.18em]">
             score
           </span>
         </div>
@@ -150,7 +172,7 @@ export default function HeroCvArtifact() {
         <p className="font-display text-base font-extrabold leading-tight text-[#141414]">
           Alya Pratama
         </p>
-        <p className="mt-0.5 text-[10px] font-semibold text-[#141414]/50">
+        <p className="mt-0.5 text-[11px] font-semibold text-[#141414]/50">
           Product Designer · Jakarta
         </p>
         <div className="mt-2 flex gap-1.5">
@@ -160,7 +182,7 @@ export default function HeroCvArtifact() {
         </div>
 
         {/* Experience */}
-        <p className="mt-4 text-[9px] font-black uppercase tracking-[0.2em] text-[#141414]/35">
+        <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-[#141414]/35">
           Experience
         </p>
         <div className="mt-2 space-y-2">
@@ -182,22 +204,24 @@ export default function HeroCvArtifact() {
         </div>
 
         {/* Skills */}
-        <p className="mt-4 text-[9px] font-black uppercase tracking-[0.2em] text-[#141414]/35">
+        <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-[#141414]/35">
           Skills
         </p>
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {["Figma", "Design Systems", "UX Research", "Prototyping"].map((skill) => (
-            <span
-              key={skill}
-              className="rounded-full border border-[#141414]/15 px-2 py-0.5 text-[9px] font-bold text-[#141414]/55"
-            >
-              {skill}
-            </span>
-          ))}
+          {["Figma", "Design Systems", "UX Research", "Prototyping"].map(
+            (skill) => (
+              <span
+                key={skill}
+                className="rounded-full border border-[#141414]/15 px-2 py-0.5 text-[11px] font-bold text-[#141414]/55"
+              >
+                {skill}
+              </span>
+            ),
+          )}
         </div>
 
         {/* Education */}
-        <p className="mt-4 text-[9px] font-black uppercase tracking-[0.2em] text-[#141414]/35">
+        <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-[#141414]/35">
           Education
         </p>
         <div className="mt-2 space-y-2 pb-1">
@@ -207,7 +231,7 @@ export default function HeroCvArtifact() {
 
         {/* Floating analysis chips */}
         <div
-          className="cv-chip-grammar absolute -left-8 top-[47%] z-20 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black"
+          className="cv-chip-grammar absolute -left-8 top-[47%] z-20 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black"
           style={{
             background: "#FF8C42",
             color: "#2b1500",
@@ -219,7 +243,7 @@ export default function HeroCvArtifact() {
         </div>
 
         <div
-          className="cv-chip-ats absolute -left-6 bottom-16 z-20 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black"
+          className="cv-chip-ats absolute -left-6 bottom-16 z-20 flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black"
           style={{
             background: "#1E1A12",
             color: "#CAFF43",
@@ -232,7 +256,7 @@ export default function HeroCvArtifact() {
         </div>
 
         <div
-          className="cv-chip-jd absolute -right-6 bottom-7 z-20 rounded-full px-2.5 py-1 text-[10px] font-black"
+          className="cv-chip-jd absolute -right-6 bottom-7 z-20 rounded-full px-2.5 py-1 text-[11px] font-black"
           style={{
             background: "#8B5CF6",
             color: "#F5F2D8",

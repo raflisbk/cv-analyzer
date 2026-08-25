@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Check } from "lucide-react";
 import { loadGsap, type GsapCtx } from "@/lib/gsap-loader";
 import { AccentPill } from "@/components/ui/accent-pill";
 
@@ -9,33 +10,44 @@ const steps = [
     pillColor: "lime" as const,
     number: "1",
     title: "Upload",
-    description: "Drag and drop your CV or click to browse. Supports PDF and DOCX.",
+    description:
+      "Drag and drop your CV or click to browse. Supports PDF and DOCX.",
     terminal: "$ pathkr analyze cv.pdf\nUploading document...",
   },
   {
     pillColor: "pink" as const,
     number: "2",
     title: "Analyze",
-    description: "AI scores your CV across clarity, impact, ATS formatting, and keyword relevance.",
-    terminal: "Analyzing...\n✓ Clarity: 78/100\n✓ Impact: 82/100\n✓ ATS: 9/10",
+    description:
+      "AI scores your CV across clarity, impact, ATS formatting, and keyword relevance.",
+    terminal: "Analyzing...\nClarity: 78/100\nImpact: 82/100\nATS: 9/10",
   },
   {
     pillColor: "orange" as const,
     number: "3",
     title: "Compare",
-    description: "Paste any job description to get your match score and a ranked skill gap list.",
-    terminal: "Comparing to JD...\nMatch: 85%\n+5 skills matched\n3 gaps identified",
+    description:
+      "Paste any job description to get your match score and a ranked skill gap list.",
+    terminal:
+      "Comparing to JD...\nMatch: 85%\n+5 skills matched\n3 gaps identified",
   },
   {
     pillColor: "purple" as const,
     number: "4",
     title: "Export",
-    description: "Download a professional PDF report with all scores, suggestions, and action items.",
-    terminal: "Generating report...\n✓ PDF exported\n✓ 12 suggestions\nDone!",
+    description:
+      "Download a professional PDF report with all scores, suggestions, and action items.",
+    terminal: "Generating report...\nPDF exported\n12 suggestions\nDone!",
   },
 ];
 
-function TypewriterTerminal({ lines, started }: { lines: string[]; started: boolean }) {
+function TypewriterTerminal({
+  lines,
+  started,
+}: {
+  lines: string[];
+  started: boolean;
+}) {
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [elapsed, setElapsed] = useState(0);
 
@@ -60,7 +72,9 @@ function TypewriterTerminal({ lines, started }: { lines: string[]; started: bool
       if (elapsed >= acc) {
         result.push(line);
       } else {
-        const partial = Math.floor((elapsed - (acc - line.length * 12 - 200)) / 12);
+        const partial = Math.floor(
+          (elapsed - (acc - line.length * 12 - 200)) / 12,
+        );
         if (partial > 0) {
           result.push(line.slice(0, partial));
         }
@@ -86,13 +100,18 @@ function TypewriterTerminal({ lines, started }: { lines: string[]; started: bool
         <div className="h-2.5 w-2.5 rounded-full bg-[#F43F5E]/60" />
         <div className="h-2.5 w-2.5 rounded-full bg-[#CAFF43]/60" />
         <div className="h-2.5 w-2.5 rounded-full bg-[#8B5CF6]/60" />
-        <span className="ml-2 text-[10px] font-mono text-[#F5F2D8]/20">pathkr terminal</span>
+        <span className="ml-2 text-[10px] font-mono text-[#F5F2D8]/20">
+          pathkr terminal
+        </span>
       </div>
       <div className="p-4 font-mono text-[12px] leading-relaxed min-h-[120px]">
         {displayedLines.map((line, i) => (
           <div key={i} className="text-[#CAFF43]/70">
-            {line.startsWith("✓") ? (
-              <span className="text-[#CAFF43]">{line}</span>
+            {/^(Clarity|Impact|ATS|PDF exported|12 suggestions)/.test(line) ? (
+              <span className="flex items-center gap-1 text-[#CAFF43]">
+                <Check className="h-3 w-3" aria-hidden="true" />
+                {line}
+              </span>
             ) : line.startsWith("+") ? (
               <span className="text-[#8B5CF6]">{line}</span>
             ) : line.startsWith("Match") ? (
@@ -102,7 +121,9 @@ function TypewriterTerminal({ lines, started }: { lines: string[]; started: bool
             )}
           </div>
         ))}
-        {started && <span className="inline-block w-2 h-3 bg-[#CAFF43]/70 animate-pulse" />}
+        {started && (
+          <span className="inline-block w-2 h-3 bg-[#CAFF43]/70 animate-pulse" />
+        )}
       </div>
     </div>
   );
@@ -134,7 +155,7 @@ export default function HowItWorksSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
 
         gsap.fromTo(
@@ -154,7 +175,7 @@ export default function HowItWorksSection() {
                 setStarted(true);
               },
             },
-          }
+          },
         );
 
         gsap.fromTo(
@@ -171,7 +192,7 @@ export default function HowItWorksSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
       }, sectionRef);
       ctxRef.current = ctx;

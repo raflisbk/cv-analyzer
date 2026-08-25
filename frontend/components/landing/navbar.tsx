@@ -110,7 +110,8 @@ export default function Navbar() {
             onClick={() => router.push("/workspace-v2/new")}
             className="group relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-2 text-[13px] font-black tracking-wide transition-all duration-200 hover:opacity-92 active:scale-[0.97]"
             style={{
-              background: "linear-gradient(135deg, #1E1A12 0%, #141414 60%, #1A170F 100%)",
+              background:
+                "linear-gradient(135deg, #1E1A12 0%, #141414 60%, #1A170F 100%)",
               color: "#F5F2D8",
               border: "1px solid rgba(255,255,255,0.10)",
               boxShadow:
@@ -240,10 +241,12 @@ export default function Navbar() {
               <button
                 className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl px-5 py-4 text-[14px] font-black tracking-wide transition-all duration-200 active:scale-[0.98]"
                 style={{
-                  background: "linear-gradient(135deg, #1E1A12 0%, #141414 60%, #1A170F 100%)",
+                  background:
+                    "linear-gradient(135deg, #1E1A12 0%, #141414 60%, #1A170F 100%)",
                   color: "#F5F2D8",
                   border: "1px solid rgba(255,255,255,0.10)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.08)",
+                  boxShadow:
+                    "0 4px 20px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.08)",
                 }}
                 onClick={() => {
                   router.push("/workspace-v2/new");
@@ -251,7 +254,11 @@ export default function Navbar() {
                 }}
               >
                 <span className="relative flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" style={{ color: "#CAFF43" }} aria-hidden="true" />
+                  <Sparkles
+                    className="h-4 w-4"
+                    style={{ color: "#CAFF43" }}
+                    aria-hidden="true"
+                  />
                   Get Started — Free
                 </span>
                 <span
@@ -268,7 +275,7 @@ export default function Navbar() {
 
               {!user && (
                 <p className="mt-3 text-center text-[11px] font-medium text-[#141414]/40">
-                  Free. Instant. Login on first use.
+                  Free. Fast setup. Login on first use.
                 </p>
               )}
             </div>

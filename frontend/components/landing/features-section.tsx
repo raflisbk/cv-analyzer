@@ -2,12 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import { loadGsap, type GsapCtx } from "@/lib/gsap-loader";
-import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/feature-icons";
+import {
+  AIScoringIcon,
+  SkillGapIcon,
+  JobMatchIcon,
+} from "@/components/ui/feature-icons";
 
 const features = [
   {
     Icon: AIScoringIcon,
-    iconBg: "bg-[#CAFF43]/20",
+    accent: "#CAFF43",
     iconColor: "text-[#141414]",
     title: "AI Scoring",
     description:
@@ -15,7 +19,7 @@ const features = [
   },
   {
     Icon: SkillGapIcon,
-    iconBg: "bg-[#FF4FCB]/20",
+    accent: "#FF4FCB",
     iconColor: "text-[#141414]",
     title: "Skill Gap Analysis",
     description:
@@ -23,7 +27,7 @@ const features = [
   },
   {
     Icon: JobMatchIcon,
-    iconBg: "bg-[#FF8C42]/20",
+    accent: "#FF8C42",
     iconColor: "text-[#141414]",
     title: "Job Match Comparison",
     description:
@@ -55,7 +59,7 @@ export default function FeaturesSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
 
         gsap.fromTo(
@@ -73,7 +77,7 @@ export default function FeaturesSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
       }, sectionRef);
       ctxRef.current = ctx;
@@ -103,35 +107,41 @@ export default function FeaturesSection() {
               AI-powered analysis across 4 dimensions — clarity, impact, ATS
               compatibility, and keyword relevance.
             </p>
+            <div className="mx-auto mt-6 flex max-w-2xl items-center justify-between border-y border-dashed border-[#141414]/20 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/40">
+              <span>BOARDING PASS</span>
+              <span>Three checks · One clear path</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {features.map(({ Icon, iconBg, iconColor, title, description }) => (
-              <div
-                key={title}
-                className="feature-card group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5"
-                style={{
-                  background: "#FFFDF4",
-                  boxShadow:
-                    "0 8px 32px rgba(17,17,17,0.06), 0 1px 2px rgba(17,17,17,0.04)",
-                  border: "1px solid rgba(17,17,17,0.07)",
-                }}
-              >
+            {features.map(
+              ({ Icon, accent, iconColor, title, description }, index) => (
                 <div
-                  className={`mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110 ${iconBg}`}
+                  key={title}
+                  className="feature-card group relative overflow-hidden border-y border-dashed border-[#141414]/20 px-5 py-5 transition-transform duration-300 hover:-translate-y-1.5"
+                  style={{
+                    borderTopColor: accent,
+                  }}
                 >
-                  <Icon size={28} className={iconColor} />
+                  <div className="mb-5 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/40">
+                    <span>BOARDING PASS</span>
+                    <span>{String(index + 1).padStart(2, "0")} / 03</span>
+                  </div>
+
+                  <div className="mb-5 inline-flex h-11 w-11 items-center justify-center border border-dashed border-[#141414]/25 transition-transform duration-300 group-hover:scale-110">
+                    <Icon size={26} className={iconColor} />
+                  </div>
+
+                  <h3 className="mb-3 font-display text-xl font-bold tracking-tight text-[#141414]">
+                    {title}
+                  </h3>
+
+                  <p className="text-[15px] leading-relaxed text-[#141414]/60">
+                    {description}
+                  </p>
                 </div>
-
-                <h3 className="mb-3 font-display text-xl font-bold tracking-tight text-[#141414]">
-                  {title}
-                </h3>
-
-                <p className="text-[15px] leading-relaxed text-[#141414]/60">
-                  {description}
-                </p>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </div>
       </div>

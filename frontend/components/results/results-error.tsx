@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -50,7 +48,7 @@ export function ResultsError({ type, retryAfter }: ResultsErrorProps) {
   };
 
   return (
-    <div className="bg-[#141414] rounded-[2rem] max-w-md mx-auto px-8 py-12 text-center">
+    <div className="border-y border-dashed border-white/15 bg-[#141414] max-w-md mx-auto px-8 py-12 text-center">
       <div className="text-[#FF4FCB] mb-4 flex justify-center">
         <AlertCircle className="w-10 h-10" />
       </div>
@@ -59,9 +57,7 @@ export function ResultsError({ type, retryAfter }: ResultsErrorProps) {
         {content.heading}
       </h2>
 
-      <p className="text-sm text-[#F5F2D8]/60 mb-2">
-        {content.subtext}
-      </p>
+      <p className="text-sm text-[#F5F2D8]/60 mb-2">{content.subtext}</p>
       {type === "rate-limit" && retryAfter && (
         <p className="text-sm text-[#F5F2D8]/40 mb-6">
           Try again in {Math.ceil(retryAfter / 60)} minutes.

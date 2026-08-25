@@ -15,17 +15,37 @@ import { ScoreRangeBadge } from "@/components/results/score-range-badge";
 import { normalizeAnalysisResult } from "@/lib/normalize-analysis-result";
 import { getWorkspaceRoute } from "@/lib/job-routes";
 
-function VersionHistoryBar({ versions, currentJobId }: { versions: ScoreVersion[]; currentJobId: string }) {
-  if (!versions || versions.length < 2) { return null; }
+function VersionHistoryBar({
+  versions,
+  currentJobId,
+}: {
+  versions: ScoreVersion[];
+  currentJobId: string;
+}) {
+  if (!versions || versions.length < 2) {
+    return null;
+  }
   return (
-    <div className="rounded-2xl border border-white/8 bg-[#1C1C1C] px-6 py-4">
-      <p className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 mb-3">Version History</p>
+    <div className="border-y border-dashed border-white/15 bg-[#141414] px-6 py-4">
+      <p className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 mb-3">
+        Version History
+      </p>
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         {versions.map((v, i) => {
           const isCurrent = v.job_id === currentJobId;
-          const deltaColor = v.delta === null ? "" : v.delta > 0 ? "text-[#CAFF43]" : v.delta < 0 ? "text-[#FF4FCB]" : "text-[#F5F2D8]/40";
+          const deltaColor =
+            v.delta === null
+              ? ""
+              : v.delta > 0
+                ? "text-[#CAFF43]"
+                : v.delta < 0
+                  ? "text-[#FF4FCB]"
+                  : "text-[#F5F2D8]/40";
           return (
-            <div key={v.job_id} className="flex items-center gap-2 flex-shrink-0">
+            <div
+              key={v.job_id}
+              className="flex items-center gap-2 flex-shrink-0"
+            >
               {i > 0 && <span className="text-[#F5F2D8]/20 text-sm">→</span>}
               <a
                 href={`/results/${v.job_id}`}
@@ -35,15 +55,20 @@ function VersionHistoryBar({ versions, currentJobId }: { versions: ScoreVersion[
                     : "bg-white/4 border border-white/8 hover:bg-white/8"
                 }`}
               >
-                <p className={`text-xs font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]/60"}`}>
+                <p
+                  className={`text-xs font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]/60"}`}
+                >
                   v{v.version}
                 </p>
-                <p className={`text-sm font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]"}`}>
+                <p
+                  className={`text-sm font-extrabold ${isCurrent ? "text-[#CAFF43]" : "text-[#F5F2D8]"}`}
+                >
                   {v.overall}
                 </p>
                 {v.delta !== null && (
                   <p className={`text-[10px] font-bold ${deltaColor}`}>
-                    {v.delta > 0 ? "+" : ""}{v.delta}
+                    {v.delta > 0 ? "+" : ""}
+                    {v.delta}
                   </p>
                 )}
               </a>
@@ -56,7 +81,7 @@ function VersionHistoryBar({ versions, currentJobId }: { versions: ScoreVersion[
 }
 
 function buildSuggestionsClipboardText(
-  cards: SuggestionCard[] | null | undefined
+  cards: SuggestionCard[] | null | undefined,
 ): string | undefined {
   if (!cards || cards.length === 0) {
     return undefined;
@@ -67,7 +92,9 @@ function buildSuggestionsClipboardText(
     return undefined;
   }
 
-  const cardsWithSuggestions = cards.filter((card) => card.suggestions.length > 0);
+  const cardsWithSuggestions = cards.filter(
+    (card) => card.suggestions.length > 0,
+  );
   const sections = cardsWithSuggestions
     .map((card) => {
       const suggestionsText = card.suggestions
@@ -81,12 +108,11 @@ function buildSuggestionsClipboardText(
   if (process.env.NODE_ENV !== "production") {
     const renderedCount = cardsWithSuggestions.reduce(
       (sum, card) => sum + card.suggestions.length,
-      0
+      0,
     );
     const copiedCount = sections
       .split("\n")
-      .filter((line) => /^\d+\.\s/.test(line))
-      .length;
+      .filter((line) => /^\d+\.\s/.test(line)).length;
     if (copiedCount !== renderedCount) {
       console.warn("Copy payload suggestion count mismatch detected");
     }
@@ -102,7 +128,9 @@ export default function ResultsPage() {
 
   const { data, isLoading, isError, error, refetch } = useJobResults(jobId);
   const normalizedResult = data ? normalizeAnalysisResult(data) : null;
-  const suggestionsClipboardText = buildSuggestionsClipboardText(normalizedResult?.suggestions);
+  const suggestionsClipboardText = buildSuggestionsClipboardText(
+    normalizedResult?.suggestions,
+  );
 
   const { data: jobRolesData } = useQuery<JobRole[]>({
     queryKey: ["job-roles"],
@@ -113,7 +141,9 @@ export default function ResultsPage() {
   if (isError) {
     const isRateLimit =
       (error instanceof Error && error.message.includes("429")) ||
-      (error instanceof Error && "code" in error && (error as Error & { code: string }).code === "RATE_LIMIT_EXCEEDED");
+      (error instanceof Error &&
+        "code" in error &&
+        (error as Error & { code: string }).code === "RATE_LIMIT_EXCEEDED");
     return (
       <main className="min-h-screen bg-[#F5F2D8] py-12 px-4">
         <ResultsError type={isRateLimit ? "rate-limit" : "network"} />
@@ -137,7 +167,8 @@ export default function ResultsPage() {
     );
   }
 
-  const isProcessing = !normalizedResult || normalizedResult.status !== "complete";
+  const isProcessing =
+    !normalizedResult || normalizedResult.status !== "complete";
   const isComplete = normalizedResult?.status === "complete";
 
   const scoreColor = normalizedResult?.scores
@@ -150,7 +181,9 @@ export default function ResultsPage() {
 
   return (
     <>
-      <main className={`min-h-screen bg-[#F5F2D8]${isComplete ? " pb-16" : ""}`}>
+      <main
+        className={`min-h-screen bg-[#F5F2D8]${isComplete ? " pb-16" : ""}`}
+      >
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
@@ -191,7 +224,7 @@ export default function ResultsPage() {
 
           {isProcessing ? (
             <div className="space-y-4">
-              <div className="bg-[#141414] rounded-[2rem] p-10 text-center space-y-4 border border-[#CAFF43]/10 animate-pulse">
+              <div className="border-y border-dashed border-[#CAFF43]/20 bg-[#141414] p-10 text-center space-y-4 animate-pulse">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-2 h-2 bg-[#CAFF43] rounded-full animate-ping" />
                   <div className="w-2 h-2 bg-[#FF8C42] rounded-full animate-ping [animation-delay:0.2s]" />
@@ -209,30 +242,35 @@ export default function ResultsPage() {
           ) : (
             <div className="space-y-8">
               {normalizedResult.scores && (
-                <div className="bg-[#141414] rounded-[2rem] px-8 py-10 flex flex-col items-center gap-2">
+                <div className="border-y border-dashed border-white/15 bg-[#141414] px-8 py-10 flex flex-col items-center gap-2">
                   <span
                     className="font-display font-extrabold text-6xl"
                     style={{ color: scoreColor }}
                   >
                     {normalizedResult.scores.overall}
                   </span>
-                  <p className="text-sm text-[#F5F2D8]/50 mt-1">Overall Score</p>
+                  <p className="text-sm text-[#F5F2D8]/50 mt-1">
+                    Overall Score
+                  </p>
                   <ScoreRangeBadge score={normalizedResult.scores.overall} />
                 </div>
               )}
 
-              {normalizedResult.version_history && normalizedResult.version_history.length >= 2 && (
-                <VersionHistoryBar
-                  versions={normalizedResult.version_history}
-                  currentJobId={jobId}
-                />
-              )}
+              {normalizedResult.version_history &&
+                normalizedResult.version_history.length >= 2 && (
+                  <VersionHistoryBar
+                    versions={normalizedResult.version_history}
+                    currentJobId={jobId}
+                  />
+                )}
 
-                <ResultsTabs
-                  result={normalizedResult}
-                  jobRoles={jobRolesData ?? []}
-                  onCompareComplete={() => { void refetch(); }}
-                />
+              <ResultsTabs
+                result={normalizedResult}
+                jobRoles={jobRolesData ?? []}
+                onCompareComplete={() => {
+                  void refetch();
+                }}
+              />
 
               <div className="flex items-center justify-center gap-3 pt-4 flex-wrap">
                 <button

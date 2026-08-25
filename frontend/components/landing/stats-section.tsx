@@ -1,21 +1,30 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { loadGsap, type GsapCtx } from "@/lib/gsap-loader";
+import {
+  BarChart3,
+  Bot,
+  CheckCircle,
+  MessageSquare,
+  Target,
+} from "lucide-react";
+import { loadGsap } from "@/lib/gsap-loader";
+
+export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: no-preference)";
 
 const stats = [
-  { number: "10,000+", label: "CVs Analyzed", isLime: false },
+  { number: "1,088", label: "Role Archetypes", isLime: false },
   { number: "4", label: "Scoring Dimensions", isLime: true },
   { number: "Free", label: "To Use", isLime: false },
-  { number: "Instant", label: "Results", isLime: false },
+  { number: "~20s", label: "Analysis Time", isLime: false },
 ];
 
 const orbitPositions = [
-  { emoji: "🤖", x: 80, y: 0, label: "AI" },
-  { emoji: "📊", x: 24.72, y: -75.98, label: "Scoring" },
-  { emoji: "✅", x: -64.72, y: -47.02, label: "ATS" },
-  { emoji: "💬", x: -64.72, y: 47.02, label: "Chat" },
-  { emoji: "🎯", x: 24.72, y: 75.98, label: "Match" },
+  { Icon: Bot, x: 80, y: 0, label: "AI" },
+  { Icon: BarChart3, x: 24.72, y: -75.98, label: "Scoring" },
+  { Icon: CheckCircle, x: -64.72, y: -47.02, label: "ATS" },
+  { Icon: MessageSquare, x: -64.72, y: 47.02, label: "Chat" },
+  { Icon: Target, x: 24.72, y: 75.98, label: "Match" },
 ];
 
 function OrbitGraphic() {
@@ -25,7 +34,8 @@ function OrbitGraphic() {
         className="absolute inset-0 rounded-full"
         style={{
           border: "1px solid rgba(202,255,67,0.12)",
-          background: "radial-gradient(circle, rgba(202,255,67,0.06) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(202,255,67,0.06) 0%, transparent 70%)",
         }}
       />
       <div
@@ -34,25 +44,31 @@ function OrbitGraphic() {
       >
         PK
       </div>
-      {orbitPositions.map((icon) => (
+      {orbitPositions.map(({ Icon, x, y, label }) => (
         <div
-          key={icon.label}
+          key={label}
           className="orbit-icon absolute top-1/2 left-1/2 w-9 h-9 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-sm"
           style={{
-            transform: `translate(calc(-50% + ${icon.x}px), calc(-50% + ${icon.y}px))`,
+            transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
             background: "rgba(255,255,255,0.08)",
             border: "1px solid rgba(255,255,255,0.1)",
           }}
-          aria-label={icon.label}
+          aria-label={label}
         >
-          {icon.emoji}
+          <Icon size={16} aria-hidden="true" />
         </div>
       ))}
     </div>
   );
 }
 
-function AnimatedCounter({ target, isLime }: { target: string; isLime: boolean }) {
+function AnimatedCounter({
+  target,
+  isLime,
+}: {
+  target: string;
+  isLime: boolean;
+}) {
   const spanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -70,33 +86,40 @@ function AnimatedCounter({ target, isLime }: { target: string; isLime: boolean }
       return;
     }
     const prefix = target.slice(0, target.indexOf(numericMatch[0]));
-    const suffix = target.slice(target.indexOf(numericMatch[0]) + numericMatch[0].length);
+    const suffix = target.slice(
+      target.indexOf(numericMatch[0]) + numericMatch[0].length,
+    );
 
     let reverted = false;
+    let mm: { revert: () => void } | null = null;
     const obj = { val: 0 };
     loadGsap().then(({ gsap }) => {
       if (reverted) {
         return;
       }
-      gsap.to(obj, {
-        val: numericVal,
-        duration: 2,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 85%",
-          once: true,
-        },
-        onUpdate: () => {
-          const formatted = obj.val >= 1000
-            ? obj.val.toLocaleString() + "+"
-            : String(obj.val);
-          el.textContent = prefix + formatted + suffix;
-        },
+      const media = gsap.matchMedia(el);
+      mm = media;
+      media.add(REDUCED_MOTION_QUERY, () => {
+        gsap.to(obj, {
+          val: numericVal,
+          duration: 2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+            once: true,
+          },
+          onUpdate: () => {
+            const formatted =
+              obj.val >= 1000 ? obj.val.toLocaleString() : String(obj.val);
+            el.textContent = prefix + formatted + suffix;
+          },
+        });
       });
     });
     return () => {
       reverted = true;
+      mm?.revert();
     };
   }, [target]);
 
@@ -106,7 +129,9 @@ function AnimatedCounter({ target, isLime }: { target: string; isLime: boolean }
       className={`font-display font-extrabold text-4xl md:text-5xl leading-none tracking-tight ${
         isLime ? "text-[#CAFF43]" : "text-[#F5F2D8]"
       }`}
-      style={isLime ? { textShadow: "0 0 20px rgba(202,255,67,0.2)" } : undefined}
+      style={
+        isLime ? { textShadow: "0 0 20px rgba(202,255,67,0.2)" } : undefined
+      }
     >
       {target}
     </span>
@@ -115,15 +140,16 @@ function AnimatedCounter({ target, isLime }: { target: string; isLime: boolean }
 
 export default function StatsSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const ctxRef = useRef<GsapCtx | null>(null);
 
   useEffect(() => {
     if (!sectionRef.current) {
       return;
     }
-    let ctx: GsapCtx | null = null;
+    let mm: { revert: () => void } | null = null;
     loadGsap().then(({ gsap }) => {
-      ctx = gsap.context(() => {
+      const media = gsap.matchMedia(sectionRef);
+      mm = media;
+      media.add(REDUCED_MOTION_QUERY, () => {
         gsap.fromTo(
           ".orbit-center",
           { scale: 0.5, opacity: 0 },
@@ -137,7 +163,7 @@ export default function StatsSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
 
         gsap.fromTo(
@@ -154,7 +180,7 @@ export default function StatsSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
 
         gsap.fromTo(
@@ -171,13 +197,12 @@ export default function StatsSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
-      }, sectionRef);
-      ctxRef.current = ctx;
+      });
     });
     return () => {
-      ctx?.revert();
+      mm?.revert();
     };
   }, []);
 
@@ -196,7 +221,10 @@ export default function StatsSection() {
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-0">
             {stats.map((stat, i) => (
-              <div key={stat.label} className="stat-item group flex items-center">
+              <div
+                key={stat.label}
+                className="stat-item group flex items-center"
+              >
                 <div className="text-center px-8 transition-transform duration-300 group-hover:-translate-y-1">
                   <AnimatedCounter target={stat.number} isLime={stat.isLime} />
                   <p className="text-[15px] font-medium tracking-wide text-[#F5F2D8]/50 uppercase">

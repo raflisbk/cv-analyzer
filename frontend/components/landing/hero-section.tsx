@@ -4,18 +4,15 @@ import { useEffect, useRef } from "react";
 import { loadGsap } from "@/lib/gsap-loader";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowRight, Scissors, Send } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AccentPill } from "@/components/ui/accent-pill";
 import { PathkrInline } from "@/components/ui/pathkr-logo";
 
 import HeroCvArtifact from "@/components/landing/hero-cv-artifact";
 
-
-const diamond = (
-  <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
-    <path d="M4 0L5 3L8 4L5 5L4 8L3 5L0 4L3 3Z" fill="currentColor" />
-  </svg>
-);
+export const HERO_INTRO_FALLBACK_MS = 700;
+export const CARD_PUNCH_ROTATION_MS = 2400;
+export const CARD_PUNCH_X_SETTLE_MS = 1500;
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -44,7 +41,13 @@ export default function HeroSection() {
         ease: "power2.in",
         transformOrigin: "left top",
       })
-      .to(stub, { y: 90, rotation: 8, opacity: 0, duration: 0.45, ease: "power2.in" })
+      .to(stub, {
+        y: 90,
+        rotation: 8,
+        opacity: 0,
+        duration: 0.45,
+        ease: "power2.in",
+      })
       .set(stub, { y: -18, rotation: 0 })
       .to(stub, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" })
       .fromTo(
@@ -164,11 +167,8 @@ export default function HeroSection() {
           });
         };
         window.addEventListener("pathkr:mascot-kick", onKick);
-        // The mascot (md+ only) physics-drops in before kicking — worst
-        // case ~11.5s; wait for it where it exists, reveal almost
-        // immediately where it doesn't
-        const mascotPresent = window.matchMedia("(min-width: 768px)").matches;
-        const fallback = window.setTimeout(startIntro, mascotPresent ? 12500 : 400);
+        // The mascot kick enhances the reveal, but must never gate the hero.
+        const fallback = window.setTimeout(startIntro, HERO_INTRO_FALLBACK_MS);
 
         // The mascot conducts these zones when it walks under them
         const onMascotZone = (event: Event) => {
@@ -191,7 +191,11 @@ export default function HeroSection() {
               })
               .to(
                 ".hero-card-wrap",
-                { x: 0, duration: 1.5, ease: "elastic.out(1, 0.32)" },
+                {
+                  x: 0,
+                  duration: CARD_PUNCH_X_SETTLE_MS / 1000,
+                  ease: "elastic.out(1, 0.32)",
+                },
                 0.09,
               )
               .to(
@@ -199,7 +203,7 @@ export default function HeroSection() {
                 {
                   transformPerspective: 1600,
                   rotationY: 1046,
-                  duration: 2.4,
+                  duration: CARD_PUNCH_ROTATION_MS / 1000,
                   ease: "expo.out",
                 },
                 0,
@@ -285,7 +289,10 @@ export default function HeroSection() {
               });
             gsap.fromTo(
               ".row-no",
-              { backgroundColor: "rgba(202,255,67,0)", color: "rgba(17,17,17,0.35)" },
+              {
+                backgroundColor: "rgba(202,255,67,0)",
+                color: "rgba(17,17,17,0.35)",
+              },
               {
                 backgroundColor: "#CAFF43",
                 color: "#141414",
@@ -336,7 +343,11 @@ export default function HeroSection() {
                 { top: "88%", duration: 1.9, ease: "sine.inOut" },
                 "<",
               )
-              .to(".hero-artifact-scan", { opacity: 0, duration: 0.3 }, ">-0.15")
+              .to(
+                ".hero-artifact-scan",
+                { opacity: 0, duration: 0.3 },
+                ">-0.15",
+              )
               .to(
                 ".hero-artifact-wrap",
                 {
@@ -348,18 +359,6 @@ export default function HeroSection() {
                 },
                 ">-0.1",
               );
-          } else if (zone === "hero-stamp") {
-            gsap.fromTo(
-              ".hero-stamp",
-              { scale: 1.45, rotation: -10, opacity: 0.4 },
-              {
-                scale: 1,
-                rotation: 0,
-                opacity: 1,
-                duration: 0.55,
-                ease: "elastic.out(1, 0.5)",
-              },
-            );
           }
         };
         window.addEventListener("pathkr:mascot-zone", onMascotZone);
@@ -378,33 +377,11 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section id="hero" ref={sectionRef} className="snap-section relative bg-[#F5F2D8]">
-      {/* Slowly spinning diamond accents */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute right-[8%] top-[10%] hidden lg:block"
-        style={{ animation: "hero-spin 26s linear infinite" }}
-      >
-        <svg width="18" height="18" viewBox="0 0 8 8" fill="none">
-          <path
-            d="M4 0L5 3L8 4L5 5L4 8L3 5L0 4L3 3Z"
-            fill="rgba(17,17,17,0.35)"
-          />
-        </svg>
-      </span>
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-[14%] left-[46%] hidden lg:block"
-        style={{ animation: "hero-spin 34s linear infinite reverse" }}
-      >
-        <svg width="12" height="12" viewBox="0 0 8 8" fill="none">
-          <path
-            d="M4 0L5 3L8 4L5 5L4 8L3 5L0 4L3 3Z"
-            fill="rgba(17,17,17,0.28)"
-          />
-        </svg>
-      </span>
-
+    <section
+      id="hero"
+      ref={sectionRef}
+      className="snap-section relative bg-[#F5F2D8]"
+    >
       <div className="flex-1 flex flex-col justify-start gap-4 px-4 pt-5 md:px-8 md:pt-6">
         {/* Editorial band above the card: stacked meta (left) +
             typographic manifesto (right) */}
@@ -412,36 +389,12 @@ export default function HeroSection() {
           {/* Same typographic recipe as the "Why it works" rows: tiny
               kicker on top, big display line underneath */}
           <div className="flex flex-col gap-1">
-            <span className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
-              <span className="text-[#141414]/30">{diamond}</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
               AI Career Platform
             </span>
             <span className="font-display text-2xl font-extrabold leading-none tracking-tight text-[#141414] 2xl:text-3xl">
               Score · Fix · Match
             </span>
-          </div>
-          {/* Dashed flight path flying off toward the right edge (ticket
-              motif) — the manifesto it used to land on now heads the RAG
-              explainer section below */}
-          <div className="relative ml-10 hidden h-10 flex-1 self-end xl:block">
-            <svg
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full"
-              viewBox="0 0 400 40"
-              preserveAspectRatio="none"
-              fill="none"
-            >
-              <path
-                d="M4 34 Q 200 -8 388 16"
-                stroke="rgba(17,17,17,0.2)"
-                strokeWidth="1.5"
-                strokeDasharray="5 7"
-              />
-            </svg>
-            <Send
-              aria-hidden="true"
-              className="absolute -right-1 top-1 h-3.5 w-3.5 rotate-12 text-[#141414]/35"
-            />
           </div>
         </div>
 
@@ -521,7 +474,7 @@ export default function HeroSection() {
                   <div className="hero-fade mt-5 flex flex-wrap gap-2">
                     {[
                       "Free",
-                      "Instant results",
+                      "Results in ~20s",
                       "6 AI features",
                       "EN & ID",
                     ].map((item) => (
@@ -637,11 +590,7 @@ export default function HeroSection() {
                 />
                 <div className="flex items-center gap-3 whitespace-nowrap text-[9px] font-black uppercase tracking-[0.2em] text-[#F5F2D8]/40 md:gap-5 md:text-[10px]">
                   <span>Gate AI</span>
-                  <span className="hidden text-[#CAFF43]/40 sm:inline">
-                    {diamond}
-                  </span>
                   <span className="hidden sm:inline">Seat 01-A</span>
-                  <span className="text-[#CAFF43]/40">{diamond}</span>
                   <span className="flex items-center gap-1.5 text-[#CAFF43]/80">
                     <span className="hero-dot h-1.5 w-1.5 animate-pulse rounded-full bg-[#CAFF43]" />
                     Boarding Now
@@ -655,146 +604,12 @@ export default function HeroSection() {
               double as story navigation (each scrolls to its section).
               xl+ only — below that the CV artifact needs the room. */}
           <div className="relative hidden xl:flex flex-col items-end justify-center pr-10">
-            {/* Ornaments filling the gap between the CV artifact and the
-                rows (only when the gap actually exists, ≥1780px): ticket
-                perforation + scissors framing the rows as a tear-off stub,
-                a dashed trajectory from the artifact toward the rows, and a
-                slowly rotating passport stamp */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-10 left-0 right-[400px] 2xl:right-[480px] hidden 2xl:block"
-            >
-              {/* Perforation line just left of the rows */}
-              <div className="absolute inset-y-8 right-0 border-r border-dashed border-[#141414]/15" />
-              <Scissors className="absolute -right-2 top-2 h-4 w-4 rotate-90 text-[#141414]/25" />
-
-              {/* Dashed trajectory: artifact → rows */}
-              <svg
-                className="absolute left-[6%] top-[24%] hidden h-40 w-[76%] min-[1780px]:block"
-                viewBox="0 0 400 160"
-                preserveAspectRatio="none"
-                fill="none"
-              >
-                <path
-                  d="M8 132 Q 180 8 392 64"
-                  stroke="rgba(17,17,17,0.16)"
-                  strokeWidth="1.5"
-                  strokeDasharray="5 7"
-                />
-                <circle cx="392" cy="64" r="3" fill="rgba(17,17,17,0.3)" />
-                <circle
-                  cx="8"
-                  cy="132"
-                  r="2.5"
-                  stroke="rgba(17,17,17,0.3)"
-                  strokeWidth="1.5"
-                />
-              </svg>
-
-              {/* Rotating passport stamp */}
-              <div
-                data-mascot-zone="hero-stamp"
-                className="hero-stamp absolute left-[30%] top-[54%] hidden h-28 w-28 min-[1780px]:block"
-              >
-                <svg
-                  className="h-full w-full"
-                  viewBox="0 0 112 112"
-                  style={{ animation: "hero-spin 45s linear infinite" }}
-                >
-                  <defs>
-                    <path
-                      id="hero-stamp-arc"
-                      d="M56,56 m-41,0 a41,41 0 1,1 82,0 a41,41 0 1,1 -82,0"
-                      fill="none"
-                    />
-                  </defs>
-                  <circle
-                    cx="56"
-                    cy="56"
-                    r="50"
-                    stroke="rgba(17,17,17,0.22)"
-                    strokeWidth="1.5"
-                    strokeDasharray="4 6"
-                    fill="none"
-                  />
-                  <circle
-                    cx="56"
-                    cy="56"
-                    r="32"
-                    stroke="rgba(17,17,17,0.16)"
-                    strokeWidth="1"
-                    fill="none"
-                  />
-                  <text
-                    fontSize="9.5"
-                    fontWeight="800"
-                    letterSpacing="2.5"
-                    fill="rgba(17,17,17,0.3)"
-                  >
-                    <textPath href="#hero-stamp-arc">
-                      PATH KARIR ✦ CAREER PASS ✦ APPROVED
-                    </textPath>
-                  </text>
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center font-display text-xl font-black text-[#141414]/30">
-                  87
-                </span>
-              </div>
-
-              {/* Scattered plus marks + micro meta */}
-              <svg
-                className="absolute left-[14%] top-[14%] hidden min-[1780px]:block"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-              >
-                <path
-                  d="M7 1v12M1 7h12"
-                  stroke="rgba(17,17,17,0.25)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <svg
-                className="absolute left-[64%] top-[80%]"
-                width="10"
-                height="10"
-                viewBox="0 0 14 14"
-                fill="none"
-              >
-                <path
-                  d="M7 1v12M1 7h12"
-                  stroke="rgba(17,17,17,0.18)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="absolute left-[52%] top-[8%] hidden min-[1780px]:block font-mono text-[9px] tracking-[0.3em] text-[#141414]/25">
-                GATE AI → ROWS 01–03
-              </span>
-              <span
-                className="absolute bottom-[6%] left-[18%] hidden min-[1780px]:block"
-                style={{ animation: "hero-spin 38s linear infinite reverse" }}
-              >
-                <svg width="11" height="11" viewBox="0 0 8 8" fill="none">
-                  <path
-                    d="M4 0L5 3L8 4L5 5L4 8L3 5L0 4L3 3Z"
-                    fill="rgba(17,17,17,0.22)"
-                  />
-                </svg>
-              </span>
-            </div>
-
             <div
               data-mascot-zone="hero-rows"
               className="w-full max-w-[340px] 2xl:max-w-[420px]"
             >
               <p className="hero-fade mb-2 flex items-center justify-end gap-2.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#141414]/40">
                 Why it works
-                <span aria-hidden="true" className="text-[#141414]/30">
-                  {diamond}
-                </span>
               </p>
               {[
                 {
@@ -856,54 +671,6 @@ export default function HeroSection() {
             data-mascot-zone="cv-artifact"
             className="pointer-events-none absolute left-[62%] top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 scale-105 lg:block xl:left-[760px] xl:scale-[1.18]"
           >
-            {/* Ornament behind the CV: dashed scan rings + plus marks */}
-            <svg
-              aria-hidden="true"
-              className="absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2"
-              width="400"
-              height="400"
-              viewBox="0 0 400 400"
-              fill="none"
-            >
-              <circle
-                cx="200"
-                cy="200"
-                r="158"
-                stroke="rgba(17,17,17,0.12)"
-                strokeWidth="1.5"
-                strokeDasharray="6 8"
-              />
-              <circle
-                cx="200"
-                cy="200"
-                r="190"
-                stroke="rgba(17,17,17,0.07)"
-                strokeWidth="1"
-                strokeDasharray="2 10"
-              />
-              <path
-                d="M46 90h14M53 83v14"
-                stroke="rgba(17,17,17,0.25)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M348 128h12M354 122v12"
-                stroke="rgba(17,17,17,0.2)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M64 316h12M70 310v12"
-                stroke="rgba(17,17,17,0.2)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M336 300l4 10 10 4-10 4-4 10-4-10-10-4 10-4z"
-                fill="rgba(17,17,17,0.2)"
-              />
-            </svg>
             <div className="hero-artifact-wrap pointer-events-auto relative">
               <HeroCvArtifact />
               {/* Scanner band — travels top→bottom in sync with the mascot

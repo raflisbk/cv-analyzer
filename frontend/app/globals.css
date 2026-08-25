@@ -5,33 +5,33 @@
 @layer base {
   :root {
     /* === MATHICAL DESIGN SYSTEM — Phase 9 === */
-    --background: 54 59% 90%;       /* cream #F5F2D8 */
-    --foreground: 0 0% 4%;          /* #0A0A0A */
+    --background: 54 59% 90%; /* cream #F5F2D8 */
+    --foreground: 0 0% 4%; /* #0A0A0A */
     --card: 54 59% 90%;
     --card-foreground: 0 0% 4%;
-    --primary: 77 100% 63%;         /* lime #CAFF43 */
-    --primary-foreground: 0 0% 8%;  /* dark text on lime */
-    --secondary: 0 0% 8%;           /* dark #141414 ⚠️ bg-secondary now dark */
+    --primary: 77 100% 63%; /* lime #CAFF43 */
+    --primary-foreground: 0 0% 8%; /* dark text on lime */
+    --secondary: 0 0% 8%; /* dark #141414 ⚠️ bg-secondary now dark */
     --secondary-foreground: 54 59% 90%;
     --muted: 54 30% 85%;
     --muted-foreground: 0 0% 40%;
-    --accent: 77 100% 63%;          /* lime */
+    --accent: 77 100% 63%; /* lime */
     --accent-foreground: 0 0% 8%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 54 20% 80%;
     --input: 54 20% 80%;
     --ring: 77 100% 63%;
-    --radius: 0.75rem;              /* rounder — was 0.5rem */
+    --radius: 0.75rem; /* rounder — was 0.5rem */
 
     /* Direct hex tokens for arbitrary Tailwind values */
-    --color-cream: #F5F2D8;
+    --color-cream: #f5f2d8;
     --color-dark: #141414;
-    --color-dark-card: #1C1C1C;
-    --color-lime: #CAFF43;
-    --color-pink: #FF4FCB;
-    --color-orange: #FF8C42;
-    --color-purple: #8B5CF6;
+    --color-dark-card: #1c1c1c;
+    --color-lime: #caff43;
+    --color-pink: #ff4fcb;
+    --color-orange: #ff8c42;
+    --color-purple: #8b5cf6;
 
     /* Standardized text opacity levels (4 levels only)
        On dark bg:  use rgba(245,242,216, x) = #F5F2D8
@@ -45,8 +45,8 @@
        Dark background cards:  rgba(255,255,255,0.07)
        Light background cards: rgba(17,17,17,0.10)
        Accent borders:         keep per-color with /15 opacity */
-    --border-dark-card: rgba(255,255,255,0.07);
-    --border-light-card: rgba(17,17,17,0.10);
+    --border-dark-card: rgba(255, 255, 255, 0.07);
+    --border-light-card: rgba(17, 17, 17, 0.1);
   }
 }
 
@@ -117,13 +117,21 @@
 
 /* Landing page animations */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .marquee-track {
@@ -134,14 +142,13 @@
 
 /* Hero: slowly rotating diamond accents */
 @keyframes hero-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .gradient-text-lime {
-  background: linear-gradient(135deg, #CAFF43 0%, #8BFF43 50%, #CAFF43 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #caff43;
 }
 
 .gradient-border {
@@ -154,21 +161,31 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(202,255,67,0.2), rgba(139,92,246,0.2));
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: linear-gradient(
+    135deg,
+    rgba(202, 255, 67, 0.2),
+    rgba(139, 92, 246, 0.2)
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   pointer-events: none;
 }
 
 .card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================================
@@ -178,30 +195,43 @@
    ============================================================ */
 [data-workspace-v2] {
   /* Shell surfaces — cream light, matching landing page */
-  --ws-bg:             #F5F2D8;   /* cream outer shell — same as landing page body */
-  --ws-surface:        rgba(255, 255, 255, 0.82);  /* glass panel */
-  --ws-surface-hover:  rgba(255, 255, 255, 0.96);
+  --ws-bg: #f5f2d8; /* cream outer shell — same as landing page body */
+  --ws-surface: rgba(255, 255, 255, 0.82); /* glass panel */
+  --ws-surface-hover: rgba(255, 255, 255, 0.96);
   --ws-surface-active: rgba(17, 17, 17, 0.05);
 
   /* Borders — dark-on-light (matches mockup --line) */
-  --ws-border:         rgba(17, 17, 17, 0.08);
-  --ws-border-accent:  rgba(202, 255, 67, 0.38);
-  --ws-border-strong:  rgba(17, 17, 17, 0.14);
+  --ws-border: rgba(17, 17, 17, 0.08);
+  --ws-border-accent: rgba(202, 255, 67, 0.38);
+  --ws-border-strong: rgba(17, 17, 17, 0.14);
 
   /* PDF Paper */
-  --ws-paper:          #FFFDF4;
-  --ws-paper-shadow:   0 8px 48px rgba(17, 17, 17, 0.10);
+  --ws-paper: #fffdf4;
+  --ws-paper-shadow: 0 8px 48px rgba(17, 17, 17, 0.1);
 
   /* Typography — dark on cream */
-  --ws-ink:            #111111;
-  --ws-ink-secondary:  rgba(17, 17, 17, 0.60);
-  --ws-ink-ghost:      rgba(17, 17, 17, 0.40);
+  --ws-ink: #111111;
+  --ws-ink-secondary: rgba(17, 17, 17, 0.6);
+  --ws-ink-ghost: rgba(17, 17, 17, 0.4);
 
   /* Accent */
-  --ws-accent:         #CAFF43;
-  --ws-accent-fg:      #111111;
-  --ws-accent-muted:   rgba(202, 255, 67, 0.28);
+  --ws-accent: #caff43;
+  --ws-accent-fg: #111111;
+  --ws-accent-muted: rgba(202, 255, 67, 0.28);
 
   /* Destructive */
-  --ws-destructive:    hsl(0 84.2% 60.2%);
+  --ws-destructive: hsl(0 84.2% 60.2%);
+}
+
+/* Below lg, side panels are hidden (see shell.tsx) — collapse the grid
+   tracks too, otherwise the 210px/280px reserved space stays empty and
+   the center pane loses ~490px on tablet/mobile widths. */
+.ws-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1024px) {
+  .ws-grid {
+    grid-template-columns: var(--ws-grid-cols, minmax(0, 1fr));
+  }
 }

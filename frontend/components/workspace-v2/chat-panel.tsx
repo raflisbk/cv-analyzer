@@ -21,7 +21,8 @@ export function ChatPanel({ className }: { className?: string }) {
 
   useEffect(() => {
     if (hydration?.messages && hydration.messages.length > 0) {
-      const storeEmpty = useWorkspaceV2Store.getState().chatMessages.length === 0;
+      const storeEmpty =
+        useWorkspaceV2Store.getState().chatMessages.length === 0;
       if (storeEmpty) {
         for (const msg of hydration.messages) {
           addChatMessage(msg);
@@ -37,7 +38,7 @@ export function ChatPanel({ className }: { className?: string }) {
     },
     onComplete: () => {
       setChatStreaming(false);
-        const msgs = useWorkspaceV2Store.getState().chatMessages;
+      const msgs = useWorkspaceV2Store.getState().chatMessages;
       const last = msgs[msgs.length - 1];
       if (last && last.role === "assistant" && last.status === "streaming") {
         const updated = [...msgs];
@@ -52,7 +53,7 @@ export function ChatPanel({ className }: { className?: string }) {
     onError: (err) => {
       console.error("Chat error:", err);
       setChatStreaming(false);
-        const msgs = useWorkspaceV2Store.getState().chatMessages;
+      const msgs = useWorkspaceV2Store.getState().chatMessages;
       const last = msgs[msgs.length - 1];
       if (last && last.role === "assistant" && last.status === "streaming") {
         const updated = [...msgs];
@@ -90,16 +91,16 @@ export function ChatPanel({ className }: { className?: string }) {
       setChatStreaming(true);
       await send(messageText);
     },
-    [isStreaming, addChatMessage, setChatStreaming, send]
+    [isStreaming, addChatMessage, setChatStreaming, send],
   );
 
   return (
     <div className={cn("flex h-full flex-col overflow-hidden", className)}>
       <div
-        className="flex-none rounded-t-2xl border-b px-4 py-3.5"
+        className="flex-none border-b border-dashed px-4 py-3.5"
         style={{
-          borderColor: "rgba(255,255,255,0.05)",
-          background: "rgba(26,23,15,0.55)",
+          borderColor: "rgba(255,255,255,0.15)",
+          background: "#141414",
         }}
       >
         <div className="flex items-center gap-2.5">
@@ -137,13 +138,13 @@ export function ChatPanel({ className }: { className?: string }) {
         )}
       </div>
 
-      <div className="min-h-0 flex-1">
+      <div className="min-h-0 flex-1 bg-[#F5F2D8]">
         <ChatMessageList messages={chatMessages} isStreaming={isStreaming} />
       </div>
 
       <div
-        className="flex-none rounded-b-2xl border-t p-3"
-        style={{ borderColor: "rgba(139,92,246,0.08)" }}
+        className="flex-none border-t border-dashed p-3"
+        style={{ borderColor: "rgba(255,255,255,0.15)" }}
       >
         <ChatInput onSend={handleSend} disabled={isStreaming} />
       </div>

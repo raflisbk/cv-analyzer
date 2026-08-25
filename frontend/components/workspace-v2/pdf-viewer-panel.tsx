@@ -1,7 +1,13 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Plus, Minus, Maximize2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Minus,
+  Maximize2,
+} from "lucide-react";
 import { PdfViewer } from "./pdf-viewer";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 
@@ -10,7 +16,10 @@ interface PdfViewerPanelProps {
   onPageLoadSuccess?: (page: unknown) => void;
 }
 
-export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProps) {
+export function PdfViewerPanel({
+  pdfUrl,
+  onPageLoadSuccess,
+}: PdfViewerPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,8 +27,10 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const [zoomScale, setZoomScale] = useState<number>(1.0);
   const [isPanning, setIsPanning] = useState(false);
   const panStartRef = useRef<{
-    x: number; y: number;
-    scrollLeft: number; scrollTop: number;
+    x: number;
+    y: number;
+    scrollLeft: number;
+    scrollTop: number;
   } | null>(null);
 
   const { hydration, viewMode } = useWorkspaceV2Store();
@@ -27,13 +38,17 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const anchors = hydration?.suggestion_anchors ?? [];
   const suggestions = hydration?.analysis?.suggestions ?? [];
   const jobId = hydration?.job_id ?? "";
-  const modeLabel = viewMode === "optimized" ? "Optimized" : "Original Uploaded";
-  const modeNote = viewMode === "original"
-    ? "Optimized PDF available after edits applied"
-    : null;
+  const modeLabel =
+    viewMode === "optimized" ? "Optimized" : "Original Uploaded";
+  const modeNote =
+    viewMode === "original"
+      ? "Optimized PDF available after edits applied"
+      : null;
 
   useEffect(() => {
-    if (!containerRef.current) { return; }
+    if (!containerRef.current) {
+      return;
+    }
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
       setContainerWidth(Math.floor(width));
@@ -46,7 +61,9 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   const paperCardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = scrollContainerRef.current;
-    if (!el) { return; }
+    if (!el) {
+      return;
+    }
     const handler = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
@@ -60,29 +77,43 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
 
   const isZoomed = zoomScale > 1.05;
 
-  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isZoomed) { return; }
-    const card = paperCardRef.current;
-    if (!card) { return; }
-    setIsPanning(true);
-    panStartRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      scrollLeft: card.scrollLeft,
-      scrollTop: card.scrollTop,
-    };
-    card.setPointerCapture(e.pointerId);
-  }, [isZoomed]);
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isZoomed) {
+        return;
+      }
+      const card = paperCardRef.current;
+      if (!card) {
+        return;
+      }
+      setIsPanning(true);
+      panStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        scrollLeft: card.scrollLeft,
+        scrollTop: card.scrollTop,
+      };
+      card.setPointerCapture(e.pointerId);
+    },
+    [isZoomed],
+  );
 
-  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isPanning || !panStartRef.current) { return; }
-    const card = paperCardRef.current;
-    if (!card) { return; }
-    const dx = e.clientX - panStartRef.current.x;
-    const dy = e.clientY - panStartRef.current.y;
-    card.scrollLeft = panStartRef.current.scrollLeft - dx;
-    card.scrollTop = panStartRef.current.scrollTop - dy;
-  }, [isPanning]);
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isPanning || !panStartRef.current) {
+        return;
+      }
+      const card = paperCardRef.current;
+      if (!card) {
+        return;
+      }
+      const dx = e.clientX - panStartRef.current.x;
+      const dy = e.clientY - panStartRef.current.y;
+      card.scrollLeft = panStartRef.current.scrollLeft - dx;
+      card.scrollTop = panStartRef.current.scrollTop - dy;
+    },
+    [isPanning],
+  );
 
   const handlePointerUp = useCallback(() => {
     setIsPanning(false);
@@ -90,13 +121,19 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
   }, []);
 
   return (
-    <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto bg-[--ws-bg]">
-
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div
+      ref={scrollContainerRef}
+      className="relative flex-1 overflow-y-auto bg-[--ws-bg]"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden hidden"
+        aria-hidden="true"
+      >
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
-            width: 640, height: 640,
+            width: 640,
+            height: 640,
             borderRadius: "50%",
             border: "1.5px solid rgba(17,17,17,0.055)",
           }}
@@ -104,7 +141,8 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
-            width: 440, height: 440,
+            width: 440,
+            height: 440,
             borderRadius: "50%",
             border: "1px solid rgba(17,17,17,0.04)",
           }}
@@ -117,26 +155,43 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
         <div
           className="absolute bottom-32 right-1/4"
           style={{
-            width: 120, height: 120, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(202,255,67,0.12) 0%, transparent 70%)",
+            width: 120,
+            height: 120,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(202,255,67,0.12) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute top-24 left-1/4"
           style={{
-            width: 90, height: 90, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(246,122,223,0.10) 0%, transparent 70%)",
+            width: 90,
+            height: 90,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(246,122,223,0.10) 0%, transparent 70%)",
           }}
         />
       </div>
 
       <div className="relative mx-auto max-w-[820px] px-6 py-8">
-
-        <div className="relative overflow-hidden rounded-t-2xl bg-[#141414] px-5 py-3.5 flex items-center justify-between">
-          <div aria-hidden="true" className="absolute right-5 top-2 h-3 w-3 rounded-full bg-[#CAFF43] opacity-72" />
-          <div aria-hidden="true" className="absolute right-12 top-5 h-1.5 w-1.5 rounded-full bg-[#FF4FCB] opacity-55" />
-          <div aria-hidden="true" className="absolute right-20 top-1 h-5 w-5 rounded-full bg-[#FF8C42] opacity-32" />
-          <div aria-hidden="true" className="absolute bottom-1 right-4 h-1.5 w-1.5 rounded-full bg-[#8B5CF6] opacity-42" />
+        <div className="relative overflow-hidden border-y border-dashed border-white/15 bg-[#141414] px-5 py-3.5 flex items-center justify-between">
+          <div
+            aria-hidden="true"
+            className="absolute right-5 top-2 h-3 w-3 rounded-full bg-[#CAFF43] opacity-72"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute right-12 top-5 h-1.5 w-1.5 rounded-full bg-[#FF4FCB] opacity-55"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute right-20 top-1 h-5 w-5 rounded-full bg-[#FF8C42] opacity-32"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute bottom-1 right-4 h-1.5 w-1.5 rounded-full bg-[#8B5CF6] opacity-42"
+          />
 
           <div className="min-w-0 flex-1 pr-4">
             <p className="font-display text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#F5F2D8]/35">
@@ -145,12 +200,17 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             <p className="font-display mt-0.5 truncate text-[13px] font-bold text-[#F5F2D8]">
               <span
                 className="rounded-full px-[0.45em] py-[0.08em] mr-1.5"
-                style={{ background: "rgba(255,255,255,0.10)", color: "#F5F2D8" }}
+                style={{
+                  background: "rgba(255,255,255,0.10)",
+                  color: "#F5F2D8",
+                }}
               >
                 Document
               </span>
               <span style={{ color: "#CAFF43" }}>{modeLabel}</span>
-              <span className="ml-2 text-[#F5F2D8]/35 text-[11px] font-normal truncate">{filename}</span>
+              <span className="ml-2 text-[#F5F2D8]/35 text-[11px] font-normal truncate">
+                {filename}
+              </span>
             </p>
             {modeNote && (
               <p className="mt-0.5 text-[9px] text-[#F5F2D8]/30 truncate font-normal">
@@ -197,7 +257,8 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
               <span className="min-w-[3rem] text-center text-[11px] font-bold text-[#F5F2D8]/55">
-                {currentPage}{numPages > 0 && ` / ${numPages}`}
+                {currentPage}
+                {numPages > 0 && ` / ${numPages}`}
               </span>
               <button
                 onClick={() => setCurrentPage((p) => p + 1)}
@@ -213,21 +274,31 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
 
         <div
           ref={(node) => {
-            (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-            (paperCardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            (
+              containerRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = node;
+            (
+              paperCardRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = node;
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
-          className="rounded-b-2xl border-b border-x border-[rgba(17,17,17,0.06)] bg-[#FFFDF4] shadow-[0_12px_48px_rgba(17,17,17,0.10),0_2px_6px_rgba(17,17,17,0.05)]"
+          className="border-b border-x border-dashed border-[rgba(17,17,17,0.12)] bg-[#FFFDF4]"
           style={{
             overflow: isZoomed ? "auto" : "hidden",
             cursor: isPanning ? "grabbing" : isZoomed ? "grab" : undefined,
           }}
           aria-label="Document Editor"
         >
-          <div style={{ transform: `scale(${zoomScale})`, transformOrigin: "top center", transition: "transform 0.15s ease-out" }}>
+          <div
+            style={{
+              transform: `scale(${zoomScale})`,
+              transformOrigin: "top center",
+              transition: "transform 0.15s ease-out",
+            }}
+          >
             <PdfViewer
               url={pdfUrl}
               containerWidth={containerWidth}
@@ -241,9 +312,7 @@ export function PdfViewerPanel({ pdfUrl, onPageLoadSuccess }: PdfViewerPanelProp
             />
           </div>
         </div>
-
       </div>
     </div>
   );
 }
-

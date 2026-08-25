@@ -16,7 +16,7 @@ import { loadGsap } from "@/lib/gsap-loader";
      effect reads as caused by the mascot — then glides back down and
      resumes patrolling. Sections opt in by tagging elements; the mascot
      never needs to know what the effects are. Current zones: card-stub /
-     hero-rows / hero-stamp (hero) and rag-graph (explainer burst).
+     hero-rows (hero) and rag-graph (explainer burst).
    Hidden on mobile; does nothing under prefers-reduced-motion (static pose). */
 
 export const MASCOT_ZONE_EVENT = "pathkr:mascot-zone";
@@ -26,8 +26,22 @@ export const MASCOT_ZONE_EVENT = "pathkr:mascot-zone";
 export const MASCOT_KICK_EVENT = "pathkr:mascot-kick";
 const ZONE_COOLDOWN_MS = 12000;
 const ZONE_SCAN_MS = 250;
+export const MASCOT_INTRO_MAX_MS = 7000;
+export const MASCOT_PHYSICS_MAX_MS = 6500;
+export const MASCOT_ZONE_MAX_MS = 9000;
 const INK = "#141414";
 const CREAM = "#F5F2D8";
+
+export function callOnce<T extends (...args: never[]) => void>(callback: T): T {
+  let called = false;
+  return ((...args: Parameters<T>) => {
+    if (called) {
+      return;
+    }
+    called = true;
+    callback(...args);
+  }) as T;
+}
 
 export default function HeroMascot() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -186,6 +200,13 @@ export default function HeroMascot() {
         type Pose = "stand" | "fall" | "cruise" | "grab";
         let pose: Pose = "stand";
         let introDone = false;
+        let introFallbackTimer: number | null = null;
+        const clearIntroFallback = () => {
+          if (introFallbackTimer !== null) {
+            window.clearTimeout(introFallbackTimer);
+            introFallbackTimer = null;
+          }
+        };
         const setPose = (next: Pose) => {
           pose = next;
           gsap.set(standG, {
@@ -228,7 +249,12 @@ export default function HeroMascot() {
             duration: 0.25,
             overwrite: "auto",
           });
-          gsap.to(flip, { rotation: 0, y: 0, duration: 0.22, overwrite: "auto" });
+          gsap.to(flip, {
+            rotation: 0,
+            y: 0,
+            duration: 0.22,
+            overwrite: "auto",
+          });
         };
 
         // Transition between grounded and flying: the paper flips through
@@ -237,13 +263,14 @@ export default function HeroMascot() {
         let folding = false;
         const foldTo = (next: Pose, onDone?: () => void) => {
           folding = true;
-          const facing = Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1;
+          const facing =
+            Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1;
           charTl({
-              onComplete: () => {
-                folding = false;
-                onDone?.();
-              },
-            })
+            onComplete: () => {
+              folding = false;
+              onDone?.();
+            },
+          })
             .to(flip, {
               scaleX: 0.12 * facing,
               duration: 0.13,
@@ -344,8 +371,9 @@ export default function HeroMascot() {
           y: number;
           vx?: number;
           vy?: number;
+          maxDurationMs?: number;
           onLand: (impact: number, landX: number) => void;
-        }) => {
+        }): (() => void) => {
           const G = 620;
           let x = opts.x;
           let y = opts.y;
@@ -361,6 +389,8 @@ export default function HeroMascot() {
           const seed = Math.random() * 100;
           const minX = 8;
           const ceiling = 120 - root.getBoundingClientRect().bottom;
+          const maxDurationMs = opts.maxDurationMs ?? MASCOT_PHYSICS_MAX_MS;
+          const onLand = callOnce(opts.onLand);
 
           const step = () => {
             const dt = Math.min(gsap.ticker.deltaRatio(60) / 60, 1 / 30);
@@ -431,32 +461,34 @@ export default function HeroMascot() {
               rot += tumbleSpin * 57.3 * dt;
             } else {
               const flare = mode === "stall" ? -dir * 24 : 0;
-              const target =
-                Math.max(-44, Math.min(44, vx * 0.1)) + flare;
+              const target = Math.max(-44, Math.min(44, vx * 0.1)) + flare;
               rot += (target - rot) * Math.min(1, 8 * dt);
             }
             const sp = Math.hypot(vx, vy);
             gsap.set(char, { x, y });
             gsap.set(fallG, {
               rotation: rot + Math.sin(elapsed * 47 + seed) * 2.5,
-              scaleY:
-                0.24 + 0.76 * Math.abs(Math.cos((rot * Math.PI) / 180)),
+              scaleY: 0.24 + 0.76 * Math.abs(Math.cos((rot * Math.PI) / 180)),
             });
             gsap.set(fallLines, {
               opacity: Math.min(0.85, (sp / 420) * 0.85),
             });
 
             // touchdown
-            if (y >= 0) {
+            if (y >= 0 || elapsed * 1000 >= maxDurationMs) {
+              y = 0;
               gsap.set(char, { x, y: 0 });
-              gsap.ticker.remove(step);
-              activeSims.delete(remove);
-              opts.onLand(Math.min(1.6, Math.max(0.6, vy / 240)), x);
+              remove();
+              onLand(Math.min(1.6, Math.max(0.6, vy / 240)), x);
             }
           };
-          const remove = () => gsap.ticker.remove(step);
+          const remove = () => {
+            gsap.ticker.remove(step);
+            activeSims.delete(remove);
+          };
           activeSims.add(remove);
           gsap.ticker.add(step);
+          return remove;
         };
 
         // Expanding shockwave ring for hard impacts (the punch)
@@ -570,7 +602,12 @@ export default function HeroMascot() {
                 duration: 0.14,
                 ease: "power2.in",
               })
-              .to(flip, { scaleY: 1, y: 0, duration: 0.35, ease: "back.out(2.2)" })
+              .to(flip, {
+                scaleY: 1,
+                y: 0,
+                duration: 0.35,
+                ease: "back.out(2.2)",
+              })
               .set([legL, legR], { rotation: 0 })
               // Dust itself off, then walk to the card's corner
               .add(() => walkTweens.forEach((tween) => tween.resume()))
@@ -611,7 +648,11 @@ export default function HeroMascot() {
                 puff(cx + 66, 58, 1.5);
               })
               // hold the extended kick — a readable pose, not a twitch
-              .to(char, { x: "-=12", duration: 0.22, ease: "power2.out" }, "+=0.3")
+              .to(
+                char,
+                { x: "-=12", duration: 0.22, ease: "power2.out" },
+                "+=0.3",
+              )
               .add(() => {
                 gsap.set(kickG, { autoAlpha: 0 });
                 gsap.set(standG, { autoAlpha: 1 });
@@ -622,10 +663,17 @@ export default function HeroMascot() {
                 duration: 0.1,
                 ease: "power2.in",
               })
-              .to(flip, { scaleY: 1, y: 0, rotation: 0, duration: 0.28, ease: "back.out(2)" })
+              .to(flip, {
+                scaleY: 1,
+                y: 0,
+                rotation: 0,
+                duration: 0.28,
+                ease: "back.out(2)",
+              })
               // Job done — fold into flight and take off on patrol
               .add(() => {
                 foldTo("cruise", () => {
+                  clearIntroFallback();
                   introDone = true;
                   patrol.play();
                 });
@@ -636,8 +684,26 @@ export default function HeroMascot() {
         // moment of contact, so the effect reads as caused by the mascot),
         // then flutter back down to the floor and resume patrolling.
         let visiting = false;
+        let zoneVisitTimer: number | null = null;
+        const clearZoneVisitTimer = () => {
+          if (zoneVisitTimer !== null) {
+            window.clearTimeout(zoneVisitTimer);
+            zoneVisitTimer = null;
+          }
+        };
         const visitZone = (el: HTMLElement, zone: string) => {
           visiting = true;
+          let visitFinished = false;
+          let stopVisitSim: (() => void) | null = null;
+          const finishVisit = () => {
+            if (visitFinished) {
+              return;
+            }
+            visitFinished = true;
+            clearZoneVisitTimer();
+            visiting = false;
+            patrol.resume();
+          };
           patrol.pause();
           walkTweens.forEach((tween) => tween.pause());
           gsap.set([legL, legR], { rotation: 0 });
@@ -670,10 +736,7 @@ export default function HeroMascot() {
             150 - rootRect.bottom, // never higher than just below the navbar
           );
           // Scanner end point: level with the CV's bottom edge
-          const scanEndY = Math.min(
-            rect.bottom + 26 - rootRect.bottom,
-            -20,
-          );
+          const scanEndY = Math.min(rect.bottom + 26 - rootRect.bottom, -20);
 
           // Legs dangle while airborne
           const dangle = gsap.to([legL, legR], {
@@ -792,7 +855,9 @@ export default function HeroMascot() {
                   const t = ascend.t;
                   const inv = 1 - t;
                   const bezierX =
-                    inv * inv * currentX + 2 * inv * t * controlX + t * t * targetX;
+                    inv * inv * currentX +
+                    2 * inv * t * controlX +
+                    t * t * targetX;
                   const bezierY = 2 * inv * t * controlY + t * t * targetY;
                   const wobble = Math.sin(t * Math.PI * 3.2) * 12 * inv;
                   gsap.set(char, {
@@ -812,7 +877,11 @@ export default function HeroMascot() {
             )
             // Arrive: swing upright, cape settles, arm comes down
             .to(flip, { rotation: 0, duration: 0.22, ease: "back.out(1.8)" })
-            .to(cape, { rotation: 0, scaleY: 1, duration: 0.3, overwrite: "auto" }, "<")
+            .to(
+              cape,
+              { rotation: 0, scaleY: 1, duration: 0.3, overwrite: "auto" },
+              "<",
+            )
             .to(arm, { rotation: 0, duration: 0.2 }, "<");
 
           // ---- Contact gesture (the zone event fires mid-gesture) ----
@@ -843,14 +912,27 @@ export default function HeroMascot() {
                 },
                 "<",
               )
-              .to(flip, { scaleY: 0.93, duration: 0.12, ease: "power2.in" }, "<0.1")
+              .to(
+                flip,
+                { scaleY: 0.93, duration: 0.12, ease: "power2.in" },
+                "<0.1",
+              )
               // ...hold the wind-up for a beat...
-              .to(flip, { rotation: 12, duration: 0.18, ease: "sine.inOut" }, "+=0.15")
+              .to(
+                flip,
+                { rotation: 12, duration: 0.18, ease: "sine.inOut" },
+                "+=0.15",
+              )
               // STRIKE
               .to(char, { x: "-=32", duration: 0.09, ease: "power4.in" })
               .to(
                 flip,
-                { rotation: -7, scaleY: 1.03, duration: 0.09, ease: "power4.in" },
+                {
+                  rotation: -7,
+                  scaleY: 1.03,
+                  duration: 0.09,
+                  ease: "power4.in",
+                },
                 "<",
               )
               .to(
@@ -872,7 +954,11 @@ export default function HeroMascot() {
                 { rotation: 7, duration: 0.45, ease: "elastic.out(1, 0.4)" },
                 "<",
               )
-              .to(arm, { rotation: 0, duration: 0.3, ease: "power2.inOut" }, "<0.12")
+              .to(
+                arm,
+                { rotation: 0, duration: 0.3, ease: "power2.inOut" },
+                "<0.12",
+              )
               .to(flip, { rotation: 0, duration: 0.35, ease: "sine.out" })
               // Eyes chase the card whirling around in front of it
               .to(pupils, {
@@ -913,7 +999,12 @@ export default function HeroMascot() {
               ease: "power3.out",
             })
               .add(touch)
-              .to(spark, { opacity: 1, scale: 1.7, duration: 0.12, ease: "power2.out" })
+              .to(spark, {
+                opacity: 1,
+                scale: 1.7,
+                duration: 0.12,
+                ease: "power2.out",
+              })
               .to(spark, { opacity: 0, scale: 0.5, duration: 0.28 })
               .to(arm, { rotation: 0, duration: 0.22 }, "<")
               // celebration: shades slide down from above the eyes
@@ -924,7 +1015,11 @@ export default function HeroMascot() {
               )
               .set(arm, { opacity: 0 })
               .to(armsCrossed, { opacity: 1, duration: 0.14 }, "<")
-              .to(flip, { rotation: -5, duration: 0.25, ease: "power2.out" }, "<")
+              .to(
+                flip,
+                { rotation: -5, duration: 0.25, ease: "power2.out" },
+                "<",
+              )
               // proud little chest bob while holding the stance
               .to(flip, {
                 y: -3,
@@ -994,7 +1089,12 @@ export default function HeroMascot() {
                 duration: 0.14,
                 ease: "power2.in",
               })
-              .to(flip, { scaleY: 1, y: 0, duration: 0.3, ease: "back.out(2.5)" })
+              .to(flip, {
+                scaleY: 1,
+                y: 0,
+                duration: 0.3,
+                ease: "back.out(2.5)",
+              })
               .add(() => {
                 dangle.kill();
                 gsap.set([legL, legR], { rotation: 0 });
@@ -1013,10 +1113,7 @@ export default function HeroMascot() {
                     Math.abs(landX - currentX) / 260 + 0.25,
                   ),
                   ease: "none",
-                  onComplete: () => {
-                    patrol.resume();
-                    visiting = false;
-                  },
+                  onComplete: finishVisit,
                 },
                 "+=0.35",
               );
@@ -1035,10 +1132,48 @@ export default function HeroMascot() {
                 repeat: -1,
                 ease: "sine.inOut",
               });
-              paperFallSim({
+              // Watch only the descent/landing phase. The choreographed
+              // approach and gesture must be allowed to finish naturally.
+              zoneVisitTimer = window.setTimeout(() => {
+                if (visitFinished || !visiting) {
+                  return;
+                }
+                tl.kill();
+                stopVisitSim?.();
+                dangle.kill();
+                gsap.killTweensOf([
+                  flip,
+                  arm,
+                  cape,
+                  torch,
+                  spark,
+                  shades,
+                  armsCrossed,
+                  fallCape,
+                  fallG,
+                ]);
+                gsap.set(char, { y: 0 });
+                setPose("stand");
+                gsap.set(flip, {
+                  rotation: 0,
+                  y: 0,
+                  scaleY: 1,
+                  transformOrigin: "50% 100%",
+                });
+                gsap.set([legL, legR], { rotation: 0 });
+                gsap.set(arm, { rotation: 0, opacity: 1 });
+                gsap.set(cape, { rotation: 0, scaleY: 1 });
+                gsap.set(torch, { opacity: 0, rotation: 0 });
+                gsap.set(spark, { opacity: 0 });
+                gsap.set(shades, { opacity: 0, y: 0 });
+                gsap.set(armsCrossed, { opacity: 0 });
+                finishVisit();
+              }, MASCOT_ZONE_MAX_MS);
+              stopVisitSim = paperFallSim({
                 x: Number(gsap.getProperty(char, "x")),
                 y: Number(gsap.getProperty(char, "y")),
                 vx: (Math.random() - 0.5) * 140,
+                maxDurationMs: MASCOT_ZONE_MAX_MS,
                 onLand: visitLand,
               });
             }, "+=0.45");
@@ -1048,7 +1183,7 @@ export default function HeroMascot() {
         // Hero zones follow a fixed ROUTINE so the show has a narrative —
         // punch the card, walk, scan the CV, walk, snap at the rows, loop —
         // instead of re-punching the card on every pass. Zones outside the
-        // routine (rag-graph, hero-stamp) stay opportunistic.
+        // routine (rag-graph) stay opportunistic.
         const ROUTINE = ["card-stub", "cv-artifact", "hero-rows"];
         let routineIndex = 0;
         let lastX = 0;
@@ -1099,11 +1234,11 @@ export default function HeroMascot() {
                 const arc = { th: 0 };
                 let mirrored = false;
                 charTl({
-                    onComplete: () => {
-                      folding = false;
-                      patrol.resume();
-                    },
-                  })
+                  onComplete: () => {
+                    folding = false;
+                    patrol.resume();
+                  },
+                })
                   .to(arc, {
                     th: Math.PI,
                     duration: 1.05,
@@ -1333,22 +1468,27 @@ export default function HeroMascot() {
         // complaint in the bubble, then it shakes itself off and moves on
         const playDizzy = (after: () => void) => {
           gsap.set(dizzyG, { autoAlpha: 1 });
-          const spin = track(gsap.to(dizzyStars, {
-            rotation: 360,
-            duration: 1.1,
-            repeat: -1,
-            ease: "none",
-            svgOrigin: "31 -7",
-          }));
-          say(DIZZY_LINES[Math.floor(Math.random() * DIZZY_LINES.length)], 2800);
+          const spin = track(
+            gsap.to(dizzyStars, {
+              rotation: 360,
+              duration: 1.1,
+              repeat: -1,
+              ease: "none",
+              svgOrigin: "31 -7",
+            }),
+          );
+          say(
+            DIZZY_LINES[Math.floor(Math.random() * DIZZY_LINES.length)],
+            2800,
+          );
           charTl({
-              onComplete: () => {
-                spin.kill();
-                gsap.set(dizzyStars, { rotation: 0 });
-                gsap.set(dizzyG, { autoAlpha: 0 });
-                after();
-              },
-            })
+            onComplete: () => {
+              spin.kill();
+              gsap.set(dizzyStars, { rotation: 0 });
+              gsap.set(dizzyG, { autoAlpha: 0 });
+              after();
+            },
+          })
             // woozy staggering sway
             .to(flip, {
               rotation: 7,
@@ -1435,6 +1575,28 @@ export default function HeroMascot() {
           gsap.set(grabLegs, { rotation: 0 });
         };
 
+        // Intro physics is decorative; it must never hold the mascot in a
+        // half-finished state indefinitely if a ticker or layout edge case
+        // prevents touchdown.
+        introFallbackTimer = window.setTimeout(() => {
+          if (introDone || dragging) {
+            return;
+          }
+          interruptAll();
+          introDone = true;
+          clearIntroFallback();
+          gsap.set(char, {
+            x: Math.min(
+              Math.max(Number(gsap.getProperty(char, "x")), 16),
+              maxX(),
+            ),
+            y: 0,
+          });
+          setPose("stand");
+          window.dispatchEvent(new CustomEvent(MASCOT_KICK_EVENT));
+          foldTo("cruise", () => patrol.play());
+        }, MASCOT_INTRO_MAX_MS);
+
         const onGrab = (event: PointerEvent) => {
           if (dragging) {
             return;
@@ -1465,7 +1627,12 @@ export default function HeroMascot() {
             transformOrigin: "50% 4%",
             scaleX: Math.sign(Number(gsap.getProperty(flip, "scaleX"))) || 1,
           });
-          gsap.to(flip, { rotation: 0, y: 0, duration: 0.15, overwrite: "auto" });
+          gsap.to(flip, {
+            rotation: 0,
+            y: 0,
+            duration: 0.15,
+            overwrite: "auto",
+          });
           // startled little jolt as it's snatched
           gsap.fromTo(
             grabG,
@@ -1530,9 +1697,14 @@ export default function HeroMascot() {
           // pendulum: the sheet trails against the drag direction
           const vx = event.clientX - lastClientX;
           // smoothed pointer velocity → initial conditions when released
-          const dtMove = Math.max((event.timeStamp - lastMoveTime) / 1000, 0.004);
-          throwVX = throwVX * 0.65 + ((event.clientX - lastClientX) / dtMove) * 0.35;
-          throwVY = throwVY * 0.65 + ((event.clientY - lastClientY) / dtMove) * 0.35;
+          const dtMove = Math.max(
+            (event.timeStamp - lastMoveTime) / 1000,
+            0.004,
+          );
+          throwVX =
+            throwVX * 0.65 + ((event.clientX - lastClientX) / dtMove) * 0.35;
+          throwVY =
+            throwVY * 0.65 + ((event.clientY - lastClientY) / dtMove) * 0.35;
           lastClientX = event.clientX;
           lastClientY = event.clientY;
           lastMoveTime = event.timeStamp;
@@ -1589,18 +1761,20 @@ export default function HeroMascot() {
             facing = homeDir;
             gsap.set(flip, { scaleX: homeDir });
             foldTo("cruise", () => {
-              track(gsap.to(char, {
-                x: grabPatrolX,
-                duration: Math.min(
-                  1.4,
-                  Math.abs(grabPatrolX - landX) / 260 + 0.25,
-                ),
-                ease: "none",
-                onComplete: () => {
-                  visiting = false;
-                  patrol.resume();
-                },
-              }));
+              track(
+                gsap.to(char, {
+                  x: grabPatrolX,
+                  duration: Math.min(
+                    1.4,
+                    Math.abs(grabPatrolX - landX) / 260 + 0.25,
+                  ),
+                  ease: "none",
+                  onComplete: () => {
+                    visiting = false;
+                    patrol.resume();
+                  },
+                }),
+              );
             });
           };
 
@@ -1657,8 +1831,18 @@ export default function HeroMascot() {
               })
               .to(char, { y: 0, duration: 0.2, ease: "power2.in" })
               .to(flip, { rotation: 0, duration: 0.2 }, "<")
-              .to(flip, { scaleY: 0.88, y: 3, duration: 0.1, ease: "power2.in" })
-              .to(flip, { scaleY: 1, y: 0, duration: 0.25, ease: "back.out(2)" })
+              .to(flip, {
+                scaleY: 0.88,
+                y: 3,
+                duration: 0.1,
+                ease: "power2.in",
+              })
+              .to(flip, {
+                scaleY: 1,
+                y: 0,
+                duration: 0.25,
+                ease: "back.out(2)",
+              })
               .add(settle, "+=0.15");
           }
         };
@@ -1669,6 +1853,8 @@ export default function HeroMascot() {
         window.addEventListener("pointercancel", onRelease);
 
         return () => {
+          clearIntroFallback();
+          clearZoneVisitTimer();
           gsap.ticker.remove(tick);
           activeSims.forEach((removeSim) => removeSim());
           activeSims.clear();
@@ -1971,9 +2157,23 @@ export default function HeroMascot() {
               />
               {/* limp dangling legs */}
               <g className="m-grab-legs">
-                <rect x="24" y="64" width="3.4" height="16" rx="1.7" fill={INK} />
+                <rect
+                  x="24"
+                  y="64"
+                  width="3.4"
+                  height="16"
+                  rx="1.7"
+                  fill={INK}
+                />
                 <ellipse cx="26" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
-                <rect x="37" y="64" width="3.4" height="16" rx="1.7" fill={INK} />
+                <rect
+                  x="37"
+                  y="64"
+                  width="3.4"
+                  height="16"
+                  rx="1.7"
+                  fill={INK}
+                />
                 <ellipse cx="39" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
               </g>
               {/* buckled sheet hanging from the pinch point */}
@@ -2056,103 +2256,117 @@ export default function HeroMascot() {
 
             {/* ===== STANDING POSE (walking / flying / gesturing) ===== */}
             <g className="m-stand">
-            {/* Legs */}
-            <g className="m-leg-l">
-              <rect
-                x="22.5"
-                y="66"
-                width="3.5"
-                height="14"
-                rx="1.75"
-                fill={INK}
-              />
-              <ellipse cx="26" cy="81.5" rx="6" ry="3" fill={INK} />
-            </g>
-            <g className="m-leg-r">
-              <rect
-                x="38"
-                y="66"
-                width="3.5"
-                height="14"
-                rx="1.75"
-                fill={INK}
-              />
-              <ellipse cx="41.5" cy="81.5" rx="6" ry="3" fill={INK} />
-            </g>
+              {/* Legs */}
+              <g className="m-leg-l">
+                <rect
+                  x="22.5"
+                  y="66"
+                  width="3.5"
+                  height="14"
+                  rx="1.75"
+                  fill={INK}
+                />
+                <ellipse cx="26" cy="81.5" rx="6" ry="3" fill={INK} />
+              </g>
+              <g className="m-leg-r">
+                <rect
+                  x="38"
+                  y="66"
+                  width="3.5"
+                  height="14"
+                  rx="1.75"
+                  fill={INK}
+                />
+                <ellipse cx="41.5" cy="81.5" rx="6" ry="3" fill={INK} />
+              </g>
 
-            {/* Waving arm (right side) */}
-            <g className="m-arm">
-              <rect x="56" y="36" width="3.2" height="13" rx="1.6" fill={INK} />
-              <circle cx="57.6" cy="50" r="2.6" fill={INK} />
-            </g>
+              {/* Waving arm (right side) */}
+              <g className="m-arm">
+                <rect
+                  x="56"
+                  y="36"
+                  width="3.2"
+                  height="13"
+                  rx="1.6"
+                  fill={INK}
+                />
+                <circle cx="57.6" cy="50" r="2.6" fill={INK} />
+              </g>
 
-            {/* Flashlight held out FORWARD (facing direction) — the mascot
+              {/* Flashlight held out FORWARD (facing direction) — the mascot
                 hovers beside the CV and rides down its edge, the horizontal
                 yellow beam sweeping the page top-to-bottom like a scanner
                 head. Drawn pointing +x; the facing flip mirrors it. */}
-            <g className="m-torch" opacity="0">
-              {/* ONE beam cone with a gradient — bright at the lens,
+              <g className="m-torch" opacity="0">
+                {/* ONE beam cone with a gradient — bright at the lens,
                   dissolving over the page. Two stacked polygons read as a
                   "double laser" (four visible edges), so: single shape. */}
-              <defs>
-                <linearGradient
-                  id="m-torch-beam"
-                  gradientUnits="userSpaceOnUse"
-                  x1="62"
-                  y1="44"
-                  x2="380"
-                  y2="44"
-                >
-                  <stop offset="0" stopColor="rgba(255,232,130,0.55)" />
-                  <stop offset="0.45" stopColor="rgba(255,220,90,0.3)" />
-                  <stop offset="1" stopColor="rgba(255,220,90,0)" />
-                </linearGradient>
-              </defs>
-              <polygon
-                points="62,39 380,-8 380,96 62,49"
-                fill="url(#m-torch-beam)"
-              />
-              {/* hot glow right at the lens (source brightness, not a
+                <defs>
+                  <linearGradient
+                    id="m-torch-beam"
+                    gradientUnits="userSpaceOnUse"
+                    x1="62"
+                    y1="44"
+                    x2="380"
+                    y2="44"
+                  >
+                    <stop offset="0" stopColor="rgba(255,232,130,0.55)" />
+                    <stop offset="0.45" stopColor="rgba(255,220,90,0.3)" />
+                    <stop offset="1" stopColor="rgba(255,220,90,0)" />
+                  </linearGradient>
+                </defs>
+                <polygon
+                  points="62,39 380,-8 380,96 62,49"
+                  fill="url(#m-torch-beam)"
+                />
+                {/* hot glow right at the lens (source brightness, not a
                   second cone) */}
-              <ellipse
-                cx="66"
-                cy="44"
-                rx="7"
-                ry="9"
-                fill="rgba(255,238,150,0.5)"
-              />
-              {/* torch: ink body, white grip band, wider head, cream lens */}
-              <rect x="41" y="40" width="13" height="8" rx="2" fill={INK} />
-              <rect x="44.5" y="41.5" width="4.5" height="5" rx="1" fill="#FFFFFF" />
-              <rect x="54" y="37" width="7.5" height="14" rx="2" fill={INK} />
-              <rect
-                x="61"
-                y="38.5"
-                width="2.6"
-                height="11"
-                rx="1.2"
-                fill="#FFF7D6"
-              />
-            </g>
+                <ellipse
+                  cx="66"
+                  cy="44"
+                  rx="7"
+                  ry="9"
+                  fill="rgba(255,238,150,0.5)"
+                />
+                {/* torch: ink body, white grip band, wider head, cream lens */}
+                <rect x="41" y="40" width="13" height="8" rx="2" fill={INK} />
+                <rect
+                  x="44.5"
+                  y="41.5"
+                  width="4.5"
+                  height="5"
+                  rx="1"
+                  fill="#FFFFFF"
+                />
+                <rect x="54" y="37" width="7.5" height="14" rx="2" fill={INK} />
+                <rect
+                  x="61"
+                  y="38.5"
+                  width="2.6"
+                  height="11"
+                  rx="1.2"
+                  fill="#FFF7D6"
+                />
+              </g>
 
-            {/* Finger-snap spark — flashes when it snaps at the rows */}
-            <path
-              className="m-spark"
-              d="M60 34 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4 Z"
-              fill="#CAFF43"
-              stroke={INK}
-              strokeWidth="1.2"
-              opacity="0"
-            />
+              {/* Finger-snap spark — flashes when it snaps at the rows */}
+              <path
+                className="m-spark"
+                d="M60 34 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4 Z"
+                fill="#CAFF43"
+                stroke={INK}
+                strokeWidth="1.2"
+                opacity="0"
+              />
 
-            {/* Paper body */}
-            <g className="m-body">
-              {/* Superhero cape — hangs straight down BEHIND the sheet,
+              {/* Paper body */}
+              <g className="m-body">
+                {/* Superhero cape — hangs straight down BEHIND the sheet,
                   from the neck to ~3/4 of the legs, peeking out on both
                   sides, with a cloud/wave scalloped hem */}
-              <path
-                className="m-cape"
-                d="M11 16
+                <path
+                  className="m-cape"
+                  d="M11 16
                    C 3 28 0 46 2 64
                    Q 4 74 8 67
                    Q 12 77 17 68
@@ -2162,153 +2376,188 @@ export default function HeroMascot() {
                    Q 52 76 56 66
                    C 60 46 59 28 53 16
                    Z"
-                fill={INK}
-                opacity="0.9"
-              />
-              <rect
-                x="6"
-                y="2"
-                width="52"
-                height="66"
-                rx="9"
-                fill={CREAM}
-                stroke={INK}
-                strokeWidth="3"
-              />
-              {/* Folded corner */}
-              <path d="M43 3 L57 17 L43 17 Z" fill={INK} />
-              {/* Score sticker */}
-              <circle
-                cx="15"
-                cy="12"
-                r="5"
-                fill="#CAFF43"
-                stroke={INK}
-                strokeWidth="2"
-              />
+                  fill={INK}
+                  opacity="0.9"
+                />
+                <rect
+                  x="6"
+                  y="2"
+                  width="52"
+                  height="66"
+                  rx="9"
+                  fill={CREAM}
+                  stroke={INK}
+                  strokeWidth="3"
+                />
+                {/* Folded corner */}
+                <path d="M43 3 L57 17 L43 17 Z" fill={INK} />
+                {/* Score sticker */}
+                <circle
+                  cx="15"
+                  cy="12"
+                  r="5"
+                  fill="#CAFF43"
+                  stroke={INK}
+                  strokeWidth="2"
+                />
 
-              {/* Eyes */}
-              <circle
-                cx="24"
-                cy="30"
-                r="6"
-                fill="#FFFFFF"
-                stroke={INK}
-                strokeWidth="2.5"
-              />
-              <circle
-                cx="41"
-                cy="30"
-                r="6"
-                fill="#FFFFFF"
-                stroke={INK}
-                strokeWidth="2.5"
-              />
-              <g className="m-pupil">
-                <circle cx="24" cy="30" r="2.6" fill={INK} />
-              </g>
-              <g className="m-pupil">
-                <circle cx="41" cy="30" r="2.6" fill={INK} />
-              </g>
+                {/* Eyes */}
+                <circle
+                  cx="24"
+                  cy="30"
+                  r="6"
+                  fill="#FFFFFF"
+                  stroke={INK}
+                  strokeWidth="2.5"
+                />
+                <circle
+                  cx="41"
+                  cy="30"
+                  r="6"
+                  fill="#FFFFFF"
+                  stroke={INK}
+                  strokeWidth="2.5"
+                />
+                <g className="m-pupil">
+                  <circle cx="24" cy="30" r="2.6" fill={INK} />
+                </g>
+                <g className="m-pupil">
+                  <circle cx="41" cy="30" r="2.6" fill={INK} />
+                </g>
 
-              {/* Mouth */}
-              <path
-                d="M29 41 Q32.5 45 36 41"
-                stroke={INK}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                fill="none"
-              />
+                {/* Mouth */}
+                <path
+                  d="M29 41 Q32.5 45 36 41"
+                  stroke={INK}
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
 
-              {/* Dizzy overlay — X eyes covering the normal ones + a ring
+                {/* Dizzy overlay — X eyes covering the normal ones + a ring
                   of little stars orbiting the head (shown after the mascot
                   has been thrown around too much) */}
-              <g className="m-dizzy" opacity="0">
-                <circle cx="24" cy="30" r="5.2" fill="#FFFFFF" />
-                <circle cx="41" cy="30" r="5.2" fill="#FFFFFF" />
-                <path
-                  d="M21 27 l6 6 M27 27 l-6 6 M38 27 l6 6 M44 27 l-6 6"
-                  stroke={INK}
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                />
-                <g className="m-dizzy-stars">
+                <g className="m-dizzy" opacity="0">
+                  <circle cx="24" cy="30" r="5.2" fill="#FFFFFF" />
+                  <circle cx="41" cy="30" r="5.2" fill="#FFFFFF" />
                   <path
-                    d="M46 -6 l1.5 3.6 3.6 1.5 -3.6 1.5 -1.5 3.6 -1.5 -3.6 -3.6 -1.5 3.6 -1.5 Z"
-                    fill={INK}
-                    opacity="0.8"
-                  />
-                  <path
-                    d="M14 -8 l1.3 3.1 3.1 1.3 -3.1 1.3 -1.3 3.1 -1.3 -3.1 -3.1 -1.3 3.1 -1.3 Z"
-                    fill="#CAFF43"
+                    d="M21 27 l6 6 M27 27 l-6 6 M38 27 l6 6 M44 27 l-6 6"
                     stroke={INK}
-                    strokeWidth="1.2"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                  />
+                  <g className="m-dizzy-stars">
+                    <path
+                      d="M46 -6 l1.5 3.6 3.6 1.5 -3.6 1.5 -1.5 3.6 -1.5 -3.6 -3.6 -1.5 3.6 -1.5 Z"
+                      fill={INK}
+                      opacity="0.8"
+                    />
+                    <path
+                      d="M14 -8 l1.3 3.1 3.1 1.3 -3.1 1.3 -1.3 3.1 -1.3 -3.1 -3.1 -1.3 3.1 -1.3 Z"
+                      fill="#CAFF43"
+                      stroke={INK}
+                      strokeWidth="1.2"
+                    />
+                    <path
+                      d="M30 -16 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4 Z"
+                      fill={INK}
+                      opacity="0.6"
+                    />
+                  </g>
+                </g>
+
+                {/* Black sunglasses — dropped on for the Mbappé celebration */}
+                <g className="m-shades" opacity="0">
+                  <rect
+                    x="16.5"
+                    y="25"
+                    width="14"
+                    height="10"
+                    rx="3.5"
+                    fill={INK}
+                  />
+                  <rect
+                    x="33.5"
+                    y="25"
+                    width="14"
+                    height="10"
+                    rx="3.5"
+                    fill={INK}
+                  />
+                  <rect
+                    x="29"
+                    y="27.5"
+                    width="6"
+                    height="2.5"
+                    rx="1.25"
+                    fill={INK}
+                  />
+                  <rect
+                    x="12"
+                    y="27"
+                    width="5.5"
+                    height="2.5"
+                    rx="1.25"
+                    fill={INK}
+                  />
+                  <rect
+                    x="46.5"
+                    y="27"
+                    width="5.5"
+                    height="2.5"
+                    rx="1.25"
+                    fill={INK}
                   />
                   <path
-                    d="M30 -16 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4 Z"
-                    fill={INK}
-                    opacity="0.6"
+                    d="M19.5 28 l4 0"
+                    stroke="rgba(255,255,255,0.65)"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
                   />
                 </g>
-              </g>
 
-              {/* Black sunglasses — dropped on for the Mbappé celebration */}
-              <g className="m-shades" opacity="0">
-                <rect x="16.5" y="25" width="14" height="10" rx="3.5" fill={INK} />
-                <rect x="33.5" y="25" width="14" height="10" rx="3.5" fill={INK} />
-                <rect x="29" y="27.5" width="6" height="2.5" rx="1.25" fill={INK} />
-                <rect x="12" y="27" width="5.5" height="2.5" rx="1.25" fill={INK} />
-                <rect x="46.5" y="27" width="5.5" height="2.5" rx="1.25" fill={INK} />
-                <path
-                  d="M19.5 28 l4 0"
-                  stroke="rgba(255,255,255,0.65)"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                />
-              </g>
+                {/* Arms folded across the belly — the celebration stance */}
+                <g className="m-arms-crossed" opacity="0">
+                  <rect
+                    x="11"
+                    y="48"
+                    width="32"
+                    height="6.5"
+                    rx="3.25"
+                    fill={INK}
+                    transform="rotate(11 27 51)"
+                  />
+                  <rect
+                    x="21"
+                    y="48"
+                    width="32"
+                    height="6.5"
+                    rx="3.25"
+                    fill={INK}
+                    transform="rotate(-11 37 51)"
+                  />
+                  <circle cx="44" cy="54.5" r="3.2" fill={INK} />
+                  <circle cx="20" cy="54.5" r="3.2" fill={INK} />
+                </g>
 
-              {/* Arms folded across the belly — the celebration stance */}
-              <g className="m-arms-crossed" opacity="0">
+                {/* CV skeleton lines */}
                 <rect
-                  x="11"
-                  y="48"
-                  width="32"
-                  height="6.5"
-                  rx="3.25"
-                  fill={INK}
-                  transform="rotate(11 27 51)"
+                  x="14"
+                  y="52"
+                  width="26"
+                  height="3"
+                  rx="1.5"
+                  fill="rgba(17,17,17,0.28)"
                 />
                 <rect
-                  x="21"
-                  y="48"
-                  width="32"
-                  height="6.5"
-                  rx="3.25"
-                  fill={INK}
-                  transform="rotate(-11 37 51)"
+                  x="14"
+                  y="59"
+                  width="35"
+                  height="3"
+                  rx="1.5"
+                  fill="rgba(17,17,17,0.18)"
                 />
-                <circle cx="44" cy="54.5" r="3.2" fill={INK} />
-                <circle cx="20" cy="54.5" r="3.2" fill={INK} />
               </g>
-
-              {/* CV skeleton lines */}
-              <rect
-                x="14"
-                y="52"
-                width="26"
-                height="3"
-                rx="1.5"
-                fill="rgba(17,17,17,0.28)"
-              />
-              <rect
-                x="14"
-                y="59"
-                width="35"
-                height="3"
-                rx="1.5"
-                fill="rgba(17,17,17,0.18)"
-              />
-            </g>
             </g>
           </svg>
         </div>

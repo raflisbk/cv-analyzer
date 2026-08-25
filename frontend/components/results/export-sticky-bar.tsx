@@ -47,7 +47,9 @@ export function ExportStickyBar({
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`PDF generation failed: ${response.status} ${errorText}`);
+        throw new Error(
+          `PDF generation failed: ${response.status} ${errorText}`,
+        );
       }
 
       const blob = await response.blob();
@@ -70,13 +72,15 @@ export function ExportStickyBar({
 
       toast.success("PDF downloaded successfully");
     } catch (error) {
-      toast.error(`PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      toast.error(
+        `PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 h-14 z-50 bg-[#141414] border-t border-[#F5F2D8]/10
+      className={`fixed bottom-0 left-0 right-0 h-14 z-50 bg-[#141414] border-t border-dashed border-[#F5F2D8]/15
         px-4 flex items-center justify-end gap-2
         transition-all duration-300 ease-out
         ${analysisStatus === "complete" && isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}
@@ -90,10 +94,11 @@ export function ExportStickyBar({
             aria-label="Copy all suggestions to clipboard"
             className="bg-[#F5F2D8]/10 text-[#F5F2D8] rounded-full hover:bg-[#F5F2D8]/20 border-0 h-9 px-4 text-sm"
           >
-            {copySuccess
-              ? <Check className="h-4 w-4 mr-2" />
-              : <Clipboard className="h-4 w-4 mr-2" />
-            }
+            {copySuccess ? (
+              <Check className="h-4 w-4 mr-2" />
+            ) : (
+              <Clipboard className="h-4 w-4 mr-2" />
+            )}
             Copy Suggestions
           </Button>
 

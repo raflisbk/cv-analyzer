@@ -1,11 +1,14 @@
 "use client";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ChevronLeft, Download, Sparkles, Upload, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PathkrLogo } from "@/components/ui/pathkr-logo";
 import Link from "next/link";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { UserMenu } from "@/components/auth/user-menu";
+import { downloadJobPdf } from "@/lib/workspace";
 
 interface WorkspaceV2HeaderProps {
   filename: string | null;
@@ -25,57 +28,72 @@ export function WorkspaceV2Header({
   const router = useRouter();
   const displayName = filename ?? "Document";
   const overallScore = useWorkspaceV2Store(
-    (s) => s.hydration?.analysis?.scores?.overall ?? null
+    (s) => s.hydration?.analysis?.scores?.overall ?? null,
   );
 
   const isReady = jobStatus === "ready";
   const isPreparing = jobStatus === "preparing";
 
+  const handleSavePdf = useCallback(async () => {
+    toast("Preparing PDF download...");
+    try {
+      await downloadJobPdf(
+        `/jobs/${jobId}/export/optimized`,
+        "POST",
+        `cv-optimized-${jobId.slice(0, 8)}.pdf`,
+      );
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      toast.error(
+        `PDF download failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+    }
+  }, [jobId]);
+
   const scoreColor =
     overallScore === null
       ? null
       : overallScore >= 85
-      ? "#CAFF43"
-      : overallScore >= 70
-      ? "#FF8C42"
-      : "#FF4FCB";
+        ? "#CAFF43"
+        : overallScore >= 70
+          ? "#FF8C42"
+          : "#FF4FCB";
 
   return (
     <header
       className={cn(
         "relative z-10 flex items-center justify-between gap-4 px-5",
-        className
+        className,
       )}
       style={{
         minHeight: 60,
         background: "rgba(245,242,216,0.88)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(17,17,17,0.09)",
-        boxShadow:
-          "0 1px 0 rgba(255,255,255,0.9) inset, 0 4px 24px rgba(17,17,17,0.06)",
+        borderBottom: "1px dashed rgba(17,17,17,0.18)",
       }}
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px border-b border-dashed border-[#141414]/20"
         style={{
-          background:
-            "linear-gradient(90deg, transparent 0%, rgba(202,255,67,0.45) 30%, rgba(202,255,67,0.6) 50%, rgba(202,255,67,0.45) 70%, transparent 100%)",
+          background: "transparent",
         }}
       />
 
       <div className="relative flex min-w-0 flex-1 items-center gap-3">
-        <Link href="/" className="hover:opacity-80 transition-opacity rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#CAFF43]">
+        <Link
+          href="/"
+          className="hover:opacity-80 transition-opacity rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#CAFF43]"
+        >
           <PathkrLogo size="md" variant="light" className="flex-none" />
         </Link>
 
-        <div className="h-5 w-px flex-none bg-[#141414]/[0.15]" aria-hidden="true" />
+        <div
+          className="h-5 w-px flex-none bg-[#141414]/[0.15]"
+          aria-hidden="true"
+        />
 
         <div className="min-w-0">
-          <p
-            className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px] text-[#141414]/40"
-          >
+          <p className="text-[10px] font-black uppercase tracking-[0.15em] leading-none mb-[3px] text-[#141414]/40">
             Workspace
             <span className="mx-1 opacity-50">/</span>
             {uploadMode ? "Upload" : "CV Analysis"}
@@ -89,7 +107,9 @@ export function WorkspaceV2Header({
               maxWidth: 380,
             }}
           >
-            <span className="truncate">{uploadMode ? "New Analysis" : displayName}</span>
+            <span className="truncate">
+              {uploadMode ? "New Analysis" : displayName}
+            </span>
             {uploadMode ? (
               <span
                 className="inline-flex flex-none items-center gap-0.5 rounded-full px-[0.45em] py-[0.12em]"
@@ -105,7 +125,7 @@ export function WorkspaceV2Header({
                 <Upload className="h-2.5 w-2.5" aria-hidden="true" />
                 upload
               </span>
-            ) : (
+            ) : isReady ? (
               <span
                 className="inline-flex flex-none items-center gap-0.5 rounded-full px-[0.45em] py-[0.12em]"
                 style={{
@@ -119,7 +139,7 @@ export function WorkspaceV2Header({
                 <Sparkles className="h-2.5 w-2.5" aria-hidden="true" />
                 optimized
               </span>
-            )}
+            ) : null}
           </h1>
         </div>
       </div>
@@ -194,6 +214,7 @@ export function WorkspaceV2Header({
         {!uploadMode && (
           <button
             type="button"
+            onClick={handleSavePdf}
             className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-black tracking-wide transition-all duration-150 hover:opacity-90 active:scale-[0.97]"
             style={{
               background: "#141414",

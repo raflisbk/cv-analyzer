@@ -31,6 +31,7 @@ export interface RagGraphProps {
 
 const INK = "#141414";
 const CREAM = "#F5F2D8";
+export const RAG_BURST_DECAY = 1.4;
 
 // ---------- canvas-texture helpers ----------
 
@@ -433,7 +434,12 @@ function RagScene({ mode, selectedIndex, onSelect }: RagSceneProps) {
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
     const { pointer } = state;
-    burstRef.current = THREE.MathUtils.damp(burstRef.current, 0, 0.7, delta);
+    burstRef.current = THREE.MathUtils.damp(
+      burstRef.current,
+      0,
+      RAG_BURST_DECAY,
+      delta,
+    );
     const burst = burstRef.current;
 
     const focused = mode === "interactive" && selectedIndex !== null;
@@ -506,7 +512,12 @@ function RagScene({ mode, selectedIndex, onSelect }: RagSceneProps) {
     spokes.forEach((spokeLine, i) => {
       const material = spokeLine.material as THREE.LineDashedMaterial;
       const target = !focused ? 0.32 : selectedIndex === i ? 0.6 : 0.08;
-      material.opacity = THREE.MathUtils.damp(material.opacity, target, 6, delta);
+      material.opacity = THREE.MathUtils.damp(
+        material.opacity,
+        target,
+        6,
+        delta,
+      );
     });
     crossLines.forEach((crossLine) => {
       const material = crossLine.material as THREE.LineBasicMaterial;
@@ -523,8 +534,7 @@ function RagScene({ mode, selectedIndex, onSelect }: RagSceneProps) {
       const spec = PRIMARY_SPECS[i];
       const excited = hoveredIndex === i || (focused && selectedIndex === i);
       const speed =
-        (excited ? spec.pulseSpeed * 2.4 : spec.pulseSpeed) *
-        (1 + burst * 2.5);
+        (excited ? spec.pulseSpeed * 2.4 : spec.pulseSpeed) * (1 + burst * 2.5);
       const progress = (t * speed + i * 0.37) % 1;
       dot.position.set(
         spec.pos[0] * (1 - progress),

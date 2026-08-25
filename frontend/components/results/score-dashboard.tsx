@@ -1,5 +1,5 @@
-
 import type { ScoreResult } from "@/lib/types";
+import { AlertTriangle } from "lucide-react";
 import { SUPPORTED_ROLES } from "@/lib/types";
 import { GaugeChart } from "./gauge-chart";
 import { MetricsPanel } from "./metrics-panel";
@@ -50,27 +50,35 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
   const benchmark = scores.benchmark;
   const showBenchmark = benchmark && benchmark.sample_size >= 20;
   const isFallback = scores.scoring_method === "fallback";
-  const roleLabel =
-    scores.target_role
-      ? SUPPORTED_ROLES.find((r) => r.id === scores.target_role)?.label ?? scores.target_role
-      : null;
-  const hasMetrics = scores.metrics && scores.metrics.bullet_count !== undefined;
+  const roleLabel = scores.target_role
+    ? (SUPPORTED_ROLES.find((r) => r.id === scores.target_role)?.label ??
+      scores.target_role)
+    : null;
+  const hasMetrics =
+    scores.metrics && scores.metrics.bullet_count !== undefined;
 
   const deltaEntries = scores.version_delta
-    ? Object.entries(scores.version_delta).filter(([k]) => k !== "_algorithm_changed")
+    ? Object.entries(scores.version_delta).filter(
+        ([k]) => k !== "_algorithm_changed",
+      )
     : [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-lg bg-[#F5F2D8] p-4 md:p-5">
       {/* Fallback warning */}
       {isFallback && (
         <div className="rounded-xl border border-[#FF4FCB]/40 bg-[#FF4FCB]/8 px-4 py-3">
           <p className="text-xs font-bold text-[#FF4FCB]">
-            ⚠ Scoring unavailable — placeholder values shown
+            <AlertTriangle
+              className="mr-1 inline-block h-3.5 w-3.5"
+              aria-hidden="true"
+            />
+            Scoring unavailable — placeholder values shown
           </p>
-          <p className="text-[11px] text-[#F5F2D8]/60 mt-0.5">
-            The AI scorer could not process this CV. All scores shown (50/100) are
-            defaults and do not reflect the actual quality of the CV. Try re-analyzing.
+          <p className="text-[11px] text-[#141414]/60 mt-0.5">
+            The AI scorer could not process this CV. All scores shown (50/100)
+            are defaults and do not reflect the actual quality of the CV. Try
+            re-analyzing.
           </p>
         </div>
       )}
@@ -78,9 +86,16 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       {/* Low confidence warning */}
       {scores.low_confidence && (
         <div className="rounded-xl border border-[#FF8C42]/30 bg-[#FF8C42]/8 px-4 py-3">
-          <p className="text-xs font-bold text-[#FF8C42]">⚠ Score confidence: moderate</p>
-          <p className="text-[11px] text-[#F5F2D8]/60 mt-0.5">
-            Deterministic signals and LLM score diverge significantly. Scores may be less reliable.
+          <p className="text-xs font-bold text-[#FF8C42]">
+            <AlertTriangle
+              className="mr-1 inline-block h-3.5 w-3.5"
+              aria-hidden="true"
+            />
+            Score confidence: moderate
+          </p>
+          <p className="text-[11px] text-[#141414]/60 mt-0.5">
+            Deterministic signals and LLM score diverge significantly. Scores
+            may be less reliable.
           </p>
         </div>
       )}
@@ -88,7 +103,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       {/* Version delta banner — visible when re-uploading from a previous version */}
       {deltaEntries.length > 0 && (
         <div className="rounded-xl border border-white/10 bg-white/4 px-4 py-3">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-[#F5F2D8]/40 mb-2">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-[#141414]/50 mb-2">
             Changes vs previous version
           </p>
           <div className="flex flex-wrap gap-2">
@@ -97,9 +112,14 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
                 key={dim}
                 className="rounded-full px-2.5 py-1 text-[11px] font-bold border"
                 style={{
-                  color: delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "#F5F2D8",
+                  color:
+                    delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "#141414",
                   borderColor:
-                    delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "rgba(255,255,255,0.1)",
+                    delta > 0
+                      ? "#CAFF43"
+                      : delta < 0
+                        ? "#FF4FCB"
+                        : "rgba(20,20,20,0.18)",
                   backgroundColor:
                     delta > 0
                       ? "rgba(202,255,67,0.08)"
@@ -117,8 +137,10 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       )}
 
       {/* Overall score panel */}
-      <div className="bg-[#F5F2D8]/[0.03] backdrop-blur-sm rounded-2xl p-8 flex flex-col items-center gap-3 border border-white/[0.07]">
-        <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">Overall Score</span>
+      <div className="border-y border-dashed border-white/15 bg-[#141414] p-8 flex flex-col items-center gap-3">
+        <span className="text-xs font-bold text-[#F5F2D8]/40 uppercase tracking-widest">
+          Overall Score
+        </span>
         <GaugeChart value={scores.overall} label="Overall" size={180} />
         <ScoreRangeBadge score={scores.overall} />
 
@@ -130,17 +152,36 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
           )}
           {scores.scoring_method && (
             <span className="text-xs font-bold rounded-full px-3 py-1 bg-white/5 text-[#F5F2D8]/40 border border-white/10">
-              {scores.scoring_method === "llm" ? "AI scored" : scores.scoring_method}
-              {scores.ensemble_runs && scores.ensemble_runs > 1 ? ` (${scores.ensemble_runs}×)` : ""}
+              {scores.scoring_method === "llm"
+                ? "AI scored"
+                : scores.scoring_method}
+              {scores.ensemble_runs && scores.ensemble_runs > 1
+                ? ` (${scores.ensemble_runs}×)`
+                : ""}
             </span>
           )}
           {scores.ats_score !== null && scores.ats_score !== undefined && (
             <span
               className="text-xs font-bold rounded-full px-3 py-1 border"
               style={{
-                color: scores.ats_score >= 70 ? "#CAFF43" : scores.ats_score >= 50 ? "#FF8C42" : "#FF4FCB",
-                borderColor: scores.ats_score >= 70 ? "rgba(202,255,67,0.3)" : scores.ats_score >= 50 ? "rgba(255,140,66,0.3)" : "rgba(255,79,203,0.3)",
-                backgroundColor: scores.ats_score >= 70 ? "rgba(202,255,67,0.08)" : scores.ats_score >= 50 ? "rgba(255,140,66,0.08)" : "rgba(255,79,203,0.08)",
+                color:
+                  scores.ats_score >= 70
+                    ? "#CAFF43"
+                    : scores.ats_score >= 50
+                      ? "#FF8C42"
+                      : "#FF4FCB",
+                borderColor:
+                  scores.ats_score >= 70
+                    ? "rgba(202,255,67,0.3)"
+                    : scores.ats_score >= 50
+                      ? "rgba(255,140,66,0.3)"
+                      : "rgba(255,79,203,0.3)",
+                backgroundColor:
+                  scores.ats_score >= 70
+                    ? "rgba(202,255,67,0.08)"
+                    : scores.ats_score >= 50
+                      ? "rgba(255,140,66,0.08)"
+                      : "rgba(255,79,203,0.08)",
               }}
             >
               ATS: {scores.ats_score}/100
@@ -149,12 +190,13 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
         </div>
 
         {showBenchmark ? (
-          <div className="mt-1 rounded-2xl bg-[#CAFF43]/6 border border-[#CAFF43]/15 px-5 py-3 text-center">
+          <div className="mt-1 border-y border-dashed border-[#CAFF43]/20 bg-[#CAFF43]/6 px-5 py-3 text-center">
             <p className="text-sm font-extrabold text-[#CAFF43]">
               Better than {benchmark!.percentile}% of CVs analyzed
             </p>
             <p className="text-xs text-[#F5F2D8]/40 mt-0.5">
-              Based on {benchmark!.sample_size.toLocaleString()} CVs in our platform
+              Based on {benchmark!.sample_size.toLocaleString()} CVs in our
+              platform
             </p>
           </div>
         ) : (
@@ -174,22 +216,35 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
           return (
             <div
               key={key}
-              className="rounded-2xl p-5 flex flex-col items-center gap-2 border border-white/[0.07] backdrop-blur-sm"
-              style={{ backgroundColor: `color-mix(in srgb, ${accentColor} 8%, transparent)` }}
+              className="border-y border-dashed border-white/15 p-5 flex flex-col items-center gap-2"
+              style={{
+                backgroundColor: `color-mix(in srgb, ${accentColor} 8%, transparent)`,
+              }}
             >
               <div className="flex items-center gap-2">
                 <span
                   className="text-xs font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full"
-                  style={{ color: accentColor, backgroundColor: `${accentColor}18` }}
+                  style={{
+                    color: accentColor,
+                    backgroundColor: `${accentColor}18`,
+                  }}
                 >
                   {label}
                 </span>
                 {delta !== undefined && (
                   <span
                     className="text-[10px] font-extrabold"
-                    style={{ color: delta > 0 ? "#CAFF43" : delta < 0 ? "#FF4FCB" : "#F5F2D8" }}
+                    style={{
+                      color:
+                        delta > 0
+                          ? "#CAFF43"
+                          : delta < 0
+                            ? "#FF4FCB"
+                            : "#141414",
+                    }}
                   >
-                    {delta > 0 ? "+" : ""}{delta}
+                    {delta > 0 ? "+" : ""}
+                    {delta}
                   </span>
                 )}
               </div>
@@ -199,8 +254,12 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
                 size={140}
                 accentColor={accentColor}
               />
-              <p className="text-xs text-[#F5F2D8]/60 text-center font-medium mt-1">{description}</p>
-              <p className="text-[10px] text-[#F5F2D8]/30 font-mono">weight {weight}</p>
+              <p className="text-xs text-[#141414]/60 text-center font-medium mt-1">
+                {description}
+              </p>
+              <p className="text-[10px] text-[#141414]/45 font-mono">
+                weight {weight}
+              </p>
 
               {reasoning && (
                 <div className="mt-2 p-3 rounded-xl bg-black/20 border border-white/[0.07] w-full">
@@ -215,13 +274,20 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       </div>
 
       {/* Weight breakdown */}
-      <div className="rounded-2xl bg-[#CAFF43]/5 border border-[#CAFF43]/10 p-5 space-y-3">
-        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#CAFF43]">Score Calculation</h4>
+      <div className="border-y border-dashed border-[#CAFF43]/20 bg-[#CAFF43]/5 p-5 space-y-3">
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#CAFF43]">
+          Score Calculation
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           {DIMENSIONS.map(({ key, label, accentColor, weight }) => (
-            <div key={key} className="flex items-center justify-between text-[11px]">
-              <span className="text-[#F5F2D8]/40">{label}</span>
-              <span className="font-mono" style={{ color: accentColor }}>{weight}</span>
+            <div
+              key={key}
+              className="flex items-center justify-between text-[11px]"
+            >
+              <span className="text-[#141414]/55">{label}</span>
+              <span className="font-mono" style={{ color: accentColor }}>
+                {weight}
+              </span>
             </div>
           ))}
         </div>
@@ -230,7 +296,7 @@ export function ScoreDashboard({ scores }: ScoreDashboardProps) {
       {/* Deterministic metrics panel */}
       {hasMetrics && (
         <div>
-          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#F5F2D8]/40 mb-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#141414]/60 mb-3">
             Objective Quality Signals
           </h4>
           <MetricsPanel

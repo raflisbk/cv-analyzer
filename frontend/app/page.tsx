@@ -6,7 +6,6 @@ import ProductsSection from "@/components/landing/products-section";
 import FeaturesSection from "@/components/landing/features-section";
 import HowItWorksSection from "@/components/landing/how-it-works-section";
 import StatsSection from "@/components/landing/stats-section";
-import TestimonialsSection from "@/components/landing/testimonials-section";
 import SeeItInActionSection from "@/components/landing/see-it-in-action-section";
 import FloatingFooter from "@/components/landing/floating-footer";
 import HeroMascot from "@/components/landing/hero-mascot";
@@ -28,7 +27,6 @@ export default function Home() {
         <FeaturesSection />
         <HowItWorksSection />
         <StatsSection />
-        <TestimonialsSection />
         <SeeItInActionSection />
       </main>
       <Footer />

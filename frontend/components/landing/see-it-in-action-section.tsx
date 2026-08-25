@@ -108,7 +108,7 @@ export default function SeeItInActionSection() {
               start: "top 85%",
               once: true,
             },
-          }
+          },
         );
 
         const tl = gsap.timeline({
@@ -126,12 +126,12 @@ export default function SeeItInActionSection() {
         tl.fromTo(
           ".sia-before",
           { opacity: 0, x: -40 },
-          { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" }
+          { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" },
         ).fromTo(
           ".sia-after",
           { opacity: 0, x: 40 },
           { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" },
-          "-=0.5"
+          "-=0.5",
         );
       }, sectionRef);
       ctxRef.current = ctx;
@@ -157,7 +157,7 @@ export default function SeeItInActionSection() {
             duration: 0.4,
             ease: "power3.out",
             stagger: 0.08,
-          }
+          },
         );
       });
     });
@@ -180,10 +180,14 @@ export default function SeeItInActionSection() {
               id="sia-heading"
               className="mb-4 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-[#141414]"
             >
-              Before & after <span className="gradient-text-lime"><PathkrInline /></span>
+              Before & after{" "}
+              <span className="gradient-text-lime">
+                <PathkrInline />
+              </span>
             </h2>
             <p className="mx-auto max-w-lg text-base font-medium tracking-wide text-[#141414]/50">
-              Real results from real CVs — see the difference AI makes.
+              See what an analysis looks like — from first draft to clearer,
+              stronger signals.
             </p>
           </div>
 
@@ -207,7 +211,12 @@ export default function SeeItInActionSection() {
 
               <div className="space-y-3.5">
                 {beforeItems.map((item) => (
-                  <MetricRow key={item.label} item={item} animate={true} delay={200} />
+                  <MetricRow
+                    key={item.label}
+                    item={item}
+                    animate={true}
+                    delay={200}
+                  />
                 ))}
               </div>
 
@@ -282,8 +291,8 @@ export default function SeeItInActionSection() {
               >
                 {showAfter ? (
                   <p className="text-[10px] font-mono text-[#CAFF43]/60">
-                    ATS passed · Quantified bullets · Active voice · 10/12 skills
-                    matched
+                    ATS passed · Quantified bullets · Active voice · 10/12
+                    skills matched
                   </p>
                 ) : (
                   <p className="text-[10px] font-mono text-[#F5F2D8]/20">
