@@ -3,7 +3,7 @@
   "note": "Replicate outputs used for the pathkr landing redesign. frontend/public/landing holds the files the site serves; this folder keeps originals, cut-outs and rejected variants.",
   "models": {
     "image": "black-forest-labs/flux-1.1-pro (1:1, png, safety_tolerance 5)",
-    "cutout": "851-labs/background-remover",
+    "cutout": "bria/remove-background",
     "logo_attempts": "recraft-ai/recraft-v3-svg"
   },
   "served": {
@@ -75,5 +75,6 @@
   "note_process": "cloud-upload, scanner, pencil and pdf-export were generated 2026-11-08 for the process section; background removal ran on the base64 of the flux output",
   "palette_change": "2026-11-08: owner asked for a real punk yellow; accent changed from #83fd80 (mint) to #f2ff00. Objects regenerated with flux-1.1-pro using \"electric acid punk yellow #f2ff00 ... no green anywhere\"; the model rendered amber, so the yellow regions were remapped to #f2ff00 by a hue remap (hue 32-66 deg -> ~63.5, saturation and value lifted). The CV sheet reuses the v2 render (hue remap of the green badge) because the white sheet vanished in the new background removal.",
   "note_cv_hero": "Header band remapped to #f42902 only above 30% of the object height, seal remapped to punk yellow only below 62%, so shading elsewhere is untouched. Options h1-h3 are in rejected/.",
-  "note_variety": "15 extra objects generated 2026-11-08 for per-section variety. sparkle and pin were rejected (ragged yellow after the hue remap, splashy shadow)."
+  "note_variety": "15 extra objects generated 2026-11-08 for per-section variety. sparkle and pin were rejected (ragged yellow after the hue remap, splashy shadow).",
+  "cutout_change": "2026-11-08 v4: every served object was re-cut with Replicate bria/remove-background (preserve_partial_alpha) from blue-gray background renders. The earlier 851-labs/background-remover cut removed white and glassy interiors (shield, target, star, plane). Yellow regions use a soft hue remap to #f2ff00. shield, magnifier, star and cv-sheet were regenerated for cleaner shapes."
 }
