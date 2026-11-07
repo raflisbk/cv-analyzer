@@ -81,6 +81,12 @@ services:
       --loglevel=info
       --pool=solo
       --concurrency=1
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.tasks.celery_app inspect ping -d celery@$$HOSTNAME --timeout 5 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     env_file: backend/.env
     environment:
       CV_ANALYZER_DB_HOST: postgres
