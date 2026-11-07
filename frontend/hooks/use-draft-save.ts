@@ -8,12 +8,11 @@ import type { JSONContent } from "@tiptap/core";
 
 export type SaveState = "idle" | "unsaved" | "saving" | "saved" | "error";
 
-interface DraftContent {
-}
+interface DraftContent {}
 
 async function patchWorkspaceContent(
   jobId: string,
-  content: DraftContent
+  content: DraftContent,
 ): Promise<void> {
   const res = await fetch(`/api/v1/jobs/${jobId}/workspace/content`, {
     method: "PATCH",
@@ -49,7 +48,7 @@ export function useDraftSave(jobId: string) {
     onError: () => {
       setSaveState("error");
       toast.error(
-        "Failed to save changes — your edits are not lost. Retrying..."
+        "Failed to save changes — your edits are not lost. Retrying...",
       );
     },
   });
@@ -59,7 +58,7 @@ export function useDraftSave(jobId: string) {
       mutate(content);
     },
     800,
-    { maxWait: 5000 }
+    { maxWait: 5000 },
   );
 
   const markUnsaved = useCallback(
@@ -67,7 +66,7 @@ export function useDraftSave(jobId: string) {
       setSaveState("unsaved");
       debouncedSave(content);
     },
-    [debouncedSave]
+    [debouncedSave],
   );
 
   return { saveState, markUnsaved };

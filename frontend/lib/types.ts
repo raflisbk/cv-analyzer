@@ -1,5 +1,3 @@
-
-
 export interface ErrorDetail {
   code: string;
   message: string;
@@ -24,7 +22,7 @@ export enum JobStatus {
   PARSING = "parsing",
   ANALYZING = "analyzing",
   COMPLETE = "complete",
-  FAILED = "failed"
+  FAILED = "failed",
 }
 
 export interface Job {
@@ -131,7 +129,10 @@ export interface AtsCheck {
 }
 
 export type SuggestionPriority = "high_impact" | "quick_win";
-export type SuggestionType = "action_verb" | "impact_metric" | "missing_section";
+export type SuggestionType =
+  | "action_verb"
+  | "impact_metric"
+  | "missing_section";
 
 export interface SuggestionItem {
   priority: SuggestionPriority;
@@ -142,7 +143,10 @@ export interface SuggestionItem {
   afterText?: string;
 }
 
-export interface ApiSuggestionItem extends Omit<SuggestionItem, "originalText" | "afterText"> {
+export interface ApiSuggestionItem extends Omit<
+  SuggestionItem,
+  "originalText" | "afterText"
+> {
   originalText?: string;
   original_text?: string;
   afterText?: string;

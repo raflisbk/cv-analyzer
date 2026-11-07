@@ -21,7 +21,9 @@ function normalizeSuggestionCard(card: ApiSuggestionCard): SuggestionCard {
   };
 }
 
-export function normalizeAnalysisResult(result: AnalysisResult): AnalysisResult {
+export function normalizeAnalysisResult(
+  result: AnalysisResult,
+): AnalysisResult {
   if (result.suggestions === undefined || result.suggestions === null) {
     return result;
   }

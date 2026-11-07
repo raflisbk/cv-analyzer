@@ -7,7 +7,7 @@ export class ApiError extends Error {
   constructor(
     public code: string,
     message: string,
-    public details?: Record<string, unknown>
+    public details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = "ApiError";
@@ -16,7 +16,7 @@ export class ApiError extends Error {
 
 export async function apiFetch<T>(
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`;
   const isFormData = options?.body instanceof FormData;
@@ -36,7 +36,7 @@ export async function apiFetch<T>(
   } catch (error) {
     throw new ApiError(
       "NETWORK_ERROR",
-      error instanceof Error ? error.message : "Unknown network error"
+      error instanceof Error ? error.message : "Unknown network error",
     );
   }
 
@@ -51,9 +51,12 @@ export async function apiFetch<T>(
 
   let data: WrappedResponse<T>;
   try {
-    data = await response.json() as WrappedResponse<T>;
+    data = (await response.json()) as WrappedResponse<T>;
   } catch {
-    throw new ApiError("PARSE_ERROR", "Unexpected response format from server.");
+    throw new ApiError(
+      "PARSE_ERROR",
+      "Unexpected response format from server.",
+    );
   }
 
   if (data.error) {
@@ -75,13 +78,19 @@ export interface UploadOptions {
 
 export async function uploadFile(
   file: File,
-  options: UploadOptions = {}
+  options: UploadOptions = {},
 ): Promise<{ job_id: string }> {
   const formData = new FormData();
   formData.append("file", file);
-  if (options.targetRole) { formData.append("target_role", options.targetRole); }
-  if (options.parentJobId) { formData.append("parent_job_id", options.parentJobId); }
-  if (options.jdText) { formData.append("jd_text", options.jdText); }
+  if (options.targetRole) {
+    formData.append("target_role", options.targetRole);
+  }
+  if (options.parentJobId) {
+    formData.append("parent_job_id", options.parentJobId);
+  }
+  if (options.jdText) {
+    formData.append("jd_text", options.jdText);
+  }
 
   return apiFetch<{ job_id: string }>("/upload", {
     method: "POST",

@@ -1,5 +1,3 @@
-
-
 export interface SuggestionAnchor {
   section: string;
   searchText: string;
@@ -18,7 +16,7 @@ export async function findTextRect(
   page: unknown,
   searchText: string,
   pageIndex: number = 0,
-  section: string = "unknown"
+  section: string = "unknown",
 ): Promise<SuggestionAnchor | null> {
   const pdfPage = page as {
     getTextContent: () => Promise<{ items: Array<Record<string, unknown>> }>;
@@ -32,7 +30,9 @@ export async function findTextRect(
     const viewport = pdfPage.getViewport({ scale: 1.0 });
 
     for (const item of textContent.items) {
-          if (!("str" in item) || !item.str) { continue; }
+      if (!("str" in item) || !item.str) {
+        continue;
+      }
 
       const textItem = item as {
         str: string;
@@ -42,9 +42,9 @@ export async function findTextRect(
       };
 
       if (textItem.str.includes(searchText)) {
-                    const [, , , , tx, ty] = textItem.transform;
+        const [, , , , tx, ty] = textItem.transform;
 
-              const [viewportX, viewportY] = viewport.convertToViewportPoint(tx, ty);
+        const [viewportX, viewportY] = viewport.convertToViewportPoint(tx, ty);
 
         return {
           section,
@@ -62,7 +62,7 @@ export async function findTextRect(
       }
     }
 
-            return null;
+    return null;
   } catch (err) {
     console.warn("[annotation-utils] findTextRect failed:", err);
     return null;

@@ -1,5 +1,3 @@
-
-
 export interface SSEMessage {
   type: "connected" | "progress" | "error";
   job_id: string;
@@ -20,11 +18,13 @@ export class SSEConnection {
   constructor(
     private url: string,
     private onMessage: (data: SSEMessage) => void,
-    private onError?: (error: Error) => void
+    private onError?: (error: Error) => void,
   ) {}
 
   connect(): void {
-    if (this.isClosed || this.completedReceived) { return; }
+    if (this.isClosed || this.completedReceived) {
+      return;
+    }
 
     if (this.eventSource) {
       this.eventSource.close();
@@ -48,7 +48,9 @@ export class SSEConnection {
     };
 
     this.eventSource.onerror = () => {
-      if (this.isClosed || this.completedReceived) { return; }
+      if (this.isClosed || this.completedReceived) {
+        return;
+      }
 
       this.eventSource?.close();
 
@@ -56,14 +58,14 @@ export class SSEConnection {
         this.reconnectAttempts++;
 
         console.warn(
-          `SSE reconnecting... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+          `SSE reconnecting... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
         );
 
         this.reconnectTimer = setTimeout(() => {
           this.connect();
         }, this.reconnectDelay);
 
-          this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
+        this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
       } else {
         this.onError?.(new Error("Max SSE reconnection attempts exceeded"));
       }

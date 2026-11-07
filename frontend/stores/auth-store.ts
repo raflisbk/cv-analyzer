@@ -32,6 +32,6 @@ export const useAuthStore = create<AuthStore>()(
       // sessionStorage: user state intentionally cleared on tab/browser close
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({ user: state.user }),
-    }
-  )
+    },
+  ),
 );

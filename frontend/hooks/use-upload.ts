@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
@@ -23,14 +22,14 @@ export function useUpload() {
       if (file.size > maxSize) {
         throw new ApiError(
           "FILE_TOO_LARGE",
-          "File size exceeds 5MB limit. Please compress or split your CV."
+          "File size exceeds 5MB limit. Please compress or split your CV.",
         );
       }
 
       if (!allowedTypes.includes(file.type)) {
         throw new ApiError(
           "INVALID_FILE_TYPE",
-          "Only PDF and DOCX files are supported."
+          "Only PDF and DOCX files are supported.",
         );
       }
 

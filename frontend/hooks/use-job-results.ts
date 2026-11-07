@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -48,7 +47,7 @@ export function useJobResults(jobId: string | null) {
         void queryClient.invalidateQueries({
           queryKey: ["job-results", jobId],
         });
-      }
+      },
     );
 
     sseRef.current = connection;

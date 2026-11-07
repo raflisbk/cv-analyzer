@@ -9,7 +9,10 @@ interface ChatStreamOptions {
   onError?: (error: Error) => void;
 }
 
-export function useChatStream(jobId: string | undefined, options: ChatStreamOptions) {
+export function useChatStream(
+  jobId: string | undefined,
+  options: ChatStreamOptions,
+) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -37,13 +40,16 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
       abortControllerRef.current = new AbortController();
 
       try {
-        const response = await fetch(`${apiUrlRef.current}/jobs/${jobId}/chat`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message }),
-          signal: abortControllerRef.current.signal,
-        });
+        const response = await fetch(
+          `${apiUrlRef.current}/jobs/${jobId}/chat`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+            signal: abortControllerRef.current.signal,
+          },
+        );
 
         if (!response.ok) {
           throw new Error(`Chat failed: ${response.statusText}`);
@@ -92,7 +98,7 @@ export function useChatStream(jobId: string | undefined, options: ChatStreamOpti
         abortControllerRef.current = null;
       }
     },
-    [jobId, isStreaming]
+    [jobId, isStreaming],
   );
 
   return { isStreaming, error, send };

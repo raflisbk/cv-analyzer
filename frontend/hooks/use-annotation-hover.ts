@@ -34,7 +34,10 @@ export function useAnnotationHover({
   });
   const dismiss = useDismiss(context);
 
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover, dismiss]);
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    hover,
+    dismiss,
+  ]);
 
   return { isOpen, refs, floatingStyles, getReferenceProps, getFloatingProps };
 }

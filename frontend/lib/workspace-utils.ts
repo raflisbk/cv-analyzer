@@ -1,4 +1,3 @@
-
 import type { JSONContent } from "@tiptap/core";
 import type { WorkspaceHydration } from "@/lib/workspace";
 import type { SuggestionItem } from "@/lib/types";
@@ -34,7 +33,9 @@ const BULLET_RE = /^([•·▪▸–\-]|\*{1,2}|→)\s+(.*)/;
 
 const NUMBERED_RE = /^\d+[.)]\s+(.*)/;
 
-function isPipeTitleLine(line: string): false | { title: string; rest: string } {
+function isPipeTitleLine(
+  line: string,
+): false | { title: string; rest: string } {
   const pipeIdx = line.indexOf(" | ");
   if (pipeIdx < 2 || pipeIdx > 70) {
     return false;
@@ -121,18 +122,22 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
     }
     const pipeResult = isPipeTitleLine(trimmed);
     if (pipeResult) {
-      content.push(makeParagraph([
-        boldText(pipeResult.title),
-        normalText(" | " + pipeResult.rest),
-      ]));
+      content.push(
+        makeParagraph([
+          boldText(pipeResult.title),
+          normalText(" | " + pipeResult.rest),
+        ]),
+      );
       continue;
     }
     const colonResult = isKeyColonLine(trimmed);
     if (colonResult) {
-      content.push(makeParagraph([
-        boldText(colonResult.key + ": "),
-        normalText(colonResult.desc),
-      ]));
+      content.push(
+        makeParagraph([
+          boldText(colonResult.key + ": "),
+          normalText(colonResult.desc),
+        ]),
+      );
       continue;
     }
     const nextTrimmed = lines[i]?.trim();
@@ -150,7 +155,9 @@ export function plainTextToTiptapDoc(text: string): JSONContent {
   return { type: "doc", content };
 }
 
-export function normalizeSuggestion(raw: Record<string, unknown>): SuggestionItem {
+export function normalizeSuggestion(
+  raw: Record<string, unknown>,
+): SuggestionItem {
   return {
     priority: (raw.priority as SuggestionItem["priority"]) ?? "quick_win",
     text: (raw.text as string) ?? "",
@@ -166,12 +173,15 @@ export function normalizeSuggestion(raw: Record<string, unknown>): SuggestionIte
 
 export function buildInitialSections(
   sections: WorkspaceHydration["document"]["sections"],
-  draftContent?: Record<string, JSONContent> | null
+  draftContent?: Record<string, JSONContent> | null,
 ): SectionState[] {
   const merged = new Map<string, string>();
   for (const section of sections) {
     const existing = merged.get(section.type);
-    merged.set(section.type, existing ? `${existing}\n${section.text}` : section.text);
+    merged.set(
+      section.type,
+      existing ? `${existing}\n${section.text}` : section.text,
+    );
   }
 
   return Array.from(merged.entries()).map(([type, text]) => ({

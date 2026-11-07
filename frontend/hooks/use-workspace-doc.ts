@@ -29,8 +29,7 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
     const persistence = new IndexeddbPersistence(`workspace-v2-${jobId}`, doc);
     persistenceRef.current = persistence;
 
-    persistence.on("synced", () => {
-    });
+    persistence.on("synced", () => {});
 
     return () => {
       persistence.destroy();
@@ -46,12 +45,9 @@ export function useWorkspaceDoc(jobId: string): UseWorkspaceDocResult {
 
     const wsUrl = "ws://localhost:8000/yjs";
 
-    const wsProvider = new WebsocketProvider(
-      wsUrl,
-      jobId,
-      docRef.current,
-      { connect: true }
-    );
+    const wsProvider = new WebsocketProvider(wsUrl, jobId, docRef.current, {
+      connect: true,
+    });
 
     wsProviderRef.current = wsProvider;
 

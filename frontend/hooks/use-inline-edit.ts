@@ -14,7 +14,11 @@ interface UseInlineEditResult {
   state: InlineEditState;
   handleSelectionChange: () => void;
   closePopover: () => void;
-  applyRewrite: (editId: string, originalText: string, rewrittenText: string) => void;
+  applyRewrite: (
+    editId: string,
+    originalText: string,
+    rewrittenText: string,
+  ) => void;
 }
 
 const MIN_SELECTION_LENGTH = 2;
@@ -63,7 +67,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
     debounceTimerRef.current = setTimeout(() => {
       const selection = window.getSelection();
 
-        if (!selection || selection.isCollapsed) {
+      if (!selection || selection.isCollapsed) {
         setState({
           selectedText: "",
           selectionRect: null,
@@ -74,7 +78,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
       const selectedText = selection.toString().trim();
 
-        if (selectedText.length < MIN_SELECTION_LENGTH) {
+      if (selectedText.length < MIN_SELECTION_LENGTH) {
         setState({
           selectedText: "",
           selectionRect: null,
@@ -84,7 +88,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
       }
 
       if (selectedText.length > MAX_SELECTION_LENGTH) {
-            const range = selection.getRangeAt(0);
+        const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
 
         setState({
@@ -95,7 +99,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         return;
       }
 
-        const range = selection.getRangeAt(0);
+      const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
       let rectPercent = undefined;
@@ -116,7 +120,6 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
         rectPercent,
         isVisible: true,
       });
-
     }, SELECTION_DEBOUNCE_MS);
   }, []);
 
@@ -142,7 +145,7 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
     (editId: string, originalText: string, rewrittenText: string) => {
       if (!inlineEditsMapRef.current) return;
 
-        const editRecord = {
+      const editRecord = {
         editId,
         originalText,
         rewrittenText,
@@ -151,9 +154,9 @@ export function useInlineEdit(jobId: string): UseInlineEditResult {
 
       inlineEditsMapRef.current.set(editId, editRecord);
 
-        closePopover();
+      closePopover();
     },
-    [closePopover]
+    [closePopover],
   );
 
   useEffect(() => {

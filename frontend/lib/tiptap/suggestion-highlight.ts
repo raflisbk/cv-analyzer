@@ -58,7 +58,9 @@ export const SuggestionHighlight = Mark.create({
           const { doc, tr } = state;
           let changed = false;
           doc.descendants((node: ProseMirrorNode, pos: number) => {
-            if (!node.isText) { return; }
+            if (!node.isText) {
+              return;
+            }
             node.marks.forEach((mark) => {
               if (
                 mark.type.name === "suggestionHighlight" &&
@@ -69,7 +71,9 @@ export const SuggestionHighlight = Mark.create({
               }
             });
           });
-          if (changed && dispatch) { dispatch(tr); }
+          if (changed && dispatch) {
+            dispatch(tr);
+          }
           return changed;
         },
     };

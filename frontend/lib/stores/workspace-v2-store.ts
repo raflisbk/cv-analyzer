@@ -1,4 +1,3 @@
-
 "use client";
 import { create } from "zustand";
 import type { WorkspaceHydration } from "@/lib/workspace";
@@ -40,7 +39,7 @@ interface WorkspaceV2State {
     editId: string,
     originalText: string,
     rewrittenText: string,
-    rectPercent?: { left: number; top: number; width: number; height: number }
+    rectPercent?: { left: number; top: number; width: number; height: number },
   ) => void;
   addChatMessage: (message: ChatMessage) => void;
   updateLastChatMessage: (content: string) => void;

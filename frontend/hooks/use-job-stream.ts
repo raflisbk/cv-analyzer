@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -15,7 +13,10 @@ interface UseJobStreamOptions {
   onComplete?: (jobId: string) => void;
 }
 
-export function useJobStream(jobId: string | null, options?: UseJobStreamOptions) {
+export function useJobStream(
+  jobId: string | null,
+  options?: UseJobStreamOptions,
+) {
   const [progress, setProgress] = useState<ProgressUpdate | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -38,7 +39,10 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       if (completedRef.current) return;
 
       const checkStatus = async () => {
-        if (completedRef.current) { stopPolling(); return; }
+        if (completedRef.current) {
+          stopPolling();
+          return;
+        }
         try {
           const res = await fetch(`${apiUrl}/jobs/${id}/results`, {
             credentials: "include",
@@ -49,18 +53,31 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
           if (status === "complete" || status === "failed") {
             completedRef.current = true;
             stopPolling();
-            if (status === "complete") { onComplete(id); }
-            setProgress({ stage: status, percentage: 100, message: status === "complete" ? "Analysis complete!" : "Analysis failed." });
+            if (status === "complete") {
+              onComplete(id);
+            }
+            setProgress({
+              stage: status,
+              percentage: 100,
+              message:
+                status === "complete"
+                  ? "Analysis complete!"
+                  : "Analysis failed.",
+            });
           }
-        } catch { /* ignore network errors during fallback poll */ }
+        } catch {
+          /* ignore network errors during fallback poll */
+        }
       };
 
       void checkStatus();
       if (!pollIntervalRef.current) {
-        pollIntervalRef.current = setInterval(() => { void checkStatus(); }, 4000);
+        pollIntervalRef.current = setInterval(() => {
+          void checkStatus();
+        }, 4000);
       }
     },
-    [apiUrl, stopPolling]
+    [apiUrl, stopPolling],
   );
 
   useEffect(() => {
@@ -81,7 +98,11 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
       (data: SSEMessage) => {
         if (data.type === "connected") {
           setIsConnected(true);
-        } else if (data.stage && data.percentage !== undefined && data.message) {
+        } else if (
+          data.stage &&
+          data.percentage !== undefined &&
+          data.message
+        ) {
           setProgress({
             stage: data.stage,
             percentage: data.percentage,
@@ -106,7 +127,7 @@ export function useJobStream(jobId: string | null, options?: UseJobStreamOptions
         if (!completedRef.current && jobId && onCompleteRef.current) {
           startFallbackPoll(jobId, onCompleteRef.current);
         }
-      }
+      },
     );
 
     connection.connect();
