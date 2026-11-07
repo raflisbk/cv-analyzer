@@ -2,9 +2,9 @@
 
 from unittest.mock import patch
 
+from app.services.contact_signals import contact_signals
 from app.services.scoring.deterministic_metrics import (
     _action_verb_ratio,
-    _contact_signals,
     _employment_gaps,
     _extract_bullets,
     _quantification_ratio,
@@ -200,7 +200,7 @@ def test_action_verb_ratio_strong() -> None:
 
 def test_contact_signals_full() -> None:
     text = "john@test.com +628123456789 linkedin.com/in/johndoe"
-    signals = _contact_signals(text)
+    signals = contact_signals(text)
     assert signals["has_email"] is True
     assert signals["has_phone"] is True
     assert signals["has_linkedin"] is True

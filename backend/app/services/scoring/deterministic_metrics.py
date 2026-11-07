@@ -6,6 +6,8 @@ the LLM subjective score. The same CV always produces the same numbers.
 
 import re
 
+from app.services.contact_signals import contact_signals
+
 # ---------------------------------------------------------------------------
 # Verb lists
 # ---------------------------------------------------------------------------
@@ -157,11 +159,6 @@ _NUMBER_IN_TEXT = re.compile(r"\d+(?:[.,]\d+)?(?:\s*[%xX×])?|\$[\d,]+|Rp[\s\d,.
 # Year ranges — used for employment gap detection
 _YEAR_RANGE = re.compile(
     r"(\d{4})\s*[-–—]\s*(\d{4}|present|current|now|sekarang)", re.IGNORECASE
-)
-_LINKEDIN = re.compile(r"linkedin\.com/in/", re.IGNORECASE)
-_GITHUB = re.compile(r"github\.com/", re.IGNORECASE)
-_PORTFOLIO = re.compile(
-    r"https?://(?!github|linkedin)[\w.-]+\.[a-z]{2,}", re.IGNORECASE
 )
 
 _DEFAULT_SECTIONS = {
@@ -520,16 +517,6 @@ def _employment_gaps(text: str, nlp_result: dict | None = None) -> dict:
     }
 
 
-def _contact_signals(text: str) -> dict:
-    return {
-        "has_email": bool(re.search(r"[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}", text)),
-        "has_phone": bool(re.search(r"[\+]?[\d\s\-().]{9,15}", text)),
-        "has_linkedin": bool(_LINKEDIN.search(text)),
-        "has_github": bool(_GITHUB.search(text)),
-        "has_portfolio": bool(_PORTFOLIO.search(text)),
-    }
-
-
 def _objective_score(metrics: dict) -> int:
     q_ratio = metrics.get("quantification_ratio", 0)
     verb = metrics.get("action_verb_ratio", {})
@@ -688,7 +675,7 @@ def compute_deterministic_metrics(
         ),
         "skill_presence_in_experience": _skill_presence_in_experience(nlp_result),
         "employment_gaps": _employment_gaps(cv_text, nlp_result),
-        "contact_signals": _contact_signals(cv_text),
+        "contact_signals": contact_signals(cv_text),
     }
     metrics["objective_score"] = _objective_score(metrics)
     return metrics

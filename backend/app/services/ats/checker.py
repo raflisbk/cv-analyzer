@@ -1,5 +1,6 @@
 import re
 
+from app.services.contact_signals import contact_signals
 from app.services.nlp.section_detector import CvSection
 
 _ACTION_VERBS: set[str] = {
@@ -360,10 +361,9 @@ def check_ats_compatibility(
             }
         )
 
-    has_email = bool(re.search(r"[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}", text))
-    has_phone = bool(re.search(r"[\+]?[\d\s\-().]{9,15}", text))
+    contact = contact_signals(text)
 
-    if has_email and has_phone:
+    if contact["has_email"] and contact["has_phone"]:
         results.append(
             {
                 "check": "Contact information complete",
@@ -371,7 +371,7 @@ def check_ats_compatibility(
                 "detail": "Email and phone number detected.",
             }
         )
-    elif has_email or has_phone:
+    elif contact["has_email"] or contact["has_phone"]:
         results.append(
             {
                 "check": "Contact information complete",
