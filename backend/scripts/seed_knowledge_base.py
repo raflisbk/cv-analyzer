@@ -23,7 +23,7 @@ from app.models.knowledge_chunk import KnowledgeChunk
 from app.services.rag.chunker import chunk_text
 from app.services.rag.embeddings import get_rag_embedding
 
-DATA_FILE = Path(__file__).parent.parent / "data" / "cv_best_practices.md"
+DATA_FILE = Path(__file__).parent.parent / "data" / "cv_best_practices.txt"
 SOURCE = "cv_best_practices"
 
 

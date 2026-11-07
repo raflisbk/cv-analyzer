@@ -374,7 +374,7 @@ docs/site/
 .agents/
 .claude/
 
-# Local private AI instructions (keep CLAUDE.md tracked)
+# Local private AI instructions
 CLAUDE.local.md
 
 # GitHub Copilot
@@ -428,3 +428,9 @@ mockup/
 # Test fixtures (PDFs, sample files)
 tests/fixtures/*.pdf
 dev-tmux.sh
+
+# Markdown is local-only except the root README
+*.md
+!/README.md
+.impeccable/
+docs/
