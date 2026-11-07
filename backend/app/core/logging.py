@@ -69,7 +69,7 @@ def setup_logging():
         logging.getLogger(name).handlers = [InterceptHandler()]
         logging.getLogger(name).propagate = False
 
-    for name in ("httpx", "httpcore", "huggingface_hub", "urllib3"):
+    for name in ("httpx", "httpcore", "urllib3"):
         logging.getLogger(name).setLevel(logging.WARNING)
 
     return logger
