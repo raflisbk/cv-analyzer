@@ -42,7 +42,6 @@ jobs:
 
       - name: Backend tests (Pytest)
         env:
-          CV_ANALYZER_HF_API_KEY: ci-dummy-key
           CV_ANALYZER_DB_HOST: localhost
           CV_ANALYZER_DB_NAME: cv-analyzer
           CV_ANALYZER_DB_USER: postgres
