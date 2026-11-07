@@ -39,6 +39,11 @@
     "prefer-const": "error",
     "no-var": "error",
     "no-unused-expressions": "warn",
+    "max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }],
+    "max-lines-per-function": [
+      "warn",
+      { "max": 80, "skipBlankLines": true, "skipComments": true, "IIFEs": true }
+    ],
     "eqeqeq": ["error", "always"],
     "curly": ["error", "all"],
     "quotes": "off",
@@ -63,6 +68,13 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parser": "@typescript-eslint/parser"
+    },
+    {
+      "files": ["components/ui/**", "__tests__/**", "e2e/**"],
+      "rules": {
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
     }
   ]
 }
