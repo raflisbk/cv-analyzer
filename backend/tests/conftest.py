@@ -1,27 +1,11 @@
 """
 Shared pytest fixtures for Phase 2 tests.
-All fixtures use mocks/fakes — no real spaCy model, no real OpenAI calls, no DB.
+All fixtures use mocks/fakes — no real LLM calls, no DB.
 """
 
-import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-
-# ---------------------------------------------------------------------------
-# Stub out optional heavy dependencies that may not be installed in the
-# test runner environment (e.g. base conda env without spacy).
-# These stubs must be injected into sys.modules BEFORE any app module is
-# imported, so they go at module scope here in conftest.py.
-# ---------------------------------------------------------------------------
-for _mod in ("spacy",):
-    if _mod not in sys.modules:
-        sys.modules[_mod] = MagicMock()  # type: ignore[assignment]
-
-# spacy.load must return a callable mock that behaves like an nlp object
-if hasattr(sys.modules["spacy"], "load"):
-    sys.modules["spacy"].load = MagicMock(return_value=MagicMock())
-
 
 SAMPLE_CV_TEXT = """
 John Doe
@@ -57,19 +41,6 @@ def sample_cv_text() -> str:
 
 
 @pytest.fixture
-def mock_nlp():
-    """Mock spaCy nlp object — avoids loading 750MB model in unit tests"""
-    with patch("app.services.nlp.model.get_nlp") as mock_get_nlp:
-        mock_doc = MagicMock()
-        mock_doc.ents = []
-        mock_doc.noun_chunks = []
-        mock_nlp_instance = MagicMock()
-        mock_nlp_instance.return_value = mock_doc
-        mock_get_nlp.return_value = mock_nlp_instance
-        yield mock_get_nlp
-
-
-@pytest.fixture
 def mock_openai_embedding():
     """Mock OpenAI embeddings — returns deterministic fake embedding"""
     fake_embedding = [0.1] * 1536  # text-embedding-3-small dimension
@@ -80,7 +51,7 @@ def mock_openai_embedding():
 
 
 def pytest_sessionfinish(session, exitstatus: int) -> None:
-    # Native libraries (spaCy stubs) can trigger SIGSEGV during
+    # Native libraries can trigger SIGSEGV during
     # Python's GC cleanup on Linux. All tests have already been reported at
     # this point, so skipping cleanup is safe for our CI.
     if exitstatus == 0:

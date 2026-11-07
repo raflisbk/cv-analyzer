@@ -32,9 +32,6 @@ COPY pyproject.toml .
 RUN mkdir -p app && touch app/__init__.py
 RUN --mount=type=cache,target=/root/.cache/uv uv pip install --system -e ".[test]"
 
-# Download spaCy English model (cached after first build)
-RUN python -m spacy download en_core_web_sm
-
 # Copy application code (overwrites the stub app/__init__.py)
 COPY . .
 

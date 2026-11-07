@@ -48,7 +48,7 @@ Cloudflare R2 Storage
   ▼
 Celery Task Chain (5 stages)
   ├── process_document_task   → text extraction (PyMuPDF / python-docx / OCR)
-  ├── nlp_analysis_task       → spaCy NLP (sections, entities, skills, role detect, archetype)
+  ├── nlp_analysis_task       → rule-based sections + LLM profile (entities, skills, role) + LLM archetype
   ├── scoring_task            → LLM ensemble scoring + deterministic metrics + ATS
   ├── grammar_check_task      → LLM grammar/spelling check
   └── llm_suggest_task        → suggestion cards + writes cv_document → COMPLETE
@@ -77,7 +77,7 @@ Frontend: /results/{job_id} + /workspace-v2/{job_id}
 | Database | PostgreSQL 16 + pgvector (RAG embeddings) |
 | Task Queue | Celery 5.4 + Redis 5.0 |
 | Storage | Cloudflare R2 (boto3 presigned URLs) |
-| NLP | spaCy 3.7 (section detection, skill extraction, entity recognition) |
+| NLP | Rule-based section detection; LLM extraction of skills, entities and role |
 | LLM / Embeddings | KoboiLLM (OpenAI-compatible API, `gpt-5.1` + `text-embedding-3-large`) |
 | OCR | Granite Vision 4.1 via Replicate |
 | PDF Export | WeasyPrint 60.0 + Jinja2 |
@@ -147,20 +147,17 @@ conda activate sbk-cv-analyzer
 # 2. Install dependencies (pyproject.toml is source of truth)
 pip install -e backend
 
-# 3. Install spaCy model
-python -m spacy download en_core_web_lg
-
-# 4. Configure environment
+# 3. Configure environment
 cp backend/.env.example backend/.env
 # Edit backend/.env with your credentials
 
-# 5. Apply database migrations
+# 4. Apply database migrations
 cd backend && alembic upgrade head
 
-# 6. Start backend (Windows: use run.py, not uvicorn directly)
+# 5. Start backend (Windows: use run.py, not uvicorn directly)
 python run.py
 
-# 7. Start Celery worker (separate terminal)
+# 6. Start Celery worker (separate terminal)
 conda activate sbk-cv-analyzer
 cd backend
 celery -A app.tasks.celery_app worker --loglevel=info --pool=solo
