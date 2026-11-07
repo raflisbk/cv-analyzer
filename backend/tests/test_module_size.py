@@ -14,7 +14,6 @@ OVERSIZED_BASELINE = {
     "services/llm/koboi_llm_service.py": 338,
     "services/scoring/anchors.py": 359,
     "services/nlp/section_detector.py": 333,
-    "services/llm/hf_llm_service.py": 306,
     "services/scoring/role_anchors.py": 301,
 }
 
