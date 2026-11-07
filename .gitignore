@@ -434,3 +434,5 @@ dev-tmux.sh
 !/README.md
 .impeccable/
 docs/
+
+.orchestra/
