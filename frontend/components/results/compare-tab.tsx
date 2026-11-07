@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeftRight, ExternalLink, X } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, ExternalLink, X } from "lucide-react";
 import { SSEConnection } from "@/lib/sse";
 import type { ComparisonResult, JobRole, SkillGapItem } from "@/lib/types";
 
@@ -209,6 +209,7 @@ export function CompareTab({
           </p>
         </div>
         <button
+          type="button"
           className="rounded-full border border-white/10 text-[#F5F2D8]/70 text-sm font-bold px-6 py-2.5 hover:bg-white/5 transition-colors"
           onClick={() => {
             setError(null);
@@ -247,11 +248,15 @@ export function CompareTab({
       <div className="border-y border-dashed border-white/15 bg-[#141414] p-6 md:p-8">
         {jobRoles.length > 0 && (
           <div className="mb-5">
-            <label className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block mb-2">
+            <label
+              htmlFor="comparison-role"
+              className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block mb-2"
+            >
               Or pick a saved job
             </label>
             <div className="relative">
               <select
+                id="comparison-role"
                 value={selectedRoleId}
                 onChange={(e) => setSelectedRoleId(e.target.value)}
                 className="w-full bg-[#141414] border border-white/10 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30 appearance-none cursor-pointer"
@@ -268,20 +273,28 @@ export function CompareTab({
         )}
 
         <div className="mb-4">
-          <label className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block mb-2">
+          <label
+            htmlFor="job-description"
+            className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block mb-2"
+          >
             Job Description
           </label>
           <textarea
+            id="job-description"
             value={jdText}
             onChange={(e) => setJdText(e.target.value)}
             placeholder="Paste the job description here…"
+            maxLength={12000}
+            aria-describedby="job-description-hint"
             className="w-full min-h-[160px] resize-y bg-[#141414] border border-white/10 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] placeholder-[#F5F2D8]/30 focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30 focus:border-[#CAFF43]/40 transition-colors"
             aria-label="Job Description"
           />
           <p
+            id="job-description-hint"
+            aria-live="polite"
             className={`text-xs mt-1.5 text-right ${jdText.trim().length >= 50 ? "text-[#CAFF43]/60" : "text-[#F5F2D8]/30"}`}
           >
-            {jdText.length} chars{" "}
+            {jdText.length}/12000 chars{" "}
             {jdText.trim().length < 50
               ? `(${50 - jdText.trim().length} more to enable)`
               : "[ok]"}
@@ -289,11 +302,19 @@ export function CompareTab({
         </div>
 
         <button
+          type="button"
           onClick={handleCompare}
           disabled={!canCompare}
           className="w-full rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold py-3.5 hover:bg-[#CAFF43]/85 active:scale-[0.99] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? "Starting comparison…" : "Compare CV →"}
+          {isSubmitting ? (
+            "Starting comparison…"
+          ) : (
+            <span className="inline-flex items-center justify-center gap-1.5">
+              Compare CV
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </span>
+          )}
         </button>
       </div>
 

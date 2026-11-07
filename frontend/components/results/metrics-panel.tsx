@@ -40,14 +40,6 @@ function MetricBar({
   );
 }
 
-function SignalDot({ pass }: { pass: boolean }) {
-  return (
-    <span
-      className={`inline-block w-2 h-2 rounded-full flex-shrink-0 ${pass ? "bg-[#CAFF43]" : "bg-[#FF4FCB]"}`}
-    />
-  );
-}
-
 interface MetricsPanelProps {
   metrics: DeterministicMetrics;
   jdKeywordGap?: JdKeywordGap | null;

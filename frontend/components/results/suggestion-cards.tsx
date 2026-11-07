@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -65,7 +64,9 @@ interface SuggestionsEmptyProps {
 
 function SuggestionsEmpty({ variant }: SuggestionsEmptyProps) {
   const heading =
-    variant === "empty" ? "No suggestions available" : "AI suggestions unavailable";
+    variant === "empty"
+      ? "No suggestions available"
+      : "AI suggestions unavailable";
   const body =
     variant === "empty"
       ? "Your CV looks strong — no specific improvement suggestions were identified."
@@ -101,7 +102,10 @@ export function SuggestionCards({ cards, isLoading }: SuggestionCardsProps) {
     return <SuggestionsEmpty variant="empty" />;
   }
 
-  const totalSuggestions = cards.reduce((sum, card) => sum + card.suggestions.length, 0);
+  const totalSuggestions = cards.reduce(
+    (sum, card) => sum + card.suggestions.length,
+    0,
+  );
   const totalSections = cards.length;
   const suggestionText = totalSuggestions === 1 ? "suggestion" : "suggestions";
   const sectionText = totalSections === 1 ? "section" : "sections";
@@ -109,7 +113,9 @@ export function SuggestionCards({ cards, isLoading }: SuggestionCardsProps) {
   return (
     <section aria-label="AI Improvement Suggestions" className="mt-8 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-display font-extrabold text-lg text-[#141414]">AI Improvement Suggestions</h2>
+        <h2 className="font-display font-extrabold text-lg text-[#141414]">
+          AI Improvement Suggestions
+        </h2>
         <p className="text-xs font-bold text-[#141414]/40 uppercase tracking-wider">
           {totalSuggestions} {suggestionText} · {totalSections} {sectionText}
         </p>

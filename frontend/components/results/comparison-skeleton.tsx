@@ -1,10 +1,12 @@
-
-
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function ComparisonSkeleton() {
   return (
-    <div className="space-y-6" aria-label="Loading comparison results…" role="status">
+    <div
+      className="space-y-6"
+      aria-label="Loading comparison results…"
+      role="status"
+    >
       <div className="border border-border rounded-lg p-6">
         <Skeleton className="h-8 w-24" />
         <Skeleton className="h-4 w-32 mt-1" />

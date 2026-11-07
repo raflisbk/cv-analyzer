@@ -9,7 +9,10 @@ interface SuggestionBeforeAfterProps {
   id: string;
 }
 
-export function SuggestionBeforeAfter({ beforeText, id }: SuggestionBeforeAfterProps) {
+export function SuggestionBeforeAfter({
+  beforeText,
+  id,
+}: SuggestionBeforeAfterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const contentId = `suggestion-before-${id}`;
   const triggerId = `suggestion-before-trigger-${id}`;
@@ -26,10 +29,11 @@ export function SuggestionBeforeAfter({ beforeText, id }: SuggestionBeforeAfterP
         aria-controls={contentId}
       >
         {isOpen ? "Hide original context" : "Show original context"}
-        {isOpen
-          ? <ChevronUp className="h-3 w-3 ml-1" />
-          : <ChevronDown className="h-3 w-3 ml-1" />
-        }
+        {isOpen ? (
+          <ChevronUp className="h-3 w-3 ml-1" />
+        ) : (
+          <ChevronDown className="h-3 w-3 ml-1" />
+        )}
       </Button>
 
       <div
@@ -41,7 +45,9 @@ export function SuggestionBeforeAfter({ beforeText, id }: SuggestionBeforeAfterP
         }`}
       >
         <div className="bg-muted rounded-md p-4">
-          <p className="text-sm font-medium text-muted-foreground mb-2">Original:</p>
+          <p className="text-sm font-medium text-muted-foreground mb-2">
+            Original:
+          </p>
           <p className="text-sm font-medium text-foreground">{beforeText}</p>
         </div>
       </div>

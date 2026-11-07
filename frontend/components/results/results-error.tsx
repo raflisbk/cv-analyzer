@@ -67,6 +67,7 @@ export function ResultsError({ type, retryAfter }: ResultsErrorProps) {
       {content.action && (
         <div className="flex items-center justify-center gap-3 mt-6">
           <button
+            type="button"
             onClick={handleAction}
             className="rounded-full bg-[#F5F2D8] text-[#141414] font-extrabold text-sm
                        px-6 py-3 hover:bg-white transition-colors duration-150"
@@ -74,6 +75,7 @@ export function ResultsError({ type, retryAfter }: ResultsErrorProps) {
             {content.action}
           </button>
           <button
+            type="button"
             onClick={handleAction}
             aria-label={content.action}
             className="w-12 h-12 rounded-full bg-[#CAFF43] flex items-center justify-center
