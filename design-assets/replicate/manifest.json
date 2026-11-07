@@ -18,7 +18,22 @@
     "3d/pencil.webp": "v3 yellow, flux + background removal + hue remap",
     "3d/pdf-export.webp": "v3 yellow, flux + background removal + hue remap",
     "logo/*.svg": "hand-built from Bricolage Grotesque 800 outlines, not generated",
-    "3d/cv-hero.webp": "finale object (single centered overlay on the last section); flux v3 + cutout + region-masked recolour"
+    "3d/cv-hero.webp": "finale object (single centered overlay on the last section); flux v3 + cutout + region-masked recolour",
+    "3d/puzzle-piece.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/robot.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/magic-wand.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/target.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/podium.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/stopwatch.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/padlock.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/cubes.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/question-mark.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/speech-bubbles.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/rocket.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/paper-plane.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/star.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/gauge.webp": "variety set: flux v3 + cutout + yellow hue remap",
+    "3d/building-blocks.webp": "variety set: flux v3 + cutout + yellow hue remap"
   },
   "prompts": {
     "style_v2": "glossy 3D clay render in the style of a toy, extremely vivid saturated flat colors, only pure red-orange #f42902, bright neon mint green #83fd80 and clean white #fdfdff, plain flat white background, soft contact shadow, absolutely no text, no letters, no words, centered, chunky rounded shapes",
@@ -34,7 +49,23 @@
     "scanner": "a chunky white paper sheet passing through a red-orange scanner bar with a mint green glowing scan line across it, + style_v2",
     "pencil": "a chunky red-orange pencil with a white tip drawing a wavy neon mint line, with two small white sparkle stars, + style_v2",
     "pdf-export": "a chunky white document with a folded corner, a red-orange corner tab, and a thick neon mint downward arrow badge at the bottom, + style_v2",
-    "cv-hero": "a single 3D paper CV document with a folded top-right corner, white sheet, a red-orange header band, a bright electric yellow rounded check badge overlapping the bottom edge, three gray text bars, glossy toy plastic look, + style (solid flat medium blue-gray background #8fa3b8 so the white sheet survives background removal)"
+    "cv-hero": "a single 3D paper CV document with a folded top-right corner, white sheet, a red-orange header band, a bright electric yellow rounded check badge overlapping the bottom edge, three gray text bars, glossy toy plastic look, + style (solid flat medium blue-gray background #8fa3b8 so the white sheet survives background removal)",
+    "puzzle-piece": "a chunky 3D jigsaw puzzle piece in red-orange with a missing slot, next to a loose electric yellow puzzle piece, + style_v3 (blue-gray background variant)",
+    "robot": "a cute chunky 3D white robot head with a red-orange antenna ball, round yellow glowing eyes and a small yellow check mark on its forehead, + style_v3 (blue-gray background variant)",
+    "magic-wand": "a chunky 3D magic wand in red-orange with a white tip and yellow sparkle stars around it, + style_v3 (blue-gray background variant)",
+    "target": "a chunky 3D bullseye target with red-orange and white rings and a yellow arrow stuck in the center, + style_v3 (blue-gray background variant)",
+    "podium": "a chunky 3D winners podium with three steps in red-orange, white and electric yellow with a small white star above the tallest step, + style_v3 (blue-gray background variant)",
+    "stopwatch": "a chunky 3D red-orange stopwatch with a white face, a yellow button on top and simple hands, no numbers, + style_v3 (blue-gray background variant)",
+    "padlock": "a chunky 3D white padlock with a red-orange shackle and an electric yellow keyhole, + style_v3 (blue-gray background variant)",
+    "cubes": "a small pyramid of four chunky rounded 3D cubes in red-orange, white, yellow and red-orange, + style_v3 (blue-gray background variant)",
+    "question-mark": "a giant chunky 3D question mark in red-orange with an electric yellow dot, + style_v3 (blue-gray background variant)",
+    "speech-bubbles": "two chunky overlapping 3D speech bubbles, one white and one red-orange, with three yellow dots inside the white one, + style_v3 (blue-gray background variant)",
+    "rocket": "a chunky 3D toy rocket in white and red-orange with a yellow flame and a round window, tilted upward, + style_v3 (blue-gray background variant)",
+    "paper-plane": "a chunky 3D folded paper airplane in white with a red-orange wing tip and a yellow fold line, + style_v3 (blue-gray background variant)",
+    "star": "a chunky 3D five point star in electric yellow with soft rounded edges, + style_v3 (blue-gray background variant)",
+    "gauge": "a chunky 3D semicircular gauge dial with red-orange, white and yellow segments and a red-orange needle pointing to the high end, + style_v3 (blue-gray background variant)",
+    "building-blocks": "a tower of three chunky 3D building blocks in red-orange, white and yellow with a small blank paper sheet on top, + style_v3 (blue-gray background variant)",
+    "style_v3": "glossy 3D clay render in the style of a toy, extremely vivid saturated flat colors, only pure red-orange #f42902, electric acid punk yellow #f2ff00 and clean white #fdfdff, no green anywhere, solid flat medium blue-gray background #8fa3b8, soft contact shadow, absolutely no text, no letters, no numbers, no words, centered, chunky rounded shapes"
   },
   "known_issues": [
     "Yellow accents are hue-remapped from amber renders; if regenerating, apply the same remap or prompt a green-free palette and check highlights",
@@ -43,5 +74,6 @@
   ],
   "note_process": "cloud-upload, scanner, pencil and pdf-export were generated 2026-11-08 for the process section; background removal ran on the base64 of the flux output",
   "palette_change": "2026-11-08: owner asked for a real punk yellow; accent changed from #83fd80 (mint) to #f2ff00. Objects regenerated with flux-1.1-pro using \"electric acid punk yellow #f2ff00 ... no green anywhere\"; the model rendered amber, so the yellow regions were remapped to #f2ff00 by a hue remap (hue 32-66 deg -> ~63.5, saturation and value lifted). The CV sheet reuses the v2 render (hue remap of the green badge) because the white sheet vanished in the new background removal.",
-  "note_cv_hero": "Header band remapped to #f42902 only above 30% of the object height, seal remapped to punk yellow only below 62%, so shading elsewhere is untouched. Options h1-h3 are in rejected/."
+  "note_cv_hero": "Header band remapped to #f42902 only above 30% of the object height, seal remapped to punk yellow only below 62%, so shading elsewhere is untouched. Options h1-h3 are in rejected/.",
+  "note_variety": "15 extra objects generated 2026-11-08 for per-section variety. sparkle and pin were rejected (ragged yellow after the hue remap, splashy shadow)."
 }
