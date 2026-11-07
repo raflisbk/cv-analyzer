@@ -6,8 +6,6 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 # System dependencies
 # - weasyprint: pango, cairo, gdk-pixbuf, ffi, shared-mime-info
 # - python-magic: libmagic1
-# - pdf2image / poppler: poppler-utils
-# - opencv headless: libgl1, libglib2.0-0
 # - general build: gcc, g++
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpango-1.0-0 \
@@ -19,9 +17,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     shared-mime-info \
     fonts-noto-core \
     libmagic1 \
-    poppler-utils \
-    libgl1 \
-    libglib2.0-0 \
     libpq5 \
     gcc \
     g++ \
@@ -35,7 +30,7 @@ WORKDIR /app
 # stub so uv can resolve the package, then overwrite with real code below.
 COPY pyproject.toml .
 RUN mkdir -p app && touch app/__init__.py
-RUN uv pip install --system --no-cache -e ".[test]"
+RUN --mount=type=cache,target=/root/.cache/uv uv pip install --system -e ".[test]"
 
 # Download spaCy English model (cached after first build)
 RUN python -m spacy download en_core_web_sm

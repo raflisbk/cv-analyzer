@@ -22,7 +22,6 @@ except ImportError:
     LANGDETECT_AVAILABLE = False
 
 from app.core.logging import structured_logger as logger
-from app.services.ocr import EASYOCR_AVAILABLE, perform_ocr
 from app.services.validation import validate_extraction_quality
 from app.services.vision import (
     VISION_AVAILABLE,
@@ -112,41 +111,6 @@ class DocumentParser:
                 logger.warning("vision_insufficient", text_length=len(text))
             except Exception as e:
                 logger.error("vision_fallback_failed", error=str(e))
-
-        if EASYOCR_AVAILABLE:
-            try:
-                logger.info("ocr_fallback_starting")
-                text, confidence = perform_ocr(content)
-
-                if len(text.strip()) >= 50:
-                    quality_score, _ = validate_extraction_quality(text)
-                    metadata["extraction_method"] = "ocr"
-                    metadata["quality_score"] = quality_score
-                    metadata["ocr_confidence"] = confidence
-
-                    if quality_score >= 0.4:
-                        if LANGDETECT_AVAILABLE:
-                            try:
-                                metadata["detected_language"] = langdetect.detect(text)
-                            except Exception:
-                                logger.warning("langdetect_failed")
-                                metadata["detected_language"] = "unknown"
-                        else:
-                            metadata["detected_language"] = "unknown"
-
-                        return text, metadata
-
-                logger.error(
-                    "ocr_insufficient",
-                    text_length=len(text),
-                    confidence=confidence,
-                    exc_info=True,
-                )
-
-            except Exception as e:
-                logger.error("ocr_failed", error=str(e), exc_info=True)
-        else:
-            logger.warning("ocr_fallback_skipped")
 
         msg = (
             "Failed to extract text from PDF after trying regular extraction and OCR. "

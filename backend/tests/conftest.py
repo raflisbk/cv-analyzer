@@ -10,11 +10,11 @@ import pytest
 
 # ---------------------------------------------------------------------------
 # Stub out optional heavy dependencies that may not be installed in the
-# test runner environment (e.g. base conda env without spacy/easyocr).
+# test runner environment (e.g. base conda env without spacy).
 # These stubs must be injected into sys.modules BEFORE any app module is
 # imported, so they go at module scope here in conftest.py.
 # ---------------------------------------------------------------------------
-for _mod in ("spacy", "easyocr", "cv2", "pdf2image"):
+for _mod in ("spacy",):
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()  # type: ignore[assignment]
 
@@ -80,7 +80,7 @@ def mock_openai_embedding():
 
 
 def pytest_sessionfinish(session, exitstatus: int) -> None:
-    # Native libraries (easyocr/cv2/spaCy stubs) can trigger SIGSEGV during
+    # Native libraries (spaCy stubs) can trigger SIGSEGV during
     # Python's GC cleanup on Linux. All tests have already been reported at
     # this point, so skipping cleanup is safe for our CI.
     if exitstatus == 0:

@@ -17,7 +17,7 @@
 | **Grammar Check** | LLM-based grammar/spelling checker with issue count badge |
 | **Workspace Editor** | Tiptap v3 rich-text editor + PDF viewer + Y.js CRDT (real-time sync) |
 | **AI Chat** | Context-aware chat about your CV scores and suggestions (SSE streaming) |
-| **OCR Support** | Granite Vision 4.1 → EasyOCR fallback for scanned PDFs and images |
+| **OCR Support** | Granite Vision 4.1 (Replicate) for scanned PDFs and images |
 | **Auth** | Google OAuth + JWT; anonymous uploads supported |
 | **Export** | PDF export via WeasyPrint |
 | **ATS Check** | 15+ ATS compatibility rules (file format, keywords, formatting) |
@@ -79,7 +79,7 @@ Frontend: /results/{job_id} + /workspace-v2/{job_id}
 | Storage | Cloudflare R2 (boto3 presigned URLs) |
 | NLP | spaCy 3.7 (section detection, skill extraction, entity recognition) |
 | LLM / Embeddings | KoboiLLM (OpenAI-compatible API, `gpt-5.1` + `text-embedding-3-large`) |
-| OCR | Granite Vision 4.1 via Replicate → EasyOCR fallback |
+| OCR | Granite Vision 4.1 via Replicate |
 | PDF Export | WeasyPrint 60.0 + Jinja2 |
 | Auth | Google OAuth 2.0 + JWT (python-jose) |
 | CRDT | pycrdt-websocket (Y.js server) |
