@@ -1,7 +1,9 @@
 import re
-from typing import Literal, Protocol
+from typing import Literal, Protocol, Self
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
+
+_BRACKET_PLACEHOLDER = re.compile(r"\[[^\]\n]{1,80}\]")
 
 
 class SuggestionItemOutput(BaseModel):
@@ -12,6 +14,16 @@ class SuggestionItemOutput(BaseModel):
     type: Literal["action_verb", "impact_metric", "missing_section"] = "action_verb"
     original_text: str | None = None
     after_text: str | None = None
+
+    @model_validator(mode="after")
+    def drop_invented_placeholders(self) -> Self:
+        if not self.after_text:
+            return self
+        original = self.original_text or ""
+        placeholders = _BRACKET_PLACEHOLDER.findall(self.after_text)
+        if any(placeholder not in original for placeholder in placeholders):
+            self.after_text = None
+        return self
 
     @field_validator("priority", mode="before")
     @classmethod

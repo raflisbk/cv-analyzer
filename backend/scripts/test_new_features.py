@@ -17,7 +17,8 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 print("\n" + "=" * 60)
 print("TEST 1: Anti-cliché rules in suggestions system prompt")
 print("=" * 60)
-from app.services.llm.koboi_llm_service import _build_system_prompt, _ANTI_CLICHE_RULES
+from app.services.llm.koboi_llm_service import _build_system_prompt
+from app.services.llm.suggestion_prompts import ANTI_CLICHE_RULES as _ANTI_CLICHE_RULES
 
 prompt = _build_system_prompt("no context")
 assert "passionate about" in prompt, "Anti-cliché rules missing from prompt"

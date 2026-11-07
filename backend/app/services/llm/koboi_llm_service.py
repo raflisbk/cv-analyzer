@@ -11,61 +11,12 @@ from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
+from app.services.llm.suggestion_prompts import (
+    ANTI_CLICHE_RULES,
+    SYSTEM_PROMPT_TEMPLATE,
+    USER_PROMPT_TEMPLATE,
+)
 from app.services.llm.params import reasoning_params
-
-_ANTI_CLICHE_RULES = """
-Anti-cliché rules — NEVER suggest or use these overused phrases:
-"passionate about", "leveraged", "spearheaded", "synergies", "robust", "seamless",
-"cutting-edge", "utilized", "results-driven", "team player", "go-getter",
-"detail-oriented", "proactive", "dynamic", "impactful", "innovative", "hardworking",
-"driven", "self-starter", "fast-paced", "disruptive", "best-in-class", "strategic",
-"holistic", "value-add", "paradigm", "diverse background", "thought leader".
-Instead: suggest specific, concrete alternatives — real actions with metrics.
-"""
-
-_SYSTEM_PROMPT_TEMPLATE = """You are an expert CV coach and recruitment specialist.
-Analyze the provided CV and generate specific, actionable improvement suggestions.
-
-{rag_context}
-
-{anti_cliche}
-
-Respond with ONLY valid JSON matching this exact schema:
-{{
-  "suggestions": [
-    {{
-      "section": "<section name>",
-      "suggestions": [
-        {{
-          "priority": "<high_impact|quick_win>",
-          "text": "<specific actionable suggestion>",
-          "explanation": "<short reasoning why this is suggested>",
-          "type": "<action_verb|impact_metric|missing_section>",
-          "original_text": "<EXACT text from the CV being improved, copy verbatim>",
-          "after_text": "<rewritten version of original_text that implements this suggestion>"
-        }}
-      ]
-    }}
-  ]
-}}
-
-Rules:
-- "high_impact" = significant improvement requiring effort
-- "quick_win" = easy to fix, immediate improvement
-- "action_verb" = replace weak verbs (e.g., managed → led)
-- "impact_metric" = add quantifiable results (e.g., increased sales by 30%)
-- "missing_section" = add absent but valuable section
-- For each suggestion, you MUST provide "original_text": the EXACT text from the user's CV that this suggestion is improving (copy it verbatim)
-- For each suggestion, you MUST provide "after_text": a concrete rewritten version of "original_text" that directly implements the suggestion
-- Generate 2-4 suggestions per section, focusing on sections with most room for improvement
-- Be specific: reference actual content from the CV text"""
-
-_USER_PROMPT_TEMPLATE = """CV Text:
-{cv_text}
-
-Detected Sections: {sections_json}
-
-Generate improvement suggestions for this CV."""
 
 _COMPARISON_SYSTEM_PROMPT = (
     "You are an expert CV/resume evaluator. "
@@ -93,14 +44,14 @@ def _build_system_prompt(rag_context: str) -> str:
     context_text = (
         "\n\n".join(rag_context) if isinstance(rag_context, list) else rag_context
     )
-    return _SYSTEM_PROMPT_TEMPLATE.format(
+    return SYSTEM_PROMPT_TEMPLATE.format(
         rag_context=context_text or "No additional context available.",
-        anti_cliche=_ANTI_CLICHE_RULES,
+        anti_cliche=ANTI_CLICHE_RULES,
     )
 
 
 def _build_user_prompt(cv_text: str, sections: list[dict]) -> str:
-    return _USER_PROMPT_TEMPLATE.format(
+    return USER_PROMPT_TEMPLATE.format(
         cv_text=cv_text[:3500],
         sections_json=json.dumps(sections, indent=2),
     )
