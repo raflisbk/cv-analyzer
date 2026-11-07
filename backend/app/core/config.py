@@ -27,8 +27,6 @@ class Settings(BaseSettings):
     CV_ANALYZER_MAX_FILE_SIZE: int = 5 * 1024 * 1024
     CV_ANALYZER_UPLOAD_RATE_LIMIT: str = "5/hour"
 
-    CV_ANALYZER_HF_API_KEY: str = ""
-
     CV_ANALYZER_ANALYSIS_RATE_LIMIT: str = "5/hour"
 
     CV_ANALYZER_KOBOI_API_KEY: str = ""
