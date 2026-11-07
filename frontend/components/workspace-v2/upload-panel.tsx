@@ -10,7 +10,6 @@ import { ProcessingStages } from "@/components/upload/processing-stages";
 import { useUpload } from "@/hooks/use-upload";
 import { useJobStream } from "@/hooks/use-job-stream";
 import { getWorkspaceRoute } from "@/lib/job-routes";
-import { SUPPORTED_ROLES } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type UploadState = "idle" | "preview" | "processing" | "complete" | "failed";

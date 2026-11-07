@@ -56,15 +56,25 @@ export default function PdfViewerInner({
 
   const setSuggestionStatus = useWorkspaceV2Store((s) => s.setSuggestionStatus);
 
-  const handleApply = useCallback((id: string) => {
-    setSuggestionStatus(id, "applied");
-  }, [setSuggestionStatus]);
+  const handleApply = useCallback(
+    (id: string) => {
+      setSuggestionStatus(id, "applied");
+    },
+    [setSuggestionStatus],
+  );
 
-  const handleDismiss = useCallback((id: string) => {
-    setSuggestionStatus(id, "dismissed");
-  }, [setSuggestionStatus]);
+  const handleDismiss = useCallback(
+    (id: string) => {
+      setSuggestionStatus(id, "dismissed");
+    },
+    [setSuggestionStatus],
+  );
 
-  const { state: inlineEditState, handleSelectionChange, closePopover } = useInlineEdit(jobId);
+  const {
+    state: inlineEditState,
+    handleSelectionChange,
+    closePopover,
+  } = useInlineEdit(jobId);
 
   const cvDocument = useWorkspaceV2Store((s) => s.cvDocument);
   const viewMode = useWorkspaceV2Store((s) => s.viewMode);
@@ -73,7 +83,10 @@ export default function PdfViewerInner({
     return (
       <div
         className="flex items-center justify-center bg-[rgba(17,17,17,0.04)]"
-        style={{ width: containerWidth, height: Math.round(containerWidth * 1.414) }}
+        style={{
+          width: containerWidth,
+          height: Math.round(containerWidth * 1.414),
+        }}
         role="alert"
       >
         <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
@@ -87,12 +100,12 @@ export default function PdfViewerInner({
     <div className="relative" onMouseUp={handleSelectionChange}>
       <Document
         file={url}
-          onLoadSuccess={({ numPages: n }: { numPages: number }) => {
-            setNumPages(n);
-            if (onDocumentLoadSuccess) {
-              onDocumentLoadSuccess(n);
-            }
-          }}
+        onLoadSuccess={({ numPages: n }: { numPages: number }) => {
+          setNumPages(n);
+          if (onDocumentLoadSuccess) {
+            onDocumentLoadSuccess(n);
+          }
+        }}
         onLoadError={(err) => setLoadError(err.message)}
         loading={<PageLoadingSkeleton width={containerWidth} />}
         error={null}
@@ -107,7 +120,8 @@ export default function PdfViewerInner({
               renderAnnotationLayer={false}
               loading={<PageLoadingSkeleton width={containerWidth} />}
               onLoadSuccess={(page: unknown) => {
-                const pw = (page as { originalWidth?: number }).originalWidth ?? 595.5;
+                const pw =
+                  (page as { originalWidth?: number }).originalWidth ?? 595.5;
                 setPageWidth(pw);
                 if (onPageLoadSuccess) {
                   onPageLoadSuccess(page);
@@ -130,8 +144,10 @@ export default function PdfViewerInner({
                 const p = patch as {
                   rewrittenText: string;
                   rectPercent?: {
-                    left: number; top: number;
-                    width: number; height: number;
+                    left: number;
+                    top: number;
+                    width: number;
+                    height: number;
                   };
                 };
                 if (!p.rectPercent) {
@@ -180,7 +196,7 @@ export default function PdfViewerInner({
             jobId={jobId}
             onClose={closePopover}
           />,
-          document.body
+          document.body,
         )}
     </div>
   );

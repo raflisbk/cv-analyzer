@@ -13,7 +13,9 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedText, setSelectedText] = useState("");
-  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(
+    null,
+  );
 
   const handleSelectionChange = useCallback(() => {
     const selection = window.getSelection();
@@ -36,7 +38,10 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
     const rect = range.getBoundingClientRect();
 
     const editorElement = document.querySelector(".ProseMirror");
-    if (!editorElement || !editorElement.contains(range.commonAncestorContainer)) {
+    if (
+      !editorElement ||
+      !editorElement.contains(range.commonAncestorContainer)
+    ) {
       setIsVisible(false);
       setSelectedText("");
       setPosition(null);
@@ -69,7 +74,8 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
         credentials: "include",
         body: JSON.stringify({
           selectedText,
-          prompt: "Improve this text for a CV. Make it more impactful and professional.",
+          prompt:
+            "Improve this text for a CV. Make it more impactful and professional.",
           cvContext: null,
         }),
       });
@@ -90,14 +96,18 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest(".inline-ai-popup") && !target.closest(".ProseMirror")) {
+      if (
+        !target.closest(".inline-ai-popup") &&
+        !target.closest(".ProseMirror")
+      ) {
         setIsVisible(false);
       }
     };
 
     if (isVisible) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [isVisible]);
 
@@ -111,7 +121,8 @@ export function InlineAIPopup({ onApplyImprovement }: InlineAIPopupProps) {
       style={{
         background: "#141414",
         border: "1px solid rgba(255,255,255,0.10)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.05) inset",
+        boxShadow:
+          "0 4px 20px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.05) inset",
         left: `${position.x}px`,
         top: `${position.y - 50}px`,
         transform: "translateX(-50%)",

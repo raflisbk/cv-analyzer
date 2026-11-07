@@ -1,4 +1,3 @@
-
 import { AlertTriangle } from "lucide-react";
 
 type ErrorType = "no-file" | "network" | "generic";
@@ -10,8 +9,8 @@ interface PdfViewerErrorProps {
 
 const ERROR_MESSAGES: Record<ErrorType, string> = {
   "no-file": "PDF tidak tersedia. File mungkin belum diproses.",
-  "network": "Dokumen tidak dapat dimuat. Periksa koneksi internet.",
-  "generic": "Terjadi kesalahan saat memuat dokumen. Coba muat ulang halaman.",
+  network: "Dokumen tidak dapat dimuat. Periksa koneksi internet.",
+  generic: "Terjadi kesalahan saat memuat dokumen. Coba muat ulang halaman.",
 };
 
 export function PdfViewerError({

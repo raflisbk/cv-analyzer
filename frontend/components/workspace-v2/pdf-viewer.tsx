@@ -3,13 +3,10 @@ import { PdfViewerSkeleton } from "./pdf-viewer-skeleton";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import type { SuggestionCard } from "@/lib/types";
 
-const PdfViewerInner = dynamic(
-  () => import("./pdf-viewer-inner"),
-  {
-    ssr: false,
-    loading: () => <PdfViewerSkeleton />,
-  }
-);
+const PdfViewerInner = dynamic(() => import("./pdf-viewer-inner"), {
+  ssr: false,
+  loading: () => <PdfViewerSkeleton />,
+});
 
 interface PdfViewerProps {
   url: string | null;
@@ -24,8 +21,15 @@ interface PdfViewerProps {
 }
 
 export function PdfViewer({
-  url, containerWidth, currentPage = 1, scale = 1.0,
-  onPageLoadSuccess, onDocumentLoadSuccess, anchors, suggestions, jobId
+  url,
+  containerWidth,
+  currentPage = 1,
+  scale = 1.0,
+  onPageLoadSuccess,
+  onDocumentLoadSuccess,
+  anchors,
+  suggestions,
+  jobId,
 }: PdfViewerProps) {
   if (!url) {
     return (

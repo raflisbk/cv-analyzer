@@ -34,7 +34,10 @@ export const SuggestionMark = Mark.create({
       },
       priority: {
         default: "quick_win",
-        parseHTML: (element) => element.getAttribute("data-priority") as SuggestionAttributes["priority"],
+        parseHTML: (element) =>
+          element.getAttribute(
+            "data-priority",
+          ) as SuggestionAttributes["priority"],
         renderHTML: (attributes) => {
           if (!attributes.priority) {
             return {};
@@ -69,9 +72,10 @@ export const SuggestionMark = Mark.create({
 
   renderHTML({ HTMLAttributes }) {
     const priority = HTMLAttributes["data-priority"] || "quick_win";
-    const color = priority === "high_impact"
-      ? { bg: "rgba(239,68,68,0.15)", border: "rgba(239,68,68,0.5)" }
-      : { bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.5)" };
+    const color =
+      priority === "high_impact"
+        ? { bg: "rgba(239,68,68,0.15)", border: "rgba(239,68,68,0.5)" }
+        : { bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.5)" };
 
     return [
       "span",

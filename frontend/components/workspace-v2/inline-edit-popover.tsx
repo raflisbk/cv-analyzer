@@ -209,6 +209,7 @@ export function InlineEditPopover({
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="e.g., Make this more impactful, Add metrics, Improve clarity..."
+                maxLength={1000}
                 className="w-full min-h-[80px] resize-y rounded-md border border-[#111111]/15 bg-white px-3 py-2 text-sm text-[#111111] placeholder:text-[#111111]/40 transition-colors focus:border-[#111111]/40 focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30"
                 rows={3}
                 autoFocus
@@ -216,6 +217,7 @@ export function InlineEditPopover({
             </div>
 
             <button
+              type="button"
               onClick={handleGenerate}
               disabled={!prompt.trim()}
               className="w-full rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35] disabled:cursor-not-allowed disabled:opacity-50"

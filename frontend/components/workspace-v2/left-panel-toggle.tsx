@@ -22,14 +22,32 @@ export function LeftPanelToggle({ className }: LeftPanelToggleProps) {
         "text-[--ws-ink] transition-colors duration-150",
         "hover:bg-[#333333] hover:border-[rgba(255,255,255,0.28)]",
         "before:absolute before:inset-[-8px] before:content-['']",
-        className
+        className,
       )}
     >
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 10 10"
+        fill="none"
+        aria-hidden="true"
+      >
         {isOpen ? (
-          <path d="M7 1L3 5L7 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M7 1L3 5L7 9"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         ) : (
-          <path d="M3 1L7 5L3 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M3 1L7 5L3 9"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         )}
       </svg>
     </button>

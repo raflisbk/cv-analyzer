@@ -59,6 +59,8 @@ export function ChatInput({ onSend, disabled, className }: ChatInputProps) {
       <textarea
         ref={textareaRef}
         placeholder="Ask AI to refine, explain…"
+        maxLength={4000}
+        aria-label="Message for AI assistant"
         disabled={disabled}
         onKeyDown={handleKeyDown}
         className="min-h-[40px] max-h-[120px] w-full resize-none rounded-xl px-3 py-2 text-[11px] leading-relaxed outline-none placeholder:text-[#F5F2D8]/50 disabled:opacity-50"

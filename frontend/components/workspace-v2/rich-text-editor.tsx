@@ -9,7 +9,10 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
-import type { SuggestionCard as SuggestionCardType, SuggestionItem } from "@/lib/types";
+import type {
+  SuggestionCard as SuggestionCardType,
+  SuggestionItem,
+} from "@/lib/types";
 import { SuggestionMark } from "./suggestion-mark";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { SuggestionCard } from "./suggestion-card";
@@ -36,24 +39,29 @@ export function RichTextEditor({
   const [htmlWithHighlights, setHtmlWithHighlights] = useState(content);
   const [isExporting, setIsExporting] = useState(false);
 
-  const setActiveSuggestionId = useWorkspaceV2Store((s) => s.setActiveSuggestionId);
+  const setActiveSuggestionId = useWorkspaceV2Store(
+    (s) => s.setActiveSuggestionId,
+  );
   const activeSuggestionId = useWorkspaceV2Store((s) => s.activeSuggestionId);
   const _suggestionStatuses = useWorkspaceV2Store((s) => s.suggestionStatuses);
 
-  const extensions = useMemo(() => [
-    StarterKit.configure({
-      heading: { levels: [1, 2, 3] },
-      bulletList: { keepMarks: true },
-      orderedList: { keepMarks: true },
-    }),
-    Underline,
-    TextAlign.configure({ types: ["heading", "paragraph"] }),
-    Link.configure({ openOnClick: false }),
-    SuggestionMark,
-    Placeholder.configure({
-      placeholder: "Ketik atau tempel teks CV Anda di sini...",
-    }),
-  ], []);
+  const extensions = useMemo(
+    () => [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+        bulletList: { keepMarks: true },
+        orderedList: { keepMarks: true },
+      }),
+      Underline,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Link.configure({ openOnClick: false }),
+      SuggestionMark,
+      Placeholder.configure({
+        placeholder: "Ketik atau tempel teks CV Anda di sini...",
+      }),
+    ],
+    [],
+  );
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -72,10 +80,15 @@ export function RichTextEditor({
     let highlighted = content;
 
     if (content && anchors.length > 0) {
-      const suggestionMap = new Map<string, {
-        text: string; afterText?: string;
-        section: string; priority: string;
-      }>();
+      const suggestionMap = new Map<
+        string,
+        {
+          text: string;
+          afterText?: string;
+          section: string;
+          priority: string;
+        }
+      >();
       for (const card of suggestions || []) {
         card.suggestions?.forEach((item: SuggestionItem, idx: number) => {
           const suggestionId = `${card.section}_${idx}_0`;
@@ -99,11 +112,14 @@ export function RichTextEditor({
           continue;
         }
 
-    const escapedText = textToHighlight.replace(/[.*+?^{}()|[\]\\]/g, "\\$&");
+        const escapedText = textToHighlight.replace(
+          /[.*+?^{}()|[\]\\]/g,
+          "\\$&",
+        );
         const regex = new RegExp(escapedText, "gi");
 
         highlighted = highlighted.replace(regex, (match) => {
-          return `<span data-suggestion-id="${anchor.suggestion_id}" data-priority="${anchor.priority}" data-section="${suggestion.section}" class="suggestion-highlight" style="background: ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)'}; border-bottom: 2px solid ${anchor.priority === 'high_impact' ? 'rgba(239,68,68,0.5)' : 'rgba(245,158,11,0.5)'}; border-radius: 2px; cursor: pointer; padding: 2px 0;">${match}</span>`;
+          return `<span data-suggestion-id="${anchor.suggestion_id}" data-priority="${anchor.priority}" data-section="${suggestion.section}" class="suggestion-highlight" style="background: ${anchor.priority === "high_impact" ? "rgba(239,68,68,0.15)" : "rgba(245,158,11,0.15)"}; border-bottom: 2px solid ${anchor.priority === "high_impact" ? "rgba(239,68,68,0.5)" : "rgba(245,158,11,0.5)"}; border-radius: 2px; cursor: pointer; padding: 2px 0;">${match}</span>`;
         });
       }
     }
@@ -114,40 +130,52 @@ export function RichTextEditor({
     setHtmlWithHighlights(highlighted);
   }, [content, anchors, suggestions, editor]);
 
-  const handleHighlightMouseEnter = useCallback((e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    const suggestionId = target.getAttribute('data-suggestion-id');
-    if (suggestionId) {
-      setActiveSuggestionId(suggestionId);
-    }
-  }, [setActiveSuggestionId]);
+  const handleHighlightMouseEnter = useCallback(
+    (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const suggestionId = target.getAttribute("data-suggestion-id");
+      if (suggestionId) {
+        setActiveSuggestionId(suggestionId);
+      }
+    },
+    [setActiveSuggestionId],
+  );
 
   const handleHighlightMouseLeave = useCallback(() => {
     setActiveSuggestionId(null);
   }, [setActiveSuggestionId]);
 
-  const handleApplyImprovement = useCallback((originalText: string, improvedText: string) => {
-    if (!editor) {
-      return;
-    }
-
-    const { from, to } = editor.state.selection;
-    const currentText = editor.state.doc.textBetween(from, to);
-
-    if (currentText === originalText) {
-      editor.chain().focus().deleteSelection().insertContent(improvedText).run();
-    } else {
-      const docText = editor.getText();
-      const index = docText.indexOf(originalText);
-      if (index !== -1) {
-        editor.chain()
-          .focus()
-          .deleteRange({ from: index, to: index + originalText.length })
-          .insertContentAt(index, improvedText)
-          .run();
+  const handleApplyImprovement = useCallback(
+    (originalText: string, improvedText: string) => {
+      if (!editor) {
+        return;
       }
-    }
-  }, [editor]);
+
+      const { from, to } = editor.state.selection;
+      const currentText = editor.state.doc.textBetween(from, to);
+
+      if (currentText === originalText) {
+        editor
+          .chain()
+          .focus()
+          .deleteSelection()
+          .insertContent(improvedText)
+          .run();
+      } else {
+        const docText = editor.getText();
+        const index = docText.indexOf(originalText);
+        if (index !== -1) {
+          editor
+            .chain()
+            .focus()
+            .deleteRange({ from: index, to: index + originalText.length })
+            .insertContentAt(index, improvedText)
+            .run();
+        }
+      }
+    },
+    [editor],
+  );
 
   const handleExportPdf = useCallback(async () => {
     if (!editor || isExporting) {
@@ -161,13 +189,16 @@ export function RichTextEditor({
     try {
       const html = editor.getHTML();
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/export/pdf`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html, filename: "cv-optimized.pdf" }),
-        signal: controller.signal,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/export/pdf`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ html, filename: "cv-optimized.pdf" }),
+          signal: controller.signal,
+        },
+      );
 
       if (!response.ok) {
         throw new Error("PDF export failed");
@@ -202,19 +233,21 @@ export function RichTextEditor({
     }
 
     const editorElement = editor.view.dom;
-    editorElement.addEventListener('mouseover', handleHighlightMouseEnter);
-    editorElement.addEventListener('mouseout', handleHighlightMouseLeave);
+    editorElement.addEventListener("mouseover", handleHighlightMouseEnter);
+    editorElement.addEventListener("mouseout", handleHighlightMouseLeave);
 
     return () => {
-      editorElement.removeEventListener('mouseover', handleHighlightMouseEnter);
-      editorElement.removeEventListener('mouseout', handleHighlightMouseLeave);
+      editorElement.removeEventListener("mouseover", handleHighlightMouseEnter);
+      editorElement.removeEventListener("mouseout", handleHighlightMouseLeave);
     };
   }, [editor, handleHighlightMouseEnter, handleHighlightMouseLeave]);
 
   if (!editor || isLoading) {
     return (
       <div className="flex items-center justify-center h-[600px] bg-[rgba(17,17,17,0.02)]">
-        <div className="text-sm text-[rgba(17,17,17,0.45)]">Loading editor...</div>
+        <div className="text-sm text-[rgba(17,17,17,0.45)]">
+          Loading editor...
+        </div>
       </div>
     );
   }
@@ -249,7 +282,9 @@ export function RichTextEditor({
         <div className="w-px h-6 bg-[rgba(17,17,17,0.1)] mx-1" />
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           active={editor.isActive("heading", { level: 1 })}
           tooltip="Heading 1"
         >
@@ -257,7 +292,9 @@ export function RichTextEditor({
         </ToolbarButton>
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           active={editor.isActive("heading", { level: 2 })}
           tooltip="Heading 2"
         >
@@ -350,7 +387,12 @@ interface ToolbarButtonProps {
   children: React.ReactNode;
 }
 
-function ToolbarButton({ onClick, active, tooltip, children }: ToolbarButtonProps) {
+function ToolbarButton({
+  onClick,
+  active,
+  tooltip,
+  children,
+}: ToolbarButtonProps) {
   return (
     <button
       type="button"

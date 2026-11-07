@@ -1,4 +1,3 @@
-
 export function WorkspaceSkeleton() {
   return (
     <div
