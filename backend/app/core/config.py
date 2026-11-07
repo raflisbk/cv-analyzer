@@ -34,7 +34,8 @@ class Settings(BaseSettings):
     CV_ANALYZER_KOBOI_API_KEY: str = ""
     CV_ANALYZER_KOBOI_BASE_URL: str = "https://lite.koboillm.com/v1"
 
-    CV_ANALYZER_LLM_MODEL: str = "openai/gpt-5.1"
+    CV_ANALYZER_LLM_MODEL: str = "gpt-6-luna"
+    CV_ANALYZER_LLM_REASONING_EFFORT: str = "none"
     CV_ANALYZER_LLM_MAX_TOKENS: int = 4096
     CV_ANALYZER_LLM_CACHE_TTL: int = 86400
     CV_ANALYZER_RAG_TOP_K: int = 5

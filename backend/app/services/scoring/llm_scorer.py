@@ -19,6 +19,7 @@ import redis as redis_sync
 
 from app.core.logging import structured_logger as logger
 from app.services.scoring.text_normalizer import normalize_cv_text
+from app.services.llm.params import reasoning_params
 
 # Bump this when the prompt or weights change significantly.
 # Changing this string automatically invalidates all cached scores.
@@ -499,6 +500,7 @@ def _single_llm_call(prompt: str, settings) -> dict | None:
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 1200,
                     "temperature": 0.1,
+                    **reasoning_params(),
                 },
             )
             resp.raise_for_status()

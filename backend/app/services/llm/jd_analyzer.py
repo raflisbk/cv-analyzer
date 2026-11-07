@@ -14,6 +14,7 @@ import re
 import httpx
 
 from app.core.logging import structured_logger as logger
+from app.services.llm.params import reasoning_params
 
 _PROMPT = """\
 Analyze this job description for red flags. Check these categories:
@@ -76,6 +77,7 @@ def analyze_jd_red_flags(jd_text: str) -> dict | None:
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 600,
                     "temperature": 0.1,
+                    **reasoning_params(),
                 },
             )
             resp.raise_for_status()

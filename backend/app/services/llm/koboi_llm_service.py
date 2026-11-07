@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.services.llm.metrics import llm_tokens_counter
 from app.services.llm.protocol import SuggestionsOutput
+from app.services.llm.params import reasoning_params
 
 _ANTI_CLICHE_RULES = """
 Anti-cliché rules — NEVER suggest or use these overused phrases:
@@ -190,6 +191,7 @@ class KoboiLLMService:
                 {"role": "user", "content": user_prompt},
             ],
             temperature=temperature,
+            extra_body=reasoning_params(),
             max_tokens=max_tokens or self.max_tokens,
         )
         return response.choices[0].message.content or ""
@@ -320,6 +322,7 @@ class KoboiLLMService:
                 *messages,
             ],
             temperature=temperature,
+            extra_body=reasoning_params(),
             max_tokens=max_tokens or self.max_tokens,
             stream=True,
         )
@@ -340,6 +343,7 @@ class KoboiLLMService:
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0.7,
+            extra_body=reasoning_params(),
             max_tokens=self.max_tokens,
             stream=True,
         )

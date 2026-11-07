@@ -22,6 +22,7 @@ from app.services.llm.archetype_registry import (
     get_display_name,
     get_domain_list,
 )
+from app.services.llm.params import reasoning_params
 
 # Re-export ARCHETYPES as alias for backward-compat (old tests may import it)
 ARCHETYPES = {domain: data["archetypes"] for domain, data in REGISTRY.items()}
@@ -69,6 +70,7 @@ def _llm_call(
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": max_tokens,
                     "temperature": 0.1,
+                    **reasoning_params(),
                 },
             )
             resp.raise_for_status()

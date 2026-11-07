@@ -7,6 +7,7 @@ import httpx
 import redis as redis_sync
 
 from app.core.logging import structured_logger as logger
+from app.services.llm.params import reasoning_params
 
 _ANCHOR_CACHE_TTL = 7 * 24 * 3600  # 7 days
 _DIMENSIONS = ("clarity", "impact", "completeness", "relevance")
@@ -90,6 +91,7 @@ def _generate_via_llm(role_title: str) -> dict[str, list[str]] | None:
                     "messages": [{"role": "user", "content": prompt}],
                     "max_tokens": 1500,
                     "temperature": 0.3,
+                    **reasoning_params(),
                 },
             )
             resp.raise_for_status()
