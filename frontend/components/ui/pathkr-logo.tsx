@@ -17,7 +17,7 @@ export function PathkrLogo({
   className = "",
 }: PathkrLogoProps) {
   const base = variant === "dark" ? "text-[#F5F2D8]" : "text-[#141414]";
-  const kr   = variant === "dark" ? "text-[#CAFF43]" : "text-[#8B5CF6]";
+  const kr = variant === "dark" ? "text-[#CAFF43]" : "text-[#8B5CF6]";
 
   return (
     <span
@@ -32,9 +32,13 @@ export function PathkrLogo({
   );
 }
 
-export function PathkrInline({ variant = "light" }: { variant?: "light" | "dark" }) {
+export function PathkrInline({
+  variant = "light",
+}: {
+  variant?: "light" | "dark";
+}) {
   const base = variant === "dark" ? "text-[#F5F2D8]" : "text-[#141414]";
-  const kr   = variant === "dark" ? "text-[#CAFF43]" : "text-[#8B5CF6]";
+  const kr = variant === "dark" ? "text-[#CAFF43]" : "text-[#8B5CF6]";
 
   return (
     <span className={`font-display font-extrabold tracking-tight ${base}`}>
