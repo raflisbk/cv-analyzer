@@ -80,7 +80,9 @@ logger.info("prometheus_configured")
 async def startup_event() -> None:
     # start() is an infinite loop — must run as background task, not awaited directly.
     spawn(yjs_server.start())
-    await asyncio.sleep(0)  # yield so the task can initialize before accepting connections
+    await asyncio.sleep(
+        0
+    )  # yield so the task can initialize before accepting connections
     logger.info(
         "app_starting",
         app_name=settings.CV_ANALYZER_APP_NAME,
