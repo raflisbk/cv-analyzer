@@ -10,7 +10,9 @@ export const metadata: Metadata = {
   title: "Path Karir | CV Analyzer",
 };
 
-export default async function WorkspaceV2Page({ params }: WorkspaceV2PageProps) {
+export default async function WorkspaceV2Page({
+  params,
+}: WorkspaceV2PageProps) {
   const { job_id } = await params;
 
   const hydration = await getWorkspaceHydration(job_id);

@@ -22,7 +22,8 @@ export default function Error({
           Something went wrong
         </h2>
         <p className="mt-2 text-sm text-[#141414]/60">
-          {error.message || "An unexpected error occurred while loading this page."}
+          {error.message ||
+            "An unexpected error occurred while loading this page."}
         </p>
         <button
           onClick={reset}

@@ -36,7 +36,8 @@ export default function Error({
           Failed to load results
         </h2>
         <p className="mt-2 text-sm text-[#141414]/60">
-          {error.message || "An error occurred while fetching your analysis results."}
+          {error.message ||
+            "An error occurred while fetching your analysis results."}
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <button

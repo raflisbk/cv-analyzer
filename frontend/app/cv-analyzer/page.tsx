@@ -3,13 +3,17 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/landing/navbar";
 import { AccentPill } from "@/components/ui/accent-pill";
-import { AIScoringIcon, SkillGapIcon, JobMatchIcon } from "@/components/ui/feature-icons";
+import {
+  AIScoringIcon,
+  SkillGapIcon,
+  JobMatchIcon,
+} from "@/components/ui/feature-icons";
 import UploadZoneCTA from "@/components/cv-analyzer/upload-zone-cta";
 
 export const metadata: Metadata = {
   title: "CV Analyzer — Path Karir",
   description:
-    "AI-powered CV scoring across clarity, impact, completeness, and relevance. Instant results, sign-in required.",
+    "AI-powered CV scoring across clarity, impact, completeness, and relevance. Get actionable feedback after an analysis of about 20 seconds.",
 };
 
 const features = [
@@ -43,10 +47,33 @@ const features = [
 ];
 
 const steps = [
-  { color: "lime" as const, number: "1", title: "Upload", description: "Drag & drop your CV. Supports PDF and DOCX." },
-  { color: "pink" as const, number: "2", title: "Analyze", description: "AI scores across clarity, impact, completeness, and relevance." },
-  { color: "orange" as const, number: "3", title: "Compare", description: "Paste a job description to get your match score and skill gap list." },
-  { color: "purple" as const, number: "4", title: "Export", description: "Download a PDF report with all scores, suggestions, and action items." },
+  {
+    color: "lime" as const,
+    number: "1",
+    title: "Upload",
+    description: "Drag & drop your CV. Supports PDF and DOCX.",
+  },
+  {
+    color: "pink" as const,
+    number: "2",
+    title: "Analyze",
+    description:
+      "AI scores across clarity, impact, completeness, and relevance.",
+  },
+  {
+    color: "orange" as const,
+    number: "3",
+    title: "Compare",
+    description:
+      "Paste a job description to get your match score and skill gap list.",
+  },
+  {
+    color: "purple" as const,
+    number: "4",
+    title: "Export",
+    description:
+      "Download a PDF report with all scores, suggestions, and action items.",
+  },
 ];
 
 export default function CVAnalyzerPage() {
@@ -56,25 +83,42 @@ export default function CVAnalyzerPage() {
       <main>
         <section className="bg-[#F5F2D8] px-4 md:px-8 py-6 md:py-8">
           <div className="bg-[#141414] rounded-[2rem] max-w-6xl mx-auto px-8 md:px-16 py-16 md:py-24 overflow-hidden relative">
-
-            <div className="absolute top-8 right-12 w-5 h-5 rounded-full bg-[#CAFF43] opacity-80" aria-hidden="true" />
-            <div className="absolute top-16 right-24 w-3 h-3 rounded-full bg-[#FF4FCB] opacity-60" aria-hidden="true" />
-            <div className="absolute top-6 right-40 w-8 h-8 rounded-full bg-[#FF8C42] opacity-40" aria-hidden="true" />
-            <div className="absolute bottom-10 left-8 w-4 h-4 rounded-full bg-[#8B5CF6] opacity-50" aria-hidden="true" />
+            <div
+              className="absolute top-8 right-12 w-5 h-5 rounded-full bg-[#CAFF43] opacity-80"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute top-16 right-24 w-3 h-3 rounded-full bg-[#FF4FCB] opacity-60"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute top-6 right-40 w-8 h-8 rounded-full bg-[#FF8C42] opacity-40"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute bottom-10 left-8 w-4 h-4 rounded-full bg-[#8B5CF6] opacity-50"
+              aria-hidden="true"
+            />
 
             <h1 className="font-display font-extrabold text-[#F5F2D8] leading-[1.1] text-5xl md:text-6xl lg:text-7xl tracking-tight">
               Your CV{" "}
-              <AccentPill color="lime" size="hero">deserves</AccentPill>
+              <AccentPill color="lime" size="hero">
+                deserves
+              </AccentPill>
               <br />
-              <AccentPill color="pink" size="hero">better</AccentPill>
-              {" "}results
+              <AccentPill color="pink" size="hero">
+                better
+              </AccentPill>{" "}
+              results
             </h1>
 
             <p className="font-sans text-base md:text-lg text-[#F5F2D8]/70 mt-6 max-w-lg leading-relaxed">
               AI-powered CV scoring. Skill gap detection. Job match comparison.
-              Get actionable feedback instantly.
+              Get actionable feedback after an analysis of about 20 seconds.
             </p>
-            <p className="font-sans text-sm text-[#F5F2D8]/50 mt-2">Free · Instant · Sign in to get started</p>
+            <p className="font-sans text-sm text-[#F5F2D8]/50 mt-2">
+              Free · Fast setup · Start analyzing
+            </p>
 
             <div className="mt-10">
               <UploadZoneCTA />
@@ -82,7 +126,10 @@ export default function CVAnalyzerPage() {
           </div>
         </section>
 
-        <section aria-labelledby="cva-features-heading" className="bg-[#F5F2D8] py-16 md:py-24 border-t border-[#141414]/10">
+        <section
+          aria-labelledby="cva-features-heading"
+          className="bg-[#F5F2D8] py-16 md:py-24 border-t border-[#141414]/10"
+        >
           <div className="max-w-6xl mx-auto px-4 md:px-8">
             <h2
               id="cva-features-heading"
@@ -95,24 +142,33 @@ export default function CVAnalyzerPage() {
               your CV&apos;s strengths and gaps.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {features.map(({ Icon, iconContainer, iconColor, title, description }) => (
-                <div
-                  key={title}
-                  className="bg-white rounded-2xl p-6 border-0 shadow-sm
+              {features.map(
+                ({ Icon, iconContainer, iconColor, title, description }) => (
+                  <div
+                    key={title}
+                    className="bg-white rounded-2xl p-6 border-0 shadow-sm
                              transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
-                >
-                  <div className={`inline-flex ${iconContainer}`}>
-                    <Icon size={24} className={iconColor} />
+                  >
+                    <div className={`inline-flex ${iconContainer}`}>
+                      <Icon size={24} className={iconColor} />
+                    </div>
+                    <p className="text-base font-extrabold text-[#141414] mt-3 mb-2">
+                      {title}
+                    </p>
+                    <p className="text-sm text-[#141414]/60 leading-relaxed">
+                      {description}
+                    </p>
                   </div>
-                  <p className="text-base font-extrabold text-[#141414] mt-3 mb-2">{title}</p>
-                  <p className="text-sm text-[#141414]/60 leading-relaxed">{description}</p>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         </section>
 
-        <section aria-labelledby="cva-hiw-heading" className="bg-[#141414] py-16 md:py-24">
+        <section
+          aria-labelledby="cva-hiw-heading"
+          className="bg-[#141414] py-16 md:py-24"
+        >
           <div className="max-w-6xl mx-auto px-4 md:px-8">
             <h2
               id="cva-hiw-heading"
@@ -122,13 +178,22 @@ export default function CVAnalyzerPage() {
             </h2>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-center gap-8 md:gap-0">
               {steps.map((step, i) => (
-                <div key={step.number} className="flex items-start md:items-center md:contents">
+                <div
+                  key={step.number}
+                  className="flex items-start md:items-center md:contents"
+                >
                   <div className="flex-1 text-center px-4">
                     <div className="flex justify-center">
-                      <AccentPill color={step.color} size="md">{step.number}</AccentPill>
+                      <AccentPill color={step.color} size="md">
+                        {step.number}
+                      </AccentPill>
                     </div>
-                    <p className="text-base font-extrabold text-[#F5F2D8] mt-4 mb-2">{step.title}</p>
-                    <p className="text-sm text-[#F5F2D8]/60 max-w-[160px] mx-auto">{step.description}</p>
+                    <p className="text-base font-extrabold text-[#F5F2D8] mt-4 mb-2">
+                      {step.title}
+                    </p>
+                    <p className="text-sm text-[#F5F2D8]/60 max-w-[160px] mx-auto">
+                      {step.description}
+                    </p>
                   </div>
                   {i < steps.length - 1 && (
                     <div className="hidden md:flex items-center justify-center pt-5 flex-shrink-0 px-2">

@@ -32,9 +32,7 @@ export default function WorkspaceError({
             />
           </svg>
         </div>
-        <h2 className="text-lg font-bold text-[#141414]">
-          Workspace error
-        </h2>
+        <h2 className="text-lg font-bold text-[#141414]">Workspace error</h2>
         <p className="mt-2 text-sm text-[#141414]/60">
           {error.message || "An error occurred while loading the workspace."}
         </p>

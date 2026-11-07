@@ -11,7 +11,7 @@
     --card-foreground: 0 0% 4%;
     --primary: 77 100% 63%; /* lime #CAFF43 */
     --primary-foreground: 0 0% 8%; /* dark text on lime */
-    --secondary: 0 0% 8%; /* dark #141414 ⚠️ bg-secondary now dark */
+    --secondary: 0 0% 8%; /* dark #141414 background */
     --secondary-foreground: 54 59% 90%;
     --muted: 54 30% 85%;
     --muted-foreground: 0 0% 40%;
@@ -61,7 +61,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    padding-bottom: 36px;
+    padding-bottom: max(36px, env(safe-area-inset-bottom));
   }
   html {
     scroll-behavior: smooth;
@@ -77,6 +77,11 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
   }
 }
 

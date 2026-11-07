@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useJobResults } from "@/hooks/use-job-results";
 import type { JobRole, ScoreVersion, SuggestionCard } from "@/lib/types";
@@ -46,7 +46,12 @@ function VersionHistoryBar({
               key={v.job_id}
               className="flex items-center gap-2 flex-shrink-0"
             >
-              {i > 0 && <span className="text-[#F5F2D8]/20 text-sm">→</span>}
+              {i > 0 && (
+                <ChevronRight
+                  className="h-4 w-4 text-[#F5F2D8]/20"
+                  aria-hidden="true"
+                />
+              )}
               <a
                 href={`/results/${v.job_id}`}
                 className={`rounded-xl px-3 py-2 text-center transition-colors ${
