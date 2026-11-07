@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 
 from app.api.dependencies import check_job_access, get_current_user
+from app.core.background import spawn
 from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, async_session_maker, get_db
 from app.models.job import Job
@@ -125,9 +126,7 @@ async def chat_stream(
 
             await _save_messages(job_id, messages)
 
-            asyncio.ensure_future(
-                _index_chat_turn(job_id, user_id, message, assistant_msg["content"])
-            )
+            spawn(_index_chat_turn(job_id, user_id, message, assistant_msg["content"]))
 
         except Exception as e:
             logger.error(

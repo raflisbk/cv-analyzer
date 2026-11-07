@@ -1,4 +1,3 @@
-import asyncio
 import uuid
 from datetime import UTC, datetime
 from typing import Any
@@ -6,6 +5,7 @@ from typing import Any
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 
+from app.core.background import spawn
 from app.db.session import AsyncSession, async_session_maker, get_db
 from app.models.job import Job
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
@@ -66,7 +66,7 @@ async def inline_edit(
     )
 
     if not response.error:
-        asyncio.ensure_future(
+        spawn(
             _index_edit_fire_and_forget(
                 job_id, user_id, response.originalText, response.rewrittenText
             )

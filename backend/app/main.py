@@ -15,6 +15,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.endpoints.yjs import yjs_asgi_app, yjs_server
+from app.core.background import spawn
 from app.api.v1.router import router as api_v1_router
 from app.core.config import get_settings
 from app.core.limiter import limiter
@@ -78,7 +79,7 @@ logger.info("prometheus_configured")
 @app.on_event("startup")
 async def startup_event() -> None:
     # start() is an infinite loop — must run as background task, not awaited directly.
-    asyncio.ensure_future(yjs_server.start())
+    spawn(yjs_server.start())
     await asyncio.sleep(0)  # yield so the task can initialize before accepting connections
     logger.info(
         "app_starting",

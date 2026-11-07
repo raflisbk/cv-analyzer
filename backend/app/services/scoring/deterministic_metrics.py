@@ -468,9 +468,9 @@ def _employment_gaps(text: str, nlp_result: dict | None = None) -> dict:
     Uses experience section text when available (from nlp_result) to avoid
     false positives from education dates.
     """
-    import datetime
+    import datetime as dt
 
-    _PRESENT_YEAR = datetime.datetime.now(datetime.UTC).year
+    _PRESENT_YEAR = dt.datetime.now(dt.UTC).year
 
     # Prefer experience section text to avoid education date false-positives
     exp_text = text
