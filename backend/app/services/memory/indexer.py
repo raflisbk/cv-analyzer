@@ -56,9 +56,13 @@ async def index_cv_sections(
                 extra={"section_type": section_type},
             )
         await session.commit()
-        logger.info("job_memory_cv_sections_indexed", job_id=job_id, count=len(sections))
+        logger.info(
+            "job_memory_cv_sections_indexed", job_id=job_id, count=len(sections)
+        )
     except Exception as e:
-        logger.warning("job_memory_index_cv_sections_failed", job_id=job_id, error=str(e))
+        logger.warning(
+            "job_memory_index_cv_sections_failed", job_id=job_id, error=str(e)
+        )
 
 
 async def index_analysis_summary(
@@ -80,8 +84,16 @@ async def index_analysis_summary(
             )
         if suggestions:
             for card in suggestions[:10]:
-                section = card.get("section", "unknown") if isinstance(card, dict) else card.section
-                items = card.get("suggestions", []) if isinstance(card, dict) else card.suggestions
+                section = (
+                    card.get("section", "unknown")
+                    if isinstance(card, dict)
+                    else card.section
+                )
+                items = (
+                    card.get("suggestions", [])
+                    if isinstance(card, dict)
+                    else card.suggestions
+                )
                 for item in items:
                     text = item.get("text") if isinstance(item, dict) else item.text
                     if text:

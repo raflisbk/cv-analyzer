@@ -287,9 +287,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         try:
             async with async_session_maker() as memory_session:
                 if sections:
-                    await index_cv_sections(
-                        job_id, user_id, sections, memory_session
-                    )
+                    await index_cv_sections(job_id, user_id, sections, memory_session)
                 if scores or suggestions_list:
                     await index_analysis_summary(
                         job_id, user_id, scores, suggestions_list, memory_session
