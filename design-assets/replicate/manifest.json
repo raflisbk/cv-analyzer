@@ -17,7 +17,8 @@
     "3d/scanner.webp": "v3 yellow, flux + background removal + hue remap",
     "3d/pencil.webp": "v3 yellow, flux + background removal + hue remap",
     "3d/pdf-export.webp": "v3 yellow, flux + background removal + hue remap",
-    "logo/*.svg": "hand-built from Bricolage Grotesque 800 outlines, not generated"
+    "logo/*.svg": "hand-built from Bricolage Grotesque 800 outlines, not generated",
+    "3d/cv-hero.webp": "finale object (single centered overlay on the last section); flux v3 + cutout + region-masked recolour"
   },
   "prompts": {
     "style_v2": "glossy 3D clay render in the style of a toy, extremely vivid saturated flat colors, only pure red-orange #f42902, bright neon mint green #83fd80 and clean white #fdfdff, plain flat white background, soft contact shadow, absolutely no text, no letters, no words, centered, chunky rounded shapes",
@@ -32,7 +33,8 @@
     "cloud-upload": "a chunky white 3D cloud with a thick red-orange upward arrow rising out of it and a small neon mint document peeking from behind, + style_v2",
     "scanner": "a chunky white paper sheet passing through a red-orange scanner bar with a mint green glowing scan line across it, + style_v2",
     "pencil": "a chunky red-orange pencil with a white tip drawing a wavy neon mint line, with two small white sparkle stars, + style_v2",
-    "pdf-export": "a chunky white document with a folded corner, a red-orange corner tab, and a thick neon mint downward arrow badge at the bottom, + style_v2"
+    "pdf-export": "a chunky white document with a folded corner, a red-orange corner tab, and a thick neon mint downward arrow badge at the bottom, + style_v2",
+    "cv-hero": "a single 3D paper CV document with a folded top-right corner, white sheet, a red-orange header band, a bright electric yellow rounded check badge overlapping the bottom edge, three gray text bars, glossy toy plastic look, + style (solid flat medium blue-gray background #8fa3b8 so the white sheet survives background removal)"
   },
   "known_issues": [
     "Yellow accents are hue-remapped from amber renders; if regenerating, apply the same remap or prompt a green-free palette and check highlights",
@@ -40,5 +42,6 @@
     "v2 (green) files stay in raw/ and cutout/ as *-v2"
   ],
   "note_process": "cloud-upload, scanner, pencil and pdf-export were generated 2026-11-08 for the process section; background removal ran on the base64 of the flux output",
-  "palette_change": "2026-11-08: owner asked for a real punk yellow; accent changed from #83fd80 (mint) to #f2ff00. Objects regenerated with flux-1.1-pro using \"electric acid punk yellow #f2ff00 ... no green anywhere\"; the model rendered amber, so the yellow regions were remapped to #f2ff00 by a hue remap (hue 32-66 deg -> ~63.5, saturation and value lifted). The CV sheet reuses the v2 render (hue remap of the green badge) because the white sheet vanished in the new background removal."
+  "palette_change": "2026-11-08: owner asked for a real punk yellow; accent changed from #83fd80 (mint) to #f2ff00. Objects regenerated with flux-1.1-pro using \"electric acid punk yellow #f2ff00 ... no green anywhere\"; the model rendered amber, so the yellow regions were remapped to #f2ff00 by a hue remap (hue 32-66 deg -> ~63.5, saturation and value lifted). The CV sheet reuses the v2 render (hue remap of the green badge) because the white sheet vanished in the new background removal.",
+  "note_cv_hero": "Header band remapped to #f42902 only above 30% of the object height, seal remapped to punk yellow only below 62%, so shading elsewhere is untouched. Options h1-h3 are in rejected/."
 }
