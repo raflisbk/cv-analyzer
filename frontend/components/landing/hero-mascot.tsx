@@ -63,6 +63,7 @@ export default function HeroMascot() {
       mm = media;
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
+        const scrollReact = char.querySelector<HTMLElement>(".m-scroll-react")!;
         const flip = char.querySelector<HTMLElement>(".m-flip")!;
         const body = char.querySelector<SVGGElement>(".m-body")!;
         const legL = char.querySelector<SVGGElement>(".m-leg-l")!;
@@ -1196,11 +1197,82 @@ export default function HeroMascot() {
         // starts heckling — escalating with each line
         let idleSince = performance.now();
         let idleLevel = 0;
+        let lastScrollY = window.scrollY;
+        let lastScrollTime = performance.now();
+        let lastSectionIndex = -1;
+        let scrollFrame = 0;
+        const scrollSections = () =>
+          Array.from(document.querySelectorAll<HTMLElement>(".snap-section"));
+        const nearestSectionIndex = () => {
+          const sections = scrollSections();
+          if (sections.length === 0) {
+            return -1;
+          }
+          const nearest = sections.reduce(
+            (best, section, index) => {
+              const distance = Math.abs(section.getBoundingClientRect().top);
+              return distance < best.distance ? { distance, index } : best;
+            },
+            { distance: Number.POSITIVE_INFINITY, index: -1 },
+          );
+          return nearest.index;
+        };
+        lastSectionIndex = nearestSectionIndex();
         const bumpActivity = () => {
           idleSince = performance.now();
           idleLevel = 0;
         };
-        window.addEventListener("scroll", bumpActivity, { passive: true });
+        const onScroll = () => {
+          bumpActivity();
+          if (scrollFrame) {
+            return;
+          }
+          scrollFrame = requestAnimationFrame(() => {
+            const now = performance.now();
+            const deltaY = window.scrollY - lastScrollY;
+            const deltaTime = Math.max(16, now - lastScrollTime);
+            const direction = deltaY >= 0 ? 1 : -1;
+            const velocity = Math.min(3, Math.abs(deltaY) / deltaTime);
+            const nextSectionIndex = nearestSectionIndex();
+
+            gsap.to(scrollReact, {
+              rotation: direction * Math.min(6, velocity * 3.5),
+              scaleX: 1 + Math.min(0.05, velocity * 0.02),
+              y: -Math.min(5, velocity * 2),
+              duration: 0.18,
+              ease: "power2.out",
+              overwrite: "auto",
+            });
+
+            if (
+              nextSectionIndex !== -1 &&
+              nextSectionIndex !== lastSectionIndex
+            ) {
+              lastSectionIndex = nextSectionIndex;
+              gsap
+                .timeline({ defaults: { overwrite: "auto" } })
+                .to(scrollReact, {
+                  rotation: direction * 8,
+                  scaleX: 1.07,
+                  y: -8,
+                  duration: 0.12,
+                  ease: "power2.out",
+                })
+                .to(scrollReact, {
+                  rotation: 0,
+                  scaleX: 1,
+                  y: 0,
+                  duration: 0.42,
+                  ease: "power3.out",
+                });
+            }
+
+            lastScrollY = window.scrollY;
+            lastScrollTime = now;
+            scrollFrame = 0;
+          });
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
         document.addEventListener("visibilitychange", bumpActivity);
 
         const tick = () => {
@@ -1860,7 +1932,10 @@ export default function HeroMascot() {
           activeSims.clear();
           bubbleEl?.remove();
           bubbleEl = null;
-          window.removeEventListener("scroll", bumpActivity);
+          window.removeEventListener("scroll", onScroll);
+          if (scrollFrame) {
+            cancelAnimationFrame(scrollFrame);
+          }
           document.removeEventListener("visibilitychange", bumpActivity);
           window.removeEventListener("pointermove", onPointerMove);
           char.removeEventListener("click", onClick);
@@ -1892,481 +1967,489 @@ export default function HeroMascot() {
         {/* overflow-visible everywhere: rotated poses (superman flight,
             horizontal paper-fall) swing the artwork outside the 64×88 box —
             the svg viewport must never clip the head/cape */}
-        <div className="m-flip origin-bottom">
-          <svg
-            width="64"
-            height="88"
-            viewBox="0 0 64 88"
-            fill="none"
-            className="overflow-visible"
-          >
-            {/* ===== FALLING POSE — a dedicated asset, not the standing
+        <div className="m-scroll-react origin-bottom">
+          <div className="m-flip origin-bottom">
+            <svg
+              width="64"
+              height="88"
+              viewBox="0 0 64 88"
+              fill="none"
+              className="overflow-visible"
+            >
+              {/* ===== FALLING POSE — a dedicated asset, not the standing
                  art rotated: a horizontal sheet bowed into a gentle U by
                  air resistance (real dropped paper flexes like this), eyes
                  peeking over the edge, cape dragged upward, feet trailing.
                  Swapped in during paperFall, back out on landing. ===== */}
-            <g className="m-fall" opacity="0">
-              {/* air rush lines above the sheet — fade in during the dive,
+              <g className="m-fall" opacity="0">
+                {/* air rush lines above the sheet — fade in during the dive,
                   gone at the stalls (opacity driven from paperFall) */}
-              <g className="m-fall-lines" opacity="0">
-                <path
-                  d="M12 24 q 3 -9 1 -17"
-                  stroke="rgba(17,17,17,0.4)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                <path
-                  d="M32 20 q 2 -8 0 -15"
-                  stroke="rgba(17,17,17,0.3)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                <path
-                  d="M52 24 q 3 -9 1 -17"
-                  stroke="rgba(17,17,17,0.4)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-              </g>
-              {/* slim cape ribbon trailing up — small, so the PAPER stays
+                <g className="m-fall-lines" opacity="0">
+                  <path
+                    d="M12 24 q 3 -9 1 -17"
+                    stroke="rgba(17,17,17,0.4)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M32 20 q 2 -8 0 -15"
+                    stroke="rgba(17,17,17,0.3)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M52 24 q 3 -9 1 -17"
+                    stroke="rgba(17,17,17,0.4)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </g>
+                {/* slim cape ribbon trailing up — small, so the PAPER stays
                   the star of the silhouette */}
-              <path
-                className="m-fall-cape"
-                d="M28 32 C 26 22 27 14 31 7 Q 33 12 35 8 Q 36 14 39 11 C 40 19 38 26 36 32 Z"
-                fill={INK}
-                opacity="0.85"
-              />
-              {/* the sheet itself: a full landscape page with its content
+                <path
+                  className="m-fall-cape"
+                  d="M28 32 C 26 22 27 14 31 7 Q 33 12 35 8 Q 36 14 39 11 C 40 19 38 26 36 32 Z"
+                  fill={INK}
+                  opacity="0.85"
+                />
+                {/* the sheet itself: a full landscape page with its content
                   clearly visible — unmistakably a piece of paper */}
-              <rect
-                x="2"
-                y="30"
-                width="60"
-                height="38"
-                rx="6"
-                fill={CREAM}
-                stroke={INK}
-                strokeWidth="3"
-              />
-              {/* folded corner */}
-              <path d="M49 31.5 L60.5 43 L49 43 Z" fill={INK} />
-              {/* score sticker */}
-              <circle
-                cx="11"
-                cy="39"
-                r="4.5"
-                fill="#CAFF43"
-                stroke={INK}
-                strokeWidth="2"
-              />
-              {/* face — mouth a little "o" (whee!) */}
-              <circle
-                cx="26"
-                cy="43"
-                r="5"
-                fill="#FFFFFF"
-                stroke={INK}
-                strokeWidth="2.4"
-              />
-              <circle
-                cx="40"
-                cy="43"
-                r="5"
-                fill="#FFFFFF"
-                stroke={INK}
-                strokeWidth="2.4"
-              />
-              <circle cx="26.5" cy="44.6" r="2" fill={INK} />
-              <circle cx="40.5" cy="44.6" r="2" fill={INK} />
-              <circle
-                cx="33"
-                cy="53"
-                r="2.2"
-                stroke={INK}
-                strokeWidth="2"
-                fill="none"
-              />
-              {/* CV text lines */}
-              <rect
-                x="10"
-                y="58.5"
-                width="24"
-                height="3"
-                rx="1.5"
-                fill="rgba(17,17,17,0.28)"
-              />
-              <rect
-                x="38"
-                y="58.5"
-                width="15"
-                height="3"
-                rx="1.5"
-                fill="rgba(17,17,17,0.18)"
-              />
-            </g>
-
-            {/* ===== KICK POSE — a proper flying side-kick for the intro:
-                 body leaning back over the support leg, kicking leg fully
-                 extended into the card, arms flung for balance, determined
-                 brows, cape whipped back ===== */}
-            <g className="m-kick" opacity="0">
-              {/* cape whipped back by the strike */}
-              <path
-                d="M10 24 C 0 27 -6 34 -13 30 Q -5 40 -13 46 C -3 48 5 42 13 41 Z"
-                fill={INK}
-                opacity="0.88"
-              />
-              {/* support leg planted under the lean */}
-              <rect
-                x="19"
-                y="62"
-                width="3.6"
-                height="18"
-                rx="1.8"
-                fill={INK}
-                transform="rotate(12 21 62)"
-              />
-              <ellipse cx="18" cy="81" rx="6" ry="3" fill={INK} />
-              {/* kicking leg: fully extended forward */}
-              <rect
-                x="33"
-                y="56"
-                width="28"
-                height="4.2"
-                rx="2.1"
-                fill={INK}
-                transform="rotate(-13 33 58)"
-              />
-              <ellipse
-                cx="63"
-                cy="50"
-                rx="6.5"
-                ry="3.4"
-                fill={INK}
-                transform="rotate(-13 63 50)"
-              />
-              {/* arms flung for balance */}
-              <rect
-                x="0"
-                y="24"
-                width="15"
-                height="3.4"
-                rx="1.7"
-                fill={INK}
-                transform="rotate(-36 2 26)"
-              />
-              <rect
-                x="42"
-                y="17"
-                width="15"
-                height="3.4"
-                rx="1.7"
-                fill={INK}
-                transform="rotate(26 44 19)"
-              />
-              {/* body sheet leaning back into the kick */}
-              <g transform="rotate(-14 28 40)">
                 <rect
-                  x="4"
-                  y="6"
-                  width="48"
-                  height="58"
-                  rx="8"
+                  x="2"
+                  y="30"
+                  width="60"
+                  height="38"
+                  rx="6"
                   fill={CREAM}
                   stroke={INK}
                   strokeWidth="3"
                 />
-                <path d="M38 7 L51 20 L38 20 Z" fill={INK} />
+                {/* folded corner */}
+                <path d="M49 31.5 L60.5 43 L49 43 Z" fill={INK} />
+                {/* score sticker */}
                 <circle
-                  cx="13"
-                  cy="15"
+                  cx="11"
+                  cy="39"
                   r="4.5"
                   fill="#CAFF43"
                   stroke={INK}
                   strokeWidth="2"
                 />
-                {/* determined eyes + angry brows */}
+                {/* face — mouth a little "o" (whee!) */}
                 <circle
-                  cx="22"
-                  cy="31"
-                  r="5.4"
+                  cx="26"
+                  cy="43"
+                  r="5"
                   fill="#FFFFFF"
                   stroke={INK}
                   strokeWidth="2.4"
                 />
                 <circle
-                  cx="37"
-                  cy="31"
-                  r="5.4"
+                  cx="40"
+                  cy="43"
+                  r="5"
                   fill="#FFFFFF"
                   stroke={INK}
                   strokeWidth="2.4"
                 />
-                <circle cx="23.5" cy="31.5" r="2" fill={INK} />
-                <circle cx="38.5" cy="31.5" r="2" fill={INK} />
-                <path
-                  d="M16 24.5 l9 3 M44 27.5 l-9 -3"
+                <circle cx="26.5" cy="44.6" r="2" fill={INK} />
+                <circle cx="40.5" cy="44.6" r="2" fill={INK} />
+                <circle
+                  cx="33"
+                  cy="53"
+                  r="2.2"
                   stroke={INK}
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
+                  strokeWidth="2"
+                  fill="none"
                 />
-                {/* gritted mouth */}
-                <path
-                  d="M26 42 h8"
-                  stroke={INK}
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                />
+                {/* CV text lines */}
                 <rect
-                  x="12"
-                  y="50"
-                  width="22"
+                  x="10"
+                  y="58.5"
+                  width="24"
                   height="3"
                   rx="1.5"
-                  fill="rgba(17,17,17,0.25)"
+                  fill="rgba(17,17,17,0.28)"
+                />
+                <rect
+                  x="38"
+                  y="58.5"
+                  width="15"
+                  height="3"
+                  rx="1.5"
+                  fill="rgba(17,17,17,0.18)"
                 />
               </g>
-            </g>
 
-            {/* ===== GRABBED POSE — pinched by the cursor at the top edge:
+              {/* ===== KICK POSE — a proper flying side-kick for the intro:
+                 body leaning back over the support leg, kicking leg fully
+                 extended into the card, arms flung for balance, determined
+                 brows, cape whipped back ===== */}
+              <g className="m-kick" opacity="0">
+                {/* cape whipped back by the strike */}
+                <path
+                  d="M10 24 C 0 27 -6 34 -13 30 Q -5 40 -13 46 C -3 48 5 42 13 41 Z"
+                  fill={INK}
+                  opacity="0.88"
+                />
+                {/* support leg planted under the lean */}
+                <rect
+                  x="19"
+                  y="62"
+                  width="3.6"
+                  height="18"
+                  rx="1.8"
+                  fill={INK}
+                  transform="rotate(12 21 62)"
+                />
+                <ellipse cx="18" cy="81" rx="6" ry="3" fill={INK} />
+                {/* kicking leg: fully extended forward */}
+                <rect
+                  x="33"
+                  y="56"
+                  width="28"
+                  height="4.2"
+                  rx="2.1"
+                  fill={INK}
+                  transform="rotate(-13 33 58)"
+                />
+                <ellipse
+                  cx="63"
+                  cy="50"
+                  rx="6.5"
+                  ry="3.4"
+                  fill={INK}
+                  transform="rotate(-13 63 50)"
+                />
+                {/* arms flung for balance */}
+                <rect
+                  x="0"
+                  y="24"
+                  width="15"
+                  height="3.4"
+                  rx="1.7"
+                  fill={INK}
+                  transform="rotate(-36 2 26)"
+                />
+                <rect
+                  x="42"
+                  y="17"
+                  width="15"
+                  height="3.4"
+                  rx="1.7"
+                  fill={INK}
+                  transform="rotate(26 44 19)"
+                />
+                {/* body sheet leaning back into the kick */}
+                <g transform="rotate(-14 28 40)">
+                  <rect
+                    x="4"
+                    y="6"
+                    width="48"
+                    height="58"
+                    rx="8"
+                    fill={CREAM}
+                    stroke={INK}
+                    strokeWidth="3"
+                  />
+                  <path d="M38 7 L51 20 L38 20 Z" fill={INK} />
+                  <circle
+                    cx="13"
+                    cy="15"
+                    r="4.5"
+                    fill="#CAFF43"
+                    stroke={INK}
+                    strokeWidth="2"
+                  />
+                  {/* determined eyes + angry brows */}
+                  <circle
+                    cx="22"
+                    cy="31"
+                    r="5.4"
+                    fill="#FFFFFF"
+                    stroke={INK}
+                    strokeWidth="2.4"
+                  />
+                  <circle
+                    cx="37"
+                    cy="31"
+                    r="5.4"
+                    fill="#FFFFFF"
+                    stroke={INK}
+                    strokeWidth="2.4"
+                  />
+                  <circle cx="23.5" cy="31.5" r="2" fill={INK} />
+                  <circle cx="38.5" cy="31.5" r="2" fill={INK} />
+                  <path
+                    d="M16 24.5 l9 3 M44 27.5 l-9 -3"
+                    stroke={INK}
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                  />
+                  {/* gritted mouth */}
+                  <path
+                    d="M26 42 h8"
+                    stroke={INK}
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                  />
+                  <rect
+                    x="12"
+                    y="50"
+                    width="22"
+                    height="3"
+                    rx="1.5"
+                    fill="rgba(17,17,17,0.25)"
+                  />
+                </g>
+              </g>
+
+              {/* ===== GRABBED POSE — pinched by the cursor at the top edge:
                  the paper gathers into creases at the grip, the body hangs
                  buckled, wide eyes dart up at whatever grabbed it, limp
                  arms and legs dangle, a sweat drop beads off ===== */}
-            <g className="m-grab" opacity="0">
-              {/* limp arms hanging at the sides (behind the sheet) */}
-              <rect
-                x="9.5"
-                y="28"
-                width="3.2"
-                height="15"
-                rx="1.6"
-                fill={INK}
-                transform="rotate(7 11 28)"
-              />
-              <rect
-                x="51.5"
-                y="28"
-                width="3.2"
-                height="15"
-                rx="1.6"
-                fill={INK}
-                transform="rotate(-7 53 28)"
-              />
-              {/* limp dangling legs */}
-              <g className="m-grab-legs">
+              <g className="m-grab" opacity="0">
+                {/* limp arms hanging at the sides (behind the sheet) */}
                 <rect
-                  x="24"
-                  y="64"
-                  width="3.4"
-                  height="16"
-                  rx="1.7"
+                  x="9.5"
+                  y="28"
+                  width="3.2"
+                  height="15"
+                  rx="1.6"
                   fill={INK}
+                  transform="rotate(7 11 28)"
                 />
-                <ellipse cx="26" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
                 <rect
-                  x="37"
-                  y="64"
-                  width="3.4"
-                  height="16"
-                  rx="1.7"
+                  x="51.5"
+                  y="28"
+                  width="3.2"
+                  height="15"
+                  rx="1.6"
                   fill={INK}
+                  transform="rotate(-7 53 28)"
                 />
-                <ellipse cx="39" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
-              </g>
-              {/* buckled sheet hanging from the pinch point */}
-              <path
-                d="M32 5
+                {/* limp dangling legs */}
+                <g className="m-grab-legs">
+                  <rect
+                    x="24"
+                    y="64"
+                    width="3.4"
+                    height="16"
+                    rx="1.7"
+                    fill={INK}
+                  />
+                  <ellipse cx="26" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
+                  <rect
+                    x="37"
+                    y="64"
+                    width="3.4"
+                    height="16"
+                    rx="1.7"
+                    fill={INK}
+                  />
+                  <ellipse cx="39" cy="81.5" rx="5.5" ry="2.8" fill={INK} />
+                </g>
+                {/* buckled sheet hanging from the pinch point */}
+                <path
+                  d="M32 5
                    C 23 7 15 11 13 20
                    C 9 32 13 46 10 58
                    C 15 67 24 64 32 66
                    C 40 64 49 67 54 58
                    C 51 46 55 32 51 20
                    C 49 11 41 7 32 5 Z"
-                fill={CREAM}
-                stroke={INK}
-                strokeWidth="3"
-                strokeLinejoin="round"
-              />
-              {/* creases gathering into the grip */}
-              <path
-                d="M32 6 L23 17 M32 6 L32 19 M32 6 L41 17"
-                stroke={INK}
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.45"
-              />
-              {/* score sticker */}
-              <circle
-                cx="19"
-                cy="26"
-                r="4.2"
-                fill="#CAFF43"
-                stroke={INK}
-                strokeWidth="2"
-              />
-              {/* wide startled eyes, pupils darting UP at the grip */}
-              <circle
-                cx="25"
-                cy="36"
-                r="5.6"
-                fill="#FFFFFF"
-                stroke={INK}
-                strokeWidth="2.4"
-              />
-              <circle
-                cx="41"
-                cy="36"
-                r="5.6"
-                fill="#FFFFFF"
-                stroke={INK}
-                strokeWidth="2.4"
-              />
-              <circle cx="25.5" cy="33.6" r="2" fill={INK} />
-              <circle cx="41.5" cy="33.6" r="2" fill={INK} />
-              {/* worried wobbly mouth */}
-              <path
-                d="M27 48 q 2.5 -2.5 5 0 q 2.5 2.5 5 0"
-                stroke={INK}
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                fill="none"
-              />
-              {/* CV lines, skewed by the buckling */}
-              <rect
-                x="16"
-                y="54"
-                width="20"
-                height="3"
-                rx="1.5"
-                fill="rgba(17,17,17,0.25)"
-                transform="rotate(-3 26 55)"
-              />
-              {/* sweat drop beading off */}
-              <path
-                className="m-grab-sweat"
-                d="M52 24 q 3.6 5.2 0 7.8 q -3.6 -2.6 0 -7.8 Z"
-                fill={INK}
-                opacity="0"
-              />
-            </g>
-
-            {/* ===== STANDING POSE (walking / flying / gesturing) ===== */}
-            <g className="m-stand">
-              {/* Legs */}
-              <g className="m-leg-l">
-                <rect
-                  x="22.5"
-                  y="66"
-                  width="3.5"
-                  height="14"
-                  rx="1.75"
-                  fill={INK}
+                  fill={CREAM}
+                  stroke={INK}
+                  strokeWidth="3"
+                  strokeLinejoin="round"
                 />
-                <ellipse cx="26" cy="81.5" rx="6" ry="3" fill={INK} />
-              </g>
-              <g className="m-leg-r">
-                <rect
-                  x="38"
-                  y="66"
-                  width="3.5"
-                  height="14"
-                  rx="1.75"
-                  fill={INK}
+                {/* creases gathering into the grip */}
+                <path
+                  d="M32 6 L23 17 M32 6 L32 19 M32 6 L41 17"
+                  stroke={INK}
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  fill="none"
+                  opacity="0.45"
                 />
-                <ellipse cx="41.5" cy="81.5" rx="6" ry="3" fill={INK} />
+                {/* score sticker */}
+                <circle
+                  cx="19"
+                  cy="26"
+                  r="4.2"
+                  fill="#CAFF43"
+                  stroke={INK}
+                  strokeWidth="2"
+                />
+                {/* wide startled eyes, pupils darting UP at the grip */}
+                <circle
+                  cx="25"
+                  cy="36"
+                  r="5.6"
+                  fill="#FFFFFF"
+                  stroke={INK}
+                  strokeWidth="2.4"
+                />
+                <circle
+                  cx="41"
+                  cy="36"
+                  r="5.6"
+                  fill="#FFFFFF"
+                  stroke={INK}
+                  strokeWidth="2.4"
+                />
+                <circle cx="25.5" cy="33.6" r="2" fill={INK} />
+                <circle cx="41.5" cy="33.6" r="2" fill={INK} />
+                {/* worried wobbly mouth */}
+                <path
+                  d="M27 48 q 2.5 -2.5 5 0 q 2.5 2.5 5 0"
+                  stroke={INK}
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                {/* CV lines, skewed by the buckling */}
+                <rect
+                  x="16"
+                  y="54"
+                  width="20"
+                  height="3"
+                  rx="1.5"
+                  fill="rgba(17,17,17,0.25)"
+                  transform="rotate(-3 26 55)"
+                />
+                {/* sweat drop beading off */}
+                <path
+                  className="m-grab-sweat"
+                  d="M52 24 q 3.6 5.2 0 7.8 q -3.6 -2.6 0 -7.8 Z"
+                  fill={INK}
+                  opacity="0"
+                />
               </g>
 
-              {/* Waving arm (right side) */}
-              <g className="m-arm">
-                <rect
-                  x="56"
-                  y="36"
-                  width="3.2"
-                  height="13"
-                  rx="1.6"
-                  fill={INK}
-                />
-                <circle cx="57.6" cy="50" r="2.6" fill={INK} />
-              </g>
+              {/* ===== STANDING POSE (walking / flying / gesturing) ===== */}
+              <g className="m-stand">
+                {/* Legs */}
+                <g className="m-leg-l">
+                  <rect
+                    x="22.5"
+                    y="66"
+                    width="3.5"
+                    height="14"
+                    rx="1.75"
+                    fill={INK}
+                  />
+                  <ellipse cx="26" cy="81.5" rx="6" ry="3" fill={INK} />
+                </g>
+                <g className="m-leg-r">
+                  <rect
+                    x="38"
+                    y="66"
+                    width="3.5"
+                    height="14"
+                    rx="1.75"
+                    fill={INK}
+                  />
+                  <ellipse cx="41.5" cy="81.5" rx="6" ry="3" fill={INK} />
+                </g>
 
-              {/* Flashlight held out FORWARD (facing direction) — the mascot
+                {/* Waving arm (right side) */}
+                <g className="m-arm">
+                  <rect
+                    x="56"
+                    y="36"
+                    width="3.2"
+                    height="13"
+                    rx="1.6"
+                    fill={INK}
+                  />
+                  <circle cx="57.6" cy="50" r="2.6" fill={INK} />
+                </g>
+
+                {/* Flashlight held out FORWARD (facing direction) — the mascot
                 hovers beside the CV and rides down its edge, the horizontal
                 yellow beam sweeping the page top-to-bottom like a scanner
                 head. Drawn pointing +x; the facing flip mirrors it. */}
-              <g className="m-torch" opacity="0">
-                {/* ONE beam cone with a gradient — bright at the lens,
+                <g className="m-torch" opacity="0">
+                  {/* ONE beam cone with a gradient — bright at the lens,
                   dissolving over the page. Two stacked polygons read as a
                   "double laser" (four visible edges), so: single shape. */}
-                <defs>
-                  <linearGradient
-                    id="m-torch-beam"
-                    gradientUnits="userSpaceOnUse"
-                    x1="62"
-                    y1="44"
-                    x2="380"
-                    y2="44"
-                  >
-                    <stop offset="0" stopColor="rgba(255,232,130,0.55)" />
-                    <stop offset="0.45" stopColor="rgba(255,220,90,0.3)" />
-                    <stop offset="1" stopColor="rgba(255,220,90,0)" />
-                  </linearGradient>
-                </defs>
-                <polygon
-                  points="62,39 380,-8 380,96 62,49"
-                  fill="url(#m-torch-beam)"
-                />
-                {/* hot glow right at the lens (source brightness, not a
+                  <defs>
+                    <linearGradient
+                      id="m-torch-beam"
+                      gradientUnits="userSpaceOnUse"
+                      x1="62"
+                      y1="44"
+                      x2="380"
+                      y2="44"
+                    >
+                      <stop offset="0" stopColor="rgba(255,232,130,0.55)" />
+                      <stop offset="0.45" stopColor="rgba(255,220,90,0.3)" />
+                      <stop offset="1" stopColor="rgba(255,220,90,0)" />
+                    </linearGradient>
+                  </defs>
+                  <polygon
+                    points="62,39 380,-8 380,96 62,49"
+                    fill="url(#m-torch-beam)"
+                  />
+                  {/* hot glow right at the lens (source brightness, not a
                   second cone) */}
-                <ellipse
-                  cx="66"
-                  cy="44"
-                  rx="7"
-                  ry="9"
-                  fill="rgba(255,238,150,0.5)"
-                />
-                {/* torch: ink body, white grip band, wider head, cream lens */}
-                <rect x="41" y="40" width="13" height="8" rx="2" fill={INK} />
-                <rect
-                  x="44.5"
-                  y="41.5"
-                  width="4.5"
-                  height="5"
-                  rx="1"
-                  fill="#FFFFFF"
-                />
-                <rect x="54" y="37" width="7.5" height="14" rx="2" fill={INK} />
-                <rect
-                  x="61"
-                  y="38.5"
-                  width="2.6"
-                  height="11"
-                  rx="1.2"
-                  fill="#FFF7D6"
-                />
-              </g>
+                  <ellipse
+                    cx="66"
+                    cy="44"
+                    rx="7"
+                    ry="9"
+                    fill="rgba(255,238,150,0.5)"
+                  />
+                  {/* torch: ink body, white grip band, wider head, cream lens */}
+                  <rect x="41" y="40" width="13" height="8" rx="2" fill={INK} />
+                  <rect
+                    x="44.5"
+                    y="41.5"
+                    width="4.5"
+                    height="5"
+                    rx="1"
+                    fill="#FFFFFF"
+                  />
+                  <rect
+                    x="54"
+                    y="37"
+                    width="7.5"
+                    height="14"
+                    rx="2"
+                    fill={INK}
+                  />
+                  <rect
+                    x="61"
+                    y="38.5"
+                    width="2.6"
+                    height="11"
+                    rx="1.2"
+                    fill="#FFF7D6"
+                  />
+                </g>
 
-              {/* Finger-snap spark — flashes when it snaps at the rows */}
-              <path
-                className="m-spark"
-                d="M60 34 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4 Z"
-                fill="#CAFF43"
-                stroke={INK}
-                strokeWidth="1.2"
-                opacity="0"
-              />
+                {/* Finger-snap spark — flashes when it snaps at the rows */}
+                <path
+                  className="m-spark"
+                  d="M60 34 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4 Z"
+                  fill="#CAFF43"
+                  stroke={INK}
+                  strokeWidth="1.2"
+                  opacity="0"
+                />
 
-              {/* Paper body */}
-              <g className="m-body">
-                {/* Superhero cape — hangs straight down BEHIND the sheet,
+                {/* Paper body */}
+                <g className="m-body">
+                  {/* Superhero cape — hangs straight down BEHIND the sheet,
                   from the neck to ~3/4 of the legs, peeking out on both
                   sides, with a cloud/wave scalloped hem */}
-                <path
-                  className="m-cape"
-                  d="M11 16
+                  <path
+                    className="m-cape"
+                    d="M11 16
                    C 3 28 0 46 2 64
                    Q 4 74 8 67
                    Q 12 77 17 68
@@ -2376,190 +2459,191 @@ export default function HeroMascot() {
                    Q 52 76 56 66
                    C 60 46 59 28 53 16
                    Z"
-                  fill={INK}
-                  opacity="0.9"
-                />
-                <rect
-                  x="6"
-                  y="2"
-                  width="52"
-                  height="66"
-                  rx="9"
-                  fill={CREAM}
-                  stroke={INK}
-                  strokeWidth="3"
-                />
-                {/* Folded corner */}
-                <path d="M43 3 L57 17 L43 17 Z" fill={INK} />
-                {/* Score sticker */}
-                <circle
-                  cx="15"
-                  cy="12"
-                  r="5"
-                  fill="#CAFF43"
-                  stroke={INK}
-                  strokeWidth="2"
-                />
+                    fill={INK}
+                    opacity="0.9"
+                  />
+                  <rect
+                    x="6"
+                    y="2"
+                    width="52"
+                    height="66"
+                    rx="9"
+                    fill={CREAM}
+                    stroke={INK}
+                    strokeWidth="3"
+                  />
+                  {/* Folded corner */}
+                  <path d="M43 3 L57 17 L43 17 Z" fill={INK} />
+                  {/* Score sticker */}
+                  <circle
+                    cx="15"
+                    cy="12"
+                    r="5"
+                    fill="#CAFF43"
+                    stroke={INK}
+                    strokeWidth="2"
+                  />
 
-                {/* Eyes */}
-                <circle
-                  cx="24"
-                  cy="30"
-                  r="6"
-                  fill="#FFFFFF"
-                  stroke={INK}
-                  strokeWidth="2.5"
-                />
-                <circle
-                  cx="41"
-                  cy="30"
-                  r="6"
-                  fill="#FFFFFF"
-                  stroke={INK}
-                  strokeWidth="2.5"
-                />
-                <g className="m-pupil">
-                  <circle cx="24" cy="30" r="2.6" fill={INK} />
-                </g>
-                <g className="m-pupil">
-                  <circle cx="41" cy="30" r="2.6" fill={INK} />
-                </g>
+                  {/* Eyes */}
+                  <circle
+                    cx="24"
+                    cy="30"
+                    r="6"
+                    fill="#FFFFFF"
+                    stroke={INK}
+                    strokeWidth="2.5"
+                  />
+                  <circle
+                    cx="41"
+                    cy="30"
+                    r="6"
+                    fill="#FFFFFF"
+                    stroke={INK}
+                    strokeWidth="2.5"
+                  />
+                  <g className="m-pupil">
+                    <circle cx="24" cy="30" r="2.6" fill={INK} />
+                  </g>
+                  <g className="m-pupil">
+                    <circle cx="41" cy="30" r="2.6" fill={INK} />
+                  </g>
 
-                {/* Mouth */}
-                <path
-                  d="M29 41 Q32.5 45 36 41"
-                  stroke={INK}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
+                  {/* Mouth */}
+                  <path
+                    d="M29 41 Q32.5 45 36 41"
+                    stroke={INK}
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
 
-                {/* Dizzy overlay — X eyes covering the normal ones + a ring
+                  {/* Dizzy overlay — X eyes covering the normal ones + a ring
                   of little stars orbiting the head (shown after the mascot
                   has been thrown around too much) */}
-                <g className="m-dizzy" opacity="0">
-                  <circle cx="24" cy="30" r="5.2" fill="#FFFFFF" />
-                  <circle cx="41" cy="30" r="5.2" fill="#FFFFFF" />
-                  <path
-                    d="M21 27 l6 6 M27 27 l-6 6 M38 27 l6 6 M44 27 l-6 6"
-                    stroke={INK}
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                  />
-                  <g className="m-dizzy-stars">
+                  <g className="m-dizzy" opacity="0">
+                    <circle cx="24" cy="30" r="5.2" fill="#FFFFFF" />
+                    <circle cx="41" cy="30" r="5.2" fill="#FFFFFF" />
                     <path
-                      d="M46 -6 l1.5 3.6 3.6 1.5 -3.6 1.5 -1.5 3.6 -1.5 -3.6 -3.6 -1.5 3.6 -1.5 Z"
-                      fill={INK}
-                      opacity="0.8"
-                    />
-                    <path
-                      d="M14 -8 l1.3 3.1 3.1 1.3 -3.1 1.3 -1.3 3.1 -1.3 -3.1 -3.1 -1.3 3.1 -1.3 Z"
-                      fill="#CAFF43"
+                      d="M21 27 l6 6 M27 27 l-6 6 M38 27 l6 6 M44 27 l-6 6"
                       stroke={INK}
-                      strokeWidth="1.2"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                    />
+                    <g className="m-dizzy-stars">
+                      <path
+                        d="M46 -6 l1.5 3.6 3.6 1.5 -3.6 1.5 -1.5 3.6 -1.5 -3.6 -3.6 -1.5 3.6 -1.5 Z"
+                        fill={INK}
+                        opacity="0.8"
+                      />
+                      <path
+                        d="M14 -8 l1.3 3.1 3.1 1.3 -3.1 1.3 -1.3 3.1 -1.3 -3.1 -3.1 -1.3 3.1 -1.3 Z"
+                        fill="#CAFF43"
+                        stroke={INK}
+                        strokeWidth="1.2"
+                      />
+                      <path
+                        d="M30 -16 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4 Z"
+                        fill={INK}
+                        opacity="0.6"
+                      />
+                    </g>
+                  </g>
+
+                  {/* Black sunglasses — dropped on for the Mbappé celebration */}
+                  <g className="m-shades" opacity="0">
+                    <rect
+                      x="16.5"
+                      y="25"
+                      width="14"
+                      height="10"
+                      rx="3.5"
+                      fill={INK}
+                    />
+                    <rect
+                      x="33.5"
+                      y="25"
+                      width="14"
+                      height="10"
+                      rx="3.5"
+                      fill={INK}
+                    />
+                    <rect
+                      x="29"
+                      y="27.5"
+                      width="6"
+                      height="2.5"
+                      rx="1.25"
+                      fill={INK}
+                    />
+                    <rect
+                      x="12"
+                      y="27"
+                      width="5.5"
+                      height="2.5"
+                      rx="1.25"
+                      fill={INK}
+                    />
+                    <rect
+                      x="46.5"
+                      y="27"
+                      width="5.5"
+                      height="2.5"
+                      rx="1.25"
+                      fill={INK}
                     />
                     <path
-                      d="M30 -16 l1.4 3.4 3.4 1.4 -3.4 1.4 -1.4 3.4 -1.4 -3.4 -3.4 -1.4 3.4 -1.4 Z"
-                      fill={INK}
-                      opacity="0.6"
+                      d="M19.5 28 l4 0"
+                      stroke="rgba(255,255,255,0.65)"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
                     />
                   </g>
-                </g>
 
-                {/* Black sunglasses — dropped on for the Mbappé celebration */}
-                <g className="m-shades" opacity="0">
+                  {/* Arms folded across the belly — the celebration stance */}
+                  <g className="m-arms-crossed" opacity="0">
+                    <rect
+                      x="11"
+                      y="48"
+                      width="32"
+                      height="6.5"
+                      rx="3.25"
+                      fill={INK}
+                      transform="rotate(11 27 51)"
+                    />
+                    <rect
+                      x="21"
+                      y="48"
+                      width="32"
+                      height="6.5"
+                      rx="3.25"
+                      fill={INK}
+                      transform="rotate(-11 37 51)"
+                    />
+                    <circle cx="44" cy="54.5" r="3.2" fill={INK} />
+                    <circle cx="20" cy="54.5" r="3.2" fill={INK} />
+                  </g>
+
+                  {/* CV skeleton lines */}
                   <rect
-                    x="16.5"
-                    y="25"
-                    width="14"
-                    height="10"
-                    rx="3.5"
-                    fill={INK}
+                    x="14"
+                    y="52"
+                    width="26"
+                    height="3"
+                    rx="1.5"
+                    fill="rgba(17,17,17,0.28)"
                   />
                   <rect
-                    x="33.5"
-                    y="25"
-                    width="14"
-                    height="10"
-                    rx="3.5"
-                    fill={INK}
-                  />
-                  <rect
-                    x="29"
-                    y="27.5"
-                    width="6"
-                    height="2.5"
-                    rx="1.25"
-                    fill={INK}
-                  />
-                  <rect
-                    x="12"
-                    y="27"
-                    width="5.5"
-                    height="2.5"
-                    rx="1.25"
-                    fill={INK}
-                  />
-                  <rect
-                    x="46.5"
-                    y="27"
-                    width="5.5"
-                    height="2.5"
-                    rx="1.25"
-                    fill={INK}
-                  />
-                  <path
-                    d="M19.5 28 l4 0"
-                    stroke="rgba(255,255,255,0.65)"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
+                    x="14"
+                    y="59"
+                    width="35"
+                    height="3"
+                    rx="1.5"
+                    fill="rgba(17,17,17,0.18)"
                   />
                 </g>
-
-                {/* Arms folded across the belly — the celebration stance */}
-                <g className="m-arms-crossed" opacity="0">
-                  <rect
-                    x="11"
-                    y="48"
-                    width="32"
-                    height="6.5"
-                    rx="3.25"
-                    fill={INK}
-                    transform="rotate(11 27 51)"
-                  />
-                  <rect
-                    x="21"
-                    y="48"
-                    width="32"
-                    height="6.5"
-                    rx="3.25"
-                    fill={INK}
-                    transform="rotate(-11 37 51)"
-                  />
-                  <circle cx="44" cy="54.5" r="3.2" fill={INK} />
-                  <circle cx="20" cy="54.5" r="3.2" fill={INK} />
-                </g>
-
-                {/* CV skeleton lines */}
-                <rect
-                  x="14"
-                  y="52"
-                  width="26"
-                  height="3"
-                  rx="1.5"
-                  fill="rgba(17,17,17,0.28)"
-                />
-                <rect
-                  x="14"
-                  y="59"
-                  width="35"
-                  height="3"
-                  rx="1.5"
-                  fill="rgba(17,17,17,0.18)"
-                />
               </g>
-            </g>
-          </svg>
+            </svg>
+          </div>
         </div>
       </div>
     </div>

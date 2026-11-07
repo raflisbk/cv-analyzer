@@ -24,7 +24,7 @@ const separator = (
 export default function FloatingFooter() {
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden py-2"
+      className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
       style={{
         background: "#1A170F",
         borderTop: "1px solid rgba(255,255,255,0.05)",

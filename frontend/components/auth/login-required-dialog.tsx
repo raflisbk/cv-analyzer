@@ -65,8 +65,19 @@ export function LoginRequiredDialog() {
           aria-label="Close"
           className="absolute right-5 top-5 rounded-full p-1.5 text-[#141414]/40 transition-colors hover:bg-[#141414]/[0.06] hover:text-[#141414]/80"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M18 6L6 18M6 6l12 12"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            />
           </svg>
         </button>
 
@@ -90,8 +101,8 @@ export function LoginRequiredDialog() {
             Sign in to continue
           </DialogTitle>
           <DialogDescription className="max-w-[26ch] text-[15px] leading-relaxed text-[#141414]/60">
-            You&apos;ll need an account to analyze your CV and come back to
-            your results anytime.
+            You&apos;ll need an account to analyze your CV and come back to your
+            results anytime.
           </DialogDescription>
         </DialogHeader>
 

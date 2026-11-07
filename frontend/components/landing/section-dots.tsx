@@ -25,6 +25,20 @@ const SECTIONS = [
 export default function SectionDots() {
   const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
 
+  const scrollToSection = (id: string) => {
+    const section = document.getElementById(id);
+    if (!section) {
+      return;
+    }
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    section.scrollIntoView({
+      behavior: reducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -60,11 +74,7 @@ export default function SectionDots() {
             type="button"
             aria-label={label}
             aria-current={active ? "true" : undefined}
-            onClick={() =>
-              document
-                .getElementById(id)
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
+            onClick={() => scrollToSection(id)}
             className="group relative flex items-center justify-center p-1"
           >
             {/* Hover label — absolutely positioned so the rail itself stays

@@ -20,7 +20,7 @@ export default function UploadZoneCTA() {
         <ArrowRight className="w-5 h-5 text-[#141414]" />
       </Link>
       <p className="text-xs text-[#F5F2D8]/40 sm:ml-2">
-        PDF or DOCX · Max 10 MB
+        PDF or DOCX · Max 5 MB
       </p>
     </div>
   );

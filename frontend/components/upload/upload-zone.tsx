@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { Upload } from "lucide-react";
+import { Sparkles, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UploadZoneProps {
@@ -11,7 +11,10 @@ interface UploadZoneProps {
   disabled?: boolean;
 }
 
-export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps) {
+export function UploadZone({
+  onFileSelected,
+  disabled = false,
+}: UploadZoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const onDrop = useCallback(
@@ -21,7 +24,7 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
       }
       setIsDragOver(false);
     },
-    [onFileSelected]
+    [onFileSelected],
   );
 
   const onDropRejected = useCallback(() => {
@@ -37,7 +40,8 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
     accept: {
       "application/pdf": [".pdf"],
       "application/msword": [".doc"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        [".docx"],
     },
     maxSize: 5 * 1024 * 1024,
     multiple: false,
@@ -58,17 +62,19 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
         isDragOver || isDragActive
           ? "border-[#CAFF43] bg-[#CAFF43]/6 scale-[1.01]"
           : "border-[#F5F2D8]/15 hover:border-[#CAFF43]/50 hover:bg-[#CAFF43]/3",
-        disabled && "opacity-40 cursor-not-allowed"
+        disabled && "opacity-40 cursor-not-allowed",
       )}
     >
       <input {...getInputProps()} />
 
-      <div className={cn(
-        "w-20 h-20 rounded-full flex items-center justify-center mb-5 transition-colors duration-200",
-        isDragOver || isDragActive
-          ? "bg-[#CAFF43] text-[#141414]"
-          : "bg-[#CAFF43]/15 text-[#CAFF43]"
-      )}>
+      <div
+        className={cn(
+          "w-20 h-20 rounded-full flex items-center justify-center mb-5 transition-colors duration-200",
+          isDragOver || isDragActive
+            ? "bg-[#CAFF43] text-[#141414]"
+            : "bg-[#CAFF43]/15 text-[#CAFF43]",
+        )}
+      >
         <Upload className="w-9 h-9" />
       </div>
 
@@ -78,23 +84,32 @@ export function UploadZone({ onFileSelected, disabled = false }: UploadZoneProps
       <p className="text-sm text-[#F5F2D8]/50 mb-6 text-center max-w-xs">
         AI scores your CV on clarity, impact, completeness & relevance
       </p>
+      <p className="text-xs text-[#F5F2D8]/40 mb-5 text-center max-w-xs">
+        Most analyses finish in about 20 seconds.
+      </p>
 
       <div className="flex items-center gap-2 mb-6 flex-wrap justify-center">
         <span className="rounded-full bg-[#CAFF43]/15 text-[#CAFF43] text-xs font-bold px-3 py-1">
-          ✦ AI Scoring
+          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" /> AI
+          Scoring
         </span>
         <span className="rounded-full bg-[#FF8C42]/15 text-[#FF8C42] text-xs font-bold px-3 py-1">
-          ✦ Skill Gap
+          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" /> Skill
+          Gap
         </span>
         <span className="rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] text-xs font-bold px-3 py-1">
-          ✦ ATS Check
+          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" /> ATS
+          Check
         </span>
       </div>
 
       <button
         type="button"
         disabled={disabled}
-        onClick={(e) => { e.stopPropagation(); open(); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          open();
+        }}
         className="rounded-full bg-[#CAFF43] text-[#141414] text-sm font-display font-extrabold
                    px-8 py-3 hover:bg-[#CAFF43]/85 active:scale-95 transition-all duration-150
                    disabled:opacity-40 disabled:cursor-not-allowed"

@@ -12,7 +12,10 @@ interface GoogleLoginButtonProps {
   className?: string;
 }
 
-export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonProps) {
+export function GoogleLoginButton({
+  onSuccess,
+  className,
+}: GoogleLoginButtonProps) {
   const setUser = useAuthStore((s) => s.setUser);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +39,7 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
 
   return (
     <button
+      type="button"
       onClick={() => login()}
       disabled={isLoading}
       className={cn(
@@ -46,7 +50,7 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
         "hover:-translate-y-0.5 hover:border-[#141414]/[0.16] hover:text-[#141414]",
         "hover:shadow-[0_1px_2px_rgba(20,20,20,0.05),0_6px_20px_rgba(20,20,20,0.10)]",
         "disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50",
-        className
+        className,
       )}
     >
       <span
@@ -72,7 +76,11 @@ export function GoogleLoginButton({ onSuccess, className }: GoogleLoginButtonPro
 
 function GoogleIcon() {
   return (
-    <svg className="h-3.5 w-3.5 flex-none" viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className="h-3.5 w-3.5 flex-none"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
         fill="#4285F4"

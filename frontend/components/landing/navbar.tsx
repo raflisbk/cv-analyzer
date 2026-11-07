@@ -149,7 +149,7 @@ export default function Navbar() {
             <button
               aria-label="Open navigation menu"
               aria-expanded={mobileOpen}
-              className="md:hidden ml-auto flex items-center justify-center h-9 w-9 rounded-xl transition-all duration-150 text-[#141414]/60 bg-[#141414]/[0.06] border border-[#141414]/[0.09]"
+              className="md:hidden ml-auto flex h-11 w-11 items-center justify-center rounded-xl border border-[#141414]/[0.09] bg-[#141414]/[0.06] text-[#141414]/60 transition-all duration-150"
             >
               <Menu className="h-4.5 w-4.5" />
             </button>
@@ -173,7 +173,7 @@ export default function Navbar() {
               <SheetClose asChild>
                 <button
                   aria-label="Close menu"
-                  className="flex h-8 w-8 items-center justify-center rounded-full transition-colors bg-[#141414]/[0.06] border border-[#141414]/[0.09]"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-[#141414]/[0.09] bg-[#141414]/[0.06] transition-colors"
                 >
                   <X className="h-4 w-4 text-[#141414]/60" />
                 </button>
@@ -245,7 +245,7 @@ export default function Navbar() {
                   </div>
                   <button
                     onClick={handleMobileLogout}
-                    className="flex-none rounded-full px-3 py-1.5 text-[12px] font-bold text-[#141414]/45 transition-colors hover:bg-[#141414]/[0.06] hover:text-[#141414]/75"
+                    className="flex min-h-11 flex-none items-center rounded-full px-3 py-1.5 text-[12px] font-bold text-[#141414]/45 transition-colors hover:bg-[#141414]/[0.06] hover:text-[#141414]/75"
                   >
                     Logout
                   </button>

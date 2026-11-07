@@ -17,7 +17,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (process.env.NODE_ENV === "development" && !GOOGLE_CLIENT_ID) {
       console.warn(
-        "[AuthProvider] NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set. Google OAuth will not work."
+        "[AuthProvider] NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set. Google OAuth will not work.",
       );
     }
   }, []);

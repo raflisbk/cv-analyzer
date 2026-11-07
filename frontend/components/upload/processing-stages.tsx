@@ -10,12 +10,12 @@ interface ProcessingStagesProps {
 }
 
 const stages = [
-  { id: "uploading",   label: "Uploading",                    color: "#FF8C42" },
-  { id: "extracting",  label: "Extracting text",              color: "#CAFF43" },
-  { id: "analyzing",   label: "Analyzing content",            color: "#8B5CF6" },
-  { id: "generating",  label: "Generating suggestions",       color: "#FF4FCB" },
-  { id: "comparing",   label: "Comparing against job role",   color: "#CAFF43" },
-  { id: "complete",    label: "Complete",                     color: "#CAFF43" },
+  { id: "uploading", label: "Uploading", color: "#FF8C42" },
+  { id: "extracting", label: "Extracting text", color: "#CAFF43" },
+  { id: "analyzing", label: "Analyzing content", color: "#8B5CF6" },
+  { id: "generating", label: "Generating suggestions", color: "#FF4FCB" },
+  { id: "comparing", label: "Comparing against job role", color: "#CAFF43" },
+  { id: "complete", label: "Complete", color: "#CAFF43" },
 ];
 
 const STAGE_MAP: Record<string, string> = {
@@ -36,7 +36,11 @@ function toUiStage(backendStage: string): string {
   return STAGE_MAP[backendStage] ?? "uploading";
 }
 
-export function ProcessingStages({ currentStage, percentage, message }: ProcessingStagesProps) {
+export function ProcessingStages({
+  currentStage,
+  percentage,
+  message,
+}: ProcessingStagesProps) {
   const uiStage = toUiStage(currentStage);
   const currentStageIndex = stages.findIndex((s) => s.id === uiStage);
   const activeStage = stages[Math.max(0, currentStageIndex)];
@@ -53,14 +57,18 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
       <div className="w-full h-2.5 rounded-full bg-[#F5F2D8]/8 overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${percentage}%`, backgroundColor: activeStage?.color ?? "#CAFF43" }}
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: activeStage?.color ?? "#CAFF43",
+          }}
         />
       </div>
 
       <div className="space-y-3">
         {stages.map((stage, index) => {
           const isActive = stage.id === uiStage;
-          const isComplete = uiStage === "complete" ? true : index < currentStageIndex;
+          const isComplete =
+            uiStage === "complete" ? true : index < currentStageIndex;
           const isPending = !isActive && !isComplete;
 
           return (
@@ -79,25 +87,32 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
                 <Circle className="w-5 h-5 flex-shrink-0 text-[#F5F2D8]/20" />
               )}
 
-              <span className={cn(
-                "text-sm flex-1",
-                isActive   && "font-extrabold text-[#F5F2D8]",
-                isComplete && "text-[#F5F2D8]/40",
-                isPending  && "text-[#F5F2D8]/25"
-              )}>
+              <span
+                className={cn(
+                  "text-sm flex-1",
+                  isActive && "font-extrabold text-[#F5F2D8]",
+                  isComplete && "text-[#F5F2D8]/40",
+                  isPending && "text-[#F5F2D8]/25",
+                )}
+              >
                 {stage.label}
               </span>
 
               {isActive && (
                 <span
                   className="text-xs font-bold rounded-full px-2.5 py-0.5"
-                  style={{ backgroundColor: `${stage.color}20`, color: stage.color }}
+                  style={{
+                    backgroundColor: `${stage.color}20`,
+                    color: stage.color,
+                  }}
                 >
                   {percentage}%
                 </span>
               )}
               {isComplete && (
-                <span className="text-xs font-bold text-[#F5F2D8]/25">Done</span>
+                <span className="text-xs font-bold text-[#F5F2D8]/25">
+                  Done
+                </span>
               )}
             </div>
           );
@@ -106,4 +121,3 @@ export function ProcessingStages({ currentStage, percentage, message }: Processi
     </div>
   );
 }
-
