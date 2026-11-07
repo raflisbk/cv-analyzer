@@ -1,6 +1,15 @@
+from io import BytesIO
+
 import pytest
+from docx import Document
 
 from app.core.security import FileValidationError, validate_file
+
+
+def _real_docx_bytes() -> bytes:
+    buffer = BytesIO()
+    Document().save(buffer)
+    return buffer.getvalue()
 
 
 @pytest.mark.asyncio
@@ -47,8 +56,7 @@ async def test_validate_invalid_mime_type():
 @pytest.mark.asyncio
 async def test_validate_docx_success():
     """Test valid DOCX file passes validation (ZIP-based format)"""
-    # DOCX files start with PK (ZIP magic bytes)
-    docx_content = b"PK\x03\x04" + b"\x00" * 100
+    docx_content = _real_docx_bytes()
     result = await validate_file("document.docx", docx_content)
     assert result["extension"] == ".docx"
     assert result["filename"] == "document.docx"
