@@ -74,5 +74,5 @@ def _on_worker_init(**_kwargs):
         log.propagate = False
         log.level = logging.INFO
 
-    for name in ("httpx", "httpcore", "huggingface_hub", "urllib3"):
+    for name in ("httpx", "httpcore", "urllib3"):
         logging.getLogger(name).setLevel(logging.WARNING)
