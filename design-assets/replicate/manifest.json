@@ -1,0 +1,33 @@
+{
+  "generated": "2026-11-08",
+  "note": "Replicate outputs used for the pathkr landing redesign. frontend/public/landing holds the files the site serves; this folder keeps originals, cut-outs and rejected variants.",
+  "models": {
+    "image": "black-forest-labs/flux-1.1-pro (1:1, png, safety_tolerance 5)",
+    "cutout": "851-labs/background-remover",
+    "logo_attempts": "recraft-ai/recraft-v3-svg"
+  },
+  "served": {
+    "3d/cv-sheet.webp": "flux v2 + cutout",
+    "3d/trophy.webp": "flux v2 + cutout",
+    "3d/magnifier.webp": "flux v2 + cutout",
+    "3d/chart.webp": "flux v2 + cutout",
+    "3d/shield.webp": "flux v2 + cutout",
+    "3d/briefcase.webp": "flux v2 + cutout",
+    "logo/*.svg": "hand-built from Bricolage Grotesque 800 outlines, not generated"
+  },
+  "prompts": {
+    "style_v2": "glossy 3D clay render in the style of a toy, extremely vivid saturated flat colors, only pure red-orange #f42902, bright neon mint green #83fd80 and clean white #fdfdff, plain flat white background, soft contact shadow, absolutely no text, no letters, no words, centered, chunky rounded shapes",
+    "cv-sheet": "a single tilted blank white paper document with a red-orange rounded header block, four plain gray rounded bars as lines, a small red-orange circle avatar at top left, and a large neon mint green rounded checkmark badge overlapping the lower corner, + style_v2",
+    "trophy": "a chunky red-orange trophy cup with a white star and mint green base, + style_v2",
+    "magnifier": "a chunky magnifying glass with a mint green lens rim and red-orange handle over a blank white paper, + style_v2",
+    "chart": "a chunky 3D bar chart with three rising rounded bars in red-orange, white and neon mint green, with a small white star on the tallest bar, + style_v2",
+    "shield": "a chunky white shield with a big neon mint green checkmark and a red-orange rim, + style_v2",
+    "briefcase": "a chunky red-orange briefcase with a white handle and a mint green clasp, + style_v2",
+    "rejected_v1": "first pass used a softer style prompt (soft glossy 3D clay render, pale mint background); output came out pastel and the resume sheet carried the word Resume",
+    "bolt": "a chunky lightning bolt in neon mint green with a red-orange outline puff; rejected, washed-out colours"
+  },
+  "known_issues": [
+    "Mint in the renders reads pastel next to #83fd80; flatten in CSS or regenerate",
+    "shield cut-out is semi-transparent glass, use on red or ink grounds"
+  ]
+}
