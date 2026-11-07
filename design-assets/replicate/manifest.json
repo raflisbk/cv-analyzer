@@ -7,17 +7,17 @@
     "logo_attempts": "recraft-ai/recraft-v3-svg"
   },
   "served": {
-    "3d/cv-sheet.webp": "flux v2 + cutout",
-    "3d/trophy.webp": "flux v2 + cutout",
-    "3d/magnifier.webp": "flux v2 + cutout",
-    "3d/chart.webp": "flux v2 + cutout",
-    "3d/shield.webp": "flux v2 + cutout",
-    "3d/briefcase.webp": "flux v2 + cutout",
-    "logo/*.svg": "hand-built from Bricolage Grotesque 800 outlines, not generated",
-    "3d/cloud-upload.webp": "flux v2 + cutout (process step 1)",
-    "3d/scanner.webp": "flux v2 + cutout (process step 2)",
-    "3d/pencil.webp": "flux v2 + cutout (process step 5)",
-    "3d/pdf-export.webp": "flux v2 + cutout (process step 6)"
+    "3d/cv-sheet.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/trophy.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/magnifier.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/chart.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/shield.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/briefcase.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/cloud-upload.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/scanner.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/pencil.webp": "v3 yellow, flux + background removal + hue remap",
+    "3d/pdf-export.webp": "v3 yellow, flux + background removal + hue remap",
+    "logo/*.svg": "hand-built from Bricolage Grotesque 800 outlines, not generated"
   },
   "prompts": {
     "style_v2": "glossy 3D clay render in the style of a toy, extremely vivid saturated flat colors, only pure red-orange #f42902, bright neon mint green #83fd80 and clean white #fdfdff, plain flat white background, soft contact shadow, absolutely no text, no letters, no words, centered, chunky rounded shapes",
@@ -35,8 +35,10 @@
     "pdf-export": "a chunky white document with a folded corner, a red-orange corner tab, and a thick neon mint downward arrow badge at the bottom, + style_v2"
   },
   "known_issues": [
-    "Mint in the renders reads pastel next to #83fd80; flatten in CSS or regenerate",
-    "shield cut-out is semi-transparent glass, use on red or ink grounds"
+    "Yellow accents are hue-remapped from amber renders; if regenerating, apply the same remap or prompt a green-free palette and check highlights",
+    "shield cut-out is semi-transparent glass, use on red or ink grounds",
+    "v2 (green) files stay in raw/ and cutout/ as *-v2"
   ],
-  "note_process": "cloud-upload, scanner, pencil and pdf-export were generated 2026-11-08 for the process section; background removal ran on the base64 of the flux output"
+  "note_process": "cloud-upload, scanner, pencil and pdf-export were generated 2026-11-08 for the process section; background removal ran on the base64 of the flux output",
+  "palette_change": "2026-11-08: owner asked for a real punk yellow; accent changed from #83fd80 (mint) to #f2ff00. Objects regenerated with flux-1.1-pro using \"electric acid punk yellow #f2ff00 ... no green anywhere\"; the model rendered amber, so the yellow regions were remapped to #f2ff00 by a hue remap (hue 32-66 deg -> ~63.5, saturation and value lifted). The CV sheet reuses the v2 render (hue remap of the green badge) because the white sheet vanished in the new background removal."
 }
