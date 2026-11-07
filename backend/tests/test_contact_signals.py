@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from app.services.contact_signals import has_phone_number
@@ -31,3 +33,19 @@ def test_detects_real_phone_numbers(text):
 )
 def test_ignores_dates_and_amounts(text):
     assert has_phone_number(text) is False
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "2020" + " " * 200_000 + "20219 ",
+        "1 " * 200_000 + "a",
+        "+" + "1" * 200_000 + "x",
+        "(" * 100_000 + "12345678",
+    ],
+)
+def test_hostile_input_is_scanned_in_linear_time(text):
+    started = time.perf_counter()
+    has_phone_number(text)
+
+    assert time.perf_counter() - started < 1.0

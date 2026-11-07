@@ -1,7 +1,7 @@
 import re
 
-_PHONE_CANDIDATE = re.compile(r"(?<![\w@/])\+?\(?\d[\d\s().\-]{6,}\d(?![\w@])")
-_YEAR_RANGE = re.compile(r"(?:(?:19|20)\d{2}\s*[-–.]?\s*)+")
+_PHONE_CANDIDATE = re.compile(r"(?<![\w@/])\+?\(?\d[\d\s().\-]{6,20}\d(?![\w@])")
+_YEAR_RANGE = re.compile(r"(?:(?:19|20)\d{2}(?:\s?[-–.]\s?|\s)?)+")
 _THOUSANDS_GROUPED = re.compile(r"\d{1,3}(?:[.,]\d{3})+")
 
 _EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}")
