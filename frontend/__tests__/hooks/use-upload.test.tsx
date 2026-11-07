@@ -10,7 +10,11 @@ vi.mock("@/lib/api", () => ({
   ApiError: class extends Error {
     code: string;
     details?: Record<string, unknown>;
-    constructor(code: string, message: string, details?: Record<string, unknown>) {
+    constructor(
+      code: string,
+      message: string,
+      details?: Record<string, unknown>,
+    ) {
       super(message);
       this.name = "ApiError";
       this.code = code;
@@ -29,9 +33,7 @@ function createWrapper() {
   });
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   };
 }
@@ -42,7 +44,9 @@ describe("useUpload", () => {
   });
 
   it("rejects files larger than 5MB", async () => {
-    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useUpload(), {
+      wrapper: createWrapper(),
+    });
     const bigFile = new File(["x".repeat(6 * 1024 * 1024)], "big.pdf", {
       type: "application/pdf",
     });
@@ -60,7 +64,9 @@ describe("useUpload", () => {
   });
 
   it("rejects unsupported file types", async () => {
-    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useUpload(), {
+      wrapper: createWrapper(),
+    });
     const textFile = new File(["content"], "test.txt", {
       type: "text/plain",
     });
@@ -79,7 +85,9 @@ describe("useUpload", () => {
 
   it("accepts PDF files", async () => {
     vi.mocked(uploadFile).mockResolvedValue({ job_id: "job-123" });
-    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useUpload(), {
+      wrapper: createWrapper(),
+    });
     const pdfFile = new File(["content"], "test.pdf", {
       type: "application/pdf",
     });
@@ -94,7 +102,9 @@ describe("useUpload", () => {
 
   it("accepts DOCX files", async () => {
     vi.mocked(uploadFile).mockResolvedValue({ job_id: "job-456" });
-    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useUpload(), {
+      wrapper: createWrapper(),
+    });
     const docxFile = new File(["content"], "test.docx", {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     });
@@ -108,7 +118,9 @@ describe("useUpload", () => {
 
   it("accepts DOC files", async () => {
     vi.mocked(uploadFile).mockResolvedValue({ job_id: "job-789" });
-    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useUpload(), {
+      wrapper: createWrapper(),
+    });
     const docFile = new File(["content"], "test.doc", {
       type: "application/msword",
     });
@@ -122,13 +134,22 @@ describe("useUpload", () => {
 
   it("passes targetRole option to uploadFile", async () => {
     vi.mocked(uploadFile).mockResolvedValue({ job_id: "job-role-test" });
-    const { result } = renderHook(() => useUpload(), { wrapper: createWrapper() });
-    const pdfFile = new File(["content"], "test.pdf", { type: "application/pdf" });
-
-    await act(async () => {
-      await result.current.mutateAsync({ file: pdfFile, options: { targetRole: "ml_engineer" } });
+    const { result } = renderHook(() => useUpload(), {
+      wrapper: createWrapper(),
+    });
+    const pdfFile = new File(["content"], "test.pdf", {
+      type: "application/pdf",
     });
 
-    expect(uploadFile).toHaveBeenCalledWith(pdfFile, { targetRole: "ml_engineer" });
+    await act(async () => {
+      await result.current.mutateAsync({
+        file: pdfFile,
+        options: { targetRole: "ml_engineer" },
+      });
+    });
+
+    expect(uploadFile).toHaveBeenCalledWith(pdfFile, {
+      targetRole: "ml_engineer",
+    });
   });
 });

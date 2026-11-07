@@ -20,9 +20,7 @@ function createWrapper() {
   });
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   };
 }
@@ -70,7 +68,7 @@ describe("useDraftSave", () => {
 
     expect(globalThis.fetch).toHaveBeenCalledWith(
       expect.stringContaining("/workspace/content"),
-      expect.objectContaining({ method: "PATCH" })
+      expect.objectContaining({ method: "PATCH" }),
     );
   });
 

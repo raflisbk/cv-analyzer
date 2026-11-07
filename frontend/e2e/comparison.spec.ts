@@ -17,11 +17,14 @@ test.describe("Compare tab — with completed analysis", () => {
 
   async function openCompareTab(page: import("@playwright/test").Page) {
     await page.goto(`/results/${jobId}`);
-    await page.locator("text=Overall Score").first().waitFor({ timeout: 10_000 });
+    await page
+      .locator("text=Overall Score")
+      .first()
+      .waitFor({ timeout: 10_000 });
     await page.locator('[role="tab"]', { hasText: "Compare" }).click();
-    await expect(
-      page.getByRole("tabpanel", { name: "Compare" })
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByRole("tabpanel", { name: "Compare" })).toBeVisible({
+      timeout: 5_000,
+    });
 
     // If previous comparison failed, click "Try again" to reset the form
     const tryAgainBtn = page.getByRole("button", { name: "Try again" });
@@ -37,7 +40,7 @@ test.describe("Compare tab — with completed analysis", () => {
 
     await expect(page.getByLabel("Job Description")).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Compare CV →" })
+      page.getByRole("button", { name: "Compare CV →" }),
     ).toBeDisabled();
   });
 
@@ -49,7 +52,7 @@ test.describe("Compare tab — with completed analysis", () => {
 
     await page.getByLabel("Job Description").fill("Short text");
     await expect(
-      page.getByRole("button", { name: "Compare CV →" })
+      page.getByRole("button", { name: "Compare CV →" }),
     ).toBeDisabled();
     await expect(page.getByText(/more to enable/)).toBeVisible();
   });
@@ -60,7 +63,7 @@ test.describe("Compare tab — with completed analysis", () => {
 
     await page.getByLabel("Job Description").fill(sampleJdText);
     await expect(
-      page.getByRole("button", { name: "Compare CV →" })
+      page.getByRole("button", { name: "Compare CV →" }),
     ).toBeEnabled();
     await expect(page.getByText("✓")).toBeVisible();
   });
@@ -79,7 +82,7 @@ test.describe("Compare tab — with completed analysis", () => {
     // Click and verify the request is made (button disables during submission)
     const compareRespPromise = page.waitForResponse(
       (r) => r.url().includes("/compare") && r.request().method() === "POST",
-      { timeout: 15_000 }
+      { timeout: 15_000 },
     );
     await compareBtn.click();
 
@@ -90,9 +93,7 @@ test.describe("Compare tab — with completed analysis", () => {
     } else {
       // If no API response, check for processing state in UI
       await expect(
-        page.locator(
-          "text=/Starting comparison|Comparing your CV|failed/i"
-        )
+        page.locator("text=/Starting comparison|Comparing your CV|failed/i"),
       ).toBeVisible({ timeout: 5_000 });
     }
   });

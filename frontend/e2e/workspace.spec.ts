@@ -14,19 +14,22 @@ test.describe("Workspace page — static structure", () => {
     if (!hasFooter) return;
 
     await expect(
-      page.getByRole("button", { name: /Apply all suggestions/i })
+      page.getByRole("button", { name: /Apply all suggestions/i }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /Export PDF/i })
+      page.getByRole("button", { name: /Export PDF/i }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /Export Report/i })
+      page.getByRole("button", { name: /Export Report/i }),
     ).toBeVisible();
   });
 
   test("Comparison View toggle flips aria-pressed", async ({ page }) => {
     await page.goto("/workspace-v2/nonexistent-id-xyz");
-    const btn = page.locator("button").filter({ hasText: "Comparison View" }).first();
+    const btn = page
+      .locator("button")
+      .filter({ hasText: "Comparison View" })
+      .first();
     const hasBtn = await btn.isVisible().catch(() => false);
     if (!hasBtn) return;
 
@@ -58,7 +61,7 @@ test.describe("Workspace — with completed analysis", () => {
     const footer = page.locator('footer[aria-label="Workspace actions"]');
     await expect(footer).toBeVisible({ timeout: 10_000 });
     await expect(
-      page.getByRole("button", { name: /Apply all suggestions/i })
+      page.getByRole("button", { name: /Apply all suggestions/i }),
     ).toBeVisible();
   });
 
@@ -67,7 +70,9 @@ test.describe("Workspace — with completed analysis", () => {
     test.setTimeout(30_000);
 
     await page.goto(`/workspace-v2/${jobId}`);
-    await page.locator('footer[aria-label="Workspace actions"]').waitFor({ timeout: 10_000 });
+    await page
+      .locator('footer[aria-label="Workspace actions"]')
+      .waitFor({ timeout: 10_000 });
     await expect(page.locator("[data-workspace-v2]")).toBeVisible();
   });
 });

@@ -108,9 +108,7 @@ function createDocx(): Buffer {
 }
 
 // Minimal ZIP builder
-function buildZip(
-  files: { name: string; data: Buffer }[]
-): Buffer {
+function buildZip(files: { name: string; data: Buffer }[]): Buffer {
   const localHeaders: Buffer[] = [];
   const centralHeaders: Buffer[] = [];
   let offset = 0;
@@ -210,7 +208,7 @@ export async function uploadCV(): Promise<string | null> {
     new Blob([bytes], {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     }),
-    "e2e-test-cv.docx"
+    "e2e-test-cv.docx",
   );
 
   try {
@@ -228,7 +226,7 @@ export async function uploadCV(): Promise<string | null> {
 
 export async function waitForJobComplete(
   jobId: string,
-  maxWait = 60
+  maxWait = 60,
 ): Promise<boolean> {
   for (let i = 0; i < maxWait / 2; i++) {
     try {

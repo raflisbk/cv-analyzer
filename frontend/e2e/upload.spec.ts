@@ -6,11 +6,9 @@ test.describe("Upload page (/workspace-v2/new)", () => {
   test("renders upload drop zone", async ({ page }) => {
     await page.goto("/workspace-v2/new");
     await expect(
-      page.getByRole("heading", { name: "Drop your CV here" })
+      page.getByRole("heading", { name: "Drop your CV here" }),
     ).toBeVisible();
-    await expect(
-      page.locator('button:has-text("Choose File")')
-    ).toBeVisible();
+    await expect(page.locator('button:has-text("Choose File")')).toBeVisible();
   });
 
   test("shows file preview after selecting a DOCX", async ({ page }) => {
@@ -28,7 +26,7 @@ test.describe("Upload page (/workspace-v2/new)", () => {
     await expect(page.getByText("test-cv.docx")).toBeVisible();
     await expect(page.getByText("Ready")).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Analyze My CV →" })
+      page.getByRole("button", { name: "Analyze My CV →" }),
     ).toBeVisible();
   });
 
@@ -40,7 +38,7 @@ test.describe("Upload page (/workspace-v2/new)", () => {
       buffer: Buffer.from("not a pdf"),
     });
     await expect(
-      page.getByText("Only PDF or DOCX files up to 5MB are supported")
+      page.getByText("Only PDF or DOCX files up to 5MB are supported"),
     ).toBeVisible();
   });
 
@@ -76,7 +74,9 @@ test.describe("Full upload flow", () => {
     });
 
     // Wait for file preview to render
-    await expect(page.getByText("e2e-test-cv.docx")).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText("e2e-test-cv.docx")).toBeVisible({
+      timeout: 5_000,
+    });
 
     // Listen for upload API call
     const uploadRespPromise = page.waitForResponse(
@@ -84,7 +84,7 @@ test.describe("Full upload flow", () => {
         const url = r.url();
         return url.includes("/upload") || url.includes("/api/v1");
       },
-      { timeout: 20_000 }
+      { timeout: 20_000 },
     );
 
     await page.getByRole("button", { name: "Analyze My CV →" }).click();
@@ -106,7 +106,7 @@ test.describe("Full upload flow", () => {
 
       // Check for processing state
       await expect(
-        page.locator("text=/Starting|Processing|Analyzing|Analysis Complete/i")
+        page.locator("text=/Starting|Processing|Analyzing|Analysis Complete/i"),
       ).toBeVisible({ timeout: 10_000 });
       return;
     }
@@ -126,8 +126,8 @@ test.describe("Full upload flow", () => {
     } else {
       await expect(
         page.locator(
-          'h2:has-text("Analysis Complete"), h2:has-text("Analyzing"), h1:has-text("Something went wrong")'
-        )
+          'h2:has-text("Analysis Complete"), h2:has-text("Analyzing"), h1:has-text("Something went wrong")',
+        ),
       ).toBeVisible({ timeout: 30_000 });
     }
   });

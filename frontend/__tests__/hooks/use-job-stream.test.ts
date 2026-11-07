@@ -40,7 +40,7 @@ describe("useJobStream", () => {
   it("resets state and closes previous connection when jobId changes", () => {
     const { rerender, result } = renderHook(
       ({ jobId }) => useJobStream(jobId),
-      { initialProps: { jobId: "job-1" } }
+      { initialProps: { jobId: "job-1" } },
     );
 
     rerender({ jobId: "job-2" });

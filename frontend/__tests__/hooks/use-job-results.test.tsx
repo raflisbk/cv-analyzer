@@ -29,9 +29,7 @@ function createWrapper() {
 
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   };
 }
@@ -79,7 +77,13 @@ describe("useJobResults", () => {
     const mockResult = {
       job_id: "job-1",
       status: "complete",
-      scores: { overall: 80, clarity: 85, impact: 75, completeness: 80, relevance: 78 },
+      scores: {
+        overall: 80,
+        clarity: 85,
+        impact: 75,
+        completeness: 80,
+        relevance: 78,
+      },
       sections: [],
       skills: [],
       grammar_issues: [],

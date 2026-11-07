@@ -11,7 +11,7 @@ describe("useChatStream", () => {
     const { result } = renderHook(() =>
       useChatStream("job-1", {
         apiUrl: "http://localhost:8000/api/v1",
-      })
+      }),
     );
 
     expect(result.current.isStreaming).toBe(false);
@@ -24,7 +24,7 @@ describe("useChatStream", () => {
       useChatStream(undefined, {
         apiUrl: "http://localhost:8000/api/v1",
         onToken,
-      })
+      }),
     );
 
     await act(async () => {
@@ -65,7 +65,7 @@ describe("useChatStream", () => {
         apiUrl: "http://localhost:8000/api/v1",
         onToken,
         onComplete,
-      })
+      }),
     );
 
     await act(async () => {
@@ -91,7 +91,7 @@ describe("useChatStream", () => {
       useChatStream("job-1", {
         apiUrl: "http://localhost:8000/api/v1",
         onError,
-      })
+      }),
     );
 
     await act(async () => {
@@ -120,7 +120,7 @@ describe("useChatStream", () => {
     const { result } = renderHook(() =>
       useChatStream("job-1", {
         apiUrl: "http://localhost:8000/api/v1",
-      })
+      }),
     );
 
     await act(async () => {
@@ -129,12 +129,14 @@ describe("useChatStream", () => {
 
     expect(result.current.isStreaming).toBe(true);
 
-    const fetchCallsBefore = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls.length;
+    const fetchCallsBefore = (globalThis.fetch as ReturnType<typeof vi.fn>).mock
+      .calls.length;
     await act(async () => {
       result.current.send("second");
     });
 
-    const fetchCallsAfter = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls.length;
+    const fetchCallsAfter = (globalThis.fetch as ReturnType<typeof vi.fn>).mock
+      .calls.length;
     expect(fetchCallsAfter).toBe(fetchCallsBefore);
   });
 });

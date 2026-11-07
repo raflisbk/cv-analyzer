@@ -12,7 +12,7 @@ test.describe("Landing page (/)", () => {
     await page.click('a[href="/cv-analyzer"]');
     await expect(page).toHaveURL(/\/cv-analyzer$/);
     await expect(
-      page.getByRole("heading", { name: /deserves.*better/i })
+      page.getByRole("heading", { name: /deserves.*better/i }),
     ).toBeVisible();
   });
 });
@@ -20,28 +20,26 @@ test.describe("Landing page (/)", () => {
 test.describe("CV Analyzer page (/cv-analyzer)", () => {
   test("renders hero heading and CTA links", async ({ page }) => {
     await page.goto("/cv-analyzer");
+    await expect(page.getByRole("heading", { name: /Your CV/i })).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /Your CV/i })
+      page.getByRole("link", { name: "Analyze My CV" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Analyze My CV" })
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Start CV analysis" })
+      page.getByRole("link", { name: "Start CV analysis" }),
     ).toBeVisible();
   });
 
   test("renders features section with 3 features", async ({ page }) => {
     await page.goto("/cv-analyzer");
     await expect(page.locator("#cva-features-heading")).toHaveText(
-      "What CV Analyzer can do"
+      "What CV Analyzer can do",
     );
     await expect(page.getByText("AI Scoring", { exact: true })).toBeVisible();
     await expect(
-      page.getByText("Skill Gap Analysis", { exact: true })
+      page.getByText("Skill Gap Analysis", { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText("Job Match Comparison", { exact: true })
+      page.getByText("Job Match Comparison", { exact: true }),
     ).toBeVisible();
   });
 
@@ -54,7 +52,7 @@ test.describe("CV Analyzer page (/cv-analyzer)", () => {
         page
           .locator("p.font-extrabold")
           .filter({ hasText: new RegExp(`^${step}$`) })
-          .first()
+          .first(),
       ).toBeVisible();
     }
   });
@@ -78,14 +76,12 @@ test.describe("Job Finding page (/job-finding)", () => {
   test("renders coming soon with email form", async ({ page }) => {
     await page.goto("/job-finding");
     await expect(
-      page.getByRole("heading", { name: "Job Finding" })
+      page.getByRole("heading", { name: "Job Finding" }),
     ).toBeVisible();
     await expect(
-      page.getByLabel("Email address for early access notification")
+      page.getByLabel("Email address for early access notification"),
     ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Notify Me" })
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Notify Me" })).toBeVisible();
   });
 });
 
