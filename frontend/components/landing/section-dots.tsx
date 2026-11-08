@@ -14,12 +14,14 @@ import { useEffect, useState } from "react";
 
 const SECTIONS = [
   { id: "hero", label: "Start" },
-  { id: "rag-explainer", label: "RAG" },
   { id: "products", label: "Products" },
+  { id: "report", label: "Score report" },
+  { id: "stickers", label: "Benefits" },
+  { id: "how", label: "How it works" },
   { id: "features", label: "Features" },
-  { id: "how-it-works", label: "How it works" },
   { id: "stats", label: "Stats" },
-  { id: "see-it-in-action", label: "In action" },
+  { id: "faq", label: "FAQ" },
+  { id: "start", label: "Get started" },
 ];
 
 export default function SectionDots() {
@@ -75,7 +77,7 @@ export default function SectionDots() {
             aria-label={label}
             aria-current={active ? "true" : undefined}
             onClick={() => scrollToSection(id)}
-            className="group relative flex items-center justify-center p-1"
+            className="group relative flex min-h-11 min-w-11 items-center justify-center p-1"
           >
             {/* Hover label — absolutely positioned so the rail itself stays
                 ~10px wide and never claims layout space from the sections */}
