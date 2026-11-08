@@ -99,6 +99,57 @@ export async function startProcessIris(
   }
   return mountIris(wrapper, panel, laptop, ScrollTrigger);
 }
+type ProcessRailState = {
+  path: SVGPathElement;
+  done: SVGPathElement;
+  rider: SVGCircleElement;
+  len: number;
+  progress: { value: number };
+};
+
+function paintProcessRail(rail: ProcessRailState) {
+  const point = rail.path.getPointAtLength(rail.len * rail.progress.value);
+  rail.rider.setAttribute("cx", String(point.x));
+  rail.rider.setAttribute("cy", String(point.y));
+  rail.done.style.strokeDashoffset = String(
+    rail.len * (1 - rail.progress.value),
+  );
+}
+
+function animateProcessStep(
+  tl: ReturnType<Gsap["timeline"]>,
+  step: HTMLElement,
+  previous: HTMLElement,
+  index: number,
+  count: number,
+  rail: ProcessRailState,
+) {
+  const img = step.querySelector("img");
+  tl.to(previous, { autoAlpha: 0, y: -50, duration: 0.35 }, index - 0.35)
+    .fromTo(
+      step,
+      { autoAlpha: 0, y: 70 },
+      { autoAlpha: 1, y: 0, duration: 0.45 },
+      index - 0.1,
+    )
+    .fromTo(
+      img,
+      { scale: 0.55, rotate: -30 },
+      { scale: 1, rotate: -6, duration: 0.6, ease: "back.out(1.6)" },
+      index - 0.1,
+    )
+    .to(
+      rail.progress,
+      {
+        value: processStepProgress(index, count),
+        duration: 0.8,
+        ease: "none",
+        onUpdate: () => paintProcessRail(rail),
+      },
+      index - 0.5,
+    );
+}
+
 export function processMotion(
   gsap: Gsap,
   panel: HTMLElement,
@@ -117,7 +168,7 @@ export function processMotion(
   done.style.strokeDasharray = String(len);
   done.style.strokeDashoffset = String(len);
   gsap.set(steps.slice(1), { autoAlpha: 0 });
-  const progress = { value: 0 };
+  const rail = { path, done, rider, len, progress: { value: 0 } };
   steps.forEach((step, i) => {
     const img = step.querySelector("img");
     if (i === 0) {
@@ -129,33 +180,6 @@ export function processMotion(
       );
       return;
     }
-    tl.to(steps[i - 1], { autoAlpha: 0, y: -50, duration: 0.35 }, i - 0.35)
-      .fromTo(
-        step,
-        { autoAlpha: 0, y: 70 },
-        { autoAlpha: 1, y: 0, duration: 0.45 },
-        i - 0.1,
-      )
-      .fromTo(
-        img,
-        { scale: 0.55, rotate: -30 },
-        { scale: 1, rotate: -6, duration: 0.6, ease: "back.out(1.6)" },
-        i - 0.1,
-      )
-      .to(
-        progress,
-        {
-          value: processStepProgress(i, steps.length),
-          duration: 0.8,
-          ease: "none",
-          onUpdate: () => {
-            const point = path.getPointAtLength(len * progress.value);
-            rider.setAttribute("cx", String(point.x));
-            rider.setAttribute("cy", String(point.y));
-            done.style.strokeDashoffset = String(len * (1 - progress.value));
-          },
-        },
-        i - 0.5,
-      );
+    animateProcessStep(tl, step, steps[i - 1], i, steps.length, rail);
   });
 }
