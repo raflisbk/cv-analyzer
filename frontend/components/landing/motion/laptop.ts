@@ -7,10 +7,7 @@ import {
   scaleQuad,
   type Quad,
 } from "@/lib/landing-laptop";
-import {
-  screenSize,
-  screenViewportHeightRatio,
-} from "@/lib/landing-laptop-screen";
+import { containScreen, screenSize } from "@/lib/landing-laptop-screen";
 
 const quads = quadsData.quads as (Quad | null)[];
 const finalQuad = quads[quadsData.frameCount - 1] as Quad;
@@ -39,12 +36,15 @@ function screenTarget(
   panel: HTMLElement,
   aspect: number,
   staticView: boolean,
-  progress: number,
 ): Quad {
   const bounds = anchor.getBoundingClientRect();
+  const contained = containScreen(
+    window.innerWidth,
+    window.innerHeight,
+    aspect,
+  );
   const width = Math.min(
-    window.innerWidth * 0.96,
-    window.innerHeight * screenViewportHeightRatio(progress) * aspect,
+    contained.width,
     window.innerWidth <= 860 ? panel.clientWidth : Infinity,
   );
   const height = width / aspect;
@@ -69,7 +69,6 @@ function paintScreen(
   frame: number,
   zoom: number,
   staticView: boolean,
-  progress: number,
 ) {
   const scaleX = anchor.offsetWidth / quadsData.width;
   const scaleY = anchor.offsetHeight / quadsData.height;
@@ -80,12 +79,11 @@ function paintScreen(
     panel,
     screenSize.width / screenSize.height,
     staticView,
-    progress,
   );
   screen.style.opacity = current ? "1" : "0";
   if (staticView || zoom === 1) {
     stage.style.transform = "none";
-    screen.style.transform = homographyCss(screenQuad, target);
+    screen.style.transform = `translate(${target[0][0]}px, ${target[0][1]}px) scale(${(target[1][0] - target[0][0]) / screenSize.width})`;
     return;
   }
   stage.style.transform = zoom
@@ -113,7 +111,7 @@ export function paintLaptop(
   }
   const { frame, zoom, content } = laptopProgress(progress);
   canvas.dispatchEvent(new CustomEvent("laptop-frame", { detail: frame }));
-  paintScreen(panel, anchor, stage, screen, frame, zoom, staticView, progress);
+  paintScreen(panel, anchor, stage, screen, frame, zoom, staticView);
   canvas.style.opacity = String(1 - Math.max(0, (zoom - 0.9) / 0.1));
   copy.style.opacity = String(1 - Math.min(1, zoom * 2.2));
   copy.style.transform = `translateY(${-30 * zoom}px)`;

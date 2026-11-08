@@ -25,12 +25,15 @@ export function measureLaptopScene(scene: HTMLElement) {
     return;
   }
   const { x, y } = sectionOffset(target, paper);
+  const heading =
+    insight.key === "payly" ? target.parentElement?.querySelector("h6") : null;
+  const top = heading ? sectionOffset(heading, paper).y : y;
   const pad = 4;
   Object.assign(highlight.style, {
     left: `${x - pad}px`,
-    top: `${y - pad}px`,
+    top: `${top - pad}px`,
     width: `${target.offsetWidth + pad * 2}px`,
-    height: `${target.offsetHeight + pad * 2}px`,
+    height: `${target.offsetHeight + y - top + pad * 2}px`,
   });
   const object = scene.querySelector<HTMLElement>(
     `[data-sc-object="${insight.object}"]`,
@@ -38,8 +41,8 @@ export function measureLaptopScene(scene: HTMLElement) {
   if (object) {
     const paperLeft = paper.offsetLeft;
     const paperTop = paper.offsetTop;
-    object.style.left = `${clampObjectPosition(paperLeft + x + target.offsetWidth - 52, paperLeft, paper.offsetWidth, object.offsetWidth)}px`;
-    object.style.top = `${Math.max(paperTop - object.offsetHeight / 2, Math.min(screenSize.height - object.offsetHeight, paperTop + y - 30))}px`;
+    object.style.left = `${clampObjectPosition(paperLeft + x + target.offsetWidth - 52, screenSize.width, object.offsetWidth)}px`;
+    object.style.top = `${clampObjectPosition(paperTop + y - 30, screenSize.height, object.offsetHeight)}px`;
   }
 }
 

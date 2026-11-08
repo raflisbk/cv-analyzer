@@ -5,6 +5,7 @@
   align-items: center;
   gap: 24px;
   isolation: isolate;
+  overflow: visible;
 }
 .text {
   position: relative;
@@ -73,9 +74,11 @@
   left: 0;
   top: 0;
   overflow: hidden;
-  border-radius: 26px;
-  background: #f2ff00;
+  border-radius: 2px;
+  background: #ffd9cf;
+  box-shadow: 0 8px 0 1px #ffd9cf;
   opacity: 0;
+  transform: scale(0);
   transform-origin: 0 0;
 }
 @media (max-width: 860px) {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import quadsData from "@/public/landing/laptop/screen-quads.json";
 import {
   applyHomography,
   interpolateQuad,
@@ -64,10 +65,11 @@ describe("laptop progress", () => {
 
   it("opens before the zoom and overlaps the screen content", () => {
     expect(laptopProgress(0)).toEqual({ frame: 0, zoom: 0, content: 0 });
-    expect(laptopProgress(0.3).frame).toBe(39);
+    expect(laptopProgress(0.3).frame).toBe(quadsData.frameCount - 1);
     expect(laptopProgress(0.4).zoom).toBeGreaterThan(0);
     expect(laptopProgress(0.4).content).toBeGreaterThan(0);
     expect(laptopProgress(0.52).zoom).toBe(1);
+    expect(laptopProgress(0.9).content).toBe(1);
     expect(laptopProgress(1).content).toBe(1);
   });
 });
