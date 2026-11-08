@@ -1,13 +1,13 @@
 "use client";
 
-import { useLandingExpand } from "@/hooks/use-landing-expand";
+import { useRef } from "react";
 import { useLandingLaptop } from "@/hooks/use-landing-laptop";
 import LaptopStage from "./laptop-stage";
 import base from "../section.module.css";
 import styles from "./laptop.module.css";
 
 export default function LaptopSection() {
-  const ref = useLandingExpand("expand");
+  const ref = useRef<HTMLElement>(null);
   useLandingLaptop(ref);
   return (
     <section

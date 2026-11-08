@@ -22,7 +22,7 @@ export function laptopProgress(value: number) {
   return {
     frame: Math.round(ease(t / 0.3) * (quadsData.frameCount - 1)),
     zoom: ease((t - 0.32) / 0.2),
-    content: clamp((t - 0.3) / 0.68),
+    content: clamp((t - 0.3) / 0.6),
   };
 }
 

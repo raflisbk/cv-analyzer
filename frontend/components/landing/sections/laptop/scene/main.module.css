@@ -1,7 +1,11 @@
 .main {
-  display: grid;
-  gap: 22px;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+}
+:global([data-laptop-scene][data-sc-mode="edit"]) .main {
+  gap: 12px;
 }
 .main mark {
   background: transparent;
@@ -29,7 +33,7 @@
   font-weight: 600;
 }
 .job + .job {
-  margin-top: 13px;
+  margin-top: 20px;
 }
 .editLine {
   min-height: 12px;
