@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import HeroSection from "@/components/landing/hero/hero-section";
 import IntroLoader from "@/components/landing/intro/intro-loader";
 import RagExplainerSection from "@/components/landing/rag-explainer-section";
@@ -11,6 +12,10 @@ import FloatingFooter from "@/components/landing/floating-footer";
 import SectionDots from "@/components/landing/section-dots";
 import Footer from "@/components/landing/footer";
 import { LoginRequiredDialog } from "@/components/auth/login-required-dialog";
+
+export const metadata: Metadata = {
+  icons: { icon: "/landing/logo/pathkr-icon.svg" },
+};
 
 export default function Home() {
   return (
