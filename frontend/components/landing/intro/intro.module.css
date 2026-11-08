@@ -1,94 +1,72 @@
 .loader {
   position: fixed;
   inset: 0;
-  z-index: 200;
-  background: var(--brand-ink);
+  z-index: 99999;
   display: grid;
   place-items: center;
-  animation: landing-loader-failsafe 0.01s 5.5s forwards;
+  overflow: hidden;
+  background: #f2ff00;
+  border-radius: 0;
+  will-change: transform;
 }
-.brand {
+.glow {
+  position: absolute;
+  width: 70vmin;
+  height: 70vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fbff9a 0%, transparent 68%);
+  opacity: 0;
+}
+.logo {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 24px;
-  width: min(80vw, 620px);
+  justify-content: center;
 }
-.mark {
-  width: clamp(100px, 14vw, 180px);
+.icon {
+  width: clamp(110px, 16vw, 168px);
+  height: auto;
+  flex: none;
+  overflow: visible;
+  opacity: 0;
+}
+.wordmarkClip {
+  position: relative;
+  width: 0;
+  margin-left: 0;
+  overflow: hidden;
   flex: none;
 }
-.brand img {
-  width: min(50vw, 360px);
-  height: auto;
-}
-.meta {
-  position: absolute;
-  left: max(20px, 3vw);
-  right: max(20px, 3vw);
-  bottom: max(26px, 3.4vw);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
-.count {
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 0.8;
-  font-size: clamp(56px, 8vw, 120px);
-  color: var(--brand-punk);
-  font-variant-numeric: tabular-nums;
-}
-.count small {
-  font-size: 0.34em;
-  letter-spacing: 0;
-  margin-left: 0.1em;
-}
-.tag {
-  font-family: var(--font-hand);
-  font-size: clamp(24px, 2.4vw, 32px);
-  color: var(--brand-snow);
-  rotate: -3deg;
-}
-.bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 6px;
-  background: rgba(253, 253, 255, 0.12);
-}
-.bar i {
+.wordmark {
   display: block;
-  height: 100%;
-  background: var(--brand-punk);
-  transform-origin: left;
-  transform: scaleX(0);
+  width: auto;
+  height: clamp(70px, 10.5vw, 112px);
+  max-width: none;
+  mix-blend-mode: multiply;
 }
-.lip {
+.expanded {
   position: absolute;
-  left: -12%;
-  right: -12%;
-  top: calc(100% - 1px);
-  height: 16vh;
-  background: var(--brand-ink);
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  top: 50%;
+  left: 0;
+  width: max-content;
+  white-space: nowrap;
+  font: 800 clamp(64px, 9.4vw, 100px) / 1 var(--font-display);
+  letter-spacing: -0.035em;
+  color: #f42902;
+  opacity: 0;
 }
-@media (max-width: 520px) {
-  .brand {
-    flex-direction: column;
-    gap: 16px;
-  }
-  .brand img {
-    width: 220px;
-  }
-  .tag {
-    font-size: 24px;
-  }
+.expanded b {
+  display: inline-block;
+  color: #1a0b07;
+  font-weight: 800;
 }
 @media (prefers-reduced-motion: reduce) {
   .loader {
     display: none;
+  }
+}
+@media (max-width: 520px) {
+  .expanded {
+    font-size: 50px;
   }
 }

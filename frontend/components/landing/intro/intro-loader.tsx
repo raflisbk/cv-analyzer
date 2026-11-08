@@ -14,45 +14,49 @@ export default function IntroLoader() {
       aria-hidden="true"
       data-landing-loader
     >
-      <div className={styles.brand}>
-        <svg
-          className={styles.mark}
-          viewBox="0 0 100 100"
-          role="img"
-          aria-label="pathkr"
-        >
-          <rect width="100" height="100" rx="26" fill="#f42902" />
-          <path
-            data-intro-path
-            d="M24 76C24 58 50 66 50 50S76 44 76 28"
-            fill="none"
-            stroke="#fdfdff"
-            strokeWidth="9.5"
-            strokeLinecap="round"
-          />
-          <circle cx="24" cy="76" r="6.5" fill="#fdfdff" />
-          <circle data-intro-dot cx="76" cy="27" r="10.5" fill="#f2ff00" />
+      <div className={styles.glow} data-intro-glow />
+      <div className={styles.logo}>
+        <svg className={styles.icon} data-intro-icon viewBox="0 0 100 100">
+          <g data-intro-wiggle>
+            <rect width="100" height="100" rx="26" fill="#f42902" />
+            <path
+              data-intro-path
+              pathLength="100"
+              d="M24 76C24 58 50 66 50 50S76 44 76 28"
+              fill="none"
+              stroke="#fdfdff"
+              strokeWidth="9.5"
+              strokeLinecap="round"
+            />
+            <circle data-intro-start cx="24" cy="76" r="6.5" fill="#fdfdff" />
+            <circle
+              data-intro-ring
+              cx="76"
+              cy="27"
+              r="10.5"
+              fill="none"
+              stroke="#fdfdff"
+              strokeWidth="3"
+            />
+            <circle data-intro-end cx="76" cy="27" r="10.5" fill="#f2ff00" />
+          </g>
         </svg>
-        <Image
-          data-intro-wordmark
-          src="/landing/logo/pathkr-wordmark-snow.svg"
-          alt=""
-          width={360}
-          height={96}
-          priority
-        />
+        <div className={styles.wordmarkClip} data-intro-clip>
+          <Image
+            className={styles.wordmark}
+            data-intro-wordmark
+            src="/landing/logo/pathkr-wordmark-red.svg"
+            alt=""
+            width={366}
+            height={112}
+            priority
+          />
+          <span className={styles.expanded} data-intro-expanded>
+            path k<b>a</b>r<b>i</b>
+            <b>r</b>
+          </span>
+        </div>
       </div>
-      <div className={styles.meta}>
-        <span className={styles.count}>
-          <span data-intro-count>0</span>
-          <small>%</small>
-        </span>
-        <span className={styles.tag}>warming up your CV...</span>
-      </div>
-      <div className={styles.bar}>
-        <i data-intro-bar />
-      </div>
-      <div className={styles.lip} />
     </div>
   );
 }
