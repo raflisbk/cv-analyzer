@@ -32,4 +32,9 @@ export function faqMotion(
       },
       0.2,
     );
+  const count = panel.querySelectorAll("[data-faq-item]").length;
+  tl.eventCallback("onUpdate", () => {
+    const index = Math.floor(tl.progress() * (count + 1)) - 1;
+    panel.dispatchEvent(new CustomEvent("landing-faq-step", { detail: index }));
+  });
 }

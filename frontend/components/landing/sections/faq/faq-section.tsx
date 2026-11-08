@@ -1,14 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
-import { faqItems, nextFaqOpen } from "@/lib/landing-faq";
-import { useLandingStory } from "@/hooks/use-landing-story";
-import { faqMotion } from "@/components/landing/motion/faq";
+import { faqItems } from "@/lib/landing-faq";
+import { useLandingFaq } from "@/hooks/use-landing-faq";
 import base from "../section.module.css";
 import styles from "./faq.module.css";
 export default function FaqSection() {
-  const [open, setOpen] = useState<number | null>(0);
-  const ref = useLandingStory(faqMotion, 120);
+  const { ref, open, toggle } = useLandingFaq();
   return (
     <section
       ref={ref}
@@ -45,7 +42,7 @@ export default function FaqSection() {
                 type="button"
                 aria-expanded={open === i}
                 aria-controls={`faq-answer-${i}`}
-                onClick={() => setOpen(nextFaqOpen(open, i))}
+                onClick={() => toggle(i)}
               >
                 {item.question}
                 <span aria-hidden="true">{open === i ? "×" : "+"}</span>
