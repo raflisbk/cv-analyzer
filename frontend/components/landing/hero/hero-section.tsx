@@ -1,3 +1,6 @@
+"use client";
+
+import { useHeroChrome } from "./use-hero-chrome";
 import HeroObjects from "./hero-objects";
 import HeroCopy from "./hero-copy";
 import HeroWaves from "./hero-waves";
@@ -6,9 +9,11 @@ import styles from "./hero.module.css";
 import announcementStyles from "./hero-announcement.module.css";
 
 export default function HeroSection() {
+  const { announcementRef, heroRef } = useHeroChrome();
+
   return (
     <>
-      <div className={announcementStyles.announcement}>
+      <div ref={announcementRef} className={announcementStyles.announcement}>
         <span>
           CV Analyzer is live.
           <span className={announcementStyles.announcementMore}>
@@ -19,7 +24,12 @@ export default function HeroSection() {
         <a href="#products">See the tools</a>
       </div>
       <Navbar />
-      <section id="hero" className={styles.hero} data-landing-hero>
+      <section
+        id="hero"
+        ref={heroRef}
+        className={styles.hero}
+        data-landing-hero
+      >
         <HeroWaves />
         <div className={styles.body}>
           <HeroCopy />

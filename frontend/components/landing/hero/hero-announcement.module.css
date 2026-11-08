@@ -28,6 +28,21 @@
   outline: 3px solid var(--brand-ink);
   outline-offset: 3px;
 }
+@media (min-width: 861px) {
+  .announcement {
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    background: var(--brand-red-deep);
+    color: var(--brand-snow);
+  }
+  .announcement a {
+    color: var(--brand-snow);
+  }
+  .announcement :focus-visible {
+    outline-color: var(--brand-punk);
+  }
+}
 @media (max-width: 520px) {
   .announcement {
     margin-inline: 16px;

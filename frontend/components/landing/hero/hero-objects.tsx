@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { HERO_OBJECTS, HERO_STICKERS } from "@/lib/landing-hero-layout";
-import styles from "./hero.module.css";
+import styles from "./hero-objects.module.css";
 
 export default function HeroObjects() {
   return (
