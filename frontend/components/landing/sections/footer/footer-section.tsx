@@ -3,6 +3,7 @@ import Link from "next/link";
 import { footerColumns } from "@/lib/landing-footer";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { footerMotion } from "@/components/landing/motion/footer";
+import PlaneIcon from "../plane-icon";
 import base from "../section.module.css";
 import styles from "./footer.module.css";
 const footerScroll = { start: "top 92%", end: "bottom bottom" };
@@ -10,16 +11,13 @@ const footerScroll = { start: "top 92%", end: "bottom bottom" };
 export default function FooterSection() {
   const ref = useLandingStory(footerMotion, 60, undefined, footerScroll);
   return (
-    <footer
-      ref={ref}
-      id="footer"
-      className={`${base.panel} ${base.ink} ${styles.footer}`}
-    >
+    <footer ref={ref} id="footer" className={`${base.panel} ${styles.footer}`}>
       <div className={styles.top}>
         <div data-footer-column className={styles.brand}>
           <p>Know what your CV says before a recruiter does.</p>
+          <span className={styles.note}>pathkr = path + karir</span>
           <Link className={base.button} href="/workspace-v2/new">
-            Score my CV <span aria-hidden="true">↗</span>
+            Score my CV <PlaneIcon size={52} />
           </Link>
         </div>
         <div className={styles.columns}>
