@@ -7,8 +7,8 @@ export function playHeroScroll(gsap: Gsap, hero: HTMLElement) {
   const timeline = gsap.timeline({
     scrollTrigger: {
       trigger: hero,
-      start: pin ? "top 12px" : "top 78%",
-      end: pin ? "+=90%" : "bottom 45%",
+      start: pin ? "top 12px" : "top top",
+      end: pin ? "+=90%" : "bottom top",
       pin,
       scrub: 0.6,
       anticipatePin: 1,

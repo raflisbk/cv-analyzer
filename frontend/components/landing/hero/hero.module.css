@@ -269,6 +269,7 @@
   }
   .copy h1 {
     font-size: clamp(42px, 12vw, 56px);
+    line-height: 1.05;
     max-width: none;
   }
   .copy h1 span {
