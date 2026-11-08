@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+main[data-landing] {
+  background: var(--brand-red);
+}
+
 @layer base {
   :root {
     /* === MATHICAL DESIGN SYSTEM — Phase 9 === */
