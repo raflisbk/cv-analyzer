@@ -20,21 +20,19 @@
   height: 130px;
   object-fit: contain;
   rotate: -6deg;
-  margin-top: 18px;
+  margin-top: 36px;
 }
 .visual {
-  position: relative;
+  display: grid;
   min-width: 0;
   padding: 15px 14px 14px 0;
 }
 .star {
-  position: absolute;
-  top: -12px;
-  right: 0;
+  justify-self: end;
   width: 76px;
   height: 76px;
   object-fit: contain;
-  z-index: 2;
+  margin-bottom: 12px;
 }
 .card {
   background: var(--brand-ink);
