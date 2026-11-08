@@ -1,0 +1,36 @@
+.scene {
+  position: absolute;
+  inset: 0;
+  width: 1000px;
+  height: 435px;
+  background: radial-gradient(
+      circle at 1px 1px,
+      rgba(26, 11, 7, 0.12) 1.2px,
+      transparent 1.4px
+    )
+    0 0/22px 22px;
+}
+.object {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(0.3) rotate(-14deg);
+  transition:
+    opacity 0.3s,
+    transform 0.45s cubic-bezier(0.3, 1.7, 0.5, 1);
+  filter: drop-shadow(0 14px 10px rgba(90, 40, 0, 0.4));
+  pointer-events: none;
+  left: 0;
+  top: 0;
+}
+.object[data-sc-active="true"] {
+  opacity: 1;
+  transform: scale(1) rotate(6deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .object {
+    transition: none;
+  }
+}

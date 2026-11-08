@@ -1,4 +1,5 @@
 import { useLaptopFrames } from "./use-laptop-frames";
+import LaptopScene from "./scene/laptop-scene";
 import styles from "./laptop.module.css";
 
 export default function LaptopStage() {
@@ -15,7 +16,9 @@ export default function LaptopStage() {
           aria-label="Opening laptop"
           role="img"
         />
-        <div data-laptop-screen className={styles.screen} />
+        <div data-laptop-screen className={styles.screen}>
+          <LaptopScene />
+        </div>
       </div>
     </div>
   );
