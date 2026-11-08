@@ -1,5 +1,6 @@
 import { laptopInsights } from "@/lib/landing-laptop-insights";
 import { laptopStepFromProgress } from "@/lib/landing-laptop-steps";
+import { clampObjectPosition, screenSize } from "@/lib/landing-laptop-screen";
 
 function sectionOffset(element: HTMLElement, paper: HTMLElement) {
   let x = 0;
@@ -35,8 +36,10 @@ export function measureLaptopScene(scene: HTMLElement) {
     `[data-sc-object="${insight.object}"]`,
   );
   if (object) {
-    object.style.left = `${Math.max(0, Math.min(516, 14 + x + target.offsetWidth - 52))}px`;
-    object.style.top = `${Math.max(2, Math.min(339, 14 + y - 30))}px`;
+    const paperLeft = paper.offsetLeft;
+    const paperTop = paper.offsetTop;
+    object.style.left = `${clampObjectPosition(paperLeft + x + target.offsetWidth - 52, paperLeft, paper.offsetWidth, object.offsetWidth)}px`;
+    object.style.top = `${Math.max(paperTop - object.offsetHeight / 2, Math.min(screenSize.height - object.offsetHeight, paperTop + y - 30))}px`;
   }
 }
 

@@ -20,7 +20,7 @@ const ease = (value: number) => {
 export function laptopProgress(value: number) {
   const t = clamp(value);
   return {
-    frame: Math.round(ease(t / 0.3) * 35),
+    frame: Math.round(ease(t / 0.3) * (quadsData.frameCount - 1)),
     zoom: ease((t - 0.32) / 0.2),
     content: clamp((t - 0.3) / 0.68),
   };
@@ -95,3 +95,4 @@ export function homographyCss(src: Quad, dst: Quad) {
   }
   return `matrix3d(${[h[0], h[3], 0, h[6], h[1], h[4], 0, h[7], 0, 0, 1, 0, h[2], h[5], 0, 1].join(",")})`;
 }
+import quadsData from "@/public/landing/laptop/screen-quads.json";
