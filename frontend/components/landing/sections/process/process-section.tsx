@@ -17,7 +17,13 @@ function prepareProcess(panel: HTMLElement) {
   panel.dataset.processPinned = String(panel.classList.contains(styles.pinned));
 }
 export default function ProcessSection() {
-  const ref = useLandingStory(processMotion, 450, prepareProcess);
+  const ref = useLandingStory(
+    processMotion,
+    450,
+    prepareProcess,
+    undefined,
+    false,
+  );
   return (
     <section
       ref={ref}

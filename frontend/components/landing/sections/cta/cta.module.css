@@ -40,23 +40,31 @@
   align-items: center;
 }
 .primary {
-  background: var(--brand-ink);
+  background: linear-gradient(
+    180deg,
+    #3a1d14 0%,
+    var(--brand-ink) 55%,
+    #0d0503 100%
+  );
   color: var(--brand-snow);
   font-size: 22px;
   min-height: 66px;
   box-shadow:
-    0 6px 0 var(--brand-red-deep),
-    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.5),
+    0 14px 24px -8px rgba(60, 6, 0, 0.7);
 }
 .primary:hover {
   box-shadow:
-    0 9px 0 var(--brand-red-deep),
-    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.5),
+    0 20px 30px -8px rgba(60, 6, 0, 0.7);
 }
 .primary:active {
   box-shadow:
-    0 1px 0 var(--brand-red-deep),
-    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 4px 8px -4px rgba(60, 6, 0, 0.7);
 }
 .sample {
   font-weight: 700;
