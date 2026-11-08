@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import styles from "./hero.module.css";
+import buttonStyles from "./hero-button.module.css";
 
 export default function HeroCopy() {
   return (
@@ -18,9 +19,13 @@ export default function HeroCopy() {
         Upload it. Get scored on impact, clarity and ATS in about a minute. Fix
         it in an editor that knows your numbers.
       </p>
-      <Link className={styles.button} href="/workspace-v2/new" data-hero-cta>
+      <Link
+        className={buttonStyles.button}
+        href="/workspace-v2/new"
+        data-hero-cta
+      >
         <span>Score my CV</span>
-        <span className={styles.arrow}>
+        <span className={buttonStyles.arrow}>
           <ArrowRight size={22} aria-hidden="true" />
         </span>
       </Link>
