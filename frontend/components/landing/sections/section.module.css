@@ -1,5 +1,5 @@
 .panel {
-  max-width: 1320px;
+  max-width: min(1600px, calc(100% - 32px));
   margin: 0 auto 16px;
   border-radius: 48px;
   padding: clamp(28px, 4.4vw, 64px);
@@ -68,7 +68,13 @@
     translate 0.2s,
     box-shadow 0.2s;
 }
-.button svg {
+.button img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  margin: -12px -8px;
+  rotate: 8deg;
+  filter: drop-shadow(0 8px 6px rgba(60, 6, 0, 0.4));
   transition: translate 0.2s;
 }
 .button:hover {
@@ -78,8 +84,8 @@
     inset 0 -5px 0 rgba(110, 120, 0, 0.35),
     0 18px 28px -8px rgba(60, 6, 0, 0.55);
 }
-.button:hover svg {
-  translate: 3px -3px;
+.button:hover img {
+  translate: 4px -4px;
 }
 .button:active {
   translate: 0 2px;
@@ -87,6 +93,26 @@
     inset 0 2px 0 rgba(255, 255, 255, 0.5),
     inset 0 -2px 0 rgba(110, 120, 0, 0.35),
     0 4px 8px -4px rgba(60, 6, 0, 0.55);
+}
+.ink .button {
+  background: linear-gradient(180deg, #3a1d14 0%, #1a0b07 55%, #0d0503 100%);
+  color: var(--brand-snow);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.4),
+    0 12px 22px -8px rgba(0, 0, 0, 0.55);
+}
+.ink .button:hover {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.4),
+    0 18px 28px -8px rgba(0, 0, 0, 0.55);
+}
+.ink .button:active {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+    0 4px 8px -4px rgba(0, 0, 0, 0.55);
 }
 .button:focus-visible,
 .panel a:focus-visible,
@@ -139,4 +165,9 @@
 }
 .ink .hand {
   color: var(--brand-punk);
+}
+@media (min-width: 1480px) {
+  .panel {
+    padding-inline: calc((min(1600px, 100vw - 32px) - 1320px) / 2);
+  }
 }

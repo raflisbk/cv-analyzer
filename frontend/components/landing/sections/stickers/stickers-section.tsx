@@ -11,7 +11,7 @@ export default function StickersSection() {
     <section
       ref={ref}
       id="stickers"
-      className={`${base.panel} ${base.blush} ${styles.section}`}
+      className={`${base.panel} ${base.punk} ${styles.section}`}
     >
       <h2>Why people stick with it</h2>
       <div className={styles.cloud}>

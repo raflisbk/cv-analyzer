@@ -26,7 +26,7 @@ export default function Home() {
         <LoginRequiredDialog />
       </Suspense>
       <IntroLoader />
-      <main>
+      <main data-landing>
         <HeroSection />
         <ProductsSection />
         <ReportSection />

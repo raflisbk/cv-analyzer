@@ -30,7 +30,7 @@
 }
 .sticker1,
 .sticker5 {
-  background: var(--brand-punk);
+  background: var(--brand-snow);
   color: var(--brand-ink);
   rotate: 3deg;
 }

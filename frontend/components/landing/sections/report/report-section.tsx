@@ -6,6 +6,7 @@ import { reportMotion } from "@/components/landing/motion/report";
 import base from "../section.module.css";
 import styles from "./report.module.css";
 import ScoreCard from "./score-card";
+import PlaneIcon from "../plane-icon";
 
 export default function ReportSection() {
   const ref = useLandingStory(reportMotion, 120);
@@ -13,7 +14,7 @@ export default function ReportSection() {
     <section
       ref={ref}
       id="report"
-      className={`${base.panel} ${base.snow} ${styles.layout}`}
+      className={`${base.panel} ${base.blush} ${styles.layout}`}
     >
       <div>
         <h2>Your score, with receipts</h2>
@@ -22,7 +23,7 @@ export default function ReportSection() {
           rewrite you can accept in one click.
         </p>
         <Link href="/workspace-v2/new" className={base.button}>
-          Try it on my CV <span aria-hidden="true">↗</span>
+          Try it on my CV <PlaneIcon size={52} />
         </Link>
         <span className={`${base.hand} ${styles.note}`}>no mystery scores</span>
         <Image
