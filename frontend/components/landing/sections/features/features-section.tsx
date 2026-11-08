@@ -11,7 +11,7 @@ export default function FeaturesSection() {
     <section
       ref={ref}
       id="inside"
-      className={`${base.panel} ${base.snow} ${styles.grid}`}
+      className={`${base.panel} ${base.punk} ${styles.grid}`}
     >
       <div className={`${base.head} ${styles.head}`}>
         <h2>Inside CV Analyzer</h2>

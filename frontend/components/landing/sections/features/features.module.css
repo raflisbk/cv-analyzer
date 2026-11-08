@@ -17,10 +17,16 @@
   column-gap: 14px;
   row-gap: 10px;
   align-content: start;
-  transition: translate 0.25s;
+  transition:
+    rotate 0.35s cubic-bezier(0.3, 1.7, 0.5, 1),
+    translate 0.35s cubic-bezier(0.3, 1.7, 0.5, 1),
+    box-shadow 0.3s;
 }
 .card:hover {
-  translate: 0 -6px;
+  rotate: 0deg;
+  translate: 0 -12px;
+  box-shadow: 0 28px 34px -18px rgba(60, 6, 0, 0.55);
+  z-index: 3;
 }
 .card h3 {
   grid-area: h;
@@ -37,6 +43,13 @@
   width: 100%;
   height: auto;
   rotate: 6deg;
+  transition:
+    rotate 0.35s cubic-bezier(0.3, 1.7, 0.5, 1),
+    scale 0.35s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+.card:hover img {
+  rotate: 10deg;
+  scale: 1.08;
 }
 .card0,
 .card1 {
@@ -50,25 +63,30 @@
 .card0 {
   background: var(--brand-red);
   color: var(--brand-snow);
+  rotate: -1.4deg;
 }
 .card0 p {
   font-weight: 700;
 }
 .card1 {
-  background: var(--brand-punk);
+  background: var(--brand-snow);
   color: var(--brand-ink);
+  rotate: 1.2deg;
 }
 .card2 {
   background: var(--brand-ink);
   color: var(--brand-snow);
+  rotate: -1deg;
 }
 .card3 {
   background: var(--brand-blush);
   color: var(--brand-ink);
+  rotate: 1.5deg;
 }
 .card4 {
   background: var(--brand-red-deep);
   color: var(--brand-snow);
+  rotate: -1.2deg;
 }
 .card4 p {
   font-weight: 700;

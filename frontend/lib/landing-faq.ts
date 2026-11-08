@@ -2,7 +2,7 @@ export const faqItems = [
   {
     question: "What is pathkr?",
     answer:
-      "pathkr is a set of tools for your job search. CV Analyzer is available now. CV Builder and Job Connect are planned next.",
+      "pathkr comes from path karir, your career path. It is a set of tools for your job search. CV Analyzer is available now. CV Builder and Job Connect are planned next.",
   },
   {
     question: "Is my CV stored?",
