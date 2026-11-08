@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { SheetClose } from "@/components/ui/sheet";
-import styles from "./navbar.module.css";
+import styles from "./mobile-menu.module.css";
 
 type Props = { label: string | null; onLogout: () => void };
 
