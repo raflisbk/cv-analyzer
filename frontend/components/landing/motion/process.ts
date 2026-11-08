@@ -1,6 +1,104 @@
 import type { loadGsap } from "@/lib/gsap-loader";
+import { loadGsap as getGsap } from "@/lib/gsap-loader";
+import { irisProgress, irisRadius, irisRingStyle } from "@/lib/landing-iris";
 import { processStepProgress } from "@/lib/landing-process";
 type Gsap = Awaited<ReturnType<typeof loadGsap>>["gsap"];
+
+function paintIris(
+  wrapper: HTMLElement,
+  panel: HTMLElement,
+  laptop: HTMLElement,
+  ring: HTMLElement,
+) {
+  const top = wrapper.getBoundingClientRect().top;
+  const q = irisProgress(top, window.innerHeight);
+  const radius = irisRadius(q, window.innerWidth, window.innerHeight);
+  panel.style.clipPath = q < 1 ? `circle(${radius}px at 50% 50%)` : "none";
+  panel.style.translate = q > 0 && q < 1 ? `0 ${-top}px` : "none";
+  laptop.style.scale = String(1 + 0.1 * q * q * (3 - 2 * q));
+  Object.assign(ring.style, irisRingStyle(radius, q));
+}
+
+function createIrisRing() {
+  const ring = document.createElement("div");
+  Object.assign(ring.style, {
+    position: "fixed",
+    left: "50%",
+    top: "50%",
+    zIndex: "30",
+    pointerEvents: "none",
+    background: "transparent",
+    borderRadius: "50%",
+    border: "7px solid #f2ff00",
+    boxShadow: "0 0 40px rgba(242,255,0,.6)",
+    opacity: "0",
+  });
+  ring.dataset.processIris = "true";
+  document.body.appendChild(ring);
+  return ring;
+}
+
+function mountIris(
+  wrapper: HTMLElement,
+  panel: HTMLElement,
+  laptop: HTMLElement,
+  ScrollTrigger: Awaited<ReturnType<typeof getGsap>>["ScrollTrigger"],
+) {
+  const ring = createIrisRing();
+  const paint = () => paintIris(wrapper, panel, laptop, ring);
+  const trigger = ScrollTrigger.create({
+    trigger: wrapper,
+    start: "top bottom",
+    end: "top top",
+    invalidateOnRefresh: true,
+    refreshPriority: -100,
+    onUpdate: paint,
+    onRefresh: paint,
+    onEnter: paint,
+    onLeave: paint,
+    onEnterBack: paint,
+    onLeaveBack: paint,
+  });
+  paint();
+  ScrollTrigger.refresh();
+  return () => {
+    trigger.kill();
+    ring.remove();
+    panel.style.clipPath = "";
+    panel.style.translate = "";
+    laptop.style.scale = "";
+  };
+}
+
+export async function startProcessIris(
+  wrapper: HTMLElement,
+  panel: HTMLElement,
+  isCancelled: () => boolean,
+) {
+  if (
+    window.innerWidth <= 860 ||
+    matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return () => {};
+  }
+  const laptop = document
+    .querySelector<HTMLElement>("[data-laptop-screen]")
+    ?.closest<HTMLElement>("section");
+  if (!laptop) {
+    return () => {};
+  }
+  await Promise.all([
+    document.fonts.ready,
+    ...Array.from(panel.querySelectorAll("img")).map((img) =>
+      img.decode().catch(() => undefined),
+    ),
+  ]);
+  const { ScrollTrigger } = await getGsap();
+  if (isCancelled()) {
+    return () => {};
+  }
+  return mountIris(wrapper, panel, laptop, ScrollTrigger);
+}
 export function processMotion(
   gsap: Gsap,
   panel: HTMLElement,
