@@ -16,6 +16,7 @@ export function useLandingStory(
   prepare?: (panel: HTMLElement) => void,
   scrollThrough?: { start: string; end: string },
   leadIn = true,
+  pinTop = 12,
 ) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -47,7 +48,7 @@ export function useLandingStory(
         if (split)
           pinTrigger = ScrollTrigger.create({
             trigger: panel,
-            start: "top 12px",
+            start: `top ${pinTop}px`,
             end: `+=${length}%`,
             pin: true,
             anticipatePin: 1,
@@ -60,11 +61,11 @@ export function useLandingStory(
             start: pin
               ? split
                 ? "top 92%"
-                : "top 12px"
+                : `top ${pinTop}px`
               : (scrollThrough?.start ?? "top 92%"),
             end: pin
               ? split
-                ? () => `+=${pinSpan(0.92 + length / 100) - 12}`
+                ? () => `+=${pinSpan(0.92 + length / 100) - pinTop}`
                 : `+=${length}%`
               : (scrollThrough?.end ?? defaultEnd(panel)),
             pin: pin && !split,
@@ -101,6 +102,6 @@ export function useLandingStory(
       timeline?.kill();
       pinTrigger?.kill();
     };
-  }, [build, length, prepare, scrollThrough, leadIn]);
+  }, [build, length, prepare, scrollThrough, leadIn, pinTop]);
   return ref;
 }
