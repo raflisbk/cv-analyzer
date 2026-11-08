@@ -1,4 +1,5 @@
 import type { loadGsap } from "@/lib/gsap-loader";
+import { countUpValue } from "@/lib/landing-stats";
 type Gsap = Awaited<ReturnType<typeof loadGsap>>["gsap"];
 export function reportMotion(
   _gsap: Gsap,
@@ -6,6 +7,8 @@ export function reportMotion(
   tl: ReturnType<Gsap["timeline"]>,
 ) {
   const ring = panel.querySelector("circle[data-ring]");
+  const number = panel.querySelector<HTMLElement>("[data-report-card] b")!;
+  const count = { progress: 0 };
   const bars = panel.querySelectorAll<HTMLElement>("[data-score-bar]");
   tl.from(
     panel.querySelector("h2"),
@@ -38,6 +41,17 @@ export function reportMotion(
       ring,
       { strokeDasharray: "0 340" },
       { strokeDasharray: "292 340", duration: 0.7 },
+      0.6,
+    )
+    .to(
+      count,
+      {
+        progress: 1,
+        duration: 0.7,
+        onUpdate: () => {
+          number.textContent = countUpValue(count.progress, 86, "");
+        },
+      },
       0.6,
     );
   bars.forEach((bar, i) =>
