@@ -14,6 +14,7 @@ export function useLandingIntro() {
     let scroll: ReturnType<typeof playHeroScroll>;
     const hide = () => {
       loader.style.display = "none";
+      window.dispatchEvent(new Event("landing-intro-complete"));
     };
     const failsafe = window.setTimeout(hide, 5500);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
