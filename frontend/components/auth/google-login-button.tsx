@@ -6,18 +6,22 @@ import { toast } from "sonner";
 import { loginWithGoogle } from "@/lib/auth";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/lib/utils";
+import styles from "./login-dialog.module.css";
 
 interface GoogleLoginButtonProps {
   onSuccess?: () => void;
   className?: string;
+  variant?: "default" | "landing";
 }
 
 export function GoogleLoginButton({
   onSuccess,
   className,
+  variant = "default",
 }: GoogleLoginButtonProps) {
   const setUser = useAuthStore((s) => s.setUser);
   const [isLoading, setIsLoading] = useState(false);
+  const landing = variant === "landing";
 
   const login = useGoogleLogin({
     flow: "implicit",
@@ -43,21 +47,29 @@ export function GoogleLoginButton({
       onClick={() => login()}
       disabled={isLoading}
       className={cn(
-        "group relative flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold",
-        "transition-all duration-200 active:scale-[0.97]",
-        "border border-[#141414]/10 bg-white text-[#141414]/80",
-        "shadow-[0_1px_2px_rgba(20,20,20,0.04),0_2px_10px_rgba(20,20,20,0.06)]",
-        "hover:-translate-y-0.5 hover:border-[#141414]/[0.16] hover:text-[#141414]",
-        "hover:shadow-[0_1px_2px_rgba(20,20,20,0.05),0_6px_20px_rgba(20,20,20,0.10)]",
-        "disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50",
+        landing
+          ? cn(styles.google, isLoading && styles.googleLoading)
+          : cn(
+              "group relative flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold",
+              "transition-all duration-200 active:scale-[0.97]",
+              "border border-[#141414]/10 bg-white text-[#141414]/80",
+              "shadow-[0_1px_2px_rgba(20,20,20,0.04),0_2px_10px_rgba(20,20,20,0.06)]",
+              "hover:-translate-y-0.5 hover:border-[#141414]/[0.16] hover:text-[#141414]",
+              "hover:shadow-[0_1px_2px_rgba(20,20,20,0.05),0_6px_20px_rgba(20,20,20,0.10)]",
+              "disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50",
+            ),
         className,
       )}
     >
       <span
-        className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-[#141414]/[0.04] transition-colors duration-200 group-hover:bg-[#141414]/[0.07]"
+        className={
+          landing
+            ? styles.googleMark
+            : "flex h-5 w-5 flex-none items-center justify-center rounded-full bg-[#141414]/[0.04] transition-colors duration-200 group-hover:bg-[#141414]/[0.07]"
+        }
         aria-hidden="true"
       >
-        {isLoading ? (
+        {isLoading && !landing ? (
           <span
             className="h-3 w-3 animate-spin rounded-full border-2"
             style={{
