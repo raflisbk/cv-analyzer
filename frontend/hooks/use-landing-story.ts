@@ -4,7 +4,7 @@ import { loadGsap } from "@/lib/gsap-loader";
 type Gsap = Awaited<ReturnType<typeof loadGsap>>["gsap"];
 type Timeline = ReturnType<Gsap["timeline"]>;
 
-export function useLandingStory(build: (gsap: Gsap, panel: HTMLElement, timeline: Timeline) => void, length = 110) {
+export function useLandingStory(build: (gsap: Gsap, panel: HTMLElement, timeline: Timeline) => void, length = 110, prepare?: (panel: HTMLElement) => void) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const panel = ref.current;
@@ -16,6 +16,7 @@ export function useLandingStory(build: (gsap: Gsap, panel: HTMLElement, timeline
       try {
         const { gsap, ScrollTrigger } = await loadGsap();
         if (cancelled) return;
+        prepare?.(panel);
         const pin = panel.offsetHeight <= window.innerHeight + 30;
         timeline = gsap.timeline({
           defaults: { ease: "power3.out" },
@@ -31,6 +32,6 @@ export function useLandingStory(build: (gsap: Gsap, panel: HTMLElement, timeline
     if (document.querySelector<HTMLElement>("[data-landing-loader]")?.style.display === "none") void start();
     else window.addEventListener("landing-intro-complete", start, { once: true });
     return () => { cancelled = true; window.removeEventListener("landing-intro-complete", start); timeline?.kill(); };
-  }, [build, length]);
+  }, [build, length, prepare]);
   return ref;
 }
