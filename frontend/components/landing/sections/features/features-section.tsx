@@ -10,7 +10,7 @@ export default function FeaturesSection() {
   return (
     <section
       ref={ref}
-      id="features"
+      id="inside"
       className={`${base.panel} ${base.snow} ${styles.grid}`}
     >
       <div className={`${base.head} ${styles.head}`}>
