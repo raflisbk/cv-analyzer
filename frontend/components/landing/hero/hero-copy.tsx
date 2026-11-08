@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import styles from "./hero.module.css";
 import buttonStyles from "./hero-button.module.css";
 
@@ -25,9 +25,14 @@ export default function HeroCopy() {
         data-hero-cta
       >
         <span>Score my CV</span>
-        <span className={buttonStyles.arrow}>
-          <ArrowRight size={22} aria-hidden="true" />
-        </span>
+        <Image
+          className={buttonStyles.plane}
+          src="/landing/3d/paper-plane.webp"
+          width={56}
+          height={56}
+          alt=""
+          aria-hidden="true"
+        />
       </Link>
     </div>
   );
