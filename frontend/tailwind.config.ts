@@ -11,6 +11,7 @@ export default {
     extend: {
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
+        hand: ["var(--font-hand)", "cursive"],
         sans: [
           "var(--font-inter)",
           "ui-sans-serif",
@@ -29,6 +30,14 @@ export default {
         "16": "64px",
       },
       colors: {
+        brand: {
+          red: "var(--brand-red)",
+          snow: "var(--brand-snow)",
+          punk: "var(--brand-punk)",
+          ink: "var(--brand-ink)",
+          "red-deep": "var(--brand-red-deep)",
+          blush: "var(--brand-blush)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
