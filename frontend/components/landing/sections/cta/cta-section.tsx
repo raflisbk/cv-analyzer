@@ -3,13 +3,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { ctaMotion } from "@/components/landing/motion/cta";
+import { useLandingExpand } from "@/hooks/use-landing-expand";
 import base from "../section.module.css";
+import PlaneIcon from "../plane-icon";
 import styles from "./cta.module.css";
 export default function CtaSection() {
-  const ref = useLandingStory(ctaMotion, 100);
+  const ref = useLandingStory(ctaMotion, 100, undefined, {
+    start: "top 92%",
+    end: "bottom top",
+  });
+  const expandRef = useLandingExpand("expand");
   return (
     <section
-      ref={ref}
+      ref={(node) => {
+        ref.current = node;
+        expandRef.current = node;
+      }}
       id="start"
       className={`${base.panel} ${base.punk} ${styles.layout}`}
     >
@@ -26,7 +35,7 @@ export default function CtaSection() {
             href="/workspace-v2/new"
             className={`${base.button} ${styles.primary}`}
           >
-            Score my CV <span aria-hidden="true">↗</span>
+            Score my CV <PlaneIcon size={52} />
           </Link>
           <a href="#report" className={styles.sample}>
             See a sample report

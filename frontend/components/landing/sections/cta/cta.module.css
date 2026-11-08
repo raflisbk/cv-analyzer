@@ -8,6 +8,13 @@
   gap: clamp(24px, 4vw, 56px);
   align-items: center;
 }
+@media (min-width: 861px) {
+  .layout {
+    width: 100vw;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+}
 .copy {
   display: flex;
   flex-direction: column;
