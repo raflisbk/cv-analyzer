@@ -1,20 +1,20 @@
 "use client";
 
 const marqueeItems = [
-  "AI Scoring",
+  "CV Scoring",
   "Grammar Check",
   "ATS Compliance",
   "Skill Gap Analysis",
   "JD Comparison",
   "Inline Edit",
-  "AI Chat",
+  "Smart Editor",
   "1,088 Role Archetypes",
   "195+ Skills",
   "2 Languages",
 ];
 
 const separator = (
-  <span className="mx-6 text-[#CAFF43] opacity-40" aria-hidden="true">
+  <span className="mx-6 text-[var(--brand-punk)] opacity-40" aria-hidden="true">
     <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
       <path d="M4 0L5 3L8 4L5 5L4 8L3 5L0 4L3 3Z" fill="currentColor" />
     </svg>
@@ -26,7 +26,7 @@ export default function FloatingFooter() {
     <div
       className="fixed bottom-0 left-0 right-0 z-40 overflow-hidden pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
       style={{
-        background: "#1A170F",
+        background: "var(--brand-ink)",
         borderTop: "1px solid rgba(255,255,255,0.05)",
       }}
     >
@@ -34,7 +34,7 @@ export default function FloatingFooter() {
         {[...marqueeItems, ...marqueeItems].map((item, i) => (
           <span key={i} className="flex items-center whitespace-nowrap">
             {i > 0 && separator}
-            <span className="text-[13px] font-semibold text-[#F5F2D8]/40">
+            <span className="text-[13px] font-semibold text-[var(--brand-snow)] opacity-40">
               {item}
             </span>
           </span>

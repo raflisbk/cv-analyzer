@@ -2,15 +2,17 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import HeroSection from "@/components/landing/hero/hero-section";
 import IntroLoader from "@/components/landing/intro/intro-loader";
-import RagExplainerSection from "@/components/landing/rag-explainer-section";
-import ProductsSection from "@/components/landing/products-section";
-import FeaturesSection from "@/components/landing/features-section";
-import HowItWorksSection from "@/components/landing/how-it-works-section";
-import StatsSection from "@/components/landing/stats-section";
-import SeeItInActionSection from "@/components/landing/see-it-in-action-section";
+import ProductsSection from "@/components/landing/sections/products/products-section";
+import ReportSection from "@/components/landing/sections/report/report-section";
+import StickersSection from "@/components/landing/sections/stickers/stickers-section";
+import ProcessSection from "@/components/landing/sections/process/process-section";
+import FeaturesSection from "@/components/landing/sections/features/features-section";
+import StatsSection from "@/components/landing/sections/stats/stats-section";
+import FaqSection from "@/components/landing/sections/faq/faq-section";
+import CtaSection from "@/components/landing/sections/cta/cta-section";
+import FooterSection from "@/components/landing/sections/footer/footer-section";
 import FloatingFooter from "@/components/landing/floating-footer";
 import SectionDots from "@/components/landing/section-dots";
-import Footer from "@/components/landing/footer";
 import { LoginRequiredDialog } from "@/components/auth/login-required-dialog";
 
 export const metadata: Metadata = {
@@ -26,16 +28,17 @@ export default function Home() {
       <IntroLoader />
       <main>
         <HeroSection />
-        <RagExplainerSection />
         <ProductsSection />
+        <ReportSection />
+        <StickersSection />
+        <ProcessSection />
         <FeaturesSection />
-        <HowItWorksSection />
         <StatsSection />
-        <SeeItInActionSection />
+        <FaqSection />
+        <CtaSection />
       </main>
-      <Footer />
+      <FooterSection />
       <FloatingFooter />
-      {/* Scroll-spy dot navigation (cloudstudio-style section pager) */}
       <SectionDots />
     </>
   );

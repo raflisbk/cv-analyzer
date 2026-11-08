@@ -113,7 +113,7 @@ export default function RagExplainerSection() {
                 column (its real home) is hidden ---- */}
         <div className="rag-reveal mx-auto mb-8 w-full max-w-7xl lg:hidden">
           <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-[#141414]">
-            An AI that actually knows you.
+            An editor that knows your CV.
           </h2>
           <div className="mt-4 flex items-center justify-between border-y border-dashed border-[#141414]/20 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/40">
             <span>ROUTE MAP</span>
@@ -216,7 +216,7 @@ export default function RagExplainerSection() {
             <div className="mb-2 flex items-end justify-between gap-8 xl:pr-8">
               <div>
                 <h2 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-[#141414] xl:text-4xl">
-                  An AI that actually knows you.
+                  An editor that knows your CV.
                 </h2>
                 <div className="mt-4 flex items-center justify-between border-y border-dashed border-[#141414]/20 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#141414]/40">
                   <span>ROUTE MAP</span>
