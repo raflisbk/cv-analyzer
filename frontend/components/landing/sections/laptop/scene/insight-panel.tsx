@@ -1,0 +1,33 @@
+import { laptopInsights } from "@/lib/landing-laptop-insights";
+import InsightBody from "./insight-body";
+import styles from "./panel.module.css";
+
+export default function InsightPanel() {
+  return (
+    <aside className={styles.panel} aria-label="CV section insights">
+      <div
+        className={styles.announcement}
+        aria-live="polite"
+        data-sc-announcement
+      />
+      {laptopInsights.map((insight, index) => (
+        <div
+          key={insight.key}
+          className={styles.state}
+          data-sc-state={index}
+          aria-hidden={index !== 0}
+        >
+          <span>{insight.eyebrow}</span>
+          <h3>{insight.title}</h3>
+          <InsightBody body={insight.body} />
+          {insight.chip && <b className={styles.chip}>{insight.chip}</b>}
+        </div>
+      ))}
+      <div className={styles.dots} aria-hidden="true" data-sc-dots>
+        {laptopInsights.slice(1).map((insight) => (
+          <i key={insight.key} />
+        ))}
+      </div>
+    </aside>
+  );
+}

@@ -1,4 +1,5 @@
 import quadsData from "@/public/landing/laptop/screen-quads.json";
+import { paintLaptopScene } from "./laptop-scene";
 import {
   homographyCss,
   interpolateQuad,
@@ -115,4 +116,5 @@ export function paintLaptop(
   copy.style.transform = `translateY(${-30 * zoom}px)`;
   screen.dataset.contentProgress = content.toFixed(3);
   screen.style.setProperty("--laptop-content-progress", String(content));
+  paintLaptopScene(screen, content, staticView);
 }
