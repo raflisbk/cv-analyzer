@@ -46,9 +46,8 @@
   color: var(--brand-ink);
 }
 .card0 p {
-  background: var(--brand-ink);
-  padding: 10px;
-  border-radius: 10px;
+  font-weight: 700;
+  font-size: 19px;
 }
 .card1 {
   background: var(--brand-blush);

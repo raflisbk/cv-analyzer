@@ -44,6 +44,19 @@
   color: var(--brand-snow);
   font-size: 22px;
   min-height: 66px;
+  box-shadow:
+    0 6px 0 var(--brand-red-deep),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+}
+.primary:hover {
+  box-shadow:
+    0 9px 0 var(--brand-red-deep),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
+}
+.primary:active {
+  box-shadow:
+    0 1px 0 var(--brand-red-deep),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18);
 }
 .sample {
   font-weight: 700;

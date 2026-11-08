@@ -52,9 +52,7 @@
   color: var(--brand-snow);
 }
 .card0 p {
-  background: var(--brand-ink);
-  padding: 8px;
-  border-radius: 8px;
+  font-weight: 700;
 }
 .card1 {
   background: var(--brand-punk);
@@ -73,9 +71,7 @@
   color: var(--brand-snow);
 }
 .card4 p {
-  background: var(--brand-ink);
-  padding: 8px;
-  border-radius: 8px;
+  font-weight: 700;
 }
 @media (max-width: 1100px) {
   .card {

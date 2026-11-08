@@ -24,9 +24,6 @@ export default function HeroCopy() {
           <ArrowRight size={22} aria-hidden="true" />
         </span>
       </Link>
-      <span className={styles.trust} data-hero-copy>
-        Free to try. No card.
-      </span>
     </div>
   );
 }

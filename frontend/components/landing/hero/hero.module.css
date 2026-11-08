@@ -67,14 +67,11 @@
   white-space: nowrap;
 }
 .copy p {
-  font-size: 20px;
+  font-size: 21px;
   line-height: 1.45;
-  font-weight: 600;
+  font-weight: 700;
   max-width: 32ch;
-  margin: 26px 0 28px;
-  background: var(--brand-ink);
-  padding: 12px 16px;
-  border-radius: 12px;
+  margin: 26px 0 32px;
 }
 .live {
   display: inline-flex;
@@ -102,33 +99,51 @@
   background: var(--brand-punk);
   color: var(--brand-ink);
   padding: 7px 7px 7px 26px;
-  border-radius: 8px;
+  border: 2.5px solid var(--brand-ink);
+  border-radius: 10px;
+  box-shadow:
+    0 6px 0 var(--brand-ink),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
   font-size: 18px;
   font-weight: 800;
   text-decoration: none;
-  transition: translate 0.2s;
+  transition:
+    translate 0.18s,
+    box-shadow 0.18s,
+    background 0.18s;
 }
 .button:hover {
   translate: 0 -3px;
+  box-shadow:
+    0 9px 0 var(--brand-ink),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+.button:active {
+  translate: 0 5px;
+  box-shadow:
+    0 1px 0 var(--brand-ink),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+.button:hover .arrow svg {
+  translate: 4px 0;
+}
+.button:hover .arrow {
+  background: var(--brand-ink);
+  color: var(--brand-punk);
 }
 .arrow {
-  border-left: 2px solid var(--brand-ink);
+  border-left: 2.5px solid var(--brand-ink);
   width: 48px;
-  height: 46px;
+  height: 44px;
+  border-radius: 0 6px 6px 0;
   display: grid;
   place-items: center;
+  transition:
+    background 0.18s,
+    color 0.18s;
 }
-.trust {
-  display: block;
-  margin-top: 26px;
-  background: var(--brand-ink);
-  color: var(--brand-snow);
-  width: max-content;
-  max-width: 100%;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
+.arrow svg {
+  transition: translate 0.18s;
 }
 .stage {
   position: relative;

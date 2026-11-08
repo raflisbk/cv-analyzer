@@ -41,13 +41,21 @@
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+  border: 2px solid var(--brand-ink);
+  box-shadow: 0 4px 0 var(--brand-ink);
   transition:
-    background 0.2s,
-    translate 0.2s;
+    background 0.18s,
+    translate 0.18s,
+    box-shadow 0.18s;
 }
 .links a:hover {
   background: var(--brand-punk);
   translate: 0 -2px;
+  box-shadow: 0 6px 0 var(--brand-ink);
+}
+.links a:active {
+  translate: 0 3px;
+  box-shadow: 0 1px 0 var(--brand-ink);
 }
 .action {
   justify-self: end;
@@ -62,6 +70,25 @@
   font-size: 15px;
   min-height: 44px;
   text-decoration: none;
+  border: 2px solid var(--brand-ink);
+  box-shadow: 0 4px 0 var(--brand-ink);
+  transition:
+    translate 0.18s,
+    box-shadow 0.18s;
+}
+.action:hover {
+  translate: 0 -2px;
+  box-shadow: 0 6px 0 var(--brand-ink);
+}
+.action:active {
+  translate: 0 3px;
+  box-shadow: 0 1px 0 var(--brand-ink);
+}
+.action:hover .arrow svg {
+  translate: 2px 0;
+}
+.arrow svg {
+  transition: translate 0.18s;
 }
 .arrow {
   width: 34px;

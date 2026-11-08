@@ -4,6 +4,12 @@ import { loadGsap } from "@/lib/gsap-loader";
 type Gsap = Awaited<ReturnType<typeof loadGsap>>["gsap"];
 type Timeline = ReturnType<Gsap["timeline"]>;
 
+function defaultEnd(panel: HTMLElement) {
+  return panel.offsetHeight > window.innerHeight * 0.85
+    ? "bottom 60%"
+    : "top 28%";
+}
+
 export function useLandingStory(
   build: (gsap: Gsap, panel: HTMLElement, timeline: Timeline) => void,
   length = 110,
@@ -34,13 +40,21 @@ export function useLandingStory(
           defaults: { ease: "power3.out" },
           scrollTrigger: {
             trigger: panel,
-            start: pin ? "top 12px" : (scrollThrough?.start ?? "top 78%"),
-            end: pin ? `+=${length}%` : (scrollThrough?.end ?? "bottom 45%"),
+            start: pin ? "top 12px" : (scrollThrough?.start ?? "top 92%"),
+            end: pin
+              ? `+=${length}%`
+              : (scrollThrough?.end ?? defaultEnd(panel)),
             pin,
             scrub: 0.6,
             anticipatePin: 1,
           },
         });
+        if (!pin && !scrollThrough)
+          timeline.from(
+            panel,
+            { y: 64, scale: 0.95, duration: 0.35, ease: "power2.out" },
+            0,
+          );
         build(gsap, panel, timeline);
         timeline.to({}, { duration: 0.3 });
         ScrollTrigger.refresh();

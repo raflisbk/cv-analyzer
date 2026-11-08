@@ -29,10 +29,7 @@
 }
 .stat span {
   font-weight: 700;
-  font-size: 20px;
-  background: var(--brand-ink);
-  padding: 8px 10px;
-  border-radius: 8px;
+  font-size: 22px;
   align-self: flex-start;
 }
 @media (max-width: 860px) {
