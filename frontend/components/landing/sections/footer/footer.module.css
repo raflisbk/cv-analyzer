@@ -1,0 +1,9 @@
+.footer{padding-block:clamp(36px,5vw,64px) 32px;display:grid;gap:50px;min-height:0}
+.top{display:grid;grid-template-columns:1fr 2fr;gap:40px}.brand p{margin:0 0 22px;max-width:28ch;font-size:18px;font-weight:700}
+.columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.columns h2{font-family:var(--font-inter);font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-punk);line-height:1.4}
+.columns ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}.columns li{min-height:44px;display:flex;align-items:center}.columns a{text-decoration:none;font-size:17px}.columns a:hover{text-decoration:underline;text-decoration-color:var(--brand-punk);text-underline-offset:4px}.columns span{opacity:.65;font-size:17px}
+.columns small{font-size:12px;border:1px solid currentColor;border-radius:99px;padding:2px 8px;margin-left:6px}
+.bottom{border-top:2px solid #544b49;padding-top:20px;font-size:14px}
+@media(max-width:860px){.top{grid-template-columns:1fr}.columns{gap:16px}}
+@media(max-width:480px){.columns{grid-template-columns:1fr 1fr}.columns nav:last-child{grid-column:1/-1}}
