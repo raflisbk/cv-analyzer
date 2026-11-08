@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 // machine's network kept timing out and pages fell back to system fonts)
 import "@fontsource-variable/inter";
 import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource/caveat/600.css";
 
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/auth-provider";
