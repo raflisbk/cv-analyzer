@@ -8,7 +8,13 @@ export default function HeroSection() {
   return (
     <>
       <div className={styles.announcement}>
-        CV Analyzer is live. CV Builder and Job Connect are on the way.
+        <span>
+          CV Analyzer is live.
+          <span className={styles.announcementMore}>
+            {" "}
+            CV Builder and Job Connect are on the way.
+          </span>
+        </span>
         <a href="#products">See the tools</a>
       </div>
       <Navbar />

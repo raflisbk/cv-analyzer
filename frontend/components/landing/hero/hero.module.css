@@ -14,6 +14,9 @@
   text-align: center;
   flex-wrap: wrap;
 }
+.announcementMore {
+  display: inline;
+}
 .announcement a {
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -266,6 +269,11 @@
   .announcement {
     margin-inline: 16px;
     font-size: 13px;
+    flex-wrap: nowrap;
+    padding: 4px 16px;
+  }
+  .announcementMore {
+    display: none;
   }
   .copy h1 {
     font-size: clamp(42px, 12vw, 56px);
