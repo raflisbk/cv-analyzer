@@ -8,6 +8,7 @@ export function useLandingStory(
   build: (gsap: Gsap, panel: HTMLElement, timeline: Timeline) => void,
   length = 110,
   prepare?: (panel: HTMLElement) => void,
+  scrollThrough?: { start: string; end: string },
 ) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -27,13 +28,14 @@ export function useLandingStory(
         const { gsap, ScrollTrigger } = await loadGsap();
         if (cancelled) return;
         prepare?.(panel);
-        const pin = panel.offsetHeight <= window.innerHeight + 30;
+        const pin =
+          !scrollThrough && panel.offsetHeight <= window.innerHeight + 30;
         timeline = gsap.timeline({
           defaults: { ease: "power3.out" },
           scrollTrigger: {
             trigger: panel,
-            start: pin ? "top 12px" : "top 78%",
-            end: pin ? `+=${length}%` : "bottom 45%",
+            start: pin ? "top 12px" : (scrollThrough?.start ?? "top 78%"),
+            end: pin ? `+=${length}%` : (scrollThrough?.end ?? "bottom 45%"),
             pin,
             scrub: 0.6,
             anticipatePin: 1,
@@ -58,6 +60,6 @@ export function useLandingStory(
       window.removeEventListener("landing-intro-complete", start);
       timeline?.kill();
     };
-  }, [build, length, prepare]);
+  }, [build, length, prepare, scrollThrough]);
   return ref;
 }

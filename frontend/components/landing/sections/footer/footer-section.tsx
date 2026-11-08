@@ -5,8 +5,10 @@ import { useLandingStory } from "@/hooks/use-landing-story";
 import { footerMotion } from "@/components/landing/motion/footer";
 import base from "../section.module.css";
 import styles from "./footer.module.css";
+const footerScroll = { start: "top 92%", end: "bottom bottom" };
+
 export default function FooterSection() {
-  const ref = useLandingStory(footerMotion, 60);
+  const ref = useLandingStory(footerMotion, 60, undefined, footerScroll);
   return (
     <footer
       ref={ref}
