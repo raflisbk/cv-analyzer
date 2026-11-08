@@ -55,7 +55,6 @@
   position: relative;
   width: min(100%, 860px);
   margin: 0 auto;
-  aspect-ratio: 792 / 712;
 }
 .stage {
   position: absolute;
@@ -73,8 +72,6 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 1000px;
-  height: 435px;
   overflow: hidden;
   border-radius: 26px;
   background: #f2ff00;

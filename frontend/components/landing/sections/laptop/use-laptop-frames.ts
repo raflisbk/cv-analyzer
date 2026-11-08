@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import quadsData from "@/public/landing/laptop/screen-quads.json";
 
 function loadFrames(
   canvas: HTMLCanvasElement,
@@ -7,7 +8,7 @@ function loadFrames(
   current: () => number,
 ) {
   const pending: Promise<void>[] = [];
-  const frames = Array.from({ length: 36 }, (_, index) => {
+  const frames = Array.from({ length: quadsData.frameCount }, (_, index) => {
     const image = new Image();
     image.src = `/landing/laptop/frame-${String(index).padStart(2, "0")}.webp`;
     pending.push(

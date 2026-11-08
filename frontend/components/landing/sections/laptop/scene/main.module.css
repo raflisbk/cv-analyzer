@@ -1,6 +1,6 @@
 .main {
   display: grid;
-  gap: 11px;
+  gap: 22px;
   align-content: start;
 }
 .main mark {
@@ -20,16 +20,16 @@
   align-items: baseline;
 }
 .role b {
-  font-size: 11.2px;
+  font-size: 11.7px;
 }
 .role span {
-  font-size: 9px;
+  font-size: 9.5px;
   font-style: normal;
   color: #6b5c57;
   font-weight: 600;
 }
 .job + .job {
-  margin-top: 8px;
+  margin-top: 13px;
 }
 .editLine {
   min-height: 12px;

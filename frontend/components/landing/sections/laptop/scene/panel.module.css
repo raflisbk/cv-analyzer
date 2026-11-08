@@ -1,15 +1,15 @@
 .panel {
   position: absolute;
-  left: 640px;
-  top: 16px;
-  width: 346px;
-  height: 403px;
+  left: 532px;
+  top: 14px;
+  width: 454px;
+  height: calc(100% - 28px);
   border-radius: 30px;
   background: #b81d00;
   box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.28),
     0 22px 32px -16px rgba(90, 20, 0, 0.6);
-  padding: 24px;
+  padding: 30px;
   box-sizing: border-box;
   color: #fdfdff;
   font-family: Inter, sans-serif;
@@ -24,11 +24,11 @@
 }
 .state {
   position: absolute;
-  left: 24px;
-  right: 24px;
-  top: 24px;
+  left: 30px;
+  right: 30px;
+  top: 30px;
   display: grid;
-  gap: 10px;
+  gap: 17px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(14px);
@@ -58,7 +58,7 @@
 }
 .state h3 {
   font:
-    800 29px/1 "Bricolage Grotesque Variable",
+    800 35px/1 "Bricolage Grotesque Variable",
     Inter,
     sans-serif;
   letter-spacing: -0.03em;
@@ -66,7 +66,7 @@
 }
 .state p {
   font:
-    600 15.5px/1.45 Inter,
+    600 16px/1.45 Inter,
     sans-serif;
   margin: 0;
   color: #fdfdff;
