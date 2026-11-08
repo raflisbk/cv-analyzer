@@ -3,14 +3,15 @@ import HeroCopy from "./hero-copy";
 import HeroWaves from "./hero-waves";
 import Navbar from "@/components/landing/navbar";
 import styles from "./hero.module.css";
+import announcementStyles from "./hero-announcement.module.css";
 
 export default function HeroSection() {
   return (
     <>
-      <div className={styles.announcement}>
+      <div className={announcementStyles.announcement}>
         <span>
           CV Analyzer is live.
-          <span className={styles.announcementMore}>
+          <span className={announcementStyles.announcementMore}>
             {" "}
             CV Builder and Job Connect are on the way.
           </span>
