@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNavScroll } from "@/hooks/use-nav-scroll";
 import MobileMenu from "./navbar/mobile-menu";
+import AccountMenu from "./navbar/account-menu";
 import { NAV_LINKS } from "./navbar/nav-links";
 import styles from "./navbar/navbar.module.css";
 
 export default function Navbar() {
   const user = useAuthStore((state) => state.user);
+  const isHydrated = useAuthStore((state) => state.isHydrated);
   const onNavScroll = useNavScroll();
   return (
     <header className={styles.header} data-landing-nav>
@@ -39,18 +41,22 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-        <Link href="/workspace-v2/new" className={styles.action}>
-          <span>{user ? "My workspace" : "Log in"}</span>
-          <span className={styles.keyWrap} aria-hidden="true">
-            <Image
-              src="/landing/3d/login-key.webp"
-              alt=""
-              width={50}
-              height={50}
-              className={styles.key}
-            />
-          </span>
-        </Link>
+        {isHydrated && user ? (
+          <AccountMenu user={user} />
+        ) : (
+          <Link href="/workspace-v2/new" className={styles.action}>
+            <span>Log in</span>
+            <span className={styles.keyWrap} aria-hidden="true">
+              <Image
+                src="/landing/3d/login-key.webp"
+                alt=""
+                width={50}
+                height={50}
+                className={styles.key}
+              />
+            </span>
+          </Link>
+        )}
         <MobileMenu />
       </nav>
     </header>

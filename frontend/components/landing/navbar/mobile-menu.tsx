@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import {
   Sheet,
@@ -21,11 +22,18 @@ import mobileStyles from "./mobile-menu.module.css";
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
   const { user, setUser } = useAuthStore();
+  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const router = useRouter();
   const onNavScroll = useNavScroll();
   async function logout() {
-    await logoutApi();
-    setUser(null);
-    setOpen(false);
+    try {
+      await logoutApi();
+    } catch {
+    } finally {
+      setUser(null);
+      setOpen(false);
+      router.push("/");
+    }
   }
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -62,10 +70,7 @@ export default function MobileMenu() {
             onNavScroll(event, sectionId, anchor);
           }}
         />
-        <MobileMenuFooter
-          label={user?.name ?? user?.email ?? null}
-          onLogout={logout}
-        />
+        <MobileMenuFooter user={isHydrated ? user : null} onLogout={logout} />
       </SheetContent>
     </Sheet>
   );
