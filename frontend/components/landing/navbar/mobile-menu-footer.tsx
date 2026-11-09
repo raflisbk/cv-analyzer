@@ -1,25 +1,24 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { SheetClose } from "@/components/ui/sheet";
+import type { AuthUser } from "@/stores/auth-store";
+import MobileAccountFooter from "./mobile-account-footer";
 import styles from "./mobile-menu.module.css";
 
-type Props = { label: string | null; onLogout: () => void };
+type Props = { user: AuthUser | null; onLogout: () => void };
 
-export default function MobileMenuFooter({ label, onLogout }: Props) {
+export default function MobileMenuFooter({ user, onLogout }: Props) {
   return (
     <div className={styles.sheetBottom}>
-      {label && (
-        <div className={styles.user}>
-          <span>{label}</span>
-          <button onClick={onLogout}>Log out</button>
-        </div>
+      {user ? (
+        <MobileAccountFooter user={user} onLogout={onLogout} />
+      ) : (
+        <SheetClose asChild>
+          <Link href="/workspace-v2/new" className={styles.mobileAction}>
+            Log in to start <ArrowRight size={20} aria-hidden="true" />
+          </Link>
+        </SheetClose>
       )}
-      <SheetClose asChild>
-        <Link href="/workspace-v2/new" className={styles.mobileAction}>
-          {label ? "My workspace" : "Log in to start"}
-          <ArrowRight size={20} aria-hidden="true" />
-        </Link>
-      </SheetClose>
     </div>
   );
 }
