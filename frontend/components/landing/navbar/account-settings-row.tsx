@@ -4,7 +4,7 @@ import styles from "./account-menu.module.css";
 export default function AccountSettingsRow() {
   return (
     <div
-      className={styles.item}
+      className={`${styles.tile} ${styles.disabled}`}
       role="menuitem"
       aria-disabled="true"
       tabIndex={-1}

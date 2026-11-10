@@ -41,20 +41,28 @@ function useMenuKeyboard(
   };
   const onTriggerKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Tab") return closeAfterTab();
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    if (
+      !["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)
+    )
+      return;
     event.preventDefault();
     setOpen(true);
-    const index = event.key === "ArrowDown" ? 0 : 1;
+    const index =
+      event.key === "ArrowDown" || event.key === "ArrowRight" ? 0 : 1;
     requestAnimationFrame(() => itemRefs.current[index]?.focus());
   };
   const onMenuKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Tab") return closeAfterTab();
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    if (
+      !["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)
+    )
+      return;
     event.preventDefault();
     const current = itemRefs.current.indexOf(
       document.activeElement as HTMLElement,
     );
-    const next = (current + (event.key === "ArrowDown" ? 1 : -1) + 2) % 2;
+    const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+    const next = (current + (forward ? 1 : -1) + 2) % 2;
     itemRefs.current[next]?.focus();
   };
   return { onTriggerKeyDown, onMenuKeyDown };
