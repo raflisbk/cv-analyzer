@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutGrid, LogOut } from "lucide-react";
+import { ArrowUpRight, LayoutGrid, LogOut } from "lucide-react";
 import type { useAccountMenu } from "@/hooks/use-account-menu";
 import AccountSettingsRow from "./account-settings-row";
 import styles from "./account-menu.module.css";
@@ -15,13 +15,14 @@ export default function AccountMenuItems({ menu }: { menu: Menu }) {
         }}
         href="/workspace-v2/new"
         role="menuitem"
-        className={styles.item}
+        className={`${styles.tile} ${styles.workspace}`}
         onClick={() => menu.close()}
       >
         <span className={styles.icon}>
           <LayoutGrid size={22} strokeWidth={2.4} />
         </span>
-        Workspace
+        <span>Workspace</span>
+        <ArrowUpRight className={styles.arrow} size={28} aria-hidden="true" />
       </Link>
       <AccountSettingsRow />
       <button
@@ -30,7 +31,7 @@ export default function AccountMenuItems({ menu }: { menu: Menu }) {
         }}
         type="button"
         role="menuitem"
-        className={`${styles.item} ${styles.logout}`}
+        className={`${styles.tile} ${styles.logout}`}
         onClick={menu.logout}
       >
         <span className={styles.icon}>
