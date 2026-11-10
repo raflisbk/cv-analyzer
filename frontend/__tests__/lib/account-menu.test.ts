@@ -3,6 +3,7 @@ import {
   accountDisplayName,
   accountInitial,
   accountPhotoUrl,
+  accountShortName,
 } from "@/lib/account-menu";
 
 describe("account menu helpers", () => {
@@ -24,6 +25,15 @@ describe("account menu helpers", () => {
   it("derives an uppercase initial from the display name", () => {
     expect(accountInitial({ name: "  ada", email: "ada@example.com" })).toBe(
       "A",
+    );
+  });
+
+  it("uses the first name in the closed account pill", () => {
+    expect(
+      accountShortName({ name: "  Ada Lovelace  ", email: "ada@example.com" }),
+    ).toBe("Ada");
+    expect(accountShortName({ name: null, email: "ada@example.com" })).toBe(
+      "ada",
     );
   });
 

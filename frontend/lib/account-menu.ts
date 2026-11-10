@@ -10,6 +10,10 @@ export function accountInitial(user: AccountIdentity): string {
   return accountDisplayName(user).charAt(0).toUpperCase();
 }
 
+export function accountShortName(user: AccountIdentity): string {
+  return accountDisplayName(user).split(/\s|@/)[0];
+}
+
 export function accountPhotoUrl(picture: string | null): string | null {
   if (!picture) {
     return null;
