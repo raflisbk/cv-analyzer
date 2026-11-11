@@ -4,13 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import type { WorkspaceView } from "./workspace-header";
 import styles from "./workspace-styles";
 
-export function ViewSwitch({
-  view,
-  setView,
-}: {
+interface Props {
   view: WorkspaceView;
   setView: (view: WorkspaceView) => void;
-}) {
+}
+
+export function ViewSwitch({ view, setView }: Props) {
   const switchRef = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState({ left: 4, width: 80 });
   useEffect(() => {

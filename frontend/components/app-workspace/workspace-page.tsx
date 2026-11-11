@@ -8,6 +8,7 @@ import { useDraftSave } from "@/hooks/use-draft-save";
 import { WorkspaceHeader } from "./workspace-header";
 import { WorkspaceBody } from "./workspace-body";
 import { ExportOverlay } from "./export-overlay";
+import { WorkspaceLoadError } from "./workspace-load-error";
 import styles from "./workspace-styles";
 
 export function WorkspacePage({ jobId }: { jobId: string }) {
@@ -46,9 +47,7 @@ export function WorkspacePage({ jobId }: { jobId: string }) {
       {exportOpen && (
         <ExportOverlay jobId={jobId} onClose={() => setExportOpen(false)} />
       )}
-      {data.hydration.error && (
-        <p role="alert">Workspace could not load. Try again later.</p>
-      )}
+      <WorkspaceLoadError error={data.hydration.error} />
     </main>
   );
 }

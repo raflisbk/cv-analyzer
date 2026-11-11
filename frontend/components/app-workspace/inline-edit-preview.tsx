@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { needsNumber } from "@/lib/app-workspace/fixes";
+import { InlineEditActions } from "./inline-edit-actions";
 import styles from "./workspace-styles";
 
 export function InlineEditPreview({
@@ -33,22 +34,7 @@ export function InlineEditPreview({
           />
         </label>
       )}
-      <div className={styles.row}>
-        <button
-          type="button"
-          className={`${styles.pill} ${styles.punk}`}
-          onClick={() => accept(provided)}
-        >
-          Accept
-        </button>
-        <button
-          type="button"
-          className={`${styles.pill} ${styles.snow}`}
-          onClick={retry}
-        >
-          Try another
-        </button>
-      </div>
+      <InlineEditActions accept={() => accept(provided)} retry={retry} />
     </>
   );
 }

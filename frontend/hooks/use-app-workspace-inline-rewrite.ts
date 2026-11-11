@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { requestInlineRewrite } from "@/lib/app-api/workspace";
 import { hasUnsupportedNumbers } from "@/lib/app-workspace/factual-rewrite";
 import { fillNumber, needsNumber } from "@/lib/app-workspace/fixes";
 
@@ -18,18 +18,7 @@ export function useAppWorkspaceInlineRewrite(
     setBusy(true);
     setError("");
     try {
-      const data = await apiFetch<{ rewrittenText: string }>(
-        `/jobs/${jobId}/inline-edit`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            selectedText,
-            prompt: instruction,
-            cvContext: null,
-          }),
-        },
-      );
-      setRewrite(data.rewrittenText);
+      setRewrite(await requestInlineRewrite(jobId, selectedText, instruction));
     } catch {
       setError("Rewrite failed. Try again.");
     } finally {
