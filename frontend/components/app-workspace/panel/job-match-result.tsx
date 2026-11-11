@@ -1,11 +1,8 @@
-"use client";
-
-import { useState } from "react";
 import type { JobMatchData } from "@/lib/app-api/jobmatch.types";
 import { ScoreBar } from "../score-bar";
-import { JobRequirement } from "./job-requirement";
-import { JobSkillConfirm } from "./job-skill-confirm";
 import { MatchRing } from "./match-ring";
+import { JobMatchRequirements } from "./job-match-requirements";
+import { JobMatchActions } from "./job-match-actions";
 import styles from "../workspace-styles";
 
 export function JobMatchResult({
@@ -17,9 +14,6 @@ export function JobMatchResult({
   onAdd: (skill: string) => boolean;
   openFixes: () => void;
 }) {
-  const [pendingSkill, setPendingSkill] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState("");
   return (
     <div className={styles.pane}>
       <div className={styles.row}>
@@ -36,45 +30,8 @@ export function JobMatchResult({
           score={dimension.score}
         />
       ))}
-      <h3 className={styles.eyebrow}>Requirements</h3>
-      {result.requirements.map((requirement) => (
-        <JobRequirement
-          key={requirement.label}
-          requirement={requirement}
-          onAdd={setPendingSkill}
-        />
-      ))}
-      {pendingSkill && (
-        <JobSkillConfirm
-          skill={pendingSkill}
-          onConfirm={() => {
-            if (!onAdd(pendingSkill)) {
-              setError(
-                "Skills section was not found, or the skill is already listed.",
-              );
-            }
-            setPendingSkill(null);
-          }}
-          onCancel={() => setPendingSkill(null)}
-        />
-      )}
-      {error && <p role="alert">{error}</p>}
-      <div className={styles.row}>
-        <button
-          type="button"
-          className={`${styles.pill} ${styles.punk}`}
-          onClick={openFixes}
-        >
-          Tailor my CV to this job
-        </button>
-        <button
-          type="button"
-          className={`${styles.pill} ${styles.snow}`}
-          onClick={() => setSaved(true)}
-        >
-          {saved ? "Job saved" : "Save this job"}
-        </button>
-      </div>
+      <JobMatchRequirements requirements={result.requirements} onAdd={onAdd} />
+      <JobMatchActions openFixes={openFixes} />
     </div>
   );
 }

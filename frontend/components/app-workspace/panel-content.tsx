@@ -1,10 +1,7 @@
 import { ReportPane } from "./panel/report-pane";
 import { FixesPane } from "./panel/fixes-pane";
 import { AtsPane } from "./panel/ats-pane";
-import { JobMatchPane } from "./panel/job-match-pane";
-import { GrammarPane } from "./panel/grammar-pane";
-import { HistoryPane } from "./panel/history-pane";
-import { ChatPane } from "./panel/chat-pane";
+import { PanelAdvancedContent } from "./panel-advanced-content";
 import type { WorkspacePanelProps } from "./workspace-panel";
 
 export function PanelContent(props: WorkspacePanelProps) {
@@ -30,46 +27,5 @@ export function PanelContent(props: WorkspacePanelProps) {
       />
     );
   }
-  if (props.tab === "match") {
-    return (
-      <JobMatchPane
-        jobId={props.jobId}
-        onAdd={props.onAddSkill}
-        openFixes={() => props.setTab("fixes")}
-      />
-    );
-  }
-  if (props.tab === "grammar") {
-    return (
-      <GrammarPane
-        data={props.grammar}
-        error={props.grammarError}
-        resolved={props.resolvedGrammar}
-        onResolve={props.onGrammar}
-      />
-    );
-  }
-  if (props.tab === "history") {
-    return (
-      <HistoryPane
-        jobId={props.jobId}
-        versions={props.versions}
-        error={props.historyError}
-      />
-    );
-  }
-  return (
-    <ChatPane
-      jobId={props.jobId}
-      fileName={props.fileName}
-      suggestedFix={props.fixes.find((fix) => !fix.after.includes("[")) ?? props.fixes[0]}
-      onApply={(id) => {
-        const fix = props.fixes.find((item) => item.id === id);
-        if (fix && !/\[/.test(fix.after)) {
-          props.onApply(fix, fix.after, document.body);
-        }
-      }}
-      onShow={props.onShow}
-    />
-  );
+  return <PanelAdvancedContent {...props} />;
 }

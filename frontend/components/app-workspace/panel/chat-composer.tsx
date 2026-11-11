@@ -1,13 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { ChatQuickQuestions } from "./chat-quick-questions";
 import styles from "../workspace-styles";
 
-const questions = [
-  "What should I fix first?",
-  "Rewrite my first bullet",
-  "Which keywords am I missing?",
-];
 export function ChatComposer({
   send,
   busy,
@@ -18,18 +14,7 @@ export function ChatComposer({
   const [input, setInput] = useState("");
   return (
     <>
-      <div className={styles.row}>
-        {questions.map((question) => (
-          <button
-            key={question}
-            type="button"
-            className={`${styles.pill} ${styles.snow}`}
-            onClick={() => send(question)}
-          >
-            {question}
-          </button>
-        ))}
-      </div>
+      <ChatQuickQuestions send={send} />
       <form
         className={styles.row}
         onSubmit={(event) => {

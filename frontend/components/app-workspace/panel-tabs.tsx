@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { RefObject } from "react";
 import type { WorkspaceTab } from "./workspace-panel";
+import { nextTabIndex } from "@/lib/app-workspace/tabs";
+import { PanelTabButton } from "./panel-tab-button";
 import styles from "./workspace-styles";
 
 const tabs: { key: WorkspaceTab; label: string }[] = [
@@ -14,17 +17,29 @@ const tabs: { key: WorkspaceTab; label: string }[] = [
   { key: "chat", label: "Chat" },
 ];
 
-export function PanelTabs({
-  tab,
-  setTab,
-  fixCount,
-  grammarCount,
-}: {
+interface Props {
   tab: WorkspaceTab;
   setTab: (tab: WorkspaceTab) => void;
   fixCount: number;
   grammarCount: number;
-}) {
+}
+
+function activateTabOnKey(
+  event: React.KeyboardEvent<HTMLButtonElement>,
+  index: number,
+  row: RefObject<HTMLDivElement | null>,
+  setTab: Props["setTab"],
+) {
+  const next = nextTabIndex(event.key, index, tabs.length);
+  if (next === null) {
+    return;
+  }
+  event.preventDefault();
+  setTab(tabs[next].key);
+  row.current?.querySelectorAll<HTMLButtonElement>("[role=tab]")[next]?.focus();
+}
+
+export function PanelTabs({ tab, setTab, fixCount, grammarCount }: Props) {
   const row = useRef<HTMLDivElement>(null);
   const [underline, setUnderline] = useState({ left: 0, width: 54 });
   useEffect(() => {
@@ -35,26 +50,6 @@ export function PanelTabs({
       setUnderline({ left: current.offsetLeft, width: current.offsetWidth });
     }
   }, [tab, fixCount, grammarCount]);
-  function onKey(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
-    const next =
-      event.key === "ArrowRight"
-        ? (index + 1) % tabs.length
-        : event.key === "ArrowLeft"
-          ? (index - 1 + tabs.length) % tabs.length
-          : event.key === "Home"
-            ? 0
-            : event.key === "End"
-              ? tabs.length - 1
-              : null;
-    if (next === null) {
-      return;
-    }
-    event.preventDefault();
-    setTab(tabs[next].key);
-    row.current
-      ?.querySelectorAll<HTMLButtonElement>("[role=tab]")
-      [next]?.focus();
-  }
   return (
     <div
       ref={row}
@@ -64,24 +59,16 @@ export function PanelTabs({
       data-tour="workspace-panel-tabs"
     >
       {tabs.map(({ key, label }, index) => (
-        <button
+        <PanelTabButton
           key={key}
-          id={`tab-${key}`}
-          className={styles.tab}
-          type="button"
-          role="tab"
-          aria-controls={`pane-${key}`}
-          aria-selected={tab === key}
-          tabIndex={tab === key ? 0 : -1}
+          value={key}
+          label={label}
+          selected={tab === key}
+          fixCount={fixCount}
+          grammarCount={grammarCount}
           onClick={() => setTab(key)}
-          onKeyDown={(event) => onKey(event, index)}
-        >
-          {label}
-          {key === "fixes" && <span className={styles.count}>{fixCount}</span>}
-          {key === "grammar" && (
-            <span className={styles.count}>{grammarCount}</span>
-          )}
-        </button>
+          onKeyDown={(event) => activateTabOnKey(event, index, row, setTab)}
+        />
       ))}
       <span className={styles.underline} style={underline} aria-hidden="true" />
     </div>

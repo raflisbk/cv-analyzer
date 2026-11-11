@@ -1,15 +1,13 @@
 import type { WorkspaceChatMessage } from "@/lib/app-workspace/chat.types";
 import styles from "../workspace-styles";
 
-export function ChatMessages({
-  messages,
-  onApply,
-  onShow,
-}: {
+interface Props {
   messages: WorkspaceChatMessage[];
   onApply: (fixId: string) => void;
   onShow: (anchorId: string) => void;
-}) {
+}
+
+export function ChatMessages({ messages, onApply, onShow }: Props) {
   if (!messages.length) {
     return <p>Ask a question about this CV. Your chat stays with this file.</p>;
   }

@@ -1,19 +1,17 @@
 import HelpButton from "@/components/pathy/help-button";
 import type { ScoreResult } from "@/lib/types";
 import { ScoreBar } from "../score-bar";
+import { ReportChecks } from "./report-checks";
 import styles from "../workspace-styles";
 
-export function ReportPane({
-  scores,
-  openFixes,
-  fixCount,
-  bonus,
-}: {
+interface Props {
   scores: ScoreResult | null | undefined;
   openFixes: () => void;
   fixCount: number;
   bonus: number;
-}) {
+}
+
+export function ReportPane({ scores, openFixes, fixCount, bonus }: Props) {
   if (!scores) {
     return (
       <div className={styles.pane} role="status">
@@ -34,16 +32,7 @@ export function ReportPane({
       <ScoreBar label="Clarity" score={scores.clarity} />
       <ScoreBar label="Relevance" score={scores.relevance} />
       <ScoreBar label="Completeness" score={scores.completeness} />
-      <div className={styles.check}>
-        <span className={styles.checkIcon}>✓</span>Clear, readable structure
-      </div>
-      <div className={styles.check}>
-        <span className={styles.checkIcon}>✓</span>Skills match the target role
-      </div>
-      <div className={styles.check}>
-        <span className={styles.checkIcon}>!</span>
-        {fixCount} fixes left to review
-      </div>
+      <ReportChecks fixCount={fixCount} />
       <button
         type="button"
         className={`${styles.pill} ${styles.punk}`}
