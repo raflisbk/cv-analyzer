@@ -14,20 +14,22 @@ export function flattenFixes(
   cards: SuggestionCard[] | null | undefined,
 ): WorkspaceFix[] {
   return (cards ?? []).flatMap((card) =>
-    card.suggestions.map((item, index) => ({
-      id: `${card.section}-${index}`,
-      section: card.section,
-      before: item.originalText ?? item.text,
-      after: item.afterText ?? "",
-      explanation: item.explanation ?? item.text,
-      label:
-        item.type === "impact_metric"
-          ? "No number"
-          : item.type === "action_verb"
-            ? "Vague verb"
-            : "Missing section",
-      points: item.priority === "high_impact" ? 3 : 1,
-    })),
+    card.suggestions
+      .filter((item) => Boolean(item.afterText))
+      .map((item, index) => ({
+        id: `${card.section}-${index}`,
+        section: card.section,
+        before: item.originalText ?? "",
+        after: item.afterText ?? "",
+        explanation: item.explanation ?? item.text,
+        label:
+          item.type === "impact_metric"
+            ? "No number"
+            : item.type === "action_verb"
+              ? "Vague verb"
+              : "Missing section",
+        points: item.priority === "high_impact" ? 3 : 1,
+      })),
   );
 }
 
