@@ -5,11 +5,16 @@ import styles from "../workspace-styles";
 
 export function FixesPane({
   fixes,
+  error,
   onApply,
 }: {
   fixes: WorkspaceFix[];
+  error?: boolean;
   onApply: (fix: WorkspaceFix, text: string, anchor: HTMLElement) => boolean;
 }) {
+  if (error) {
+    return <div role="alert">Fixes could not load. Try again later.</div>;
+  }
   return (
     <div className={styles.pane}>
       <div className={styles.row}>
