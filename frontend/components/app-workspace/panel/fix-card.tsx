@@ -3,15 +3,15 @@
 import { useState } from "react";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
 import { fillNumber, needsNumber } from "@/lib/app-workspace/fixes";
+import { FixNumberField } from "./fix-number-field";
 import styles from "../workspace-styles";
 
-export function FixCard({
-  fix,
-  onApply,
-}: {
+interface Props {
   fix: WorkspaceFix;
   onApply: (text: string, anchor: HTMLElement) => boolean;
-}) {
+}
+
+export function FixCard({ fix, onApply }: Props) {
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   const requiresNumber = needsNumber(fix.after);
@@ -25,18 +25,7 @@ export function FixCard({
         </span>
       )}
       {fix.after && <span>{fix.after}</span>}
-      {requiresNumber && (
-        <label>
-          Enter the number from your experience
-          <input
-            className={styles.input}
-            inputMode="decimal"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder="Your number"
-          />
-        </label>
-      )}
+      {requiresNumber && <FixNumberField value={value} setValue={setValue} />}
       {error && <span role="alert">{error}</span>}
       <button
         type="button"

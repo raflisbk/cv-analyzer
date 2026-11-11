@@ -4,13 +4,12 @@ import { pathyPoseSrc } from "@/lib/pathy/pose";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
 import styles from "../workspace-styles";
 
-export function GrammarSummary({
-  count,
-  stats,
-}: {
+interface Props {
   count: number;
   stats: GrammarData["stats"];
-}) {
+}
+
+export function GrammarSummary({ count, stats }: Props) {
   return (
     <>
       <div className={styles.paneHead}>
