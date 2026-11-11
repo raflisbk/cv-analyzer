@@ -12,6 +12,10 @@ interface Props {
   navigate: (key: "view" | "tab", value: string) => void;
   onExport: () => void;
 }
+function showAnchor(navigate: Props["navigate"], anchorId: string) {
+  navigate("view", "editor");
+  requestAnimationFrame(() => showWorkspaceAnchor(anchorId));
+}
 export function WorkspacePanelContainer({
   jobId,
   tab,
@@ -30,6 +34,10 @@ export function WorkspacePanelContainer({
       tab={tab}
       setTab={(next) => navigate("tab", next)}
       scores={scores}
+      reportError={Boolean(data.results.error && !scores)}
+      fixesError={Boolean(
+        data.results.error && !data.hydration.data?.analysis.suggestions,
+      )}
       fixes={edits.fixes}
       bonus={edits.bonus}
       ats={data.ats.data}
@@ -43,10 +51,7 @@ export function WorkspacePanelContainer({
       onAddSkill={edits.addSkill}
       onExport={onExport}
       onGrammar={edits.onGrammar}
-      onShow={(anchorId) => {
-        navigate("view", "editor");
-        requestAnimationFrame(() => showWorkspaceAnchor(anchorId));
-      }}
+      onShow={(anchorId) => showAnchor(navigate, anchorId)}
     />
   );
 }

@@ -26,6 +26,8 @@ export interface WorkspacePanelProps {
   tab: WorkspaceTab;
   setTab: (tab: WorkspaceTab) => void;
   scores?: ScoreResult | null;
+  reportError?: boolean;
+  fixesError?: boolean;
   fixes: WorkspaceFix[];
   bonus: number;
   ats?: AtsData;

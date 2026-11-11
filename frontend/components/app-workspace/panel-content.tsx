@@ -9,6 +9,7 @@ export function PanelContent(props: WorkspacePanelProps) {
     return (
       <ReportPane
         scores={props.scores}
+        error={props.reportError}
         fixCount={props.fixes.length}
         bonus={props.bonus}
         openFixes={() => props.setTab("fixes")}
@@ -16,7 +17,13 @@ export function PanelContent(props: WorkspacePanelProps) {
     );
   }
   if (props.tab === "fixes") {
-    return <FixesPane fixes={props.fixes} onApply={props.onApply} />;
+    return (
+      <FixesPane
+        fixes={props.fixes}
+        error={props.fixesError}
+        onApply={props.onApply}
+      />
+    );
   }
   if (props.tab === "ats") {
     return (

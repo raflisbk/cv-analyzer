@@ -2,22 +2,26 @@ import HelpButton from "@/components/pathy/help-button";
 import type { ScoreResult } from "@/lib/types";
 import { ScoreBar } from "../score-bar";
 import { ReportChecks } from "./report-checks";
+import { ReportStatus } from "./report-status";
 import styles from "../workspace-styles";
 
 interface Props {
   scores: ScoreResult | null | undefined;
+  error?: boolean;
   openFixes: () => void;
   fixCount: number;
   bonus: number;
 }
 
-export function ReportPane({ scores, openFixes, fixCount, bonus }: Props) {
-  if (!scores) {
-    return (
-      <div className={styles.pane} role="status">
-        Your report is still processing.
-      </div>
-    );
+export function ReportPane({
+  scores,
+  error,
+  openFixes,
+  fixCount,
+  bonus,
+}: Props) {
+  if (!scores || error) {
+    return <ReportStatus error={error} />;
   }
   return (
     <div className={styles.pane}>
