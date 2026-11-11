@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ChatMessage } from "@/lib/app-api/conversations.types";
+import ChatAction from "./chat-action";
 import styles from "./home-thread.module.css";
 
 export default function ChatThread({
@@ -21,40 +21,9 @@ export default function ChatThread({
           key={message.id}
         >
           <p>{message.text}</p>
-          {message.actions?.map((action, index) => {
-            if (action.type === "open_workspace") {
-              return (
-                <Link
-                  key={index}
-                  href={`/app/cvs/${action.jobId}?view=${action.view}`}
-                >
-                  Open workspace
-                </Link>
-              );
-            }
-            if (action.type === "show_in_editor") {
-              return (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() =>
-                    document
-                      .querySelector(
-                        `[data-anchor-id='${CSS.escape(action.anchorId)}']`,
-                      )
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  Show in editor
-                </button>
-              );
-            }
-            return (
-              <button key={index} type="button" data-fix-id={action.fixId}>
-                Apply fix
-              </button>
-            );
-          })}
+          {message.actions?.map((action, index) => (
+            <ChatAction key={index} action={action} />
+          ))}
         </div>
       ))}
       {typing && (
