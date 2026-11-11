@@ -1,8 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useUpload } from "@/hooks/use-upload";
+import { useAppShellUploadButton } from "@/hooks/use-app-shell-upload-button";
 import styles from "./app-shell.module.css";
 
 export default function UploadCvButton({
@@ -12,9 +10,7 @@ export default function UploadCvButton({
   label?: string;
   onUploaded?: (jobId: string) => void;
 }) {
-  const input = useRef<HTMLInputElement>(null);
-  const upload = useUpload();
-  const router = useRouter();
+  const { input, upload, onChange } = useAppShellUploadButton(onUploaded);
   return (
     <>
       <input
@@ -23,21 +19,7 @@ export default function UploadCvButton({
         accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         hidden
         aria-label="Choose a CV file"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) {
-            upload.mutate(
-              { file },
-              {
-                onSuccess: ({ job_id }) =>
-                  onUploaded
-                    ? onUploaded(job_id)
-                    : router.push(`/app/cvs/${job_id}?view=editor`),
-              },
-            );
-          }
-          event.target.value = "";
-        }}
+        onChange={onChange}
       />
       <button
         className={`${styles.pill} ${styles.punk}`}
