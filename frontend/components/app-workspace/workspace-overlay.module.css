@@ -1,0 +1,16 @@
+.popover {
+  position: fixed;
+  z-index: 70;
+  width: min(380px, calc(100vw - 24px));
+  padding: 16px;
+  border-radius: 22px;
+  background: var(--app-red-deep);
+  color: var(--app-snow);
+  box-shadow: 0 24px 40px -16px rgba(60, 6, 0, 0.8);
+}
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(80, 8, 0, 0.5);
+}
