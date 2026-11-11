@@ -8,7 +8,13 @@ import AccountAvatar from "./account-avatar";
 import AccountMenuItems from "./account-menu-items";
 import styles from "./account-menu.module.css";
 
-export default function AccountMenu({ user }: { user: AuthUser }) {
+export default function AccountMenu({
+  user,
+  app = false,
+}: {
+  user: AuthUser;
+  app?: boolean;
+}) {
   const menu = useAccountMenu();
   return (
     <div className={styles.account} ref={menu.rootRef}>
@@ -47,7 +53,7 @@ export default function AccountMenu({ user }: { user: AuthUser }) {
             inert={!menu.open}
             onKeyDown={menu.onMenuKeyDown}
           >
-            <AccountMenuItems menu={menu} />
+            <AccountMenuItems menu={menu} app={app} />
           </div>
         </div>
       </div>

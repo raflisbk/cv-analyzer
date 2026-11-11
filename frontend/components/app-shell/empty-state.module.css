@@ -1,0 +1,15 @@
+.empty {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+.empty h2 {
+  font: 800 30px var(--app-font-display);
+}
+.empty p {
+  color: var(--app-ink-soft);
+}

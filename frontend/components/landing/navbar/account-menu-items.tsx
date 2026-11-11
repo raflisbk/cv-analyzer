@@ -6,14 +6,20 @@ import styles from "./account-menu.module.css";
 
 type Menu = ReturnType<typeof useAccountMenu>;
 
-export default function AccountMenuItems({ menu }: { menu: Menu }) {
+export default function AccountMenuItems({
+  menu,
+  app = false,
+}: {
+  menu: Menu;
+  app?: boolean;
+}) {
   return (
     <>
       <Link
         ref={(node) => {
           menu.itemRefs.current[0] = node;
         }}
-        href="/workspace-v2/new"
+        href={app ? "/app/cvs" : "/app"}
         role="menuitem"
         className={`${styles.tile} ${styles.workspace}`}
         onClick={() => menu.close()}
@@ -21,7 +27,7 @@ export default function AccountMenuItems({ menu }: { menu: Menu }) {
         <span className={styles.icon}>
           <LayoutGrid size={22} strokeWidth={2.4} />
         </span>
-        <span>Workspace</span>
+        <span>{app ? "My CVs" : "Workspace"}</span>
         <ArrowUpRight className={styles.arrow} size={28} aria-hidden="true" />
       </Link>
       <AccountSettingsRow />
