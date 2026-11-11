@@ -7,15 +7,17 @@ import UploadCvButton from "@/components/app-shell/upload-cv-button";
 import styles from "./home.module.css";
 import arrow from "./arrow.webp";
 
+interface ChatComposerProps {
+  onSend: (text: string) => void;
+  busy: boolean;
+  onUploaded?: (jobId: string) => void;
+}
+
 export default function ChatComposer({
   onSend,
   busy,
   onUploaded,
-}: {
-  onSend: (text: string) => void;
-  busy: boolean;
-  onUploaded?: (jobId: string) => void;
-}) {
+}: ChatComposerProps) {
   const [text, setText] = useState("");
   const submit = (event: FormEvent) => {
     event.preventDefault();
