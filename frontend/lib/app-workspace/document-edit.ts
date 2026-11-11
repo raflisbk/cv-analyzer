@@ -25,6 +25,20 @@ export function replaceDocumentText(
   return true;
 }
 
+export function insertDocumentText(
+  editor: Editor | null,
+  text: string,
+): boolean {
+  if (!editor || !text.trim()) {
+    return false;
+  }
+  editor.commands.insertContentAt(0, {
+    type: "paragraph",
+    content: [{ type: "text", text }],
+  });
+  return true;
+}
+
 export function appendSkill(editor: Editor | null, skill: string): boolean {
   if (!editor || !skill.trim()) {
     return false;
