@@ -1,0 +1,19 @@
+.app-root {
+  --app-red: #f42902;
+  --app-red-deep: #b81d00;
+  --app-snow: #fdfdff;
+  --app-punk: #f2ff00;
+  --app-blush: #ffd9cf;
+  --app-ink: #1a0b07;
+  --app-ink-soft: #5a2a20;
+  --app-font-display: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  --app-font-body: var(--font-inter), system-ui, sans-serif;
+  --app-font-hand: var(--font-hand), cursive;
+  --app-gutter-left: max(16px, env(safe-area-inset-left, 0px));
+  --app-gutter-right: max(16px, env(safe-area-inset-right, 0px));
+  min-height: 100dvh;
+  background: var(--app-red);
+  color: var(--app-ink);
+  font-family: var(--app-font-body);
+  font-weight: 500;
+}
