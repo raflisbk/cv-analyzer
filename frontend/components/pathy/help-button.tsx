@@ -1,11 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { HELP, type HelpKey } from "@/lib/pathy/help-content";
-import { pathyPoseSrc } from "@/lib/pathy/pose";
 import { useAppShellFocusTrap } from "@/hooks/use-app-shell-focus-trap";
 import { usePathy } from "./pathy-context";
+import HelpCard from "./help-card";
 import styles from "./help.module.css";
 
 export interface HelpButtonProps {
@@ -15,7 +14,7 @@ export interface HelpButtonProps {
 
 export default function HelpButton({ helpKey, label }: HelpButtonProps) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLSpanElement>(null);
   const pathy = usePathy();
   const content = HELP[helpKey as HelpKey];
   if (!content) {
@@ -34,34 +33,16 @@ export default function HelpButton({ helpKey, label }: HelpButtonProps) {
       >
         ?
       </button>
-      {open && content && (
-        <span
-          ref={ref}
-          className={styles.helpCard}
-          role="dialog"
-          aria-label={content.title}
-        >
-          <Image
-            src={pathyPoseSrc(content.pose)}
-            alt=""
-            width={64}
-            height={64}
-            unoptimized
-          />
-          <strong>{content.title}</strong>
-          <span>{content.text}</span>
-          <span className={styles.helpActions}>
-            <button onClick={() => setOpen(false)}>Got it</button>
-            <button
-              onClick={() => {
-                setOpen(false);
-                pathy.startTour("full");
-              }}
-            >
-              Show me the tour
-            </button>
-          </span>
-        </span>
+      {open && (
+        <HelpCard
+          innerRef={ref}
+          content={content}
+          close={() => setOpen(false)}
+          tour={() => {
+            setOpen(false);
+            pathy.startTour("full");
+          }}
+        />
       )}
     </span>
   );

@@ -5,15 +5,21 @@ import { TOURS } from "@/lib/pathy/tours";
 import { useAppShellFocusTrap } from "@/hooks/use-app-shell-focus-trap";
 import { usePathyTourTarget } from "@/hooks/use-pathy-tour-target";
 import PathyTourCard from "./pathy-tour-card";
+import PathySpotlight from "./pathy-spotlight";
 import styles from "./pathy.module.css";
 
-export default function PathyTour({
-  name,
-  close,
-}: {
+function tourBackground(rect: DOMRect | null): string | undefined {
+  return rect
+    ? `radial-gradient(ellipse ${Math.max(rect.width, rect.height) * 0.9}px ${Math.max(rect.height, 60)}px at ${rect.left + rect.width / 2}px ${rect.top + rect.height / 2}px, transparent 55%, rgba(80,8,0,.72) 60%)`
+    : undefined;
+}
+
+interface PathyTourProps {
   name: string | null;
   close: () => void;
-}) {
+}
+
+export default function PathyTour({ name, close }: PathyTourProps) {
   const [index, setIndex] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const steps = name ? TOURS[name] : undefined;
@@ -30,23 +36,9 @@ export default function PathyTour({
     <div
       className={styles.tourOverlay}
       role="presentation"
-      style={{
-        background: rect
-          ? `radial-gradient(ellipse ${Math.max(rect.width, rect.height) * 0.9}px ${Math.max(rect.height, 60)}px at ${rect.left + rect.width / 2}px ${rect.top + rect.height / 2}px, transparent 55%, rgba(80,8,0,.72) 60%)`
-          : undefined,
-      }}
+      style={{ background: tourBackground(rect) }}
     >
-      {rect && (
-        <div
-          className={styles.spotlight}
-          style={{
-            left: rect.left - 8,
-            top: rect.top - 8,
-            width: rect.width + 16,
-            height: rect.height + 16,
-          }}
-        />
-      )}
+      <PathySpotlight rect={rect} />
       <PathyTourCard
         step={step}
         index={index}

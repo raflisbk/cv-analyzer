@@ -1,41 +1,21 @@
 "use client";
 
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef } from "react";
 import Image from "next/image";
-import { usePathy } from "./pathy-context";
 import { pathyPoseSrc, type PathyPose } from "@/lib/pathy/pose";
 import PathyMenu from "./pathy-menu";
+import { usePathyHelper } from "@/hooks/use-pathy-helper";
 import styles from "./pathy.module.css";
 
 interface Props {
   pose: PathyPose;
   bubble: string;
 }
-const quips: [PathyPose, string][] = [
-  ["idea", "Try Match it to a job."],
-  ["proud", "I read CVs for breakfast."],
-  ["detective", "I spot weak verbs from a mile."],
-];
-
 const PathyHelper = forwardRef<HTMLButtonElement, Props>(function PathyHelper(
   { pose, bubble },
   ref,
 ) {
-  const [open, setOpen] = useState(false);
-  const [idle, setIdle] = useState<PathyPose>("helpdesk");
-  const pathy = usePathy();
-  useEffect(() => {
-    const timer = setInterval(
-      () =>
-        setIdle(
-          ["helpdesk", "think", "guide"][
-            Math.floor(Math.random() * 3)
-          ] as PathyPose,
-        ),
-      18000,
-    );
-    return () => clearInterval(timer);
-  }, []);
+  const { open, idle, toggle, close } = usePathyHelper();
   return (
     <div className={styles.helper}>
       {bubble && !open && (
@@ -43,21 +23,14 @@ const PathyHelper = forwardRef<HTMLButtonElement, Props>(function PathyHelper(
           {bubble}
         </div>
       )}
-      {open && <PathyMenu close={() => setOpen(false)} />}
+      {open && <PathyMenu close={close} />}
       <button
         ref={ref}
         className={styles.helperButton}
         type="button"
         aria-label="Pathy help"
         aria-expanded={open}
-        onClick={() => {
-          setOpen(!open);
-          if (open) {
-            const [next, text] =
-              quips[Math.floor(Math.random() * quips.length)];
-            pathy.react(next, text);
-          }
-        }}
+        onClick={toggle}
       >
         <Image
           src={pathyPoseSrc(bubble ? pose : idle)}

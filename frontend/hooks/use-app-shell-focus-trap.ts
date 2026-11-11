@@ -1,5 +1,15 @@
 import { useEffect, type RefObject } from "react";
 
+function focusableElements(root: HTMLElement | null): HTMLElement[] {
+  const items = [
+    ...(root?.querySelectorAll<HTMLElement>(
+      "a[href],button:not([disabled]),input,textarea,[tabindex]:not([tabindex='-1'])",
+    ) ?? []),
+  ];
+  const visible = items.filter((item) => item.getClientRects().length > 0);
+  return visible.length ? visible : items;
+}
+
 export function useAppShellFocusTrap(
   open: boolean,
   ref: RefObject<HTMLElement | null>,
@@ -10,16 +20,7 @@ export function useAppShellFocusTrap(
       return;
     }
     const previous = document.activeElement as HTMLElement | null;
-    const focusable = () => {
-      const items = [
-        ...(ref.current?.querySelectorAll<HTMLElement>(
-          "a[href],button:not([disabled]),input,textarea,[tabindex]:not([tabindex='-1'])",
-        ) ?? []),
-      ];
-      const visible = items.filter((item) => item.getClientRects().length > 0);
-      return visible.length ? visible : items;
-    };
-    focusable()[0]?.focus();
+    focusableElements(ref.current)[0]?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -28,7 +29,7 @@ export function useAppShellFocusTrap(
       if (event.key !== "Tab") {
         return;
       }
-      const items = focusable();
+      const items = focusableElements(ref.current);
       if (!items.length) {
         return;
       }
