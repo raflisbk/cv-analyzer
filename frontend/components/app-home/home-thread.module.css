@@ -1,0 +1,151 @@
+.openHome {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.openHome > form {
+  max-width: 900px;
+}
+.threadSheet {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.thread {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.userMessage {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 12px 18px;
+  border-radius: 24px 24px 8px 24px;
+  background: var(--app-ink);
+  color: var(--app-snow);
+}
+.assistantMessage {
+  max-width: 85%;
+  font-size: 18px;
+}
+.assistantMessage a,
+.assistantMessage button {
+  display: inline-flex;
+  margin: 8px 8px 0 0;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 99px;
+  background: var(--app-punk);
+  color: var(--app-ink);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+.typing {
+  display: flex;
+  gap: 6px;
+}
+.typing i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--app-red);
+  animation: bob 1s ease-in-out infinite;
+}
+.typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.progress {
+  width: min(900px, 100%);
+  margin: 0 auto;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+  font-size: 13px;
+  font-weight: 800;
+}
+.steps div {
+  display: grid;
+  gap: 6px;
+}
+.steps b {
+  height: 10px;
+  border-radius: 99px;
+  background: #b81d0033;
+}
+.steps i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--app-red);
+  transform-origin: left;
+  transition: scale 0.3s;
+}
+.scoreCard {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  width: min(540px, 100%);
+  padding: 22px 24px;
+  border-radius: 28px;
+  background: var(--app-red-deep);
+  color: var(--app-snow);
+}
+.scoreCard > img {
+  position: absolute;
+  right: 20px;
+  top: 18px;
+  font-size: 56px;
+}
+.scoreCard small {
+  color: var(--app-punk);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+.scoreCard h2 {
+  font: 800 52px var(--app-font-display);
+}
+.scoreCard > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.scoreCard a {
+  padding: 10px 16px;
+  border-radius: 99px;
+  background: var(--app-punk);
+  color: var(--app-ink);
+  font-weight: 800;
+  text-decoration: none;
+}
+.scoreCard a + a {
+  background: var(--app-snow);
+}
+@keyframes bob {
+  50% {
+    translate: 0 -8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typing i {
+    animation: none;
+  }
+  .steps i {
+    transition: none;
+  }
+}
