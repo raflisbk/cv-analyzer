@@ -1,0 +1,55 @@
+.helpWrap {
+  position: relative;
+  display: inline-flex;
+}
+.helpButton {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #a9b000;
+  border-radius: 50%;
+  background: var(--app-punk);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 -3px #bdc600;
+}
+.helpCard {
+  position: absolute;
+  left: 0;
+  top: 38px;
+  z-index: 90;
+  width: min(300px, 80vw);
+  display: grid;
+  gap: 10px;
+  background: var(--app-snow);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 20px 40px #5a080088;
+  font-size: 14px;
+}
+.helpCard img {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+}
+.helpCard strong {
+  font: 800 20px var(--app-font-display);
+  padding-right: 70px;
+}
+.helpCard > span:not(.helpActions) {
+  padding-right: 54px;
+}
+.helpActions {
+  display: flex;
+  gap: 8px;
+}
+.helpActions button {
+  border: 0;
+  border-radius: 99px;
+  padding: 9px 12px;
+  background: var(--app-punk);
+  font-weight: 800;
+  cursor: pointer;
+}
+.helpActions button + button {
+  background: var(--app-blush);
+}

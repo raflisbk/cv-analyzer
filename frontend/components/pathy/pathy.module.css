@@ -1,0 +1,172 @@
+.helper {
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  z-index: 70;
+}
+.helperButton {
+  width: 112px;
+  height: 112px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-snow);
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 14px 22px -10px rgba(60, 6, 0, 0.65);
+  animation:
+    bob 3.2s ease-in-out infinite,
+    hop 18s ease-in-out infinite;
+}
+.helperButton img {
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+}
+.bubble {
+  position: absolute;
+  right: 112px;
+  bottom: 90px;
+  white-space: nowrap;
+  background: var(--app-snow);
+  border-radius: 18px;
+  padding: 10px 15px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px #6b180866;
+}
+.menu {
+  position: absolute;
+  right: 0;
+  bottom: 110px;
+  width: 300px;
+  display: grid;
+  gap: 2px;
+  padding: 18px;
+  border-radius: 26px;
+  background: var(--app-snow);
+  box-shadow: 0 20px 38px #5a080099;
+}
+.menu strong {
+  font: 800 20px var(--app-font-display);
+  color: var(--app-red);
+  padding: 0 8px 12px;
+}
+.menu button {
+  border: 0;
+  background: none;
+  text-align: left;
+  border-radius: 12px;
+  padding: 12px 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.menu button:hover {
+  background: var(--app-blush);
+}
+.tourOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(80, 8, 0, 0.72);
+}
+.spotlight {
+  position: fixed;
+  border: 3px solid var(--app-punk);
+  border-radius: 20px;
+  pointer-events: none;
+  box-shadow: 0 0 0 3px #fff8;
+}
+.tourCard {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(470px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  padding: 20px;
+  background: var(--app-snow);
+  border-radius: 26px;
+  box-shadow: 0 24px 50px #4b0800aa;
+}
+.tourCard h2 {
+  font: 800 24px var(--app-font-display);
+  margin: 2px 0;
+}
+.tourCard small {
+  font-weight: 800;
+  color: var(--app-red-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.tourCard p {
+  font-size: 15px;
+}
+.tourActions {
+  grid-column: 1/-1;
+  display: flex;
+  gap: 8px;
+}
+.tourActions button {
+  border: 0;
+  border-radius: 99px;
+  padding: 9px 12px;
+  background: var(--app-punk);
+  font-weight: 800;
+  cursor: pointer;
+}
+.tourActions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tourActions button:last-child {
+  margin-left: auto;
+  background: var(--app-blush);
+}
+.dots {
+  grid-column: 1/-1;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.dots i {
+  width: 8px;
+  height: 8px;
+  background: var(--app-blush);
+  border-radius: 50%;
+}
+.dots i[data-active="true"] {
+  background: var(--app-red);
+}
+@keyframes bob {
+  50% {
+    translate: 0 -8px;
+  }
+}
+@keyframes hop {
+  92%,
+  100% {
+    rotate: 0deg;
+  }
+  95% {
+    rotate: -8deg;
+  }
+  97% {
+    rotate: 5deg;
+  }
+}
+@media (max-width: 560px) {
+  .helperButton,
+  .helperButton img {
+    width: 88px;
+    height: 88px;
+  }
+  .menu {
+    bottom: 90px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .helperButton {
+    animation: none;
+  }
+}
