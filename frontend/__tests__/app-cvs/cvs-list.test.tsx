@@ -45,6 +45,9 @@ describe("CvsList", () => {
         .some((image) => image.getAttribute("src")?.includes("sad.webp")),
     ).toBe(true);
   });
+});
+
+describe("CvsList cards", () => {
   it("shows CV cards and both workspace links", async () => {
     vi.mocked(listCvs).mockResolvedValue([
       {
