@@ -5,14 +5,15 @@ import AccountSettingsRow from "./account-settings-row";
 import styles from "./account-menu.module.css";
 
 type Menu = ReturnType<typeof useAccountMenu>;
+interface AccountMenuItemsProps {
+  menu: Menu;
+  app?: boolean;
+}
 
 export default function AccountMenuItems({
   menu,
   app = false,
-}: {
-  menu: Menu;
-  app?: boolean;
-}) {
+}: AccountMenuItemsProps) {
   return (
     <>
       <Link
