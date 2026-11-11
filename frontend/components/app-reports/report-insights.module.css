@@ -1,0 +1,36 @@
+.insights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.insights section {
+  padding: 20px;
+  border-radius: 26px;
+  background: var(--app-red-deep);
+  color: var(--app-snow);
+}
+.insights h2 {
+  color: var(--app-punk);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.fix {
+  display: grid;
+  gap: 2px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #ffffff24;
+}
+.fix strong {
+  color: var(--app-punk);
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  .insights {
+    grid-template-columns: 1fr;
+  }
+}
