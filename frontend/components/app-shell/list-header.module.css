@@ -1,0 +1,40 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.icon {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+.header h1 {
+  margin: 0;
+  font: 800 clamp(28px, 4vw, 38px)/1 var(--app-font-display);
+  letter-spacing: -0.03em;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--app-punk);
+  padding: 3px 7px 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.note {
+  font: 700 28px var(--app-font-hand);
+  color: var(--app-red-deep);
+  rotate: -3deg;
+  white-space: nowrap;
+}
+.spacer {
+  flex: 1;
+}
+@media (max-width: 600px) {
+  .note {
+    display: none;
+  }
+}
