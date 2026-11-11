@@ -6,7 +6,8 @@
   --app-blush: #ffd9cf;
   --app-ink: #1a0b07;
   --app-ink-soft: #5a2a20;
-  --app-font-display: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  --app-font-display:
+    var(--font-display), var(--font-inter), system-ui, sans-serif;
   --app-font-body: var(--font-inter), system-ui, sans-serif;
   --app-font-hand: var(--font-hand), cursive;
   --app-gutter-left: max(16px, env(safe-area-inset-left, 0px));

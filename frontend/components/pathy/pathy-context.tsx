@@ -9,7 +9,11 @@ export interface PathyApi {
   startTour: (name?: string) => void;
 }
 
-const noop: PathyApi = { react: () => {}, burst: () => {}, startTour: () => {} };
+const noop: PathyApi = {
+  react: () => {},
+  burst: () => {},
+  startTour: () => {},
+};
 
 export const PathyContext = createContext<PathyApi>(noop);
 
