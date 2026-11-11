@@ -1,0 +1,114 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(360px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.document {
+  min-width: 0;
+  position: relative;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.tool {
+  border: 0;
+  border-radius: 12px;
+  background: var(--app-snow);
+  width: 40px;
+  height: 40px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 -3px 0 rgba(120, 30, 10, 0.14);
+}
+.note {
+  margin-left: auto;
+  font-family: var(--app-font-hand);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--app-red-deep);
+  transform: rotate(-3deg);
+}
+.frame {
+  height: calc(100vh - 372px);
+  min-height: 340px;
+  overflow: auto;
+  background: var(--app-snow);
+  border-radius: 22px;
+  box-shadow: 0 20px 32px -20px rgba(60, 6, 0, 0.55);
+}
+.editor :global(.ProseMirror) {
+  min-height: 100%;
+  padding: 40px clamp(28px, 5vw, 88px);
+  outline: 0;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.editor :global(.ProseMirror h1) {
+  font: 800 26px var(--app-font-display);
+}
+.editor :global(.ProseMirror h2) {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--app-red-deep);
+  margin-top: 20px;
+}
+.editor :global(.ProseMirror p) {
+  margin: 7px 0;
+}
+.editor :global(.suggestion-highlight) {
+  position: relative;
+  box-shadow: inset 0 0 0 2px #d6e000;
+  background: rgba(242, 255, 0, 0.26);
+  border-radius: 14px;
+  padding: 4px;
+  cursor: pointer;
+}
+.editor :global(.suggestion-highlight::after) {
+  content: attr(data-label);
+  position: absolute;
+  right: 8px;
+  top: -14px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: var(--app-red);
+  color: var(--app-snow);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.more {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: var(--app-punk);
+  padding: 8px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(80, 8, 0, 0.3);
+}
+.tool:focus-visible {
+  outline: 3px solid var(--app-punk);
+  outline-offset: 2px;
+}
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .frame {
+    height: auto;
+    min-height: 420px;
+  }
+  .more,
+  .note {
+    display: none;
+  }
+}

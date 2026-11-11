@@ -12,12 +12,16 @@ export function useAppWorkspaceScrollAssist(
 ) {
   const [hasMore, setHasMore] = useState(false);
   const update = useCallback(() => {
-    if (ref.current) {setHasMore(hasMoreContent(ref.current));}
+    if (ref.current) {
+      setHasMore(hasMoreContent(ref.current));
+    }
   }, [ref]);
 
   useEffect(() => {
     const node = ref.current;
-    if (!node) {return;}
+    if (!node) {
+      return;
+    }
     node.scrollTop = 0;
     update();
     const observer = new ResizeObserver(update);
@@ -32,7 +36,9 @@ export function useAppWorkspaceScrollAssist(
 
   const scrollMore = () => {
     const node = ref.current;
-    if (node) {node.scrollTo({ top: nextScrollTop(node), behavior: "smooth" });}
+    if (node) {
+      node.scrollTo({ top: nextScrollTop(node), behavior: "smooth" });
+    }
   };
   return { hasMore, scrollMore, update };
 }
