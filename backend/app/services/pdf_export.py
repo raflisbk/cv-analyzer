@@ -25,11 +25,10 @@ class PDFExportService:
             html_doc = HTML(
                 string=full_html,
                 base_url="",
-                font_config=self.font_config,
             )
 
             pdf_bytes = html_doc.write_pdf(
-                stylesheets=[CSS(string=css_styles)],
+                stylesheets=[CSS(string=css_styles, font_config=self.font_config)],
                 font_config=self.font_config,
             )
 

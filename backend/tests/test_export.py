@@ -175,6 +175,21 @@ def test_export_pdf_with_partial_data(app, client):
     assert response.content[:4] == b"%PDF"
 
 
+def test_optimized_export_returns_real_pdf(app, client):
+    from app.db.session import get_db
+
+    job = _make_completed_job()
+    job.cv_document = {"sections": []}
+
+    async def override_get_db():
+        yield _make_mock_session(job)
+
+    app.dependency_overrides[get_db] = override_get_db
+    response = client.post(f"/api/v1/jobs/{job.id}/export/optimized")
+    assert response.status_code == 200
+    assert response.content.startswith(b"%PDF")
+
+
 def test_export_pdf_with_comparison_result(app, client):
     """Export must include comparison section when comparison_result is present."""
     from app.db.session import get_db
