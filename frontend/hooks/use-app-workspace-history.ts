@@ -11,14 +11,25 @@ export function useAppWorkspaceHistory(jobId: string) {
   async function compare(versionId: string) {
     try {
       setLoadError("");
-      setDiff(await getVersionDiff(jobId, versionId));
+      const changes = await getVersionDiff(jobId, versionId);
+      if (
+        !changes ||
+        (Array.isArray(changes) && !changes.length) ||
+        (!Array.isArray(changes) && !changes.before && !changes.after)
+      ) {
+        setDiff(null);
+        setLoadError("Version text is unavailable for comparison.");
+        return;
+      }
+      setDiff(changes);
     } catch {
-      setLoadError("Changes could not load.");
+      setDiff(null);
+      setLoadError("Version text is unavailable for comparison.");
     }
   }
   function restore() {
     setLoadError(
-      "Restore preview confirmed. Saving restored drafts is coming soon.",
+      "Restore is unavailable because version text cannot be loaded.",
     );
     setRestoreId(null);
   }

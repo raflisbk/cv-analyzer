@@ -38,7 +38,7 @@ export function PdfViewer({
         role="alert"
       >
         <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
-          PDF unavailable. The file may still be processing.
+          Original file unavailable for this CV.
         </p>
       </div>
     );
