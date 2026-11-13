@@ -1,0 +1,57 @@
+{
+  "id": "id_average_teacher",
+  "language": "id",
+  "group": "average",
+  "target_role": "Teacher",
+  "text": "Tari Rekaan | tari@example.com | +62 811 0000 0001\nRINGKASAN\nGuru sekolah dasar dengan pengalaman kelas.\nPENGALAMAN KERJA\nGuru, Sekolah Rekaan | 2021-2024\n- Mengajar 3 kelas dan menyusun materi belajar.\n- Membantu siswa dengan latihan membaca.\nPENDIDIKAN\nS1 Pendidikan, Universitas Contoh | 2017-2021\nKEAHLIAN\nkurikulum, asesmen",
+  "expected_bands": {
+    "impact": [
+      45,
+      75
+    ],
+    "clarity": [
+      55,
+      85
+    ],
+    "relevance": [
+      55,
+      85
+    ],
+    "completeness": [
+      55,
+      85
+    ]
+  },
+  "expected_overall_band": [
+    50,
+    80
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "kurikulum",
+      "asesmen"
+    ],
+    "quantified_bullet_share": [
+      0.45,
+      0.55
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

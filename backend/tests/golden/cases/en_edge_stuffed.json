@@ -1,0 +1,61 @@
+{
+  "id": "en_edge_stuffed",
+  "language": "en",
+  "group": "edge",
+  "target_role": "Data Analyst",
+  "text": "Rowan Fiction | rowan@example.com\nSUMMARY\nData analyst seeking a role.\nEXPERIENCE\nAssistant, Sample Office | 2023-2024\n- Reports were prepared for the team.\nEDUCATION\nBA General Studies, Fictional College | 2019-2023\nSKILLS\nSQL, Python, Excel, Tableau, Power BI, R, statistics, machine learning, cloud, forecasting, SQL, Python, Excel, Tableau, Power BI, R, statistics, machine learning, cloud, forecasting",
+  "expected_bands": {
+    "impact": [
+      10,
+      55
+    ],
+    "clarity": [
+      20,
+      70
+    ],
+    "relevance": [
+      20,
+      65
+    ],
+    "completeness": [
+      10,
+      70
+    ]
+  },
+  "expected_overall_band": [
+    15,
+    60
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "SQL",
+      "Python",
+      "Excel",
+      "Tableau",
+      "Power BI"
+    ],
+    "quantified_bullet_share": [
+      0,
+      0.05
+    ],
+    "passive_count": [
+      0,
+      2
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      6,
+      8
+    ]
+  }
+}

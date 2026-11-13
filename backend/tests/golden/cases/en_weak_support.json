@@ -1,0 +1,56 @@
+{
+  "id": "en_weak_support",
+  "language": "en",
+  "group": "weak",
+  "target_role": "Customer Support Specialist",
+  "text": "Mira Fiction | mira@example.com\nSUMMARY\nLooking for support work.\nEXPERIENCE\nAssistant, Example Shop\n- Tickets were handled when needed.\n- Calls were answered.\nSKILLS\nemail support",
+  "expected_bands": {
+    "impact": [
+      15,
+      50
+    ],
+    "clarity": [
+      25,
+      60
+    ],
+    "relevance": [
+      25,
+      65
+    ],
+    "completeness": [
+      15,
+      60
+    ]
+  },
+  "expected_overall_band": [
+    20,
+    55
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "skills"
+    ],
+    "skills": [
+      "email support"
+    ],
+    "quantified_bullet_share": [
+      0,
+      0.05
+    ],
+    "passive_count": [
+      1,
+      3
+    ],
+    "ats_fail_count": [
+      1,
+      3
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

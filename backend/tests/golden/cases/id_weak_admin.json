@@ -1,0 +1,57 @@
+{
+  "id": "id_weak_admin",
+  "language": "id",
+  "group": "weak",
+  "target_role": "Administrative Assistant",
+  "text": "Rani Contoh | rani@example.com\nRINGKASAN\nMencari pekerjaan administrasi.\nPENGALAMAN KERJA\nPetugas, PT Contoh Fiktif\n- Pekerjaan arsip dilakukan setiap hari.\n- Dokumen disiapkan sesuai permintaan.\nKEAHLIAN\nMicrosoft Excel, pengarsipan",
+  "expected_bands": {
+    "impact": [
+      15,
+      50
+    ],
+    "clarity": [
+      25,
+      60
+    ],
+    "relevance": [
+      25,
+      65
+    ],
+    "completeness": [
+      15,
+      60
+    ]
+  },
+  "expected_overall_band": [
+    20,
+    55
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "skills"
+    ],
+    "skills": [
+      "Microsoft Excel",
+      "pengarsipan"
+    ],
+    "quantified_bullet_share": [
+      0,
+      0.05
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      1,
+      3
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

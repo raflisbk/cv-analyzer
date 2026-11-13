@@ -1,0 +1,59 @@
+{
+  "id": "id_strong_operations",
+  "language": "id",
+  "group": "strong",
+  "target_role": "Operations Manager",
+  "text": "Sari Fiktif | sari@example.com | +62 811 0000 0002\nRINGKASAN\nManajer operasional dengan hasil pengiriman terukur.\nPENGALAMAN KERJA\nManajer, PT Fiktif Logistik | 2020-2024\n- Memimpin 12 staf dan meningkatkan ketepatan pengiriman dari 82% menjadi 96%.\n- Mengurangi biaya pengiriman 18% melalui perbaikan rute.\n- Mempercepat pemrosesan 200 pesanan harian sebesar 25%.\nPENDIDIKAN\nS1 Manajemen, Universitas Rekaan | 2016-2020\nKEAHLIAN\nlogistik, perencanaan rute, Excel",
+  "expected_bands": {
+    "impact": [
+      70,
+      95
+    ],
+    "clarity": [
+      70,
+      95
+    ],
+    "relevance": [
+      70,
+      95
+    ],
+    "completeness": [
+      70,
+      95
+    ]
+  },
+  "expected_overall_band": [
+    70,
+    95
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "logistik",
+      "perencanaan rute",
+      "Excel"
+    ],
+    "quantified_bullet_share": [
+      0.95,
+      1
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

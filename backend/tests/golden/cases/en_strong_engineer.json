@@ -1,0 +1,59 @@
+{
+  "id": "en_strong_engineer",
+  "language": "en",
+  "group": "strong",
+  "target_role": "Software Engineer",
+  "text": "Elena Placeholder | elena@example.com | +1 202 555 0103\nSUMMARY\nBackend engineer delivering measurable reliability gains.\nEXPERIENCE\nSenior Engineer, Fictional Cloud | 2020-2024\n- Reduced API latency 42% for 80,000 daily users by redesigning cache access.\n- Cut deployment failures 30% with automated checks.\n- Led 6 engineers and improved uptime from 99.2% to 99.9%.\nEDUCATION\nBS Computer Science, Example University | 2016-2020\nSKILLS\nPython, PostgreSQL, Kubernetes",
+  "expected_bands": {
+    "impact": [
+      70,
+      95
+    ],
+    "clarity": [
+      70,
+      95
+    ],
+    "relevance": [
+      70,
+      95
+    ],
+    "completeness": [
+      70,
+      95
+    ]
+  },
+  "expected_overall_band": [
+    70,
+    95
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "Python",
+      "PostgreSQL",
+      "Kubernetes"
+    ],
+    "quantified_bullet_share": [
+      0.95,
+      1
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      1
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

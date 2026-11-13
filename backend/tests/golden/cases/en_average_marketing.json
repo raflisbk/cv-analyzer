@@ -1,0 +1,57 @@
+{
+  "id": "en_average_marketing",
+  "language": "en",
+  "group": "average",
+  "target_role": "Marketing Coordinator",
+  "text": "Nora Example | nora@example.com | +1 202 555 0101\nSUMMARY\nMarketing coordinator with campaign experience.\nEXPERIENCE\nCoordinator, Sample Studio | 2021-2024\n- Managed 5 email campaigns for a local product launch.\n- Prepared weekly reports and worked with designers.\nEDUCATION\nBA Marketing, Fictional College | 2017-2021\nSKILLS\nemail marketing, Google Analytics",
+  "expected_bands": {
+    "impact": [
+      45,
+      75
+    ],
+    "clarity": [
+      55,
+      85
+    ],
+    "relevance": [
+      55,
+      85
+    ],
+    "completeness": [
+      55,
+      85
+    ]
+  },
+  "expected_overall_band": [
+    50,
+    80
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "email marketing",
+      "Google Analytics"
+    ],
+    "quantified_bullet_share": [
+      0.45,
+      0.55
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}
