@@ -1,6 +1,7 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
+import ScoreRing from "@/components/landing/product-demos/score-ring";
+import RewriteDemo from "@/components/landing/product-demos/rewrite-demo";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { ctaMotion } from "@/components/landing/motion/cta";
 import { useLandingExpand } from "@/hooks/use-landing-expand";
@@ -31,10 +32,7 @@ export default function CtaSection() {
           Upload it now. Your first report is ready before your coffee cools.
         </p>
         <div className={styles.actions}>
-          <Link
-            href="/app"
-            className={`${base.button} ${styles.primary}`}
-          >
+          <Link href="/app" className={`${base.button} ${styles.primary}`}>
             Score my CV <PlaneIcon size={52} />
           </Link>
           <a href="#report" className={styles.sample}>
@@ -43,17 +41,16 @@ export default function CtaSection() {
         </div>
         <span className={base.hand}>no card, no spam</span>
       </div>
-      <div className={styles.art} aria-hidden="true">
-        {["rocket", "paper-plane", "star"].map((object) => (
-          <Image
-            width={360}
-            height={360}
-            className={base.object}
-            src={`/landing/3d/${object}.webp`}
-            alt=""
-            key={object}
-          />
-        ))}
+      <div className={styles.art} aria-label="Sample CV analysis and rewrite">
+        <div className={styles.sampleScore}>
+          <ScoreRing />
+          <span>
+            Samuel Samdono
+            <br />
+            Product Designer · Payly
+          </span>
+        </div>
+        <RewriteDemo />
       </div>
     </section>
   );
