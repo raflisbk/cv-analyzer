@@ -64,7 +64,9 @@ export function FixCard({ fix, onApply }: Props) {
             return;
           }
           if (!onApply(text, event.currentTarget, answers)) {
-            setError("Could not apply this fix. Check the original text and supplied facts.");
+            setError(
+              "Could not apply this fix. Check the original text and supplied facts.",
+            );
           }
         }}
       >

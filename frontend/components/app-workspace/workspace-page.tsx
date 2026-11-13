@@ -21,7 +21,15 @@ export function WorkspacePage({ jobId }: { jobId: string }) {
   const { view, tab, navigate } = useAppWorkspaceNavigation();
   const [exportOpen, setExportOpen] = useState(false);
   const refreshAnalysis = () => {
-    for (const key of ["app-workspace", "job-results", "app-ats", "app-grammar", "app-history", "app-file", "app-report-detail"]) {
+    for (const key of [
+      "app-workspace",
+      "job-results",
+      "app-ats",
+      "app-grammar",
+      "app-history",
+      "app-file",
+      "app-report-detail",
+    ]) {
       void queryClient.invalidateQueries({ queryKey: [key, jobId] });
     }
   };
@@ -43,12 +51,11 @@ export function WorkspacePage({ jobId }: { jobId: string }) {
         setView={(next) => navigate("view", next)}
         onExport={() => setExportOpen(true)}
       />
-      {data.hydration.isLoading && <LoadingSkeleton label="Loading workspace" />}
+      {data.hydration.isLoading && (
+        <LoadingSkeleton label="Loading workspace" />
+      )}
       {hydration?.status === "preparing" && (
-        <AnalysisProgress
-          jobId={jobId}
-          onComplete={refreshAnalysis}
-        />
+        <AnalysisProgress jobId={jobId} onComplete={refreshAnalysis} />
       )}
       {hydration?.status === "failed" && (
         <p role="alert">Analysis failed. Please try another CV.</p>
