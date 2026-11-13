@@ -17,6 +17,7 @@ from slowapi.errors import RateLimitExceeded
 from app.api.v1.endpoints.yjs import yjs_asgi_app, yjs_server
 from app.api.v1.endpoints.app_lists import router as app_lists_router
 from app.api.v1.endpoints.conversations import router as conversations_router
+from app.api.v1.endpoints.export_templates import router as export_templates_router
 from app.core.background import spawn
 from app.api.v1.router import router as api_v1_router
 from app.core.config import get_settings
@@ -109,6 +110,7 @@ async def health_check():
 
 app.include_router(api_v1_router, prefix="/api")
 app.include_router(app_lists_router, prefix="/api/v1", tags=["app-lists"])
+app.include_router(export_templates_router, prefix="/api/v1", tags=["export-templates"])
 app.include_router(
     conversations_router, prefix="/api/v1/conversations", tags=["conversations"]
 )
