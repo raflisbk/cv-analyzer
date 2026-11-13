@@ -9,7 +9,7 @@ export function matchJob(
 ): Promise<JobMatchData> {
   return USE_APP_MOCKS
     ? Promise.resolve(jobMatchFixture)
-    : apiFetch(`/jobs/${jobId}/job-match`, {
+    : apiFetch(`/jobs/${encodeURIComponent(jobId)}/job-match`, {
         method: "POST",
         body: JSON.stringify({ jobDescription }),
       });

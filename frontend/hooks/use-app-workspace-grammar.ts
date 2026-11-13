@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Editor } from "@tiptap/core";
 import type { MutableRefObject } from "react";
 import { resolveGrammar } from "@/lib/app-api/grammar";
@@ -15,12 +16,14 @@ export function useAppWorkspaceGrammar(
   const [resolvedGrammar, setResolvedGrammar] = useState<Set<string>>(
     () => new Set(),
   );
+  const queryClient = useQueryClient();
   async function onGrammar(id: string, action: "accept" | "ignore") {
     const note = grammar?.notes.find((item) => item.id === id);
     if (!note) {
       return;
     }
-    await resolveGrammar(jobId, id, action);
+    const refreshed = await resolveGrammar(jobId, id, action);
+    queryClient.setQueryData(["app-grammar", jobId], refreshed);
     if (action === "accept") {
       replaceDocumentText(editorRef.current, note.before, note.after);
     }

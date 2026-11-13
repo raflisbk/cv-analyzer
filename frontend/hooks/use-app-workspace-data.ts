@@ -1,8 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getWorkspaceHydration, getJobFileUrl } from "@/lib/workspace";
-import { getJobResults } from "@/lib/api";
+import {
+  getWorkspaceHydration,
+  getJobFileUrl,
+  getJobResults,
+} from "@/lib/app-api/workspace";
 import { getAts } from "@/lib/app-api/ats";
 import { getGrammar } from "@/lib/app-api/grammar";
 import { getVersions } from "@/lib/app-api/history";
