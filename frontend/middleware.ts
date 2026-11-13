@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PROTECTED_PATHS = ["/workspace-v2", "/results", "/app"];
-
 const BASE64URL = /^[A-Za-z0-9_-]+$/;
 
 function isTokenStructureValid(token: string): boolean {
@@ -23,25 +21,30 @@ function isTokenStructureValid(token: string): boolean {
   return true;
 }
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+function hasValidAccessToken(token?: string): boolean {
+  if (!token || !isTokenStructureValid(token)) return false;
+  try {
+    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const claims = JSON.parse(atob(payload)) as { exp?: unknown };
+    return typeof claims.exp === "number" && claims.exp > Date.now() / 1000;
+  } catch {
+    return false;
+  }
+}
 
-  const isProtected = PROTECTED_PATHS.some((path) => pathname.startsWith(path));
-  if (!isProtected) {
+export function middleware(request: NextRequest) {
+  if (hasValidAccessToken(request.cookies.get("access_token")?.value)) {
     return NextResponse.next();
   }
-
-  const token = request.cookies.get("access_token");
-  if (!token || !isTokenStructureValid(token.value)) {
-    const loginUrl = new URL("/", request.url);
-    loginUrl.searchParams.set("login", "required");
-    loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.next();
+  const restoreUrl = new URL("/session/restore", request.url);
+  restoreUrl.searchParams.set(
+    "next",
+    request.nextUrl.pathname + request.nextUrl.search,
+  );
+  restoreUrl.searchParams.set("attempt", "1");
+  return NextResponse.redirect(restoreUrl);
 }
 
 export const config = {
-  matcher: ["/workspace-v2/:path*", "/results/:path*", "/app/:path*"],
+  matcher: ["/app/:path*"],
 };
