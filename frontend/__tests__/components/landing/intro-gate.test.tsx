@@ -7,13 +7,11 @@ const mocks = vi.hoisted(() => ({
   refresh: vi.fn(),
   entrance: vi.fn(),
   scroll: vi.fn(() => ({ kill: vi.fn() })),
+  loadGsap: vi.fn(),
 }));
 
 vi.mock("@/lib/gsap-loader", () => ({
-  loadGsap: async () => ({
-    gsap: { timeline: mocks.timeline },
-    ScrollTrigger: { refresh: mocks.refresh },
-  }),
+  loadGsap: () => mocks.loadGsap(),
 }));
 vi.mock("@/components/landing/intro/play-hero-entrance", () => ({
   playHeroEntrance: mocks.entrance,
@@ -38,7 +36,13 @@ describe("seen landing intro", () => {
     mocks.timeline.mockClear();
     mocks.entrance.mockClear();
     mocks.scroll.mockClear();
+    mocks.loadGsap.mockReset();
+    mocks.loadGsap.mockResolvedValue({
+      gsap: { timeline: mocks.timeline },
+      ScrollTrigger: { refresh: mocks.refresh },
+    });
     vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    vi.stubGlobal("scrollTo", vi.fn());
     document.body.style.overflow = "";
   });
 
@@ -60,5 +64,16 @@ describe("seen landing intro", () => {
 
     unmount();
     window.removeEventListener("landing-intro-complete", complete);
+  });
+
+  it("locks scrolling and marks a first visit as seen", () => {
+    mocks.loadGsap.mockImplementationOnce(() => new Promise(() => {}));
+    const { unmount } = render(<Probe />);
+
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(sessionStorage.getItem("pathkr-intro-seen")).toBe("1");
+
+    unmount();
+    expect(document.body.style.overflow).toBe("");
   });
 });
