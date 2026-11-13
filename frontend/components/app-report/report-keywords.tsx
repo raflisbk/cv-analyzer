@@ -10,7 +10,10 @@ export function ReportKeywords({
   keywords: ReportDetail["keywords"];
   fixHref: string;
 }) {
-  const score = Math.round((keywords.present.length / keywords.total) * 100);
+  const score =
+    keywords.total > 0
+      ? Math.round((keywords.present.length / keywords.total) * 100)
+      : 0;
   return (
     <section
       className={`${styles.card} ${styles.keywordCard} ${styles.span6}`}
@@ -26,6 +29,7 @@ export function ReportKeywords({
         </p>
       </div>
       <div className={styles.chips}>
+        {!keywords.present.length && <p>No matching keywords found yet.</p>}
         {keywords.present.map((keyword) => (
           <span className={styles.chip} key={keyword.name}>
             {keyword.name} ×{keyword.count}
@@ -35,13 +39,15 @@ export function ReportKeywords({
       <h2>Missing keywords</h2>
       <p className={styles.caption}>Add only skills you actually have.</p>
       <div className={styles.chips}>
+        {!keywords.missing.length && <p>No missing keywords identified.</p>}
         {keywords.missing.map((keyword) => (
           <a
             href={fixHref}
             className={`${styles.chip} ${styles.missing}`}
             key={keyword.name}
           >
-            {keyword.name} · {keyword.posts} of 10 posts +
+            {keyword.name}
+            {keyword.posts > 0 ? ` · ${keyword.posts} of 10 posts` : ""} +
           </a>
         ))}
       </div>

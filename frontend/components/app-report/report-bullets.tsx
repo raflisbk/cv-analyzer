@@ -45,6 +45,9 @@ export function ReportBullets({
       </div>
       <div className={styles.scrollArea} ref={ref}>
         <div className={styles.bulletTable}>
+          {!bullets.some(
+            (item) => filter === "all" || item.strength === filter,
+          ) && <p>No bullets in this group.</p>}
           {bullets
             .filter((item) => filter === "all" || item.strength === filter)
             .map((bullet) => (

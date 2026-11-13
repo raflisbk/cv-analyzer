@@ -61,11 +61,13 @@ export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
         </svg>
       </div>
       <div className={styles.facts}>
+        {!ats.facts.length && <p>No ATS details available yet.</p>}
         {ats.facts.map((fact) => (
           <span key={fact}>{fact}</span>
         ))}
       </div>
       <div className={styles.atsChecks}>
+        {!ats.checks.length && <p>No ATS checks available yet.</p>}
         {ats.checks.map((check) => (
           <span key={check.text} data-ok={check.ok}>
             <b aria-hidden="true">{check.ok ? "✓" : "!"}</b>

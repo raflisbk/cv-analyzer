@@ -9,12 +9,13 @@ export function ReportHistoryChart({
   projectedScore: number;
 }) {
   const values = [...versions.map((version) => version.score), projectedScore];
+  const width = Math.max(900, 300 * values.length + 100);
   const point = (score: number, index: number) =>
     `${150 + index * 300},${180 - score * 1.4}`;
   return (
     <svg
       className={styles.history}
-      viewBox="0 0 900 220"
+      viewBox={`0 0 ${width} 220`}
       role="img"
       aria-label={`Score by version: ${versions.map((version) => `${version.label} ${version.score}`).join(", ")}; projected ${projectedScore}`}
     >
@@ -22,7 +23,7 @@ export function ReportHistoryChart({
         <g key={score}>
           <line
             x1="60"
-            x2="880"
+            x2={width - 20}
             y1={180 - score * 1.4}
             y2={180 - score * 1.4}
             stroke="#f3dcd5"

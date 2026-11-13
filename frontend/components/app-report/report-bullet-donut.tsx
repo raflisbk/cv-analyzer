@@ -5,7 +5,7 @@ export function ReportBulletDonut({
 }: {
   counts: { strong: number; fair: number; weak: number };
 }) {
-  const total = counts.strong + counts.fair + counts.weak || 1;
+  const total = counts.strong + counts.fair + counts.weak;
   const length = 2 * Math.PI * 52;
   return (
     <svg
@@ -31,15 +31,17 @@ export function ReportBulletDonut({
           fill="none"
           stroke={{ strong: "#f2ff00", fair: "#f42902", weak: "#1a0b07" }[kind]}
           strokeWidth="22"
-          strokeDasharray={`${(length * counts[kind]) / total} ${length}`}
+          strokeDasharray={`${total ? (length * counts[kind]) / total : 0} ${length}`}
           strokeDashoffset={
-            (-length *
-              (index === 0
-                ? 0
-                : index === 1
-                  ? counts.strong
-                  : counts.strong + counts.fair)) /
             total
+              ? (-length *
+                  (index === 0
+                    ? 0
+                    : index === 1
+                      ? counts.strong
+                      : counts.strong + counts.fair)) /
+                total
+              : 0
           }
           transform="rotate(-90 70 70)"
         />

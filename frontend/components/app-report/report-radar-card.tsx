@@ -7,7 +7,10 @@ export function ReportRadarCard({ data }: { data: ReportDetail }) {
   return (
     <section className={`${styles.card} ${styles.span4}`}>
       <ReportHeading title="Shape of your CV" helpKey="radar" />
-      <ReportRadar dimensions={data.dimensions} />
+      <ReportRadar
+        dimensions={data.dimensions}
+        hasPrevious={data.versions.length > 1}
+      />
       <p className={styles.caption}>
         Wide on Clarity and Completeness, narrow on Impact. The thin side is
         where one fix pays most.
