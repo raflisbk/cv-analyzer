@@ -15,25 +15,27 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(
+function fetchWithCookies(
+  url: string,
+  options?: RequestInit,
+): Promise<Response> {
+  const isFormData = options?.body instanceof FormData;
+  return fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: isFormData
+      ? undefined
+      : { "Content-Type": "application/json", ...options?.headers },
+  });
+}
+
+async function requestApi(
   endpoint: string,
   options?: RequestInit,
-): Promise<T> {
+): Promise<Response> {
   const url = `${API_URL}${endpoint}`;
-  const isFormData = options?.body instanceof FormData;
   const versionAtStart = currentRefreshVersion();
-
-  const request = () =>
-    fetch(url, {
-      ...options,
-      credentials: "include",
-      headers: isFormData
-        ? undefined
-        : {
-            "Content-Type": "application/json",
-            ...options?.headers,
-          },
-    });
+  const request = () => fetchWithCookies(url, options);
   let response: Response;
   try {
     response = await request();
@@ -56,6 +58,13 @@ export async function apiFetch<T>(
     );
   }
 
+  return response;
+}
+
+async function parseApiResponse<T>(
+  response: Response,
+  endpoint: string,
+): Promise<T> {
   if (response.status === 401) {
     if (!endpoint.startsWith("/auth/")) {
       const { useAuthStore } = await import("@/stores/auth-store");
@@ -83,6 +92,13 @@ export async function apiFetch<T>(
   }
 
   return data.data as T;
+}
+
+export async function apiFetch<T>(
+  endpoint: string,
+  options?: RequestInit,
+): Promise<T> {
+  return parseApiResponse<T>(await requestApi(endpoint, options), endpoint);
 }
 
 export interface UploadOptions {
