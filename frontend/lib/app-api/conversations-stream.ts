@@ -60,6 +60,29 @@ function readEvent(
   }
 }
 
+async function readConversationStream(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  onUpdate?: (text: string) => void,
+): Promise<StreamState> {
+  const decoder = new TextDecoder();
+  const state: StreamState = { text: "" };
+  let buffer = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      break;
+    }
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\n\n");
+    buffer = events.pop() ?? "";
+    for (const event of events) {
+      readEvent(event, state, onUpdate);
+    }
+  }
+  readEvent(buffer, state, onUpdate);
+  return state;
+}
+
 export async function postConversationMessage(
   id: string,
   text: string,
@@ -79,23 +102,10 @@ export async function postConversationMessage(
   if (!response.body) {
     throw new ApiError("CHAT_FAILED", "Could not send your message.");
   }
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  const state: StreamState = { text: "" };
-  let buffer = "";
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      break;
-    }
-    buffer += decoder.decode(value, { stream: true });
-    const events = buffer.split("\n\n");
-    buffer = events.pop() ?? "";
-    for (const event of events) {
-      readEvent(event, state, onUpdate);
-    }
-  }
-  readEvent(buffer, state, onUpdate);
+  const state = await readConversationStream(
+    response.body.getReader(),
+    onUpdate,
+  );
   return {
     id: crypto.randomUUID(),
     role: "assistant",
