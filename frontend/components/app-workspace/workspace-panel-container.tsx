@@ -16,6 +16,21 @@ function showAnchor(navigate: Props["navigate"], anchorId: string) {
   navigate("view", "editor");
   requestAnimationFrame(() => showWorkspaceAnchor(anchorId));
 }
+function panelQueryState(data: Props["data"]) {
+  const scores =
+    data.results.data?.scores ?? data.hydration.data?.analysis.scores;
+  const hasFixes = Boolean(data.hydration.data?.analysis.suggestions);
+  return {
+    scores,
+    reportError: Boolean(data.results.error && !scores),
+    fixesError: Boolean(data.results.error && !hasFixes),
+    fixesLoading: data.results.isLoading && !hasFixes,
+  };
+}
+function retryFixQueries(data: Props["data"]) {
+  void data.results.refetch();
+  void data.hydration.refetch();
+}
 export function WorkspacePanelContainer({
   jobId,
   tab,
@@ -25,22 +40,13 @@ export function WorkspacePanelContainer({
   navigate,
   onExport,
 }: Props) {
-  const scores =
-    data.results.data?.scores ?? data.hydration.data?.analysis.scores;
   return (
     <WorkspacePanel
       jobId={jobId}
       fileName={fileName}
       tab={tab}
       setTab={(next) => navigate("tab", next)}
-      scores={scores}
-      reportError={Boolean(data.results.error && !scores)}
-      fixesError={Boolean(
-        data.results.error && !data.hydration.data?.analysis.suggestions,
-      )}
-      fixesLoading={
-        data.results.isLoading && !data.hydration.data?.analysis.suggestions
-      }
+      {...panelQueryState(data)}
       fixes={edits.fixes}
       bonus={edits.bonus}
       ats={data.ats.data}
@@ -56,10 +62,7 @@ export function WorkspacePanelContainer({
       onGrammar={edits.onGrammar}
       onShow={(anchorId) => showAnchor(navigate, anchorId)}
       retryReport={() => void data.results.refetch()}
-      retryFixes={() => {
-        void data.results.refetch();
-        void data.hydration.refetch();
-      }}
+      retryFixes={() => retryFixQueries(data)}
       retryAts={() => void data.ats.refetch()}
       retryGrammar={() => void data.grammar.refetch()}
       retryHistory={() => void data.history.refetch()}
