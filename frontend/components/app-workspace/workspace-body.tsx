@@ -46,9 +46,17 @@ export function WorkspaceBody({
             draft={draft}
           />
         </div>
-        {view === "pdf" && (
-          <WorkspacePdf jobId={jobId} url={data.file.data?.file_url ?? null} />
-        )}
+        {view === "pdf" &&
+          (data.file.isLoading ? (
+            <p role="status">Loading original file…</p>
+          ) : data.file.error ? (
+            <p role="alert">Original file unavailable for this CV.</p>
+          ) : (
+            <WorkspacePdf
+              jobId={jobId}
+              url={data.file.data?.file_url ?? null}
+            />
+          ))}
         <WorkspacePanelContainer
           jobId={jobId}
           tab={tab}
