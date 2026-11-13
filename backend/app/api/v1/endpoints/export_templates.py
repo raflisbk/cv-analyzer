@@ -3,14 +3,14 @@ import re
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select
 
 from app.api.dependencies import require_user
 from app.db.session import AsyncSession, get_db
 from app.models.job import Job
 from app.models.user import User
-from app.schemas.common import WrappedResponse
+from app.schemas.common import ErrorDetail, WrappedResponse
 from app.schemas.export_templates import ExportRequest, ExportTemplate
 from app.services.export_templates.apply_fixes import FixResult, apply_fixes
 from app.services.export_templates.html_pdf import extract_pdf_text, render_pdf
@@ -21,7 +21,7 @@ from app.services.export_templates.registry import (
     score_original,
     template_list,
 )
-from app.services.storage import storage_service
+from app.services.storage import StorageError, storage_service
 
 router = APIRouter()
 _DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -46,6 +46,28 @@ def _filename(job: Job, template_id: str, extension: str) -> str:
     source = Path((job.file_metadata or {}).get("filename") or "CV").stem
     stem = re.sub(r"[^A-Za-z0-9_-]", "_", source).strip("_")[:80] or "CV"
     return f"{stem}-{template_id}{extension}"
+
+
+def _file_unavailable_response() -> JSONResponse:
+    return JSONResponse(
+        status_code=422,
+        content=WrappedResponse(
+            error=ErrorDetail(
+                code="ORIGINAL_FILE_UNAVAILABLE",
+                message="The original CV file is unavailable. Upload it again to use this layout.",
+            )
+        ).model_dump(),
+    )
+
+
+def _apply_export_fixes(job: Job, body: ExportRequest) -> FixResult:
+    return apply_fixes(
+        job.cv_document or {},
+        job.suggestions or [],
+        body.fix_ids,
+        body.answers,
+        original=body.template_id == "original",
+    )
 
 
 async def _original_output(job: Job, file_type: str, result: FixResult) -> bytes:
@@ -73,8 +95,13 @@ async def get_export_templates(
     score = None
     if job_id:
         job = await _owner_job(db, user, job_id)
-        data = await asyncio.to_thread(storage_service.get_file, job.file_id)
-        score = await asyncio.to_thread(score_original, data, _file_type(job))
+        if job.file_id:
+            try:
+                data = await asyncio.to_thread(storage_service.get_file, job.file_id)
+            except StorageError:
+                pass
+            else:
+                score = await asyncio.to_thread(score_original, data, _file_type(job))
     entries = await asyncio.to_thread(template_list, score)
     return WrappedResponse(
         data=[ExportTemplate.model_validate(entry) for entry in entries]
@@ -92,20 +119,19 @@ async def export_job(
         raise HTTPException(status_code=404, detail="Template not found.")
     job = await _owner_job(db, user, job_id)
     file_type = _file_type(job)
+    if body.template_id == "original" and not job.file_id:
+        return _file_unavailable_response()
     if body.template_id == "original" and file_type not in (".pdf", ".docx"):
         raise HTTPException(
             status_code=422,
             detail="Your original needs a text-based PDF or DOCX upload.",
         )
-    result = apply_fixes(
-        job.cv_document or {},
-        job.suggestions or [],
-        body.fix_ids,
-        body.answers,
-        original=body.template_id == "original",
-    )
+    result = _apply_export_fixes(job, body)
     if body.template_id == "original":
-        output = await _original_output(job, file_type, result)
+        try:
+            output = await _original_output(job, file_type, result)
+        except StorageError:
+            return _file_unavailable_response()
     else:
         output = await asyncio.to_thread(render_pdf, body.template_id, result.document)
     extension = (
