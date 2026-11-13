@@ -1,10 +1,8 @@
-import Link from "next/link";
 import type { useAppShellHistoryDrawer } from "@/hooks/use-app-shell-history-drawer";
 import HistoryGroup from "./history-group";
-import styles from "./app-shell.module.css";
-import drawerStyles from "./drawer.module.css";
 import DrawerAccountFooter from "./drawer-account-footer";
 import LoadingSkeleton from "./loading-skeleton";
+import HistoryDrawerActions from "./history-drawer-actions";
 
 type Drawer = ReturnType<typeof useAppShellHistoryDrawer>;
 interface HistoryDrawerBodyProps {
@@ -21,22 +19,7 @@ export default function HistoryDrawerBody({
   const { user, isLoading, isError, refetch, groups, logOut } = state;
   return (
     <>
-      <div className={drawerStyles.drawerTop}>
-        <strong>Chat history</strong>
-        <button type="button" onClick={close} aria-label="Close chat history">
-          ×
-        </button>
-      </div>
-      <Link
-        className={`${styles.pill} ${styles.punk}`}
-        href="/app"
-        onClick={() => {
-          newChat();
-          close();
-        }}
-      >
-        + New chat
-      </Link>
+      <HistoryDrawerActions close={close} newChat={newChat} />
       {isError && (
         <p role="alert">
           Could not load chats.{" "}
