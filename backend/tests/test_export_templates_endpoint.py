@@ -157,3 +157,46 @@ def test_original_pdf_endpoint_reports_actual_counts(client):
     assert (
         "New line" in fitz.open(stream=response.content, filetype="pdf")[0].get_text()
     )
+
+
+def test_template_list_scores_owners_original(client):
+    import fitz
+
+    test_client, job, _ = client
+    pdf = fitz.open()
+    pdf.new_page().insert_text((50, 50), "Alex Morgan")
+    source = pdf.tobytes()
+    pdf.close()
+    with patch(
+        "app.api.v1.endpoints.export_templates.storage_service.get_file",
+        return_value=source,
+    ):
+        response = test_client.get(f"/api/v1/export/templates?jobId={job.id}")
+    assert response.status_code == 200
+    assert isinstance(response.json()["data"][0]["atsScore"], int)
+
+
+def test_original_docx_endpoint_returns_docx(client):
+    from io import BytesIO
+
+    from docx import Document
+
+    test_client, job, _ = client
+    job.file_metadata = {"filename": "resume.docx"}
+    source = Document()
+    source.add_paragraph("Old line")
+    stream = BytesIO()
+    source.save(stream)
+    with patch(
+        "app.api.v1.endpoints.export_templates.storage_service.get_file",
+        return_value=stream.getvalue(),
+    ):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export", json={"templateId": "original"}
+        )
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith(
+        "application/vnd.openxmlformats-officedocument"
+    )
+    assert "resume-original.docx" in response.headers["content-disposition"]
+    assert Document(BytesIO(response.content)).paragraphs[0].text == "New line"
