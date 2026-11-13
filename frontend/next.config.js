@@ -14,6 +14,21 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/workspace-v2/new", destination: "/app", permanent: true },
+      {
+        source: "/workspace-v2/:job_id",
+        destination: "/app/cvs/:job_id?view=editor",
+        permanent: true,
+      },
+      {
+        source: "/results/:job_id",
+        destination: "/app/cvs/:job_id?view=report",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     const backendUrl = process.env.BACKEND_URL || "http://127.0.0.1:8000";
     return [

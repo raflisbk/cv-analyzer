@@ -6,7 +6,7 @@ import styles from "./workspace-styles";
 
 const PdfViewer = dynamic(
   () =>
-    import("@/components/workspace-v2/pdf-viewer").then(
+    import("@/components/app-workspace/pdf/pdf-viewer").then(
       (module) => module.PdfViewer,
     ),
   { ssr: false },
