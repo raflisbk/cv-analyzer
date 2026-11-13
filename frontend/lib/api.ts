@@ -1,5 +1,6 @@
 import { WrappedResponse } from "./types";
 import type { AnalysisResult } from "./types";
+import { currentRefreshVersion, refreshSession } from "./auth-refresh";
 
 const API_URL = "/api/v1";
 
@@ -20,10 +21,10 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`;
   const isFormData = options?.body instanceof FormData;
+  const versionAtStart = currentRefreshVersion();
 
-  let response: Response;
-  try {
-    response = await fetch(url, {
+  const request = () =>
+    fetch(url, {
       ...options,
       credentials: "include",
       headers: isFormData
@@ -33,19 +34,33 @@ export async function apiFetch<T>(
             ...options?.headers,
           },
     });
+  let response: Response;
+  try {
+    response = await request();
+    if (response.status === 401 && !endpoint.startsWith("/auth/")) {
+      if (currentRefreshVersion() === versionAtStart) {
+        await refreshSession();
+      }
+      response = await request();
+    }
   } catch (error) {
+    if (error instanceof Error && error.message === "Session refresh failed.") {
+      throw new ApiError(
+        "UNAUTHORIZED",
+        "Session expired. Please log in again.",
+      );
+    }
     throw new ApiError(
       "NETWORK_ERROR",
       error instanceof Error ? error.message : "Unknown network error",
     );
   }
 
-  // On 401: auth is a single JWT cookie (no refresh endpoint on the backend),
-  // so clear auth state and throw UNAUTHORIZED — the UI redirects to login.
-  // Do NOT fall through to JSON parsing on 401.
   if (response.status === 401) {
-    const { useAuthStore } = await import("@/stores/auth-store");
-    useAuthStore.getState().setUser(null);
+    if (!endpoint.startsWith("/auth/")) {
+      const { useAuthStore } = await import("@/stores/auth-store");
+      useAuthStore.getState().setUser(null);
+    }
     throw new ApiError("UNAUTHORIZED", "Session expired. Please log in again.");
   }
 
