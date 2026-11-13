@@ -35,14 +35,14 @@ describe("CvsList", () => {
       screen.getByRole("button", { name: "Try again" }),
     ).toBeInTheDocument();
   });
-  it("shows sad Pathy when there are no CVs", async () => {
+  it("shows hello Pathy when there are no CVs", async () => {
     vi.mocked(listCvs).mockResolvedValue([]);
     show();
     expect(await screen.findByText("No CVs yet")).toBeInTheDocument();
     expect(
       screen
         .getAllByAltText("")
-        .some((image) => image.getAttribute("src")?.includes("sad.webp")),
+        .some((image) => image.getAttribute("src")?.includes("hello.webp")),
     ).toBe(true);
   });
 });

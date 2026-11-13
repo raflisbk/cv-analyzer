@@ -38,6 +38,9 @@ export function WorkspacePanelContainer({
       fixesError={Boolean(
         data.results.error && !data.hydration.data?.analysis.suggestions,
       )}
+      fixesLoading={
+        data.results.isLoading && !data.hydration.data?.analysis.suggestions
+      }
       fixes={edits.fixes}
       bonus={edits.bonus}
       ats={data.ats.data}
@@ -52,6 +55,14 @@ export function WorkspacePanelContainer({
       onExport={onExport}
       onGrammar={edits.onGrammar}
       onShow={(anchorId) => showAnchor(navigate, anchorId)}
+      retryReport={() => void data.results.refetch()}
+      retryFixes={() => {
+        void data.results.refetch();
+        void data.hydration.refetch();
+      }}
+      retryAts={() => void data.ats.refetch()}
+      retryGrammar={() => void data.grammar.refetch()}
+      retryHistory={() => void data.history.refetch()}
     />
   );
 }

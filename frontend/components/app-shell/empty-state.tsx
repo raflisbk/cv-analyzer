@@ -7,7 +7,7 @@ export default function EmptyState({ type }: { type: "cvs" | "reports" }) {
   return (
     <div className={styles.empty}>
       <Image
-        src={pathyPoseSrc("sad")}
+        src={pathyPoseSrc(type === "cvs" ? "hello" : "sad")}
         alt=""
         width={120}
         height={120}

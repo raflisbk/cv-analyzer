@@ -1,4 +1,5 @@
 import Image from "next/image";
+import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import styles from "./report.module.css";
 
 export function ReportLoadState({
@@ -10,8 +11,8 @@ export function ReportLoadState({
 }) {
   if (kind === "loading") {
     return (
-      <section className={styles.state} role="status">
-        Loading full report…
+      <section className={styles.state}>
+        <LoadingSkeleton label="Loading full report" />
       </section>
     );
   }
