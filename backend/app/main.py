@@ -19,6 +19,7 @@ from app.api.v1.endpoints.app_lists import router as app_lists_router
 from app.api.v1.endpoints.conversations import router as conversations_router
 from app.api.v1.endpoints.export_templates import router as export_templates_router
 from app.api.v1.endpoints.report_detail import router as report_detail_router
+from app.api.v1.endpoints.workspace_data import router as workspace_data_router
 from app.core.background import spawn
 from app.api.v1.router import router as api_v1_router
 from app.core.config import get_settings
@@ -113,6 +114,7 @@ app.include_router(api_v1_router, prefix="/api")
 app.include_router(app_lists_router, prefix="/api/v1", tags=["app-lists"])
 app.include_router(export_templates_router, prefix="/api/v1", tags=["export-templates"])
 app.include_router(report_detail_router, prefix="/api/v1", tags=["report-detail"])
+app.include_router(workspace_data_router, prefix="/api/v1", tags=["workspace-data"])
 app.include_router(
     conversations_router, prefix="/api/v1/conversations", tags=["conversations"]
 )
