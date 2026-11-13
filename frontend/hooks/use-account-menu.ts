@@ -30,22 +30,26 @@ function useDismissal(
   }, [close, open, rootRef]);
 }
 
+function closeAfterTab(
+  rootRef: React.RefObject<HTMLDivElement | null>,
+  close: () => void,
+) {
+  requestAnimationFrame(() => {
+    if (!rootRef.current?.contains(document.activeElement)) {
+      close();
+    }
+  });
+}
+
 function useMenuKeyboard(
   rootRef: React.RefObject<HTMLDivElement | null>,
   itemRefs: React.RefObject<(HTMLElement | null)[]>,
   setOpen: (open: boolean) => void,
   close: () => void,
 ) {
-  const closeAfterTab = () => {
-    requestAnimationFrame(() => {
-      if (!rootRef.current?.contains(document.activeElement)) {
-        close();
-      }
-    });
-  };
   const onTriggerKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Tab") {
-      return closeAfterTab();
+      return closeAfterTab(rootRef, close);
     }
     if (
       !["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)
@@ -54,13 +58,12 @@ function useMenuKeyboard(
     }
     event.preventDefault();
     setOpen(true);
-    const index =
-      event.key === "ArrowDown" || event.key === "ArrowRight" ? 0 : 1;
+    const index = event.key === "ArrowUp" || event.key === "ArrowLeft" ? 1 : 0;
     requestAnimationFrame(() => itemRefs.current[index]?.focus());
   };
   const onMenuKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Tab") {
-      return closeAfterTab();
+      return closeAfterTab(rootRef, close);
     }
     if (
       !["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)
