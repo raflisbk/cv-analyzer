@@ -20,7 +20,9 @@ export async function getExportTemplates(): Promise<ExportTemplate[]> {
 }
 
 export async function getExportPreview(jobId: string): Promise<ExportPreview> {
-  if (USE_APP_MOCKS) return exportPreview;
+  if (USE_APP_MOCKS) {
+    return exportPreview;
+  }
   const data = await getWorkspaceHydration(jobId);
   const source =
     data.document.source_text ??
@@ -38,7 +40,9 @@ export async function exportCv(
   jobId: string,
   request: ExportRequest,
 ): Promise<Blob> {
-  if (USE_APP_MOCKS) return mockExportPdf();
+  if (USE_APP_MOCKS) {
+    return mockExportPdf();
+  }
   const response = await fetch(
     `/api/v1/jobs/${encodeURIComponent(jobId)}/export`,
     {
@@ -48,13 +52,15 @@ export async function exportCv(
       body: JSON.stringify(request),
     },
   );
-  if (!response.ok)
+  if (!response.ok) {
     throw new ApiError(
       "EXPORT_FAILED",
       `PDF export failed (${response.status}).`,
     );
+  }
   const blob = await response.blob();
-  if (!blob.size)
+  if (!blob.size) {
     throw new ApiError("EMPTY_EXPORT", "The exported PDF is empty.");
+  }
   return blob;
 }
