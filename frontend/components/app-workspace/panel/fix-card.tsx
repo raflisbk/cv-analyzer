@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
-import { fillInputs, fillNumber, needsNumber } from "@/lib/app-workspace/fixes";
+import { needsNumber } from "@/lib/app-workspace/fixes";
 import { USE_APP_MOCKS } from "@/lib/app-api/mode";
 import { FixNumberField } from "./fix-number-field";
+import { FixCardInputs } from "./fix-card-inputs";
+import { FixCardAction } from "./fix-card-action";
 import styles from "../workspace-styles";
 
 interface Props {
@@ -34,44 +36,21 @@ export function FixCard({ fix, onApply }: Props) {
       )}
       {fix.after && <span>{fix.after}</span>}
       {requiresNumber && <FixNumberField value={value} setValue={setValue} />}
-      {inputs.map(({ token, question }) => (
-        <label key={token}>
-          {question}
-          <input
-            className={styles.input}
-            value={answers[token] ?? ""}
-            onChange={(event) =>
-              setAnswers((current) => ({
-                ...current,
-                [token]: event.target.value,
-              }))
-            }
-          />
-        </label>
-      ))}
+      <FixCardInputs
+        inputs={inputs}
+        answers={answers}
+        setAnswers={setAnswers}
+      />
       {error && <span role="alert">{error}</span>}
-      <button
-        type="button"
-        className={`${styles.pill} ${styles.punk}`}
-        onClick={(event) => {
-          const text = inputs.length
-            ? fillInputs(fix.after, inputs, answers)
-            : requiresNumber
-              ? fillNumber(fix.after, value)
-              : fix.after;
-          if (!text) {
-            setError("Enter a valid number before applying.");
-            return;
-          }
-          if (!onApply(text, event.currentTarget, answers)) {
-            setError(
-              "Could not apply this fix. Check the original text and supplied facts.",
-            );
-          }
-        }}
-      >
-        Apply
-      </button>
+      <FixCardAction
+        fix={fix}
+        inputs={inputs}
+        answers={answers}
+        value={value}
+        requiresNumber={requiresNumber}
+        onApply={onApply}
+        setError={setError}
+      />
     </article>
   );
 }
