@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, LayoutGrid, LogOut } from "lucide-react";
+import { ArrowUpRight, LayoutGrid, LogOut, Monitor } from "lucide-react";
 import type { useAccountMenu } from "@/hooks/use-account-menu";
-import AccountSettingsRow from "./account-settings-row";
+import AccountSessionsAllDevices from "./account-sessions-all-devices";
 import styles from "./account-menu.module.css";
 
 type Menu = ReturnType<typeof useAccountMenu>;
@@ -31,10 +31,26 @@ export default function AccountMenuItems({
         <span>{app ? "My CVs" : "Workspace"}</span>
         <ArrowUpRight className={styles.arrow} size={28} aria-hidden="true" />
       </Link>
-      <AccountSettingsRow />
       <button
         ref={(node) => {
           menu.itemRefs.current[1] = node;
+        }}
+        type="button"
+        role="menuitem"
+        className={styles.tile}
+        onClick={() => {
+          menu.close();
+          menu.setSessionsOpen(true);
+        }}
+      >
+        <span className={styles.icon}>
+          <Monitor size={22} aria-hidden="true" />
+        </span>
+        Active sessions
+      </button>
+      <button
+        ref={(node) => {
+          menu.itemRefs.current[2] = node;
         }}
         type="button"
         role="menuitem"
@@ -46,6 +62,7 @@ export default function AccountMenuItems({
         </span>
         Log out
       </button>
+      <AccountSessionsAllDevices menu={menu} />
     </>
   );
 }

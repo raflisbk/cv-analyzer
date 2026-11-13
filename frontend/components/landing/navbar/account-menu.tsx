@@ -6,6 +6,7 @@ import { accountDisplayName, accountShortName } from "@/lib/account-menu";
 import type { AuthUser } from "@/stores/auth-store";
 import AccountAvatar from "./account-avatar";
 import AccountMenuItems from "./account-menu-items";
+import AccountSessions from "./account-sessions";
 import styles from "./account-menu.module.css";
 
 interface AccountMenuProps {
@@ -55,6 +56,7 @@ export default function AccountMenu({ user, app = false }: AccountMenuProps) {
           {accountTrigger(user, menu)}
           <div
             className={styles.grid}
+            style={{ gridTemplateRows: "repeat(3, 1fr)" }}
             role="menu"
             aria-label="Account"
             aria-hidden={!menu.open}
@@ -65,6 +67,10 @@ export default function AccountMenu({ user, app = false }: AccountMenuProps) {
           </div>
         </div>
       </div>
+      <AccountSessions
+        open={menu.sessionsOpen}
+        onOpenChange={menu.setSessionsOpen}
+      />
     </div>
   );
 }
