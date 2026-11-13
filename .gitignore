@@ -436,3 +436,5 @@ dev-tmux.sh
 docs/
 
 .orchestra/
+
+backend/tests/golden/last_run.json
