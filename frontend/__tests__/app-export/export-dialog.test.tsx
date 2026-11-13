@@ -33,7 +33,11 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-function show(onClose = vi.fn()) {
+function show(
+  onClose = vi.fn(),
+  fixIds?: string[],
+  answers?: Record<string, Record<string, string>>,
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -46,7 +50,13 @@ function show(onClose = vi.fn()) {
       <PathyContext.Provider
         value={{ react, burst: vi.fn(), startTour: vi.fn() }}
       >
-        <ExportDialog jobId="job" open onClose={onClose} />
+        <ExportDialog
+          jobId="job"
+          fixIds={fixIds}
+          answers={answers}
+          open
+          onClose={onClose}
+        />
       </PathyContext.Provider>
     </QueryClientProvider>,
   );
@@ -127,5 +137,25 @@ describe("ExportDialog", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Retry download" }));
     await waitFor(() => expect(saveExportPdf).toHaveBeenCalledOnce());
+  });
+  it("passes applied fix answers to export", async () => {
+    exportCv.mockResolvedValue({
+      blob: new Blob(["pdf"]),
+      applied: 1,
+      skipped: 0,
+    });
+    show(vi.fn(), ["Experience_0_0"], {
+      Experience_0_0: { "[team size]": "6" },
+    });
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Download PDF" }),
+    );
+    await waitFor(() =>
+      expect(exportCv).toHaveBeenCalledWith("job", {
+        templateId: "original",
+        fixIds: ["Experience_0_0"],
+        answers: { Experience_0_0: { "[team size]": "6" } },
+      }),
+    );
   });
 });

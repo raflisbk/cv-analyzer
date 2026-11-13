@@ -17,6 +17,7 @@ export interface ExportResult {
   blob: Blob;
   applied: number;
   skipped: number;
+  fileName?: string;
 }
 
 export interface ExportPreview {

@@ -64,7 +64,7 @@ export function FixCard({ fix, onApply }: Props) {
             return;
           }
           if (!onApply(text, event.currentTarget, answers)) {
-            setError("The original text is not in this CV.");
+            setError("Could not apply this fix. Check the original text and supplied facts.");
           }
         }}
       >

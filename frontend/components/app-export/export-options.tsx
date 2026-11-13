@@ -21,6 +21,10 @@ export default function ExportOptions({
   onDownload,
   onCancel,
 }: Props) {
+  const format =
+    template.original && fileName.toLowerCase().endsWith(".docx")
+      ? "DOCX"
+      : "PDF";
   return (
     <aside className={styles.side}>
       <div className={styles.scoreCard}>
@@ -46,8 +50,10 @@ export default function ExportOptions({
       )}
       <div className={styles.format}>
         <span>Format</span>
-        <strong>PDF</strong>
-        <small>A4 · selectable text</small>
+        <strong>{format}</strong>
+        <small>
+          {format === "PDF" ? "A4 · selectable text" : "Editable document"}
+        </small>
       </div>
       <div className={styles.actions}>
         <small>{exportFilename(fileName, template.id)}</small>
@@ -64,10 +70,10 @@ export default function ExportOptions({
           onClick={(event) => onDownload(event.currentTarget)}
         >
           {downloading
-            ? "Preparing PDF…"
+            ? `Preparing ${format}…`
             : error
               ? "Retry download"
-              : "Download PDF"}
+              : `Download ${format}`}
         </button>
         <button type="button" className={styles.cancel} onClick={onCancel}>
           Cancel

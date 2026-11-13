@@ -76,5 +76,8 @@ export async function exportCv(
     blob,
     applied: Number(response.headers.get("X-Export-Applied") ?? 0),
     skipped: Number(response.headers.get("X-Export-Skipped") ?? 0),
+    fileName: response.headers
+      .get("Content-Disposition")
+      ?.match(/filename="?([^";]+)"?/)?.[1],
   };
 }

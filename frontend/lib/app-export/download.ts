@@ -1,7 +1,9 @@
 export function exportFilename(fileName: string, templateId: string): string {
   const stem =
     fileName.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_-]+/g, "_") || "CV";
-  return `${stem}-${templateId}.pdf`;
+  const extension =
+    templateId === "original" && /\.docx$/i.test(fileName) ? "docx" : "pdf";
+  return `${stem}-${templateId}.${extension}`;
 }
 
 export function saveExportPdf(blob: Blob, fileName: string): void {

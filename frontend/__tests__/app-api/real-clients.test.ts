@@ -87,6 +87,22 @@ it("returns export applied and skipped counts from response headers", async () =
   );
 });
 
+it("uses the server's DOCX filename for an original export", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(
+      new Response("docx", {
+        headers: {
+          "Content-Disposition": 'attachment; filename="resume-original.docx"',
+        },
+      }),
+    ),
+  );
+  const { exportCv } = await import("@/lib/app-api/export");
+  const result = await exportCv("job", { templateId: "original" });
+  expect(result.fileName).toBe("resume-original.docx");
+});
+
 it("normalizes backend suggestion fields for the workspace", async () => {
   const { normalizeSuggestions } = await import("@/lib/app-api/workspace");
   expect(
@@ -115,16 +131,14 @@ it("normalizes backend suggestion fields for the workspace", async () => {
 it("shows the backend export error message", async () => {
   vi.stubGlobal(
     "fetch",
-    vi
-      .fn()
-      .mockResolvedValue(
-        new Response(
-          JSON.stringify({
-            error: { code: "EXPORT_FAILED", message: "Template unavailable" },
-          }),
-          { status: 422 },
-        ),
+    vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: { code: "EXPORT_FAILED", message: "Template unavailable" },
+        }),
+        { status: 422 },
       ),
+    ),
   );
   const { exportCv } = await import("@/lib/app-api/export");
   await expect(exportCv("job", { templateId: "plain" })).rejects.toThrow(
