@@ -15,6 +15,6 @@ it("keeps the active navigation label inside an equal-width indicator cell", () 
     "components/app-shell/app-shell.module.css",
     "utf8",
   );
-  expect(css).toMatch(/\.nav a\s*\{[^}]*width:\s*96px/s);
-  expect(css).toMatch(/\.indicator\s*\{[^}]*width:\s*96px/s);
+  expect(css).toMatch(/\.nav a\s*\{[^}]*width:\s*96px/);
+  expect(css).toMatch(/\.indicator\s*\{[^}]*width:\s*96px/);
 });
