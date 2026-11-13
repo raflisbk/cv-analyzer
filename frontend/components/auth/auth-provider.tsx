@@ -4,6 +4,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getMe } from "@/lib/auth";
+import { refreshSession } from "@/lib/auth-refresh";
 import { useAuthStore } from "@/stores/auth-store";
 import { useAuthRefresh } from "@/hooks/use-auth-refresh";
 
@@ -35,7 +36,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
+    const hasSessionHint = document.cookie
+      .split(";")
+      .some((cookie) => cookie.trim() === "session_hint=1");
+    if (!hasSessionHint) {
+      setUser(null);
+      setHydrated(true);
+      return;
+    }
     getMe()
+      .then((user) => user ?? refreshSession())
       .then((user) => setUser(user))
       .catch(() => setUser(null))
       .finally(() => setHydrated(true));
