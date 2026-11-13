@@ -52,8 +52,9 @@ export default function IntroLoader() {
             priority
           />
           <span className={styles.expanded} data-intro-expanded>
-            path k<b>a</b>r<b>i</b>
+            path k<b>a</b>
             <b>r</b>
+            <b>i</b>r
           </span>
         </div>
       </div>
