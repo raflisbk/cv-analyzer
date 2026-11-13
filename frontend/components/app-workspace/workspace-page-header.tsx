@@ -20,6 +20,7 @@ export function WorkspacePageHeader({
     <WorkspaceHeader
       name={hydration?.file.filename ?? "Your CV"}
       role={scores?.target_role ?? "Your CV"}
+      version={data.history.data?.find((item) => item.current)?.label}
       saveState={draft.saveState}
       view={navigation.view}
       setView={(next) => navigation.navigate("view", next)}
