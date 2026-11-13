@@ -75,6 +75,13 @@ def test_cookie_flags_and_lifetimes():
     assert "Path=/api/v1/auth" in cookies[1]
     assert "HttpOnly" in cookies[1]
     assert "SameSite=strict" in cookies[1]
+    assert "session_hint=1" in cookies[2]
+    assert "Max-Age=2592000" in cookies[2]
+    assert "Path=/" in cookies[2]
+    assert "SameSite=strict" in cookies[2]
+    assert "HttpOnly" not in cookies[2]
+    assert "access" not in cookies[2]
+    assert "refresh" not in cookies[2]
 
 
 @pytest.mark.asyncio
@@ -187,6 +194,7 @@ def test_clear_cookies_uses_both_paths():
         "refresh_token=" in cookie and "Path=/api/v1/auth" in cookie
         for cookie in cookies
     )
+    assert any("session_hint=" in cookie and "Path=/" in cookie for cookie in cookies)
 
 
 @pytest.mark.asyncio
@@ -217,6 +225,7 @@ async def test_google_login_creates_session_and_both_cookies():
     cookies = response.headers.getlist("set-cookie")
     assert any("access_token=" in cookie for cookie in cookies)
     assert any("refresh_token=refresh" in cookie for cookie in cookies)
+    assert any("session_hint=1" in cookie for cookie in cookies)
 
 
 @pytest.mark.asyncio
@@ -229,7 +238,7 @@ async def test_invalid_refresh_returns_401_and_clears_cookies():
     ):
         result = await refresh(request({"refresh_token": "old"}), Response(), db)
     assert result.status_code == 401
-    assert len(result.headers.getlist("set-cookie")) == 2
+    assert len(result.headers.getlist("set-cookie")) == 3
 
 
 @pytest.mark.asyncio
@@ -242,7 +251,41 @@ async def test_logout_revokes_session_and_clears_cookies():
         result = await logout(request(), response, db)
     assert result["message"] == "Logged out successfully."
     revoke.assert_awaited_once()
-    assert len(response.headers.getlist("set-cookie")) == 2
+    assert len(response.headers.getlist("set-cookie")) == 3
+
+
+@pytest.mark.asyncio
+async def test_logout_all_clears_session_hint():
+    from app.api.v1.endpoints.auth import logout_everywhere
+
+    db = MagicMock()
+    response = Response()
+    user = SimpleNamespace(id=uuid4())
+    with patch("app.api.v1.endpoints.auth.logout_all", AsyncMock()):
+        await logout_everywhere(request(), response, user, db)
+    assert any(
+        "session_hint=" in cookie and "Max-Age=0" in cookie
+        for cookie in response.headers.getlist("set-cookie")
+    )
+
+
+@pytest.mark.asyncio
+async def test_successful_refresh_sets_session_hint():
+    from app.api.v1.endpoints.auth import refresh
+
+    created = session()
+    user = SimpleNamespace(
+        id=created.user_id, email="person@example.com", name="Person", picture=None
+    )
+    response = Response()
+    with patch(
+        "app.api.v1.endpoints.auth.rotate_session",
+        AsyncMock(return_value=(user, created, "new-refresh")),
+    ):
+        await refresh(request({"refresh_token": "old"}), response, MagicMock())
+    assert any(
+        "session_hint=1" in cookie for cookie in response.headers.getlist("set-cookie")
+    )
 
 
 @pytest.mark.asyncio
@@ -294,10 +337,16 @@ def test_secure_cookie_on_public_host():
     with patch(
         "app.services.auth.cookies.get_settings",
         return_value=SimpleNamespace(
-            CV_ANALYZER_COOKIE_SECURE=True, CV_ANALYZER_ENV="production"
+            CV_ANALYZER_COOKIE_SECURE=True,
+            CV_ANALYZER_ENV="production",
+            CV_ANALYZER_ACCESS_TOKEN_MINUTES=15,
+            CV_ANALYZER_REFRESH_ABSOLUTE_DAYS=30,
         ),
     ):
         assert cookie_secure(public_request)
+        response = Response()
+        set_auth_cookies(response, public_request, "access", "refresh")
+    assert "Secure" in response.headers.getlist("set-cookie")[2]
 
 
 def test_expired_access_jwt_is_rejected():
@@ -316,6 +365,8 @@ def test_rotated_refresh_cookie_uses_remaining_absolute_lifetime():
     set_auth_cookies(response, request(), "access", "refresh", expiry)
     refresh_cookie = response.headers.getlist("set-cookie")[1]
     assert "Max-Age=172800" in refresh_cookie or "Max-Age=172799" in refresh_cookie
+    hint_cookie = response.headers.getlist("set-cookie")[2]
+    assert "Max-Age=172800" in hint_cookie or "Max-Age=172799" in hint_cookie
 
 
 @pytest.mark.asyncio
