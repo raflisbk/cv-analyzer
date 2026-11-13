@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-import { logoutAllApi, logoutApi } from "@/lib/auth";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthLogout } from "./use-auth-logout";
 
 function useDismissal(
   open: boolean,
@@ -10,9 +7,13 @@ function useDismissal(
   close: (restoreFocus?: boolean) => void,
 ) {
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
     const outside = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) close();
+      if (!rootRef.current?.contains(event.target as Node)) {
+        close();
+      }
     };
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -37,15 +38,20 @@ function useMenuKeyboard(
 ) {
   const closeAfterTab = () => {
     requestAnimationFrame(() => {
-      if (!rootRef.current?.contains(document.activeElement)) close();
+      if (!rootRef.current?.contains(document.activeElement)) {
+        close();
+      }
     });
   };
   const onTriggerKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Tab") return closeAfterTab();
+    if (event.key === "Tab") {
+      return closeAfterTab();
+    }
     if (
       !["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)
-    )
+    ) {
       return;
+    }
     event.preventDefault();
     setOpen(true);
     const index =
@@ -53,11 +59,14 @@ function useMenuKeyboard(
     requestAnimationFrame(() => itemRefs.current[index]?.focus());
   };
   const onMenuKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Tab") return closeAfterTab();
+    if (event.key === "Tab") {
+      return closeAfterTab();
+    }
     if (
       !["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(event.key)
-    )
+    ) {
       return;
+    }
     event.preventDefault();
     const current = itemRefs.current.indexOf(
       document.activeElement as HTMLElement,
@@ -77,27 +86,15 @@ export function useAccountMenu() {
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
-  const setUser = useAuthStore((state) => state.setUser);
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const close = useCallback((restoreFocus = false) => {
     setOpen(false);
-    if (restoreFocus) triggerRef.current?.focus();
+    if (restoreFocus) {
+      triggerRef.current?.focus();
+    }
   }, []);
   useDismissal(open, rootRef, close);
   const keyboard = useMenuKeyboard(rootRef, itemRefs, setOpen, close);
-  const logout = async (all = false) => {
-    try {
-      if (all) await logoutAllApi();
-      else await logoutApi();
-    } catch {
-    } finally {
-      setUser(null);
-      queryClient.clear();
-      close();
-      router.replace("/");
-    }
-  };
+  const logout = useAuthLogout(close);
   return {
     open,
     setOpen,

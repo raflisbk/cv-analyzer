@@ -1,58 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getSessions, revokeSession, type AuthSession } from "@/lib/auth";
+import type { AuthSession } from "@/lib/auth";
 import { sessionDevice, sessionLastUsed } from "@/lib/auth-session-format";
+import { useAuthSessions } from "@/hooks/use-auth-sessions";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+function SessionRow({
+  session,
+  busy,
+  signOut,
+}: {
+  session: AuthSession;
+  busy: boolean;
+  signOut: (id: string) => void;
+}) {
+  return (
+    <li className="flex items-center justify-between gap-3 rounded-2xl bg-white p-3">
+      <div>
+        <strong>{sessionDevice(session.userAgent)}</strong>
+        <small className="block">
+          Last used {sessionLastUsed(session.lastUsedAt)}
+        </small>
+        {session.current && (
+          <span className="text-sm font-bold">Current session</span>
+        )}
+      </div>
+      {!session.current && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => signOut(session.id)}
+          className="rounded-full bg-[#b81d00] px-3 py-2 font-bold text-white"
+        >
+          Sign out
+        </button>
+      )}
+    </li>
+  );
+}
+
 export default function AccountSessions({ open, onOpenChange }: Props) {
-  const [sessions, setSessions] = useState<AuthSession[]>([]);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    let active = true;
-    getSessions().then(
-      (items) => {
-        if (active) {
-          setSessions(items);
-        }
-      },
-      () => {
-        if (active) {
-          setError("Could not load sessions.");
-        }
-      },
-    );
-    return () => {
-      active = false;
-    };
-  }, [open]);
-
-  async function signOut(id: string) {
-    setBusy(id);
-    try {
-      await revokeSession(id);
-      setSessions((items) => items.filter((item) => item.id !== id));
-    } catch {
-      setError("Could not sign out this session.");
-    } finally {
-      setBusy(null);
-    }
-  }
+  const { sessions, error, busy, signOut } = useAuthSessions(open);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,30 +62,12 @@ export default function AccountSessions({ open, onOpenChange }: Props) {
         {error && <p role="alert">{error}</p>}
         <ul className="max-h-80 space-y-3 overflow-y-auto">
           {sessions.map((session) => (
-            <li
+            <SessionRow
               key={session.id}
-              className="flex items-center justify-between gap-3 rounded-2xl bg-white p-3"
-            >
-              <div>
-                <strong>{sessionDevice(session.userAgent)}</strong>
-                <small className="block">
-                  Last used {sessionLastUsed(session.lastUsedAt)}
-                </small>
-                {session.current && (
-                  <span className="text-sm font-bold">Current session</span>
-                )}
-              </div>
-              {!session.current && (
-                <button
-                  type="button"
-                  disabled={busy === session.id}
-                  onClick={() => signOut(session.id)}
-                  className="rounded-full bg-[#b81d00] px-3 py-2 font-bold text-white"
-                >
-                  Sign out
-                </button>
-              )}
-            </li>
+              session={session}
+              busy={busy === session.id}
+              signOut={signOut}
+            />
           ))}
         </ul>
       </DialogContent>
