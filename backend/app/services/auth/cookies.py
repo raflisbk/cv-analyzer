@@ -42,9 +42,25 @@ def set_auth_cookies(
         max_age=remaining,
         **options,
     )
+    response.set_cookie(
+        "session_hint",
+        "1",
+        path="/",
+        max_age=remaining,
+        httponly=False,
+        secure=options["secure"],
+        samesite="strict",
+    )
 
 
 def clear_auth_cookies(response: Response, request: Request) -> None:
     options = {"httponly": True, "secure": cookie_secure(request), "samesite": "strict"}
     response.delete_cookie("access_token", path="/", **options)
     response.delete_cookie("refresh_token", path="/api/v1/auth", **options)
+    response.delete_cookie(
+        "session_hint",
+        path="/",
+        httponly=False,
+        secure=options["secure"],
+        samesite="strict",
+    )
