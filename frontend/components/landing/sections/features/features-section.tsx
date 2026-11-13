@@ -3,6 +3,7 @@ import Image from "next/image";
 import { features } from "@/lib/landing-features";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { featuresMotion } from "@/components/landing/motion/features";
+import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import base from "../section.module.css";
 import styles from "./features.module.css";
 export default function FeaturesSection() {
@@ -23,7 +24,13 @@ export default function FeaturesSection() {
           key={feature.title}
         >
           <h3>{feature.title}</h3>
-          <p>{feature.description}</p>
+          <p>
+            {feature.title === "Real scoring"
+              ? `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions, with a plain reason for every score.`
+              : feature.title === "Job match"
+                ? "A match percentage and a clear list of missing keywords."
+                : feature.description}
+          </p>
           <Image
             width={360}
             height={360}

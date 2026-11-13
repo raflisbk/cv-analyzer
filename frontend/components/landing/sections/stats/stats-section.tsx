@@ -1,11 +1,30 @@
 "use client";
 import Image from "next/image";
-import { stats } from "@/lib/landing-stats";
+import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { statsMotion } from "@/components/landing/motion/stats";
 import { useLandingExpand } from "@/hooks/use-landing-expand";
 import base from "../section.module.css";
 import styles from "./stats.module.css";
+
+const stats = [
+  {
+    value: landingFacts.scoreDimensions,
+    label: "scored dimensions",
+    image: "cubes",
+  },
+  {
+    value: landingFacts.atsCheckCount,
+    label: "ATS checks",
+    image: "scanner",
+  },
+  {
+    value: landingFacts.exportTemplateCount,
+    label: "export templates",
+    image: "pdf-export",
+  },
+];
+
 export default function StatsSection() {
   const ref = useLandingStory(statsMotion, 90, undefined, {
     start: "top 92%",
@@ -32,9 +51,8 @@ export default function StatsSection() {
             alt=""
             aria-hidden="true"
           />
-          <b data-value={stat.value} data-suffix={stat.suffix}>
-            {stat.value}
-            {stat.suffix}
+          <b data-value={stat.value} data-suffix="">
+            {formatLandingCount(stat.value)}
           </b>
           <span>{stat.label}</span>
         </div>

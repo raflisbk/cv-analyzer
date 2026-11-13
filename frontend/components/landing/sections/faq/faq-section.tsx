@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { faqItems } from "@/lib/landing-faq";
 import { useLandingFaq } from "@/hooks/use-landing-faq";
+import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import base from "../section.module.css";
 import styles from "./faq.module.css";
 export default function FaqSection() {
@@ -49,7 +50,11 @@ export default function FaqSection() {
               </button>
             </h3>
             <div id={`faq-answer-${i}`} hidden={open !== i}>
-              <p>{item.answer}</p>
+              <p>
+                {item.question === "How is the score calculated?"
+                  ? `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions are combined, then adjusted by rule checks such as numbers per bullet and action verbs.`
+                  : item.answer}
+              </p>
             </div>
           </div>
         ))}

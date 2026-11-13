@@ -1,5 +1,7 @@
 "use client";
 
+import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
+
 const marqueeItems = [
   "CV Scoring",
   "Grammar Check",
@@ -8,9 +10,10 @@ const marqueeItems = [
   "JD Comparison",
   "Inline Edit",
   "Smart Editor",
-  "1,088 Role Archetypes",
-  "195+ Skills",
-  "2 Languages",
+  `${formatLandingCount(landingFacts.archetypeCount)} Role Archetypes`,
+  `${formatLandingCount(landingFacts.domainCount)} Domains`,
+  `${formatLandingCount(landingFacts.atsCheckCount)} ATS Checks`,
+  `${formatLandingCount(landingFacts.languages.length)} Languages`,
 ];
 
 const separator = (
