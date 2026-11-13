@@ -1,0 +1,55 @@
+{
+  "id": "id_weak_sales",
+  "language": "id",
+  "group": "weak",
+  "target_role": "Sales Associate",
+  "text": "Bima Rekaan | bima@example.com\nPENGALAMAN KERJA\nStaf Toko, Toko Rekaan\n- Penjualan dibantu oleh saya.\n- Pelanggan dilayani di toko.\nKEAHLIAN\nlayanan pelanggan",
+  "expected_bands": {
+    "impact": [
+      15,
+      50
+    ],
+    "clarity": [
+      25,
+      60
+    ],
+    "relevance": [
+      25,
+      65
+    ],
+    "completeness": [
+      15,
+      60
+    ]
+  },
+  "expected_overall_band": [
+    20,
+    55
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "experience",
+      "skills"
+    ],
+    "skills": [
+      "layanan pelanggan"
+    ],
+    "quantified_bullet_share": [
+      0,
+      0.05
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      1,
+      3
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

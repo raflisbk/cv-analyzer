@@ -1,0 +1,59 @@
+{
+  "id": "id_strong_finance",
+  "language": "id",
+  "group": "strong",
+  "target_role": "Financial Analyst",
+  "text": "Adi Contoh | adi@example.com | +62 811 0000 0003\nRINGKASAN\nAnalis keuangan yang meningkatkan akurasi dan efisiensi laporan.\nPENGALAMAN KERJA\nAnalis, PT Rekaan Finansial | 2019-2024\n- Mengurangi waktu laporan bulanan dari 5 hari menjadi 2 hari.\n- Meningkatkan akurasi proyeksi dari 78% menjadi 91%.\n- Mengelola anggaran Rp 4 miliar dan menekan selisih 12%.\nPENDIDIKAN\nS1 Akuntansi, Universitas Sampel | 2015-2019\nKEAHLIAN\nExcel, anggaran, proyeksi",
+  "expected_bands": {
+    "impact": [
+      70,
+      95
+    ],
+    "clarity": [
+      70,
+      95
+    ],
+    "relevance": [
+      70,
+      95
+    ],
+    "completeness": [
+      70,
+      95
+    ]
+  },
+  "expected_overall_band": [
+    70,
+    95
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "Excel",
+      "anggaran",
+      "proyeksi"
+    ],
+    "quantified_bullet_share": [
+      0.95,
+      1
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "en_average_engineer",
+  "language": "en",
+  "group": "average",
+  "target_role": "Software Engineer",
+  "text": "Theo Sample | theo@example.com | +1 202 555 0102\nSUMMARY\nSoftware engineer focused on web services.\nEXPERIENCE\nEngineer, Example Systems | 2022-2024\n- Built REST endpoints used by 2 internal teams.\n- Reviewed code and maintained deployment scripts.\nEDUCATION\nBS Computer Science, Sample University | 2018-2022\nSKILLS\nPython, FastAPI, Docker",
+  "expected_bands": {
+    "impact": [
+      45,
+      75
+    ],
+    "clarity": [
+      55,
+      85
+    ],
+    "relevance": [
+      55,
+      85
+    ],
+    "completeness": [
+      55,
+      85
+    ]
+  },
+  "expected_overall_band": [
+    50,
+    80
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "summary",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "Python",
+      "FastAPI",
+      "Docker"
+    ],
+    "quantified_bullet_share": [
+      0.45,
+      0.55
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

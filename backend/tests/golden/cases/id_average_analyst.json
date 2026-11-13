@@ -1,0 +1,58 @@
+{
+  "id": "id_average_analyst",
+  "language": "id",
+  "group": "average",
+  "target_role": "Data Analyst",
+  "text": "Dewi Sampel | dewi@example.com | +62 811 0000 0000\nRINGKASAN\nAnalis data dengan pengalaman laporan bisnis.\nPENGALAMAN KERJA\nAnalis, PT Sampel Data | 2022-2024\n- Membuat dashboard penjualan untuk 4 tim.\n- Membersihkan data transaksi dan menulis laporan mingguan.\nPENDIDIKAN\nS1 Statistika, Universitas Fiktif | 2018-2022\nKEAHLIAN\nSQL, Excel, Power BI",
+  "expected_bands": {
+    "impact": [
+      45,
+      75
+    ],
+    "clarity": [
+      55,
+      85
+    ],
+    "relevance": [
+      55,
+      85
+    ],
+    "completeness": [
+      55,
+      85
+    ]
+  },
+  "expected_overall_band": [
+    50,
+    80
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "experience",
+      "education",
+      "skills"
+    ],
+    "skills": [
+      "SQL",
+      "Excel",
+      "Power BI"
+    ],
+    "quantified_bullet_share": [
+      0.45,
+      0.55
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      0,
+      2
+    ],
+    "ats_warn_count": [
+      5,
+      7
+    ]
+  }
+}

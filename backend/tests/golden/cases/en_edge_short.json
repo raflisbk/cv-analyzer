@@ -1,0 +1,54 @@
+{
+  "id": "en_edge_short",
+  "language": "en",
+  "group": "edge",
+  "target_role": "Graphic Designer",
+  "text": "Ava Placeholder | ava@example.com\nSKILLS\nFigma",
+  "expected_bands": {
+    "impact": [
+      10,
+      55
+    ],
+    "clarity": [
+      20,
+      70
+    ],
+    "relevance": [
+      20,
+      65
+    ],
+    "completeness": [
+      10,
+      70
+    ]
+  },
+  "expected_overall_band": [
+    15,
+    60
+  ],
+  "expected_deterministic": {
+    "sections": [
+      "header",
+      "skills"
+    ],
+    "skills": [
+      "Figma"
+    ],
+    "quantified_bullet_share": [
+      0,
+      0.05
+    ],
+    "passive_count": [
+      0,
+      1
+    ],
+    "ats_fail_count": [
+      3,
+      5
+    ],
+    "ats_warn_count": [
+      4,
+      6
+    ]
+  }
+}
