@@ -1,38 +1,38 @@
 import type { loadGsap } from "@/lib/gsap-loader";
+import { countUpValue } from "@/lib/landing-stats";
+
 type Gsap = Awaited<ReturnType<typeof loadGsap>>["gsap"];
+
 export function productsMotion(
   _gsap: Gsap,
   panel: HTMLElement,
   tl: ReturnType<Gsap["timeline"]>,
 ) {
-  const cards = panel.querySelectorAll("article");
-  tl.fromTo(
-    panel.querySelector("h2"),
-    { clipPath: "inset(0 100% 0 0)" },
-    { clipPath: "inset(0 0% 0 0)", duration: 0.5 },
-    0,
-  )
-    .from(
-      cards,
+  const number = panel.querySelector<HTMLElement>("[data-demo-count]");
+  if (number) {
+    const count = { progress: 0 };
+    tl.to(
+      count,
       {
-        x: (i: number) => 900 + i * 160,
-        rotate: (i: number) => 16 - i * 4,
-        autoAlpha: 0,
-        stagger: 0.5,
-        duration: 0.8,
+        progress: 1,
+        duration: 0.7,
+        onUpdate: () => {
+          number.textContent = countUpValue(
+            count.progress,
+            Number(number.dataset.demoCount),
+            "",
+          );
+        },
       },
-      0.3,
-    )
-    .from(
-      panel.querySelectorAll("article img"),
-      {
-        scale: 0,
-        rotate: 180,
-        autoAlpha: 0,
-        stagger: 0.5,
-        duration: 0.6,
-        ease: "back.out(2)",
-      },
-      0.9,
+      0,
     );
+  }
+  panel.querySelectorAll<HTMLElement>("[data-demo-bar]").forEach((bar, i) => {
+    tl.fromTo(
+      bar,
+      { width: "0%" },
+      { width: `${bar.dataset.demoBar}%`, duration: 0.4 },
+      0.3 + i * 0.1,
+    );
+  });
 }
