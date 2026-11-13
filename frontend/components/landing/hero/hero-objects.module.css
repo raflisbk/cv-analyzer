@@ -3,163 +3,96 @@
   height: 520px;
   min-width: 0;
 }
-.object {
+.sheet {
   position: absolute;
-  width: clamp(90px, 18vw, 300px);
+  width: min(76%, 400px);
   aspect-ratio: 1;
+  right: 12%;
+  top: 4%;
+  rotate: 8deg;
   filter: drop-shadow(0 30px 24px rgba(80, 8, 0, 0.4));
 }
-.object img {
+.sheet img {
   object-fit: contain;
 }
-.float {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  animation: landing-float 7s ease-in-out infinite;
-}
-.cv {
-  right: 16%;
-  top: 4%;
-  rotate: 12deg;
-}
-.trophy {
-  width: clamp(90px, 12vw, 190px);
-  right: -2%;
-  top: 40%;
-  rotate: -12deg;
-}
-.magnifier {
-  width: clamp(90px, 11vw, 170px);
-  left: 0;
-  top: 50%;
-  rotate: 16deg;
-}
-.chart {
-  width: clamp(90px, 11vw, 170px);
-  right: 8%;
-  bottom: -2%;
-  rotate: 8deg;
-}
-.shield {
-  width: clamp(70px, 8vw, 120px);
-  left: 30%;
-  top: -2%;
-  rotate: -14deg;
-}
-.sticker {
+.callout {
   position: absolute;
   z-index: 2;
-  font-family: var(--font-display);
-  font-weight: 800;
+  font: 800 clamp(17px, 2.1vw, 28px)/1 var(--font-display);
   border-radius: 999px;
-  padding: 8px 24px 12px;
-  font-size: clamp(26px, 3.2vw, 42px);
-  letter-spacing: -0.03em;
-  line-height: 1;
+  padding: 9px 18px 11px;
   white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(80, 8, 0, 0.25);
 }
-.impact {
-  background: var(--brand-punk);
-  color: var(--brand-ink);
-  left: 2%;
-  top: 14%;
-  rotate: -8deg;
+.callout::after {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 3px;
+  background: currentColor;
+  top: 50%;
 }
 .ats {
-  background: var(--brand-snow);
   color: var(--brand-ink);
-  right: 2%;
-  top: 0;
-  rotate: 5deg;
+  background: var(--brand-snow);
+  top: 12%;
+  left: 6%;
+}
+.ats::after {
+  left: 100%;
+  rotate: -15deg;
+  transform-origin: left;
+}
+.impact {
+  color: var(--brand-ink);
+  background: var(--brand-punk);
+  top: 49%;
+  left: 0;
+}
+.impact::after {
+  left: 100%;
+  rotate: 14deg;
+  transform-origin: left;
 }
 .gap {
-  background: var(--brand-ink);
   color: var(--brand-snow);
-  left: 24%;
-  bottom: 10%;
-  rotate: -4deg;
+  background: var(--brand-ink);
+  bottom: 13%;
+  right: 0;
 }
-.note {
-  position: absolute;
-  color: var(--brand-punk);
-  left: 2%;
-  bottom: -2%;
-  z-index: 2;
-  font-family: var(--font-hand);
-  font-size: 34px;
-  rotate: -8deg;
+.gap::after {
+  right: 100%;
+  rotate: -18deg;
+  transform-origin: right;
 }
 @media (max-width: 860px) {
   .stage {
     height: 400px;
-  }
-  .cv {
-    right: 23%;
-    width: 220px;
-  }
-  .trophy {
-    width: 140px;
-  }
-  .magnifier,
-  .chart {
-    width: 120px;
-  }
-  .shield {
-    width: 90px;
   }
 }
 @media (max-width: 520px) {
   .stage {
     height: 320px;
   }
-  .cv {
-    width: 170px;
-    right: 18%;
-    top: 14%;
-  }
-  .trophy {
-    width: 95px;
-    right: 0;
-    top: 52%;
-  }
-  .magnifier {
-    width: 90px;
-    left: 0;
-    top: 52%;
-  }
-  .chart {
-    width: 90px;
+  .sheet {
+    width: 78%;
     right: 10%;
-    bottom: 0;
+    top: 11%;
   }
-  .shield {
-    width: 75px;
-    left: 27%;
-    top: 0;
+  .callout {
+    font-size: 15px;
+    padding: 7px 10px 9px;
   }
-  .sticker {
-    font-size: clamp(16px, 5vw, 24px);
-    padding: 7px 12px 9px;
-  }
-  .impact {
-    left: 0;
-    top: 12%;
+  .callout::after {
+    width: 12px;
   }
   .ats {
-    right: 0;
+    left: 0;
+  }
+  .impact {
+    top: 50%;
   }
   .gap {
-    left: 20%;
-    bottom: 5%;
-  }
-  .note {
-    font-size: 24px;
-    bottom: -7%;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .float {
-    animation: none;
+    bottom: 7%;
   }
 }

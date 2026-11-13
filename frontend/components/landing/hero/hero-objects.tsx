@@ -4,38 +4,28 @@ import styles from "./hero-objects.module.css";
 
 export default function HeroObjects() {
   return (
-    <div className={styles.stage} aria-hidden="true" data-hero-stage>
-      {HERO_OBJECTS.map((item) => (
-        <div
-          key={item.name}
-          className={`${styles.object} ${styles[item.name]}`}
-          data-hero-object
-        >
-          <div
-            className={styles.float}
-            style={{ animationDelay: `${item.delay}s` }}
-          >
-            <Image
-              src={`/landing/3d/${item.asset}.webp`}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 150px, 300px"
-            />
-          </div>
-        </div>
-      ))}
+    <div
+      className={styles.stage}
+      role="img"
+      aria-label="CV analysis finds an ATS-ready header, impact in experience, and a skill gap"
+    >
+      <div className={styles.sheet} data-hero-object>
+        <Image
+          src={`/landing/3d/${HERO_OBJECTS[0].asset}.webp`}
+          alt=""
+          fill
+          sizes="(max-width: 768px) 220px, 400px"
+        />
+      </div>
       {HERO_STICKERS.map((item) => (
         <span
-          key={item.label}
-          className={`${styles.sticker} ${styles[item.name]}`}
+          key={item.name}
+          className={`${styles.callout} ${styles[item.name]}`}
           data-hero-sticker
         >
           {item.label}
         </span>
       ))}
-      <span className={styles.note} data-hero-sticker>
-        score it. fix it. land it.
-      </span>
     </div>
   );
 }
