@@ -6,14 +6,16 @@ import type { VersionData, VersionDiff } from "./history.types";
 export function getVersions(jobId: string): Promise<VersionData[]> {
   return USE_APP_MOCKS
     ? Promise.resolve(historyFixture)
-    : apiFetch(`/jobs/${jobId}/versions`);
+    : apiFetch(`/jobs/${encodeURIComponent(jobId)}/versions`);
 }
 
 export function getVersionDiff(
   jobId: string,
   versionId: string,
-): Promise<VersionDiff[]> {
+): Promise<VersionDiff> {
   return USE_APP_MOCKS
     ? Promise.resolve(historyDiffFixture)
-    : apiFetch(`/jobs/${jobId}/versions/${versionId}/diff`);
+    : apiFetch(
+        `/jobs/${encodeURIComponent(jobId)}/versions/${encodeURIComponent(versionId)}/diff`,
+      );
 }

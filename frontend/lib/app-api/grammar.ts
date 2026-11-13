@@ -6,17 +6,20 @@ import type { GrammarData } from "./grammar.types";
 export function getGrammar(jobId: string): Promise<GrammarData> {
   return USE_APP_MOCKS
     ? Promise.resolve(grammarFixture)
-    : apiFetch(`/jobs/${jobId}/grammar`);
+    : apiFetch(`/jobs/${encodeURIComponent(jobId)}/grammar`);
 }
 
 export function resolveGrammar(
   jobId: string,
   noteId: string,
   action: "accept" | "ignore",
-) {
+): Promise<GrammarData> {
   return USE_APP_MOCKS
-    ? Promise.resolve()
-    : apiFetch<unknown>(`/jobs/${jobId}/grammar/${noteId}/${action}`, {
-        method: "POST",
-      });
+    ? Promise.resolve(grammarFixture)
+    : apiFetch<GrammarData>(
+        `/jobs/${encodeURIComponent(jobId)}/grammar/${encodeURIComponent(noteId)}/${action}`,
+        {
+          method: "POST",
+        },
+      );
 }

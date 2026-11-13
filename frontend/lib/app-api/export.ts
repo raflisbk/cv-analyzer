@@ -2,6 +2,8 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { getWorkspaceHydration } from "@/lib/workspace";
 import { USE_APP_MOCKS } from "./mode";
 import { draftText } from "@/lib/app-export/draft-text";
+import { responseError } from "./response-error";
+import { rawRequest } from "./raw-request";
 import {
   exportPreview,
   exportTemplates,
@@ -11,12 +13,17 @@ import type {
   ExportPreview,
   ExportRequest,
   ExportTemplate,
+  ExportResult,
 } from "./export.types";
 
-export async function getExportTemplates(): Promise<ExportTemplate[]> {
+export async function getExportTemplates(
+  jobId?: string,
+): Promise<ExportTemplate[]> {
   return USE_APP_MOCKS
     ? exportTemplates
-    : apiFetch<ExportTemplate[]>("/export/templates");
+    : apiFetch<ExportTemplate[]>(
+        `/export/templates${jobId ? `?jobId=${encodeURIComponent(jobId)}` : ""}`,
+      );
 }
 
 export async function getExportPreview(jobId: string): Promise<ExportPreview> {
@@ -39,22 +46,25 @@ export async function getExportPreview(jobId: string): Promise<ExportPreview> {
 export async function exportCv(
   jobId: string,
   request: ExportRequest,
-): Promise<Blob> {
+): Promise<ExportResult> {
   if (USE_APP_MOCKS) {
-    return mockExportPdf();
+    return {
+      blob: mockExportPdf(),
+      applied: request.fixIds?.length ?? 0,
+      skipped: 0,
+    };
   }
-  const response = await fetch(
+  const response = await rawRequest(
     `/api/v1/jobs/${encodeURIComponent(jobId)}/export`,
     {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
     },
   );
   if (!response.ok) {
-    throw new ApiError(
-      "EXPORT_FAILED",
+    throw await responseError(
+      response,
       `PDF export failed (${response.status}).`,
     );
   }
@@ -62,5 +72,9 @@ export async function exportCv(
   if (!blob.size) {
     throw new ApiError("EMPTY_EXPORT", "The exported PDF is empty.");
   }
-  return blob;
+  return {
+    blob,
+    applied: Number(response.headers.get("X-Export-Applied") ?? 0),
+    skipped: Number(response.headers.get("X-Export-Skipped") ?? 0),
+  };
 }

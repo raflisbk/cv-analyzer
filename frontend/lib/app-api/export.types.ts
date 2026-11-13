@@ -2,7 +2,7 @@ export interface ExportTemplate {
   id: string;
   name: string;
   description: string;
-  atsScore: number;
+  atsScore: number | null;
   original: boolean;
   traits: string[];
 }
@@ -10,6 +10,13 @@ export interface ExportTemplate {
 export interface ExportRequest {
   templateId: string;
   fixIds?: string[];
+  answers?: Record<string, Record<string, string>>;
+}
+
+export interface ExportResult {
+  blob: Blob;
+  applied: number;
+  skipped: number;
 }
 
 export interface ExportPreview {

@@ -1,5 +1,7 @@
 import { ApiError } from "@/lib/api";
 import type { ChatMessage } from "./conversations.types";
+import { responseError } from "./response-error";
+import { rawRequest } from "./raw-request";
 
 type Action = NonNullable<ChatMessage["actions"]>[number];
 type StreamState = { text: string; actions?: Action[] };
@@ -23,7 +25,11 @@ function isAction(value: unknown): value is Action {
   );
 }
 
-function readEvent(event: string, state: StreamState): void {
+function readEvent(
+  event: string,
+  state: StreamState,
+  onUpdate?: (text: string) => void,
+): void {
   const data = event
     .split("\n")
     .filter((line) => line.startsWith("data:"))
@@ -41,11 +47,13 @@ function readEvent(event: string, state: StreamState): void {
   }
   if ("token" in payload && typeof payload.token === "string") {
     state.text += payload.token;
+    onUpdate?.(state.text);
   } else if ("text" in payload && typeof payload.text === "string") {
     state.text =
       "type" in payload && payload.type === "complete"
         ? payload.text
         : state.text + payload.text;
+    onUpdate?.(state.text);
   }
   if ("actions" in payload && Array.isArray(payload.actions)) {
     state.actions = payload.actions.filter(isAction);
@@ -55,17 +63,20 @@ function readEvent(event: string, state: StreamState): void {
 export async function postConversationMessage(
   id: string,
   text: string,
+  onUpdate?: (text: string) => void,
 ): Promise<ChatMessage> {
-  const response = await fetch(
+  const response = await rawRequest(
     `/api/v1/conversations/${encodeURIComponent(id)}/messages`,
     {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
     },
   );
-  if (!response.ok || !response.body) {
+  if (!response.ok) {
+    throw await responseError(response, "Could not send your message.");
+  }
+  if (!response.body) {
     throw new ApiError("CHAT_FAILED", "Could not send your message.");
   }
   const reader = response.body.getReader();
@@ -81,10 +92,10 @@ export async function postConversationMessage(
     const events = buffer.split("\n\n");
     buffer = events.pop() ?? "";
     for (const event of events) {
-      readEvent(event, state);
+      readEvent(event, state, onUpdate);
     }
   }
-  readEvent(buffer, state);
+  readEvent(buffer, state, onUpdate);
   return {
     id: crypto.randomUUID(),
     role: "assistant",
