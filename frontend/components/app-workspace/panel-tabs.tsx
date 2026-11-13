@@ -48,7 +48,14 @@ export function PanelTabs({ tab, setTab, fixCount, grammarCount }: Props) {
     );
     if (current) {
       setUnderline({ left: current.offsetLeft, width: current.offsetWidth });
-      current.scrollIntoView({ block: "nearest", inline: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      current.scrollIntoView?.({
+        block: "nearest",
+        inline: "nearest",
+        behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")
+          .matches
+          ? "instant"
+          : "smooth",
+      });
     }
   }, [tab, fixCount, grammarCount]);
   return (
