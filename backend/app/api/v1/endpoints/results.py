@@ -25,6 +25,7 @@ from app.schemas.analysis import (
     SuggestionItem,
 )
 from app.services.skills_gap import rank_skill_gaps
+from app.services.llm.protocol import SuggestionsOutput
 from app.schemas.common import ErrorDetail, ResponseMeta, WrappedResponse
 
 router = APIRouter()
@@ -132,6 +133,10 @@ async def get_job_results(
         suggestions: list[SuggestionCard] | None = None
         if job.suggestions is not None:
             try:
+                safe_cards = SuggestionsOutput.model_validate(
+                    {"suggestions": job.suggestions},
+                    context={"cv_text": (job.result or {}).get("text", "")},
+                ).model_dump()["suggestions"]
                 suggestions = [
                     SuggestionCard(
                         section=card.get("section", ""),
@@ -142,11 +147,12 @@ async def get_job_results(
                                 type=item.get("type", "action_verb"),
                                 original_text=item.get("original_text"),
                                 after_text=item.get("after_text"),
+                                needsInput=item.get("needs_input", []),
                             )
                             for item in card.get("suggestions", [])
                         ],
                     )
-                    for card in job.suggestions
+                    for card in safe_cards
                 ]
             except Exception:
                 logger.warning("malformed_suggestions_jsonb", job_id=job_id)

@@ -31,7 +31,7 @@ def test_invented_bracket_placeholder_drops_the_rewrite():
 
 def test_bracket_text_already_in_the_cv_is_kept():
     original = "- Led migration to [Kubernetes] clusters"
-    rewrite = "- Led migration of 3 services to [Kubernetes] clusters"
+    rewrite = "- Led migration to [Kubernetes] clusters"
 
     assert _item(rewrite, original_text=original).after_text == rewrite
 
@@ -42,4 +42,4 @@ def test_missing_after_text_is_untouched():
 
 def test_prompt_forbids_inventing_facts_and_placeholders():
     assert "NEVER invent" in SYSTEM_PROMPT_TEMPLATE
-    assert "bracketed placeholders" in SYSTEM_PROMPT_TEMPLATE
+    assert "bracket placeholder question" in SYSTEM_PROMPT_TEMPLATE

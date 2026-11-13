@@ -46,6 +46,16 @@ def test_suggestion_item_backward_compatible():
     assert item2.original_text is None
 
 
+def test_suggestion_item_serializes_needs_input_alias():
+    item = SuggestionItem(
+        priority="quick_win",
+        text="Add metric",
+        type="impact_metric",
+        needsInput=[{"token": "[how many?]", "question": "how many?"}],
+    )
+    assert item.model_dump(by_alias=True)["needsInput"][0]["token"] == "[how many?]"
+
+
 if __name__ == "__main__":
     print("Running GREEN tests (should pass after implementation)...")
     try:

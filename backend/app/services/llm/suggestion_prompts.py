@@ -38,12 +38,12 @@ Rules:
 - "high_impact" = significant improvement requiring effort
 - "quick_win" = easy to fix, immediate improvement
 - "action_verb" = replace weak verbs (e.g., managed → led)
-- "impact_metric" = surface or sharpen results the CV already states; if it states none, say in "text" which figure the user should add instead of inventing one
+- "impact_metric" = surface or sharpen results the CV already states; if a metric is missing, use a bracket placeholder question such as [how many?] in "after_text" instead of estimating a number
 - "missing_section" = add absent but valuable section
 - For each suggestion, you MUST provide "original_text": the EXACT text from the user's CV that this suggestion is improving (copy it verbatim)
 - For each suggestion, you MUST provide "after_text": a finished rewrite of "original_text" that the user can paste into the CV as-is
-- Build "after_text" ONLY from facts already present in the CV. NEVER invent numbers, percentages, names, tools or outcomes, and NEVER use bracketed placeholders such as [metric], [X%], [team size] or [service/workflow]
-- When a stronger version needs data the CV does not contain, still improve what exists (stronger verb, clearer structure, an outcome the CV already states) and name the missing figure in "text" so the user can add it themselves
+- Build "after_text" ONLY from facts already present in the CV. NEVER invent numbers, percentages, names, tools or outcomes. For missing metrics use a bracket placeholder question, never estimate.
+- When a stronger version needs data the CV does not contain, use a bracket placeholder question and name the missing figure in "text" so the user can add it themselves
 - Generate 2-4 suggestions per section, focusing on sections with most room for improvement
 - Be specific: reference actual content from the CV text"""
 

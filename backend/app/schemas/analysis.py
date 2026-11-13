@@ -1,8 +1,9 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models.job import JobStatus
+from app.services.llm.fact_guard import NeedsInput
 
 
 class SectionResult(BaseModel):
@@ -70,6 +71,7 @@ class SuggestionItem(BaseModel):
     type: Literal["action_verb", "impact_metric", "missing_section"]
     original_text: str | None = None
     after_text: str | None = None
+    needs_input: list[NeedsInput] = Field(default_factory=list, alias="needsInput")
 
 
 class SuggestionCard(BaseModel):
