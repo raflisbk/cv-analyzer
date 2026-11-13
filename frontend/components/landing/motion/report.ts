@@ -25,18 +25,6 @@ export function reportMotion(
       { y: 120, rotate: 7, autoAlpha: 0, duration: 0.5 },
       0.2,
     )
-    .from(
-      panel.querySelectorAll("[data-report-object]"),
-      {
-        rotate: -140,
-        scale: 0.2,
-        autoAlpha: 0,
-        stagger: 0.25,
-        duration: 0.6,
-        ease: "back.out(1.6)",
-      },
-      0.5,
-    )
     .fromTo(
       ring,
       { strokeDasharray: "0 340" },
