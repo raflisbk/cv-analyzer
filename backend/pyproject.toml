@@ -179,6 +179,7 @@ addopts = "-ra -q --strict-markers --strict-config"
 testpaths = ["tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
+markers = ["golden: opt-in real LLM scoring regression"]
 
 [build-system]
 requires = ["setuptools>=61.0"]
