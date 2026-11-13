@@ -88,13 +88,33 @@ async def _add_missing(session: AsyncSession, statement, objects: list) -> None:
             session.add(obj)
 
 
+async def _sync_jobs(
+    session: AsyncSession, user_id: uuid.UUID, jobs: list[Job]
+) -> None:
+    existing = {
+        job.id: job
+        for job in (await session.execute(select(Job).where(Job.user_id == user_id)))
+        .scalars()
+        .all()
+    }
+    for job in jobs:
+        current = existing.get(job.id)
+        if current is None:
+            session.add(job)
+        elif (current.file_metadata or {}).get("seed_key") == job.file_metadata[
+            "seed_key"
+        ]:
+            for field in ("result", "nlp_result", "suggestions", "cv_document"):
+                setattr(current, field, getattr(job, field))
+
+
 async def seed(session: AsyncSession, email: str) -> list[Job]:
     email = email.strip().lower()
     if not email or "@" not in email or len(email) > 255:
         raise ValueError("Provide a valid email with --email")
     user = await _get_or_create_user(session, email)
     jobs = build_jobs(user.id, email)
-    await _add_missing(session, select(Job.id).where(Job.user_id == user.id), jobs)
+    await _sync_jobs(session, user.id, jobs)
     conversations = conversation_data(user.id, email, jobs[-2].id)
     await _add_missing(
         session,
