@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { logoutApi } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { logoutAllApi, logoutApi } from "@/lib/auth";
 import { useAuthStore } from "@/stores/auth-store";
 
 function useDismissal(
@@ -62,7 +63,8 @@ function useMenuKeyboard(
       document.activeElement as HTMLElement,
     );
     const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
-    const next = (current + (forward ? 1 : -1) + 2) % 2;
+    const count = itemRefs.current.filter(Boolean).length;
+    const next = (current + (forward ? 1 : -1) + count) % count;
     itemRefs.current[next]?.focus();
   };
   return { onTriggerKeyDown, onMenuKeyDown };
@@ -70,25 +72,30 @@ function useMenuKeyboard(
 
 export function useAccountMenu() {
   const [open, setOpen] = useState(false);
+  const [sessionsOpen, setSessionsOpen] = useState(false);
+  const [confirmAll, setConfirmAll] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const close = useCallback((restoreFocus = false) => {
     setOpen(false);
     if (restoreFocus) triggerRef.current?.focus();
   }, []);
   useDismissal(open, rootRef, close);
   const keyboard = useMenuKeyboard(rootRef, itemRefs, setOpen, close);
-  const logout = async () => {
+  const logout = async (all = false) => {
     try {
-      await logoutApi();
+      if (all) await logoutAllApi();
+      else await logoutApi();
     } catch {
     } finally {
       setUser(null);
+      queryClient.clear();
       close();
-      router.push("/");
+      router.replace("/");
     }
   };
   return {
@@ -98,7 +105,12 @@ export function useAccountMenu() {
     triggerRef,
     itemRefs,
     close,
-    logout,
+    logout: () => logout(),
+    logoutAll: () => logout(true),
+    sessionsOpen,
+    setSessionsOpen,
+    confirmAll,
+    setConfirmAll,
     ...keyboard,
   };
 }
