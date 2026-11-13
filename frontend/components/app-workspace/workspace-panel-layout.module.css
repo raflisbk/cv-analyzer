@@ -17,6 +17,8 @@
   display: flex;
   gap: 4px;
   overflow-x: auto;
+  flex: none;
+  scroll-padding-inline: 8px;
   scrollbar-width: none;
   border-bottom: 2px solid rgba(253, 253, 255, 0.22);
 }
@@ -24,12 +26,13 @@
   display: none;
 }
 .tab {
+  flex: none;
   border: 0;
   background: none;
   min-height: 44px;
-  padding: 0 9px;
+  padding: 0 5px;
   color: var(--app-snow);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
@@ -52,7 +55,7 @@
   place-items: center;
   min-width: 20px;
   height: 20px;
-  margin-left: 6px;
+  margin-left: 3px;
   border-radius: 50%;
   background: var(--app-punk);
   color: var(--app-ink);
