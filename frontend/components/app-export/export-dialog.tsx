@@ -25,12 +25,16 @@ export default function ExportDialog({
   const close = useCallback(() => onClose(), [onClose]);
   useAppShellFocusTrap(open, panel, close);
   const state = useAppExport(jobId);
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
   return (
     <div
       className={styles.scrim}
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
       }}
     >
       <div

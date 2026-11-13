@@ -29,8 +29,12 @@ export default function ExportPreview({ template, data }: Props) {
           const heading =
             /^(contact|skills|education|experience|summary)$/i.test(line.text);
           const content = line.changed ? <mark>{line.text}</mark> : line.text;
-          if (first) return <h3 key={index}>{content}</h3>;
-          if (heading) return <h4 key={index}>{content}</h4>;
+          if (first) {
+            return <h3 key={index}>{content}</h3>;
+          }
+          if (heading) {
+            return <h4 key={index}>{content}</h4>;
+          }
           return <p key={index}>{content || "\u00a0"}</p>;
         })}
       </div>
