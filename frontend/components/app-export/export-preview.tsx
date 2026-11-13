@@ -12,6 +12,10 @@ interface Props {
 
 export default function ExportPreview({ template, data }: Props) {
   const lines = markChangedLines(data.originalText, data.editedText);
+  const format =
+    template.original && data.fileName.toLowerCase().endsWith(".docx")
+      ? "DOCX"
+      : "PDF";
   return (
     <div className={styles.preview}>
       <p className={styles.banner}>
@@ -22,7 +26,7 @@ export default function ExportPreview({ template, data }: Props) {
       <div
         className={`${styles.paper} ${styles[template.id]}`}
         data-template={template.id}
-        aria-label={`${template.name} PDF preview`}
+        aria-label={`${template.name} ${format} preview`}
       >
         {lines.map((line, index) => {
           const first = index === 0;

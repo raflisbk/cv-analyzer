@@ -43,11 +43,13 @@ export function useAppExport(
           fixIds: fixIds ?? [],
           answers: answers ?? {},
         });
-        saveExportPdf(
-          result.blob,
-          exportFilename(preview.data.fileName, selected.id),
-        );
-        const message = `Your PDF is ready! ${result.applied} fixes applied, ${result.skipped} skipped.`;
+        const fileName =
+          result.fileName ?? exportFilename(preview.data.fileName, selected.id);
+        saveExportPdf(result.blob, fileName);
+        const format = fileName.toLowerCase().endsWith(".docx")
+          ? "DOCX"
+          : "PDF";
+        const message = `Your ${format} is ready! ${result.applied} fixes applied, ${result.skipped} skipped.`;
         setResultMessage(message);
         pathy.react("cheer", message, anchor);
       } catch (cause) {
