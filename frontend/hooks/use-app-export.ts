@@ -10,10 +10,14 @@ import {
 } from "@/lib/app-api/export";
 import { exportFilename, saveExportPdf } from "@/lib/app-export/download";
 
-export function useAppExport(jobId: string) {
+export function useAppExport(
+  jobId: string,
+  fixIds?: string[],
+  answers?: Record<string, Record<string, string>>,
+) {
   const templates = useQuery({
-    queryKey: ["export-templates"],
-    queryFn: getExportTemplates,
+    queryKey: ["export-templates", jobId],
+    queryFn: () => getExportTemplates(jobId),
   });
   const preview = useQuery({
     queryKey: ["export-preview", jobId],
@@ -22,6 +26,7 @@ export function useAppExport(jobId: string) {
   const [selectedId, setSelectedId] = useState("original");
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
   const pathy = usePathy();
   const selected =
     templates.data?.find((template) => template.id === selectedId) ??
@@ -31,10 +36,20 @@ export function useAppExport(jobId: string) {
       if (!selected || !preview.data || downloading) return;
       setDownloading(true);
       setError(null);
+      setResultMessage(null);
       try {
-        const blob = await exportCv(jobId, { templateId: selected.id });
-        saveExportPdf(blob, exportFilename(preview.data.fileName, selected.id));
-        pathy.react("cheer", "Your PDF is ready!", anchor);
+        const result = await exportCv(jobId, {
+          templateId: selected.id,
+          fixIds: fixIds ?? [],
+          answers: answers ?? {},
+        });
+        saveExportPdf(
+          result.blob,
+          exportFilename(preview.data.fileName, selected.id),
+        );
+        const message = `Your PDF is ready! ${result.applied} fixes applied, ${result.skipped} skipped.`;
+        setResultMessage(message);
+        pathy.react("cheer", message, anchor);
       } catch (cause) {
         const message =
           cause instanceof Error
@@ -46,7 +61,7 @@ export function useAppExport(jobId: string) {
         setDownloading(false);
       }
     },
-    [downloading, jobId, pathy, preview.data, selected],
+    [answers, downloading, fixIds, jobId, pathy, preview.data, selected],
   );
   return {
     templates,
@@ -56,6 +71,7 @@ export function useAppExport(jobId: string) {
     setSelectedId,
     downloading,
     error,
+    resultMessage,
     download,
   };
 }

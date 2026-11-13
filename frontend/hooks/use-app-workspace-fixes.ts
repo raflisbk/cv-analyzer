@@ -19,14 +19,22 @@ export function useAppWorkspaceFixes(
 ) {
   const pathy = usePathy();
   const [applied, setApplied] = useState<Set<string>>(() => new Set());
+  const [appliedAnswers, setAppliedAnswers] = useState<
+    Record<string, Record<string, string>>
+  >({});
   const [bonus, setBonus] = useState(0);
   const allFixes = useMemo(() => flattenFixes(suggestions), [suggestions]);
   const fixes = useMemo(
     () => allFixes.filter((fix) => !applied.has(fix.id)),
     [allFixes, applied],
   );
-  function applyFix(fix: WorkspaceFix, text: string, anchor: HTMLElement) {
-    if (!canApplyFix(source, text, fix.after)) {
+  function applyFix(
+    fix: WorkspaceFix,
+    text: string,
+    anchor: HTMLElement,
+    answers: Record<string, string> = {},
+  ) {
+    if (!canApplyFix(source, text, fix.after, answers)) {
       return false;
     }
     const written = fix.before
@@ -36,6 +44,7 @@ export function useAppWorkspaceFixes(
       return false;
     }
     setApplied((current) => new Set(current).add(fix.id));
+    setAppliedAnswers((current) => ({ ...current, [fix.id]: answers }));
     setBonus((current) => current + fix.points);
     pathy.react(
       fix.points > 1 ? "trophy" : "proud",
@@ -44,5 +53,11 @@ export function useAppWorkspaceFixes(
     );
     return true;
   }
-  return { fixes, bonus, applyFix };
+  return {
+    fixes,
+    bonus,
+    applyFix,
+    appliedFixIds: [...applied],
+    appliedAnswers,
+  };
 }

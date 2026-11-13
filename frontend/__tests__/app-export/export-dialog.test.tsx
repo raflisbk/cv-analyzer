@@ -81,23 +81,38 @@ describe("ExportDialog", () => {
     opener.remove();
   });
   it("downloads the selected template and celebrates", async () => {
-    exportCv.mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" }));
+    exportCv.mockResolvedValue({
+      blob: new Blob(["pdf"], { type: "application/pdf" }),
+      applied: 2,
+      skipped: 1,
+    });
     show();
     fireEvent.click(
       await screen.findByRole("button", { name: "Download PDF" }),
     );
     await waitFor(() => expect(saveExportPdf).toHaveBeenCalledOnce());
-    expect(exportCv).toHaveBeenCalledWith("job", { templateId: "original" });
+    expect(exportCv).toHaveBeenCalledWith("job", {
+      templateId: "original",
+      fixIds: [],
+      answers: {},
+    });
     expect(react).toHaveBeenCalledWith(
       "cheer",
-      "Your PDF is ready!",
+      "Your PDF is ready! 2 fixes applied, 1 skipped.",
       expect.any(HTMLElement),
+    );
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "2 fixes applied, 1 skipped",
     );
   });
   it("shows the error and allows a retry", async () => {
     exportCv
       .mockRejectedValueOnce(new Error("Network unavailable"))
-      .mockResolvedValueOnce(new Blob(["pdf"]));
+      .mockResolvedValueOnce({
+        blob: new Blob(["pdf"]),
+        applied: 0,
+        skipped: 0,
+      });
     show();
     fireEvent.click(
       await screen.findByRole("button", { name: "Download PDF" }),

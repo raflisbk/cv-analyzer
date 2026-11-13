@@ -7,6 +7,7 @@ interface Props {
   fileName: string;
   downloading: boolean;
   error: string | null;
+  resultMessage: string | null;
   onDownload: (anchor: HTMLElement) => void;
   onCancel: () => void;
 }
@@ -16,13 +17,14 @@ export default function ExportOptions({
   fileName,
   downloading,
   error,
+  resultMessage,
   onDownload,
   onCancel,
 }: Props) {
   return (
     <aside className={styles.side}>
       <div className={styles.scoreCard}>
-        <span className={styles.score}>{template.atsScore}</span>
+        <span className={styles.score}>{template.atsScore ?? "—"}</span>
         <div>
           <strong>{template.name}</strong>
           <small>{template.description}</small>
@@ -54,6 +56,7 @@ export default function ExportOptions({
             {error}
           </p>
         )}
+        {resultMessage && <p role="status">{resultMessage}</p>}
         <button
           type="button"
           className={styles.download}
