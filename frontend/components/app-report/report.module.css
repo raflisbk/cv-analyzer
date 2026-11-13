@@ -98,6 +98,7 @@
 .keywordCard { background: var(--deep); color: var(--snow); }
 .keywordCard .caption { color: var(--snow); }
 .keywordCard .eyebrow { color: var(--punk); }
+.keywordCard .ring circle:last-child { stroke: var(--punk); }
 .keywordCard .chip { background: var(--punk); color: var(--ink); font-size: 14px; }
 .missing { background: none !important; color: var(--snow) !important; border: 2px dashed var(--punk); text-decoration: none; cursor: pointer; }
 .atsChecks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
