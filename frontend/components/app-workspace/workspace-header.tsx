@@ -11,6 +11,7 @@ export type WorkspaceView = "editor" | "pdf" | "report";
 export function WorkspaceHeader({
   name,
   role,
+  version,
   saveState,
   view,
   setView,
@@ -18,6 +19,7 @@ export function WorkspaceHeader({
 }: {
   name: string;
   role: string;
+  version?: string;
   saveState: string;
   view: WorkspaceView;
   setView: (view: WorkspaceView) => void;
@@ -26,7 +28,12 @@ export function WorkspaceHeader({
   return (
     <header className={styles.head}>
       <WorkspaceBack />
-      <WorkspaceTitle name={name} role={role} saveState={saveState} />
+      <WorkspaceTitle
+        name={name}
+        role={role}
+        version={version}
+        saveState={saveState}
+      />
       <ViewSwitch view={view} setView={setView} />
       <HelpButton helpKey="views" />
       <button
