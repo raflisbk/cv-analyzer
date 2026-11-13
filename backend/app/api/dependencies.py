@@ -3,9 +3,9 @@ from typing import Any
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.auth import verify_token
 from app.core.config import Settings, get_settings
 from app.db.session import get_db
+from app.services.auth.identity import authenticated_user
 from app.models.user import User
 
 
@@ -18,19 +18,7 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db),
 ) -> User | None:
     """Return the authenticated user, or None if not logged in."""
-    token = request.cookies.get("access_token")
-    if not token:
-        return None
-
-    payload = verify_token(token)
-    if not payload:
-        return None
-
-    user = await db.get(User, payload["sub"])
-    if not user or not user.is_active:
-        return None
-
-    return user
+    return await authenticated_user(db, request)
 
 
 async def require_user(
