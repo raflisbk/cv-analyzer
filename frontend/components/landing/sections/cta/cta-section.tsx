@@ -32,7 +32,7 @@ export default function CtaSection() {
         </p>
         <div className={styles.actions}>
           <Link
-            href="/workspace-v2/new"
+            href="/app"
             className={`${base.button} ${styles.primary}`}
           >
             Score my CV <PlaneIcon size={52} />

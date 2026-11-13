@@ -2,7 +2,7 @@ export const footerColumns = [
   {
     title: "Products",
     links: [
-      { label: "CV Analyzer", href: "/workspace-v2/new" },
+      { label: "CV Analyzer", href: "/app" },
       { label: "CV Builder", href: null },
       { label: "Job Connect", href: null },
     ],

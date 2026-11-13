@@ -21,7 +21,7 @@ export default function HeroCopy() {
       </p>
       <Link
         className={buttonStyles.button}
-        href="/workspace-v2/new"
+        href="/app"
         data-hero-cta
       >
         <span>Score my CV</span>

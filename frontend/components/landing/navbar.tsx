@@ -44,7 +44,7 @@ export default function Navbar() {
         {isHydrated && user ? (
           <AccountMenu user={user} />
         ) : (
-          <Link href="/workspace-v2/new" className={styles.action}>
+          <Link href="/app" className={styles.action}>
             <span>Log in</span>
             <span className={styles.keyWrap} aria-hidden="true">
               <Image

@@ -16,7 +16,7 @@ export default function FooterSection() {
         <div data-footer-column className={styles.brand}>
           <p>Know what your CV says before a recruiter does.</p>
           <span className={styles.note}>pathkr = path + karir</span>
-          <Link className={base.button} href="/workspace-v2/new">
+          <Link className={base.button} href="/app">
             Score my CV <PlaneIcon size={52} />
           </Link>
         </div>

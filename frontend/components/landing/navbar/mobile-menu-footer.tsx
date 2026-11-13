@@ -14,7 +14,7 @@ export default function MobileMenuFooter({ user, onLogout }: Props) {
         <MobileAccountFooter user={user} onLogout={onLogout} />
       ) : (
         <SheetClose asChild>
-          <Link href="/workspace-v2/new" className={styles.mobileAction}>
+          <Link href="/app" className={styles.mobileAction}>
             Log in to start <ArrowRight size={20} aria-hidden="true" />
           </Link>
         </SheetClose>

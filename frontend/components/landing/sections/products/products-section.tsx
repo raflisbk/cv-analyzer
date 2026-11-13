@@ -37,7 +37,7 @@ export default function ProductsSection() {
               <h3>{product.name}</h3>
               <p>{product.description}</p>
               {product.live && (
-                <Link className={base.button} href="/workspace-v2/new">
+                <Link className={base.button} href="/app">
                   Try it free <PlaneIcon size={52} />
                 </Link>
               )}

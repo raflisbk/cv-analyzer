@@ -16,7 +16,7 @@ export default function MobileAccountFooter({
     <>
       <div className={styles.userName}>{accountDisplayName(user)}</div>
       <SheetClose asChild>
-        <Link href="/workspace-v2/new" className={styles.accountItem}>
+        <Link href="/app" className={styles.accountItem}>
           <LayoutGrid size={20} aria-hidden="true" /> Workspace
         </Link>
       </SheetClose>

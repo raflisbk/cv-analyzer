@@ -490,7 +490,7 @@ export default function HeroSection() {
                   <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                     <div className="hero-cta">
                       <Link
-                        href="/workspace-v2/new"
+                        href="/app"
                         className="group relative flex items-center gap-2.5 overflow-hidden rounded-full px-6 py-3 text-sm md:text-base font-extrabold transition-all duration-200 active:scale-[0.98]"
                         style={{
                           background: "#CAFF43",

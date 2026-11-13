@@ -61,8 +61,8 @@ test.describe("CV Analyzer page (/cv-analyzer)", () => {
     await page.goto("/cv-analyzer");
     const textLink = page.getByRole("link", { name: "Analyze My CV" });
     const iconLink = page.getByRole("link", { name: "Start CV analysis" });
-    await expect(textLink).toHaveAttribute("href", "/workspace-v2/new");
-    await expect(iconLink).toHaveAttribute("href", "/workspace-v2/new");
+    await expect(textLink).toHaveAttribute("href", "/app");
+    await expect(iconLink).toHaveAttribute("href", "/app");
   });
 
   test("Back to Path Karir navigates home", async ({ page }) => {

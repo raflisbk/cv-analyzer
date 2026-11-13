@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 export default function ProductCardCTA() {
   return (
     <Link
-      href="/workspace-v2/new"
+      href="/app"
       className="text-sm text-primary hover:underline transition-colors"
     >
       <span className="inline-flex items-center gap-1.5">

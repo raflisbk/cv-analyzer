@@ -11,7 +11,7 @@ describe("safeNextPath", () => {
   it.each([null, "", "//evil.example", "https://evil.example/path"])(
     "falls back for an unsafe or missing path: %s",
     (path) => {
-      expect(safeNextPath(path)).toBe("/workspace-v2/new");
+      expect(safeNextPath(path)).toBe("/app");
     },
   );
 });

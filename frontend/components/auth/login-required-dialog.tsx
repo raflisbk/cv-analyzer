@@ -17,7 +17,7 @@ export function LoginRequiredDialog() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
-  const [nextPath, setNextPath] = useState("/workspace-v2/new");
+  const [nextPath, setNextPath] = useState("/app");
 
   useEffect(() => {
     if (searchParams.get("login") === "required") {

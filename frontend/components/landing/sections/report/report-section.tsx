@@ -22,7 +22,7 @@ export default function ReportSection() {
           Every number comes with the exact line that earned or cost it, and a
           rewrite you can accept in one click.
         </p>
-        <Link href="/workspace-v2/new" className={base.button}>
+        <Link href="/app" className={base.button}>
           Try it on my CV <PlaneIcon size={52} />
         </Link>
         <span className={`${base.hand} ${styles.note}`}>no mystery scores</span>
