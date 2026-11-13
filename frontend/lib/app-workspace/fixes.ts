@@ -1,4 +1,12 @@
-import type { SuggestionCard } from "@/lib/types";
+import type { SuggestionCard, SuggestionItem } from "@/lib/types";
+
+export interface FixInput {
+  token: string;
+  question: string;
+}
+type InputCard = Omit<SuggestionCard, "suggestions"> & {
+  suggestions: (SuggestionItem & { needsInput?: FixInput[] })[];
+};
 
 export interface WorkspaceFix {
   id: string;
@@ -8,16 +16,16 @@ export interface WorkspaceFix {
   explanation: string;
   label: string;
   points: number;
+  needsInput?: FixInput[];
 }
 
 export function flattenFixes(
-  cards: SuggestionCard[] | null | undefined,
+  cards: InputCard[] | null | undefined,
 ): WorkspaceFix[] {
-  return (cards ?? []).flatMap((card) =>
+  return (cards ?? []).flatMap((card, cardIndex) =>
     card.suggestions
-      .filter((item) => Boolean(item.afterText))
       .map((item, index) => ({
-        id: `${card.section}-${index}`,
+        id: `${card.section}_${index}_${cardIndex}`,
         section: card.section,
         before: item.originalText ?? "",
         after: item.afterText ?? "",
@@ -29,8 +37,26 @@ export function flattenFixes(
               ? "Vague verb"
               : "Missing section",
         points: item.priority === "high_impact" ? 3 : 1,
-      })),
+        needsInput: item.needsInput ?? [],
+      }))
+      .filter((item) => Boolean(item.after)),
   );
+}
+
+export function fillInputs(
+  after: string,
+  inputs: FixInput[],
+  answers: Record<string, string>,
+): string | null {
+  let filled = after;
+  for (const { token } of inputs) {
+    const value = answers[token]?.trim();
+    if (!value || value.length > 80 || /[\x00-\x1f\x7f]/.test(value)) {
+      return null;
+    }
+    filled = filled.replaceAll(token, value);
+  }
+  return filled;
 }
 
 export function needsNumber(after: string): boolean {

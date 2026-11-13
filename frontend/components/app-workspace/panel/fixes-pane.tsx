@@ -1,4 +1,5 @@
 import HelpButton from "@/components/pathy/help-button";
+import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
 import { FixCard } from "./fix-card";
 import styles from "../workspace-styles";
@@ -6,14 +7,33 @@ import styles from "../workspace-styles";
 export function FixesPane({
   fixes,
   error,
+  loading,
+  retry,
   onApply,
 }: {
   fixes: WorkspaceFix[];
   error?: boolean;
-  onApply: (fix: WorkspaceFix, text: string, anchor: HTMLElement) => boolean;
+  loading?: boolean;
+  retry?: () => void;
+  onApply: (
+    fix: WorkspaceFix,
+    text: string,
+    anchor: HTMLElement,
+    answers: Record<string, string>,
+  ) => boolean;
 }) {
   if (error) {
-    return <div role="alert">Fixes could not load. Try again later.</div>;
+    return (
+      <div role="alert">
+        Fixes could not load.{" "}
+        <button type="button" onClick={retry}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+  if (loading) {
+    return <LoadingSkeleton label="Loading suggested fixes" />;
   }
   return (
     <div className={styles.pane}>
@@ -26,7 +46,9 @@ export function FixesPane({
           <FixCard
             key={fix.id}
             fix={fix}
-            onApply={(text, anchor) => onApply(fix, text, anchor)}
+            onApply={(text, anchor, answers) =>
+              onApply(fix, text, anchor, answers)
+            }
           />
         ))
       ) : (

@@ -6,16 +6,26 @@ import styles from "./workspace-styles";
 
 export function ExportOverlay({
   jobId,
+  fixIds,
+  answers,
   onClose,
 }: {
   jobId: string;
+  fixIds: string[];
+  answers: Record<string, Record<string, string>>;
   onClose: () => void;
 }) {
   const dialogRef = useAppWorkspaceFocusTrap(onClose);
   return (
     <div className={styles.scrim} onClick={onClose}>
       <div ref={dialogRef} onClick={(event) => event.stopPropagation()}>
-        <ExportDialog jobId={jobId} open onClose={onClose} />
+        <ExportDialog
+          jobId={jobId}
+          fixIds={fixIds}
+          answers={answers}
+          open
+          onClose={onClose}
+        />
       </div>
     </div>
   );
