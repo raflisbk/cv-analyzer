@@ -42,7 +42,7 @@ describe("HistoryDrawer", () => {
     expect(await screen.findByText("Review my CV")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Review my CV/ })).toHaveAttribute(
       "href",
-      "/app/cvs/job-1?view=editor&tab=chat",
+      "/app/chat/one",
     );
     expect(document.activeElement).toHaveAttribute(
       "aria-label",

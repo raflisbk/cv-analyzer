@@ -17,11 +17,7 @@ export default function HistoryGroup({
       {items.map((item) => (
         <Link
           key={item.id}
-          href={
-            item.scope.type === "cv"
-              ? `/app/cvs/${item.scope.jobId}?view=editor&tab=chat`
-              : `/app/chat/${item.id}`
-          }
+          href={`/app/chat/${encodeURIComponent(item.id)}`}
           onClick={close}
         >
           <span>{item.title}</span>

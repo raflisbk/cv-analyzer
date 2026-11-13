@@ -23,7 +23,7 @@ describe("groupHistory", () => {
     expect(groups.today.map((chat) => chat.id)).toEqual(["later", "today"]);
     expect(groups.lastWeek.map((chat) => chat.id)).toEqual(["week"]);
   });
-  it("excludes old and future chats", () => {
+  it("keeps old chats and excludes future chats", () => {
     const groups = groupHistory(
       [
         item("old", "2026-10-30T00:00:00Z"),
@@ -31,6 +31,6 @@ describe("groupHistory", () => {
       ],
       now,
     );
-    expect(groups).toEqual({ today: [], lastWeek: [] });
+    expect(groups).toEqual({ today: [], lastWeek: [], older: [item("old", "2026-10-30T00:00:00Z")] });
   });
 });

@@ -5,9 +5,15 @@ import AnalysisScoreCard from "./analysis-score-card";
 import styles from "./home-thread.module.css";
 
 const steps = ["Read", "Analyze", "Score", "Grammar", "Suggest"];
-export default function AnalysisProgress({ jobId }: { jobId: string }) {
+export default function AnalysisProgress({
+  jobId,
+  onComplete,
+}: {
+  jobId: string;
+  onComplete?: () => void;
+}) {
   const { active, message, failed, complete, count } =
-    useAppShellAnalysisProgress(jobId);
+    useAppShellAnalysisProgress(jobId, onComplete);
   return (
     <section className={styles.progress} aria-live="polite">
       <p>{message ?? "Reading your CV now."}</p>
