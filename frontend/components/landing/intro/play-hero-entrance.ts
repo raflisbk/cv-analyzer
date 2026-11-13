@@ -1,10 +1,14 @@
-function revealWords(timeline: gsap.core.Timeline) {
+function revealWords(timeline: gsap.core.Timeline, startAt: number) {
   timeline
-    .from("[data-landing-nav]", { y: -70, autoAlpha: 0, duration: 0.6 }, 4.35)
+    .from(
+      "[data-landing-nav]",
+      { y: -70, autoAlpha: 0, duration: 0.6 },
+      startAt,
+    )
     .from(
       "[data-hero-live]",
       { scale: 0, autoAlpha: 0, duration: 0.45, ease: "back.out(2.4)" },
-      4.35,
+      startAt,
     )
     .from(
       "[data-hero-word]",
@@ -15,16 +19,16 @@ function revealWords(timeline: gsap.core.Timeline) {
         duration: 0.75,
         ease: "expo.out",
       },
-      4.35,
+      startAt,
     )
     .from(
       "[data-hero-copy],[data-hero-cta]",
       { y: 30, autoAlpha: 0, stagger: 0.1, duration: 0.5 },
-      4.5,
+      startAt + 0.15,
     );
 }
 
-function revealObjects(timeline: gsap.core.Timeline) {
+function revealObjects(timeline: gsap.core.Timeline, startAt: number) {
   timeline
     .from(
       "[data-hero-object]",
@@ -36,7 +40,7 @@ function revealObjects(timeline: gsap.core.Timeline) {
         duration: 0.8,
         ease: "back.out(1.7)",
       },
-      4.35,
+      startAt,
     )
     .from(
       "[data-hero-sticker]",
@@ -47,11 +51,11 @@ function revealObjects(timeline: gsap.core.Timeline) {
         duration: 0.5,
         ease: "back.out(2.6)",
       },
-      4.65,
+      startAt + 0.3,
     );
 }
 
-export function playHeroEntrance(timeline: gsap.core.Timeline) {
-  revealWords(timeline);
-  revealObjects(timeline);
+export function playHeroEntrance(timeline: gsap.core.Timeline, startAt = 4.35) {
+  revealWords(timeline, startAt);
+  revealObjects(timeline, startAt);
 }
