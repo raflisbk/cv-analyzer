@@ -27,6 +27,16 @@ def test_fabricated_evidence_is_missing():
     assert (item.status, item.evidence) == ("missing", MISSING_EVIDENCE)
 
 
+def test_unrelated_short_evidence_is_missing():
+    item = verify_requirement(requirement("Python", quote="the"), "the Python")
+    assert (item.status, item.evidence) == ("missing", MISSING_EVIDENCE)
+
+
+def test_relevant_single_word_evidence_is_accepted():
+    item = verify_requirement(requirement("Figma", quote="Figma"), "Used Figma")
+    assert (item.status, item.evidence) == ("met", "Figma")
+
+
 def test_case_and_whitespace_normalized_quote_returns_cv_text():
     item = verify_requirement(
         requirement("Python", quote="built a PYTHON service"),
