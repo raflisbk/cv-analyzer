@@ -6,6 +6,8 @@ from app.models.user import User
 from app.models.user_session import UserSession
 
 __all__ = [
+    "Conversation",
+    "ConversationMessage",
     "Job",
     "JobMemoryChunk",
     "JobRole",
@@ -14,3 +16,5 @@ __all__ = [
     "User",
     "UserSession",
 ]
+from app.models.conversation import Conversation
+from app.models.conversation_message import ConversationMessage
