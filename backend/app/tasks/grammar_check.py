@@ -7,6 +7,7 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.ats.checker import check_ats_compatibility
+from app.services.ats.hidden_text_check import hidden_text_check
 from app.services.grammar.checker import check_grammar
 from app.services.nlp.section_detector import CvSection, detect_sections
 from app.tasks.celery_app import celery_app
@@ -42,6 +43,7 @@ def grammar_check_task(self: Task, job_id: str) -> dict:
                 return {"error": msg}
 
             text = job.result.get("text", "")
+            hidden_report = job.result.get("metadata", {}).get("hidden_text")
             sections_raw = job.nlp_result.get("sections") if job.nlp_result else None
 
         # Grammar + ATS work (sync, LLM call) — outside DB session
@@ -61,6 +63,9 @@ def grammar_check_task(self: Task, job_id: str) -> dict:
             sections = detect_sections(text)
 
         ats_checks = check_ats_compatibility(text, sections=sections)
+        hidden_check = hidden_text_check(hidden_report)
+        if hidden_check:
+            ats_checks.append(hidden_check)
 
         # Save results
         async with async_session_maker() as session:
