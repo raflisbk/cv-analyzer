@@ -13,7 +13,7 @@ import styles from "./home.module.css";
 import threadStyles from "./home-thread.module.css";
 
 export default function HomeChat() {
-  const { messages, busy, error, jobId, setJobId, send } =
+  const { messages, busy, error, jobId, setJobId, send, retry } =
     useConversationHome();
   const { data: cvs } = useQuery({ queryKey: ["app-cvs"], queryFn: listCvs });
   const latest = cvs?.[0];
@@ -26,7 +26,14 @@ export default function HomeChat() {
         <section className={`${shell.sheet} ${threadStyles.threadSheet}`}>
           <ChatThread messages={messages} typing={busy} />
           {jobId && <AnalysisProgress jobId={jobId} />}
-          {error && <p role="alert">{error}</p>}
+          {error && (
+            <p className={threadStyles.assistantMessage} role="alert">
+              {error}{" "}
+              <button type="button" onClick={retry}>
+                Retry
+              </button>
+            </p>
+          )}
         </section>
       )}
       <ChatComposer onSend={send} busy={busy} onUploaded={setJobId} />

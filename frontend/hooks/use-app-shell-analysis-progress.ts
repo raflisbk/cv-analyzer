@@ -16,11 +16,17 @@ const stages: Record<string, number> = {
   complete: 5,
 };
 
-export function useAppShellAnalysisProgress(jobId: string) {
+export function useAppShellAnalysisProgress(
+  jobId: string,
+  onComplete?: () => void,
+) {
   const [complete, setComplete] = useState(false);
   const [count, setCount] = useState(0);
   const { progress, error } = useJobStream(jobId, {
-    onComplete: () => setComplete(true),
+    onComplete: () => {
+      setComplete(true);
+      onComplete?.();
+    },
   });
   const result = useJobResults(complete ? jobId : null);
   const pathy = usePathy();

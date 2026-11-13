@@ -40,4 +40,40 @@ describe("postConversationMessage", () => {
       "Could not send your message",
     );
   });
+  it("publishes tokens as each event arrives", async () => {
+    const encoder = new TextEncoder();
+    const updates: string[] = [];
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode('data: {"token":"Hi"}\n\n'));
+        controller.enqueue(encoder.encode('data: {"token":" there"}\n\n'));
+        controller.close();
+      },
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, body: stream }),
+    );
+    await postConversationMessage("one", "Hello", (text) => updates.push(text));
+    expect(updates).toEqual(["Hi", "Hi there"]);
+  });
+  it("surfaces an error event after partial tokens", async () => {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode('data: {"token":"Partial"}\n\n'));
+        controller.enqueue(
+          encoder.encode('data: {"error":"Model unavailable"}\n\n'),
+        );
+        controller.close();
+      },
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, body: stream }),
+    );
+    await expect(postConversationMessage("one", "Hello")).rejects.toThrow(
+      "Model unavailable",
+    );
+  });
 });

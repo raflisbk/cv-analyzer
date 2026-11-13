@@ -4,6 +4,7 @@ import HistoryGroup from "./history-group";
 import styles from "./app-shell.module.css";
 import drawerStyles from "./drawer.module.css";
 import DrawerAccountFooter from "./drawer-account-footer";
+import LoadingSkeleton from "./loading-skeleton";
 
 type Drawer = ReturnType<typeof useAppShellHistoryDrawer>;
 interface HistoryDrawerBodyProps {
@@ -17,7 +18,7 @@ export default function HistoryDrawerBody({
   close,
   newChat,
 }: HistoryDrawerBodyProps) {
-  const { user, isError, refetch, groups, logOut } = state;
+  const { user, isLoading, isError, refetch, groups, logOut } = state;
   return (
     <>
       <div className={drawerStyles.drawerTop}>
@@ -37,13 +38,22 @@ export default function HistoryDrawerBody({
         + New chat
       </Link>
       {isError && (
-        <p>
+        <p role="alert">
           Could not load chats.{" "}
           <button onClick={() => refetch()}>Try again</button>
         </p>
       )}
+      {isLoading && <LoadingSkeleton label="Loading conversations" />}
+      {!isLoading &&
+        !isError &&
+        !groups.today.length &&
+        !groups.lastWeek.length &&
+        !groups.older.length && (
+          <p>No conversations yet. Start a new chat above.</p>
+        )}
       <HistoryGroup title="Today" items={groups.today} close={close} />
       <HistoryGroup title="Last 7 days" items={groups.lastWeek} close={close} />
+      <HistoryGroup title="Older" items={groups.older} close={close} />
       <DrawerAccountFooter
         name={user?.name ?? user?.email ?? "Account"}
         logOut={logOut}

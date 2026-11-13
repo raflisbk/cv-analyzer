@@ -14,7 +14,7 @@ export function useAppShellHistoryDrawer(open: boolean, close: () => void) {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
-  const { data, isError, refetch } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["app-conversations"],
     queryFn: listConversations,
     enabled: open,
@@ -30,5 +30,5 @@ export function useAppShellHistoryDrawer(open: boolean, close: () => void) {
       router.push("/");
     }
   };
-  return { ref, user, isError, refetch, groups, logOut };
+  return { ref, user, isLoading, isError, refetch, groups, logOut };
 }
