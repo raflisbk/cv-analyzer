@@ -6,7 +6,16 @@ from app.services.export_templates.apply_fixes import Fix, FixResult
 def _rectangles(page: fitz.Page, source: str) -> list[fitz.Rect]:
     rectangles = page.search_for(source)
     if rectangles:
-        return rectangles
+        selected = []
+        target = " ".join(source.split())
+        for rect in rectangles:
+            selected.append(rect)
+            found = " ".join(
+                " ".join(page.get_textbox(item) for item in selected).split()
+            )
+            if found == target:
+                break
+        return selected
     lines = [line.strip() for line in source.splitlines() if line.strip()]
     if len(lines) < 2:
         return []

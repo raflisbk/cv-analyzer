@@ -179,3 +179,16 @@ def test_original_docx_preserves_other_runs(document, suggestions):
     assert [run.text for run in runs] == ["Kept line ", "New line", " Last line"]
     assert runs[0].bold
     assert runs[1].italic
+
+
+def test_original_pdf_changes_only_first_duplicate(document, suggestions):
+    pdf = fitz.open()
+    page = pdf.new_page()
+    page.insert_text((50, 50), "Old line")
+    page.insert_text((50, 80), "Old line")
+    source = pdf.tobytes()
+    pdf.close()
+    result = apply_fixes(document, suggestions, ["experience_0_0"], original=True)
+    text = extract_pdf_text(render_original_pdf(source, result))
+    assert text.count("New line") == 1
+    assert text.count("Old line") == 1
