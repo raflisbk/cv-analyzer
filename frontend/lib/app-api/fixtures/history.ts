@@ -21,7 +21,14 @@ export const historyFixture: VersionData[] = [
   },
 ];
 
-export const historyDiffFixture: VersionDiff = {
-  before: "Led a team of developers on the checkout rebuild.",
-  after: "Led the checkout rebuild with a team of developers.",
-};
+export const historyDiffFixture: VersionDiff[] = [
+  {
+    before: "Led a team of developers on the checkout rebuild.",
+    after: "Led the checkout rebuild with a team of developers.",
+  },
+  {
+    before: "Improved the onboarding flow on mobile.",
+    after: "Redesigned the mobile onboarding flow.",
+  },
+  { before: "recieve", after: "receive" },
+];

@@ -1,7 +1,11 @@
 import { apiFetch } from "@/lib/api";
 import { USE_APP_MOCKS } from "./mode";
 import { historyFixture, historyDiffFixture } from "./fixtures/history";
-import type { VersionData, VersionDiff } from "./history.types";
+import type {
+  VersionData,
+  VersionDiff,
+  VersionDiffResult,
+} from "./history.types";
 
 export function getVersions(jobId: string): Promise<VersionData[]> {
   return USE_APP_MOCKS
@@ -12,10 +16,10 @@ export function getVersions(jobId: string): Promise<VersionData[]> {
 export function getVersionDiff(
   jobId: string,
   versionId: string,
-): Promise<VersionDiff> {
+): Promise<VersionDiffResult> {
   return USE_APP_MOCKS
     ? Promise.resolve(historyDiffFixture)
-    : apiFetch(
+    : apiFetch<VersionDiff>(
         `/jobs/${encodeURIComponent(jobId)}/versions/${encodeURIComponent(versionId)}/diff`,
       );
 }
