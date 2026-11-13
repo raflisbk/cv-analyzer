@@ -14,6 +14,38 @@ pytestmark = [
 ]
 
 
+def _band_failures(case: dict, scores: dict) -> list[str]:
+    bands = {**case["expected_bands"], "overall": case["expected_overall_band"]}
+    return [
+        f"{case['id']} {key}: {scores[key]} outside {band}"
+        for key, band in bands.items()
+        if not band[0] <= scores[key] <= band[1]
+    ]
+
+
+def _print_results(results: dict) -> None:
+    print("case                  impact clarity relevance completeness overall")
+    for case_id, result in results.items():
+        scores = result["scores"]
+        print(
+            f"{case_id:22} {scores['impact']:6} {scores['clarity']:7} {scores['relevance']:9} {scores['completeness']:12} {scores['overall']:7}"
+        )
+
+
+def _assert_order(results: dict) -> None:
+    strong = [
+        item["scores"]["overall"]
+        for item in results.values()
+        if item["group"] == "strong"
+    ]
+    weak = [
+        item["scores"]["overall"]
+        for item in results.values()
+        if item["group"] == "weak"
+    ]
+    assert min(strong) > max(weak), "strong cases must score above weak cases"
+
+
 def test_scoring_golden_set() -> None:
     cases = [
         json.loads(path.read_text())
@@ -32,12 +64,7 @@ def test_scoring_golden_set() -> None:
                 key: scores[key] for key in (*case["expected_bands"], "overall")
             },
         }
-        for key, band in {
-            **case["expected_bands"],
-            "overall": case["expected_overall_band"],
-        }.items():
-            if not band[0] <= scores[key] <= band[1]:
-                failures.append(f"{case['id']} {key}: {scores[key]} outside {band}")
+        failures.extend(_band_failures(case, scores))
     payload = {
         "scoring_version": SCORING_VERSION,
         "model": settings.CV_ANALYZER_LLM_MODEL,
@@ -47,21 +74,6 @@ def test_scoring_golden_set() -> None:
     (Path(__file__).parent / "last_run.json").write_text(
         json.dumps(payload, indent=2) + "\n"
     )
-    print("case                  impact clarity relevance completeness overall")
-    for case_id, result in results.items():
-        scores = result["scores"]
-        print(
-            f"{case_id:22} {scores['impact']:6} {scores['clarity']:7} {scores['relevance']:9} {scores['completeness']:12} {scores['overall']:7}"
-        )
-    strong = [
-        item["scores"]["overall"]
-        for item in results.values()
-        if item["group"] == "strong"
-    ]
-    weak = [
-        item["scores"]["overall"]
-        for item in results.values()
-        if item["group"] == "weak"
-    ]
-    assert min(strong) > max(weak), "strong cases must score above weak cases"
+    _print_results(results)
+    _assert_order(results)
     assert not failures, "\n".join(failures)
