@@ -48,4 +48,3 @@ async def verify_google_token(access_token: str) -> dict:
         raise HTTPException(
             status_code=401, detail="Google token verification failed."
         ) from e
-
