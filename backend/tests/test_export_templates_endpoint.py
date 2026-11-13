@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
+from app.services.storage import StorageError
 
 from app.api.dependencies import require_user
 from app.db.session import get_db
@@ -61,6 +62,55 @@ def test_templates_response_shape(client):
         "original",
         "traits",
     }
+
+
+def test_templates_with_missing_original_keep_original_entry(client):
+    test_client, job, _ = client
+    with patch(
+        "app.api.v1.endpoints.export_templates.storage_service.get_file",
+        side_effect=StorageError("missing"),
+    ):
+        response = test_client.get(f"/api/v1/export/templates?jobId={job.id}")
+    assert response.status_code == 200
+    original = next(
+        item for item in response.json()["data"] if item["id"] == "original"
+    )
+    assert original["atsScore"] is None
+
+
+def test_original_export_with_missing_file_returns_422(client):
+    test_client, job, _ = client
+    with patch(
+        "app.api.v1.endpoints.export_templates.storage_service.get_file",
+        side_effect=StorageError("missing"),
+    ):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export", json={"templateId": "original"}
+        )
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "ORIGINAL_FILE_UNAVAILABLE"
+
+
+def test_seeded_job_without_file_keeps_templates_and_rejects_original(client):
+    test_client, job, _ = client
+    job.file_id = ""
+    with patch(
+        "app.api.v1.endpoints.export_templates.storage_service.get_file",
+        side_effect=AssertionError("Storage must not be called"),
+    ):
+        templates = test_client.get(f"/api/v1/export/templates?jobId={job.id}")
+        original = test_client.post(
+            f"/api/v1/jobs/{job.id}/export", json={"templateId": "original"}
+        )
+    assert templates.status_code == 200
+    assert (
+        next(item for item in templates.json()["data"] if item["id"] == "original")[
+            "atsScore"
+        ]
+        is None
+    )
+    assert original.status_code == 422
+    assert original.json()["error"]["code"] == "ORIGINAL_FILE_UNAVAILABLE"
 
 
 def test_job_scoping_hides_other_owner(client):
