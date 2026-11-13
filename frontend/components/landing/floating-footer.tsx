@@ -34,7 +34,7 @@ export default function FloatingFooter() {
         {[...marqueeItems, ...marqueeItems].map((item, i) => (
           <span key={i} className="flex items-center whitespace-nowrap">
             {i > 0 && separator}
-            <span className="text-[13px] font-semibold text-[var(--brand-snow)] opacity-40">
+            <span className="text-[13px] font-semibold text-[var(--brand-snow)] opacity-55">
               {item}
             </span>
           </span>
