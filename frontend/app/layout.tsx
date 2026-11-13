@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "pathkr — AI-Powered Career Tools",
   description:
     "AI-powered CV analysis, skill gap detection, and job matching. Analyze your CV for free in seconds.",
+  icons: { icon: "/landing/logo/pathkr-icon.svg" },
 };
 
 export default function RootLayout({
