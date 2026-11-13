@@ -48,7 +48,7 @@ def cv_text(version: int, standalone: bool) -> str:
         if version == 1
         else "Built Python dashboards that reduced weekly reporting time by 20%."
     )
-    second = "Designed SQL reports for sales operations."
+    second = "Helped with SQL reports for sales operations."
     return (
         f"Mira Solana\nmira.solana@example.test\n{role}\n"
         "Summary\nEngineer focused on practical reporting tools.\n"
@@ -59,11 +59,7 @@ def cv_text(version: int, standalone: bool) -> str:
 
 
 def suggestions(version: int) -> list[dict]:
-    first = (
-        "Built Python dashboards for customer teams."
-        if version == 1
-        else "Built Python dashboards that reduced weekly reporting time by 20%."
-    )
+    first = "Led documentation updates for a small team."
     return [
         {
             "section": "experience",
@@ -71,23 +67,23 @@ def suggestions(version: int) -> list[dict]:
                 {
                     "priority": "high_impact",
                     "type": "impact_metric",
-                    "text": "Add the number of customer teams served.",
+                    "text": "Add the number of teammates supported.",
                     "original_text": first,
-                    "after_text": first[:-1] + " for [how many?] customer teams.",
+                    "after_text": "Led documentation updates for [how many?] teammates.",
                     "needs_input": [
-                        {"token": "[how many?]", "question": "How many customer teams?"}
+                        {"token": "[how many?]", "question": "How many teammates?"}
                     ],
                 },
                 {
                     "priority": "quick_win",
                     "type": "action_verb",
-                    "text": "Clarify the reporting audience and outcome.",
-                    "original_text": "Designed SQL reports for sales operations.",
-                    "after_text": "Designed SQL reports for [which team?] in sales operations.",
+                    "text": "Replace the vague verb with the work you did.",
+                    "original_text": "Helped with SQL reports for sales operations.",
+                    "after_text": "[What did you do?] with SQL reports for sales operations.",
                     "needs_input": [
                         {
-                            "token": "[which team?]",
-                            "question": "Which team used the reports?",
+                            "token": "[What did you do?]",
+                            "question": "What did you do with the SQL reports?",
                         }
                     ],
                 },

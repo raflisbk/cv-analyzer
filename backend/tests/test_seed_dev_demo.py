@@ -1,5 +1,6 @@
 import uuid
 
+import fitz
 import pytest
 
 from app.models.conversation import Conversation
@@ -7,6 +8,7 @@ from app.models.conversation_message import ConversationMessage
 from app.models.job import Job, JobStatus
 from app.models.user import User
 from app.services.llm.protocol import SuggestionsOutput
+from app.services.anchor_service import compute_suggestion_anchors
 from scripts.seed_demo.builders import WEIGHTS, build_jobs
 from scripts.seed_dev_demo import ensure_dev_environment, run, seed
 
@@ -94,5 +96,38 @@ def test_seeded_placeholder_suggestions_survive_result_validation():
     items = cards.suggestions[0].suggestions
     assert [item.needs_input[0].token for item in items] == [
         "[how many?]",
-        "[which team?]",
+        "[What did you do?]",
     ]
+
+
+def test_seeded_suggestions_anchor_to_matching_cv_lines(monkeypatch):
+    jobs = build_jobs(uuid.uuid4(), "demo@example.test")
+    for job in jobs:
+        text = job.result["text"]
+        document = fitz.open()
+        page = document.new_page()
+        for index, line in enumerate(text.splitlines()):
+            page.insert_text((40, 40 + index * 16), line)
+        pdf = document.tobytes()
+        document.close()
+        monkeypatch.setattr(
+            "app.services.anchor_service.storage_service.get_file",
+            lambda _, data=pdf: data,
+        )
+        anchors = compute_suggestion_anchors("seed-pdf", job.suggestions)
+        items = job.suggestions[0]["suggestions"]
+        assert len(anchors) == len(items)
+        rendered = fitz.open(stream=pdf, filetype="pdf")
+        for index, item in enumerate(items):
+            original = item["original_text"]
+            assert original in text
+            assert original in job.cv_document["sections"][1]["content"]
+            assert anchors[index]["text_anchor"] == original
+            rect = anchors[index]["rect"]
+            line_rect = rendered[0].search_for(original)[0]
+            assert abs(rect["x"] - line_rect.x0) < 1
+            assert abs(rect["y"] - line_rect.y0) < 1
+            assert rect["w"] > 0
+        rendered.close()
+        assert "20%" not in items[0]["original_text"]
+        assert items[1]["original_text"].startswith("Helped with")
