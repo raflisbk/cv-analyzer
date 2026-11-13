@@ -17,6 +17,7 @@ from app.services.llm.suggestion_prompts import (
     USER_PROMPT_TEMPLATE,
 )
 from app.services.llm.params import reasoning_params
+from app.services.llm.untrusted import UNTRUSTED_DATA_RULE, wrap_untrusted
 
 _COMPARISON_SYSTEM_PROMPT = (
     "You are an expert CV/resume evaluator. "
@@ -199,21 +200,19 @@ class KoboiLLMService:
     )
     def compare_cv(self, cv_text: str, jd_text: str) -> dict:
         user_prompt = (
-            f"Job Description:\n{jd_text[:2000]}\n\n"
-            f"=== CANDIDATE CV ===\n{cv_text[:4000]}\n\n"
+            f"{wrap_untrusted('job description', jd_text, 2000)}\n\n"
+            f"{wrap_untrusted('candidate cv', cv_text, 4000)}\n\n"
             "Compare the CV against the job description. "
             "Focus on technical skills, years of experience, and key qualifications. "
             "Return the JSON comparison."
         )
-
-        raw_json = self._chat(_COMPARISON_SYSTEM_PROMPT, user_prompt, temperature=0.7)
+        system_prompt = _COMPARISON_SYSTEM_PROMPT + UNTRUSTED_DATA_RULE
+        raw_json = self._chat(system_prompt, user_prompt, temperature=0.7)
         raw_json = _extract_json(raw_json)
         comparison_data = json.loads(raw_json)
-
-        prompt_tokens = _estimate_tokens(_COMPARISON_SYSTEM_PROMPT + user_prompt)
+        prompt_tokens = _estimate_tokens(system_prompt + user_prompt)
         completion_tokens = _estimate_tokens(raw_json)
         _log_tokens(self.model, prompt_tokens, completion_tokens)
-
         logger.info(
             "llm_comparison_generated",
             model=self.model,

@@ -20,10 +20,11 @@ import redis as redis_sync
 from app.core.logging import structured_logger as logger
 from app.services.scoring.text_normalizer import normalize_cv_text
 from app.services.llm.params import reasoning_params
+from app.services.llm.untrusted import UNTRUSTED_DATA_RULE, wrap_untrusted
 
 # Bump this when the prompt or weights change significantly.
 # Changing this string automatically invalidates all cached scores.
-SCORING_VERSION = "v5"
+SCORING_VERSION = "v6"
 
 _WEIGHTS = {
     "impact": 0.35,
@@ -497,7 +498,10 @@ def _single_llm_call(prompt: str, settings) -> dict | None:
                 },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
+                    "messages": [
+                        {"role": "system", "content": UNTRUSTED_DATA_RULE},
+                        {"role": "user", "content": prompt},
+                    ],
                     "max_tokens": 1200,
                     "temperature": 0.1,
                     **reasoning_params(),
@@ -534,18 +538,15 @@ def score_cv_with_llm(
     category = _role_category(target_role, archetype_domain)
     cv_slice = normalize_cv_text(cv_text)[:4000]
     jd_slice = (jd_text or "")[:200]
-
     jd_section = ""
     if jd_text:
-        jd_section = f"Job Description (use for relevance scoring):\n{jd_text[:2000]}\n"
-
+        jd_section = f"Job Description (use for relevance scoring):\n{wrap_untrusted('job description', jd_text, 2000)}\n"
     prompt = _PROMPT.format(
         role=role_label,
         cv_text=cv_slice,
         jd_section=jd_section,
         impact_guidance=_IMPACT_GUIDANCE[category],
     )
-
     n_runs = max(1, settings.CV_ANALYZER_SCORING_ENSEMBLE_RUNS)
 
     # Cache lookup — only for single-run (ensemble explicitly wants fresh calls)
@@ -554,7 +555,6 @@ def score_cv_with_llm(
         cached = _cache_get(cache_key, settings)
         if cached:
             return cached
-
     logger.info(
         "llm_scoring_request",
         role=role_label,

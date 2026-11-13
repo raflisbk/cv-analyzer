@@ -15,6 +15,7 @@ import httpx
 
 from app.core.logging import structured_logger as logger
 from app.services.llm.params import reasoning_params
+from app.services.llm.untrusted import UNTRUSTED_DATA_RULE, wrap_untrusted
 
 _PROMPT = """\
 Analyze this job description for red flags. Check these categories:
@@ -63,7 +64,7 @@ def analyze_jd_red_flags(jd_text: str) -> dict | None:
     if not settings.CV_ANALYZER_KOBOI_API_KEY:
         return None
 
-    prompt = _PROMPT.format(jd_text=jd_text[:3000])
+    prompt = _PROMPT.format(jd_text=wrap_untrusted("job description", jd_text, 3000))
 
     try:
         with httpx.Client(timeout=25.0) as client:
@@ -74,7 +75,10 @@ def analyze_jd_red_flags(jd_text: str) -> dict | None:
                 },
                 json={
                     "model": settings.CV_ANALYZER_LLM_MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
+                    "messages": [
+                        {"role": "system", "content": UNTRUSTED_DATA_RULE},
+                        {"role": "user", "content": prompt},
+                    ],
                     "max_tokens": 600,
                     "temperature": 0.1,
                     **reasoning_params(),
