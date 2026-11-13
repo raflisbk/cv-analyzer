@@ -85,22 +85,18 @@
 }
 .art {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 20px;
+  border-radius: 28px;
+  background: var(--brand-ink);
+  color: var(--brand-snow);
+  padding: clamp(20px, 3vw, 34px);
+  box-shadow: 12px 12px 0 var(--brand-red);
+}
+.sampleScore {
+  display: flex;
   align-items: center;
-}
-.art img {
-  width: 100%;
-  height: auto;
-}
-.art img:nth-child(1) {
-  rotate: -6deg;
-}
-.art img:nth-child(2) {
-  rotate: 6deg;
-}
-.art img:nth-child(3) {
-  rotate: -4deg;
+  gap: 16px;
+  font-weight: 700;
 }
 @media (max-width: 860px) {
   .layout {
