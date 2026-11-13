@@ -12,11 +12,11 @@ export function contentHtml(text: string, fixes: WorkspaceFix[]): string {
   if (!text.trim()) {
     return "<p></p>";
   }
-  let html = text
+  return text
     .split(/\n/)
     .filter(Boolean)
     .map((line, index) => {
-      const escaped = escapeHtml(line.trim());
+      const escaped = highlightLine(line.trim(), fixes);
       if (index === 0) {
         return `<h1>${escaped}</h1>`;
       }
@@ -30,14 +30,34 @@ export function contentHtml(text: string, fixes: WorkspaceFix[]): string {
       return `<p>${escaped}</p>`;
     })
     .join("");
-  for (const fix of fixes) {
-    if (!fix.before || !html.includes(escapeHtml(fix.before))) {
+}
+
+function highlightLine(line: string, fixes: WorkspaceFix[]): string {
+  const matches = fixes
+    .flatMap((fix) => {
+      const quote = fix.before.trim();
+      if (!quote) {
+        return [];
+      }
+      const pattern = quote
+        .split(/\s+/)
+        .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+        .join("\\s+");
+      const match = new RegExp(pattern, "i").exec(line);
+      return match
+        ? [{ start: match.index, end: match.index + match[0].length, fix }]
+        : [];
+    })
+    .sort((a, b) => a.start - b.start);
+  let html = "";
+  let offset = 0;
+  for (const { start, end, fix } of matches) {
+    if (start < offset) {
       continue;
     }
-    html = html.replace(
-      escapeHtml(fix.before),
-      `<span class="suggestion-highlight" data-fix-id="${escapeHtml(fix.id)}" data-label="${escapeHtml(fix.label)}">${escapeHtml(fix.before)}</span>`,
-    );
+    html += escapeHtml(line.slice(offset, start));
+    html += `<span class="suggestion-highlight" data-fix-id="${escapeHtml(fix.id)}" data-label="${escapeHtml(fix.label)}">${escapeHtml(line.slice(start, end))}</span>`;
+    offset = end;
   }
-  return html;
+  return html + escapeHtml(line.slice(offset));
 }
