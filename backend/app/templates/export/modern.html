@@ -1,0 +1,2 @@
+<style>@page{size:A4;margin:19mm}body{font-family:Arial,sans-serif;color:#263343;font-size:10.5pt;line-height:1.5}h1{font-size:23pt;color:#183b5d;margin:0 0 10pt}h2{font-size:12pt;color:#183b5d;border-bottom:2px solid #b8cbd8;margin:15pt 0 6pt}p{margin:4pt 0}</style>
+{% for section in sections %}<section>{% if loop.first %}<h1>{{ section.lines[0] if section.lines else '' }}</h1>{% else %}<h2>{{ section.title }}</h2>{% endif %}{% for line in (section.lines[1:] if loop.first else section.lines) %}{% if line %}<p>{{ line }}</p>{% endif %}{% endfor %}</section>{% endfor %}
