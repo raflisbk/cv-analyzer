@@ -113,6 +113,13 @@
   background: var(--app-punk);
   border-radius: 999px;
 }
+.parserTrack[data-empty="true"] {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(253, 253, 255, 0.25) 0 4px,
+    transparent 4px 8px
+  );
+}
 .tab:focus-visible {
   outline: 3px solid var(--app-punk);
   outline-offset: 2px;
