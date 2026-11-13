@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { getVersionDiff } from "@/lib/app-api/history";
-import type { VersionDiff } from "@/lib/app-api/history.types";
+import type { VersionDiffResult } from "@/lib/app-api/history.types";
 
 export function useAppWorkspaceHistory(jobId: string) {
-  const [diff, setDiff] = useState<VersionDiff | null>(null);
+  const [diff, setDiff] = useState<VersionDiffResult | null>(null);
   const [restoreId, setRestoreId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState("");
   async function compare(versionId: string) {

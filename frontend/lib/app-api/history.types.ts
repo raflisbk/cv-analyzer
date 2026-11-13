@@ -12,3 +12,5 @@ export interface VersionDiff {
   before: string;
   after: string;
 }
+
+export type VersionDiffResult = VersionDiff | VersionDiff[];
