@@ -4,7 +4,13 @@ import { useState } from "react";
 import type { ReportDimension } from "@/lib/app-api/report-detail.types";
 import styles from "./report.module.css";
 
-export function ReportRadar({ dimensions }: { dimensions: ReportDimension[] }) {
+export function ReportRadar({
+  dimensions,
+  hasPrevious = true,
+}: {
+  dimensions: ReportDimension[];
+  hasPrevious?: boolean;
+}) {
   const [showPrevious, setShowPrevious] = useState(true);
   const points = (values: number[]) =>
     values
@@ -29,7 +35,7 @@ export function ReportRadar({ dimensions }: { dimensions: ReportDimension[] }) {
             stroke="#e9c9c0"
           />
         ))}
-        {showPrevious && (
+        {hasPrevious && showPrevious && dimensions.length === 4 && (
           <polygon
             points={points(dimensions.map((item) => item.previous))}
             fill="none"
@@ -38,12 +44,14 @@ export function ReportRadar({ dimensions }: { dimensions: ReportDimension[] }) {
             strokeDasharray="6 5"
           />
         )}
-        <polygon
-          points={points(dimensions.map((item) => item.score))}
-          fill="rgba(244,41,2,.28)"
-          stroke="#f42902"
-          strokeWidth="3"
-        />
+        {hasPrevious && dimensions.length === 4 && (
+          <polygon
+            points={points(dimensions.map((item) => item.score))}
+            fill="rgba(244,41,2,.28)"
+            stroke="#f42902"
+            strokeWidth="3"
+          />
+        )}
         {dimensions.map((item, index) => (
           <text
             key={item.key}
@@ -63,13 +71,15 @@ export function ReportRadar({ dimensions }: { dimensions: ReportDimension[] }) {
           <i style={{ background: "#f42902" }} />
           Current
         </span>
-        <button
-          type="button"
-          aria-pressed={showPrevious}
-          onClick={() => setShowPrevious(!showPrevious)}
-        >
-          ◌ Previous version
-        </button>
+        {dimensions.length === 4 && (
+          <button
+            type="button"
+            aria-pressed={showPrevious}
+            onClick={() => setShowPrevious(!showPrevious)}
+          >
+            ◌ Previous version
+          </button>
+        )}
       </div>
     </>
   );

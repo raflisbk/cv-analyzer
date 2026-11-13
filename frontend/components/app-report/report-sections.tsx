@@ -15,6 +15,7 @@ export function ReportSections({
     >
       <ReportHeading title="Section by section" helpKey="sections" />
       <div className={styles.sectionRows}>
+        {!sections.length && <p>No section scores available yet.</p>}
         {sections.map((section) => (
           <div
             className={styles.sectionRow}

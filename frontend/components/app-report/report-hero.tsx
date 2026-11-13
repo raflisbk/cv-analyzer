@@ -80,11 +80,19 @@ export function ReportHero({
           </li>
         ))}
       </ol>
-      <span className={styles.chip}>
-        {USE_APP_MOCKS ? "Sample analysis · " : ""}
-        {formatDelta(data.score - data.previousScore)} since{" "}
-        {data.versions[0]?.label}
-      </span>
+      {reportDeltaChip(data)}
     </section>
+  );
+}
+
+function reportDeltaChip(data: ReportDetail) {
+  if (data.versions.length < 2) {
+    return null;
+  }
+  return (
+    <span className={styles.chip}>
+      {USE_APP_MOCKS ? "Sample analysis · " : ""}
+      {formatDelta(data.score - data.previousScore)} since previous version
+    </span>
   );
 }

@@ -20,6 +20,7 @@ export function ReportHistory({
       <ReportHeading title="Score history" helpKey="history" />
       <ReportHistoryChart versions={versions} projectedScore={projectedScore} />
       <div className={styles.historyCards}>
+        {!versions.length && <p>No earlier analyses available.</p>}
         {versions.map((version, index) => (
           <div key={version.label}>
             <strong>

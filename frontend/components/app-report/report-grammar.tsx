@@ -28,6 +28,7 @@ export function ReportGrammar({
         are optional.
       </p>
       <div className={styles.scrollArea}>
+        {!grammar.notes.length && <p>No language notes found.</p>}
         {grammar.notes.map((note) => (
           <div className={styles.note} key={note.before}>
             <s>{note.before}</s> → <b>{note.after}</b>

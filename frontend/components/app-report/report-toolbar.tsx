@@ -16,7 +16,9 @@ export function ReportToolbar({
       <div>
         <h1>Full report</h1>
         <p>
-          {data.fileName} · {data.role} · {data.version}{" "}
+          {[data.fileName, data.role, data.version]
+            .filter((part) => part?.trim())
+            .join(" · ")}{" "}
           {USE_APP_MOCKS && <span className={styles.chip}>Sample data</span>}
         </p>
       </div>

@@ -11,7 +11,10 @@ export function ReportFixesCard({
 }) {
   return (
     <section className={`${styles.card} ${styles.yellow} ${styles.span4}`}>
-      <ReportHeading title="If you apply the 3 fixes" helpKey="fixesCard" />
+      <ReportHeading
+        title={`If you apply ${data.fixes.length} fixes`}
+        helpKey="fixesCard"
+      />
       <div className={styles.bars}>
         {data.dimensions.slice(0, 3).map((dimension) => (
           <div key={dimension.key}>
@@ -30,6 +33,7 @@ export function ReportFixesCard({
         ))}
       </div>
       <div className={styles.fixList}>
+        {!data.fixes.length && <p>No suggested fixes available.</p>}
         {data.fixes.map((fix) => (
           <div key={fix.title}>
             <b>+{fix.points}</b>

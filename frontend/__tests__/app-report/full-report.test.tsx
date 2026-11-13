@@ -135,6 +135,34 @@ describe("FullReportView", () => {
     show();
     expect(await screen.findByText("No report yet")).toBeInTheDocument();
   });
+  it("renders real-data empty fields without invalid scores or blank subtitles", async () => {
+    vi.mocked(getReportDetail).mockResolvedValue({
+      ...reportDetailFixture,
+      role: "",
+      previousScore: 0,
+      versions: [reportDetailFixture.versions[0]],
+      sections: [],
+      bullets: [],
+      grammar: { spelling: 0, grammar: 0, style: 0, notes: [] },
+      keywords: {
+        present: [],
+        missing: [{ name: "Python", posts: 0 }],
+        total: 0,
+      },
+      ats: { score: 0, facts: [], checks: [] },
+    });
+    show();
+    await screen.findByText("Full report");
+    expect(document.body.textContent).not.toContain(" · · ");
+    expect(document.body.textContent).not.toContain("NaN");
+    expect(document.body.textContent).not.toContain("undefined");
+    expect(document.body.textContent).not.toContain("since previous version");
+    expect(
+      screen.getByText("No section scores available yet."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("No language notes found.")).toBeInTheDocument();
+    expect(document.body.textContent).not.toContain("0 of 10 posts");
+  });
   it("opens the existing export dialog", async () => {
     show();
     await screen.findByText("Full report");

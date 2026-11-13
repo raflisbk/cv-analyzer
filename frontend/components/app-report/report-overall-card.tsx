@@ -21,8 +21,10 @@ export function ReportOverallCard({ data }: { data: ReportDetail }) {
         helpKey="overall"
       />
       <ScoreRing score={shown} large />
-      <p>Clarity carries the score. Impact holds it back.</p>
-      <ReportPercentile topPercent={data.topPercent} />
+      <p>Your score reflects the four dimensions below.</p>
+      {data.role?.trim() && data.topPercent > 0 && (
+        <ReportPercentile topPercent={data.topPercent} />
+      )}
       <div className={styles.facts}>
         {data.facts.map((fact) => (
           <span key={fact}>{fact}</span>
@@ -32,13 +34,17 @@ export function ReportOverallCard({ data }: { data: ReportDetail }) {
         Scoring v5 · weighted across four dimensions.
       </p>
       <div className={styles.facts}>
-        <span>
-          {formatDelta(data.score - data.previousScore)} vs{" "}
-          {data.versions[0]?.label}
-        </span>
-        <span>
-          Top {data.topPercent}% of {data.role} CVs
-        </span>
+        {data.versions.length > 1 && (
+          <span>
+            {formatDelta(data.score - data.previousScore)} since previous
+            version
+          </span>
+        )}
+        {data.role?.trim() && data.topPercent > 0 && (
+          <span>
+            Top {data.topPercent}% of {data.role} CVs
+          </span>
+        )}
       </div>
     </section>
   );
