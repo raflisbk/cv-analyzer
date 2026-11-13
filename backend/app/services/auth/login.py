@@ -9,7 +9,9 @@ from app.services.auth.session_store import create_session, current_time
 
 
 async def upsert_google_user(db: AsyncSession, google_user: dict) -> User:
-    result = await db.execute(select(User).where(User.google_id == google_user["google_id"]))
+    result = await db.execute(
+        select(User).where(User.google_id == google_user["google_id"])
+    )
     user = result.scalar_one_or_none()
     if user is None:
         user = User(google_id=google_user["google_id"], email=google_user["email"])
@@ -21,12 +23,17 @@ async def upsert_google_user(db: AsyncSession, google_user: dict) -> User:
 
 
 async def login(
-    db: AsyncSession, google_user: dict, user_agent: str | None, ip: str | None,
+    db: AsyncSession,
+    google_user: dict,
+    user_agent: str | None,
+    ip: str | None,
     now: datetime | None = None,
 ) -> tuple[User, UserSession, str]:
     user = await upsert_google_user(db, google_user)
     if not user.is_active:
         raise ValueError("Inactive user")
-    session, refresh = await create_session(db, user.id, user_agent, ip, now or current_time())
+    session, refresh = await create_session(
+        db, user.id, user_agent, ip, now or current_time()
+    )
     await db.commit()
     return user, session, refresh

@@ -10,7 +10,12 @@ class UserSession(Base):
     __tablename__ = "user_sessions"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     family_id = Column(UUID(as_uuid=True), nullable=False, index=True)
     refresh_hash = Column(String(64), nullable=False, unique=True)
     created_at = Column(DateTime(timezone=True), nullable=False)

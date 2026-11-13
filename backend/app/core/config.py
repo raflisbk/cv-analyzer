@@ -53,9 +53,9 @@ class Settings(BaseSettings):
     CV_ANALYZER_GOOGLE_CLIENT_ID: str = ""
     CV_ANALYZER_JWT_SECRET: str = "change-me-in-production-min-32-chars"
     CV_ANALYZER_JWT_ALGORITHM: str = "HS256"
-    CV_ANALYZER_ACCESS_TOKEN_MINUTES: int = Field(default=30, gt=0)
-    CV_ANALYZER_REFRESH_IDLE_DAYS: int = Field(default=30, gt=0)
-    CV_ANALYZER_REFRESH_ABSOLUTE_DAYS: int = Field(default=90, gt=0)
+    CV_ANALYZER_ACCESS_TOKEN_MINUTES: int = Field(default=15, gt=0)
+    CV_ANALYZER_REFRESH_IDLE_DAYS: int = Field(default=7, gt=0)
+    CV_ANALYZER_REFRESH_ABSOLUTE_DAYS: int = Field(default=30, gt=0)
     CV_ANALYZER_COOKIE_SECURE: bool = Field(
         default=True,
         description="Use Secure cookies except on localhost or when CV_ANALYZER_ENV is development.",

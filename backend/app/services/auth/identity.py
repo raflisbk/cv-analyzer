@@ -26,7 +26,11 @@ async def authenticated_user(db: AsyncSession, request: Request) -> User | None:
         return None
     user_id, session_id = claims
     session = await db.get(UserSession, session_id)
-    if session is None or session.user_id != user_id or not active(session, current_time()):
+    if (
+        session is None
+        or session.user_id != user_id
+        or not active(session, current_time())
+    ):
         return None
     user = await db.get(User, user_id)
     return user if user is not None and user.is_active else None

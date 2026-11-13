@@ -1,6 +1,6 @@
 import hashlib
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from jose import jwt
@@ -8,7 +8,9 @@ from jose import jwt
 from app.core.config import get_settings
 
 
-def issue_access_token(user_id: UUID, email: str, session_id: UUID, now: datetime) -> str:
+def issue_access_token(
+    user_id: UUID, email: str, session_id: UUID, now: datetime
+) -> str:
     settings = get_settings()
     return jwt.encode(
         {
