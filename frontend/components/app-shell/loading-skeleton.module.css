@@ -1,0 +1,46 @@
+.skeleton {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+  width: 100%;
+}
+
+.skeleton span {
+  display: block;
+  height: 18px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #fff4ee, #ffd3c6, #fff4ee);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton span:first-child {
+  width: 42%;
+  height: 28px;
+}
+.skeleton span:nth-child(2) {
+  width: 88%;
+}
+.skeleton span:last-child {
+  width: 67%;
+}
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton span {
+    animation: none;
+  }
+}

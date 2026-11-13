@@ -9,6 +9,6 @@ it("asks for a job description before matching", async () => {
   await user.clear(screen.getByRole("textbox", { name: "Job description" }));
   await user.click(screen.getByRole("button", { name: "Match with my CV" }));
   expect(screen.getByRole("alert")).toHaveTextContent(
-    "Paste a job description first.",
+    "Paste a job description of at least 50 characters.",
   );
 });

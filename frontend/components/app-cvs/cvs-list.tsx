@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listCvs } from "@/lib/app-api/cvs";
 import ListHeader from "@/components/app-shell/list-header";
 import EmptyState from "@/components/app-shell/empty-state";
+import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import CvCard from "./cv-card";
 import shell from "@/components/app-shell/app-shell.module.css";
 import styles from "./cvs.module.css";
@@ -20,7 +21,7 @@ export default function CvsList() {
         Every file you uploaded. Open the report to read it, or the editor to
         change it.
       </p>
-      {isLoading && <p role="status">Loading CVs…</p>}
+      {isLoading && <LoadingSkeleton label="Loading CVs" />}
       {isError && (
         <p role="alert">
           Could not load your CVs.{" "}

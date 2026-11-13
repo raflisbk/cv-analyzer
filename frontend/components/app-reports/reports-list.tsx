@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listReports } from "@/lib/app-api/reports";
 import ListHeader from "@/components/app-shell/list-header";
 import EmptyState from "@/components/app-shell/empty-state";
+import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import ReportCard from "./report-card";
 import ReportInsights from "./report-insights";
 import ReportStats from "./report-stats";
@@ -18,7 +19,7 @@ export default function ReportsList() {
   return (
     <section className={`${shell.sheet} ${styles.list}`}>
       <ListHeader type="reports" />
-      {isLoading && <p role="status">Loading reports…</p>}
+      {isLoading && <LoadingSkeleton label="Loading reports" />}
       {isError && (
         <p role="alert">
           Could not load reports.{" "}

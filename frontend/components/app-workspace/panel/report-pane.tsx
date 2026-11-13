@@ -8,6 +8,7 @@ import styles from "../workspace-styles";
 interface Props {
   scores: ScoreResult | null | undefined;
   error?: boolean;
+  retry?: () => void;
   openFixes: () => void;
   fixCount: number;
   bonus: number;
@@ -16,12 +17,13 @@ interface Props {
 export function ReportPane({
   scores,
   error,
+  retry,
   openFixes,
   fixCount,
   bonus,
 }: Props) {
   if (!scores || error) {
-    return <ReportStatus error={error} />;
+    return <ReportStatus error={error} retry={retry} />;
   }
   return (
     <div className={styles.pane}>

@@ -10,6 +10,7 @@ export function PanelContent(props: WorkspacePanelProps) {
       <ReportPane
         scores={props.scores}
         error={props.reportError}
+        retry={props.retryReport}
         fixCount={props.fixes.length}
         bonus={props.bonus}
         openFixes={() => props.setTab("fixes")}
@@ -21,6 +22,8 @@ export function PanelContent(props: WorkspacePanelProps) {
       <FixesPane
         fixes={props.fixes}
         error={props.fixesError}
+        loading={props.fixesLoading}
+        retry={props.retryFixes}
         onApply={props.onApply}
       />
     );
@@ -30,6 +33,7 @@ export function PanelContent(props: WorkspacePanelProps) {
       <AtsPane
         data={props.ats}
         error={props.atsError}
+        retry={props.retryAts}
         onExport={props.onExport}
       />
     );

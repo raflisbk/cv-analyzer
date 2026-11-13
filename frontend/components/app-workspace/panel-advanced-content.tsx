@@ -19,6 +19,7 @@ export function PanelAdvancedContent(props: WorkspacePanelProps) {
       <GrammarPane
         data={props.grammar}
         error={props.grammarError}
+        retry={props.retryGrammar}
         resolved={props.resolvedGrammar}
         onResolve={props.onGrammar}
       />
@@ -30,6 +31,7 @@ export function PanelAdvancedContent(props: WorkspacePanelProps) {
         jobId={props.jobId}
         versions={props.versions}
         error={props.historyError}
+        retry={props.retryHistory}
       />
     );
   }

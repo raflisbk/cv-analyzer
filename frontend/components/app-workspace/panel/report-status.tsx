@@ -1,7 +1,20 @@
-export function ReportStatus({ error }: { error?: boolean }) {
+import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
+
+export function ReportStatus({
+  error,
+  retry,
+}: {
+  error?: boolean;
+  retry?: () => void;
+}) {
   return error ? (
-    <div role="alert">Report could not load. Try again later.</div>
+    <div role="alert">
+      Report could not load.{" "}
+      <button type="button" onClick={retry}>
+        Try again
+      </button>
+    </div>
   ) : (
-    <div role="status">Your report is still processing.</div>
+    <LoadingSkeleton label="Your report is still processing" />
   );
 }
