@@ -39,6 +39,8 @@ class MemorySession:
         entity = statement.column_descriptions[0]["entity"]
         if entity is User:
             return Result([obj for obj in self.objects if isinstance(obj, User)])
+        if entity is Job:
+            return Result([obj for obj in self.objects if isinstance(obj, Job)])
         return Result([obj.id for obj in self.objects if isinstance(obj, entity)])
 
     async def commit(self):
@@ -73,6 +75,20 @@ async def test_seed_is_idempotent():
         for kind in (User, Job, Conversation, ConversationMessage)
     ] == [1, 4, 2, 6]
     assert session.commits == 2
+
+
+@pytest.mark.asyncio
+async def test_seed_refreshes_demo_analysis_without_replacing_workspace_draft():
+    session = MemorySession()
+    jobs = await seed(session, "demo@example.test")
+    stored = next(obj for obj in session.objects if isinstance(obj, Job))
+    stored.suggestions = []
+    stored.result = {"text": "old text"}
+    stored.workspace_draft = {"sections": ["user edit"]}
+    await seed(session, "demo@example.test")
+    assert stored.suggestions == jobs[0].suggestions
+    assert stored.result == jobs[0].result
+    assert stored.workspace_draft == {"sections": ["user edit"]}
 
 
 def test_seeded_scores_follow_weights_and_versions():
