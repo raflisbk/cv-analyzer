@@ -1,4 +1,5 @@
 from io import BytesIO
+from dataclasses import asdict
 
 try:
     import fitz
@@ -40,6 +41,8 @@ class DocumentParser:
             msg = "PyMuPDF not installed. Install with: pip install PyMuPDF"
             raise ParsingError(msg)
 
+        from app.services.ats.hidden_text import detect_hidden_text
+
         metadata = {
             "extraction_method": None,
             "quality_score": 0.0,
@@ -50,6 +53,7 @@ class DocumentParser:
         try:
             doc = fitz.open(stream=content, filetype="pdf")
             metadata["page_count"] = len(doc)
+            metadata["hidden_text"] = asdict(detect_hidden_text(content))
 
             text = ""
             for page in doc:

@@ -38,6 +38,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                 return {"error": msg}
 
             text = job.result.get("text", "")
+            hidden_report = job.result.get("metadata", {}).get("hidden_text")
             jd_text = job.jd_text or None
             nlp_result = job.nlp_result or {}
             nlp_sections = nlp_result.get("sections") or None
@@ -154,6 +155,7 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                 check_ats_compatibility,
                 compute_ats_score,
             )
+            from app.services.ats.hidden_text_check import hidden_text_check
             from app.services.nlp.section_detector import CvSection
 
             sections_for_ats: list[CvSection] | None = None
@@ -167,6 +169,9 @@ def score_cv_task(self: Task, job_id: str) -> dict:
                     for i, sec in enumerate(nlp_sections)
                 ]
             ats_checks_now = check_ats_compatibility(text, sections=sections_for_ats)
+            hidden_check = hidden_text_check(hidden_report)
+            if hidden_check:
+                ats_checks_now.append(hidden_check)
             scores["ats_score"] = compute_ats_score(ats_checks_now)
             logger.info(
                 "ats_score_computed", job_id=job_id, ats_score=scores["ats_score"]

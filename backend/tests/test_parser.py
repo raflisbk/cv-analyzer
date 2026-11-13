@@ -16,3 +16,18 @@ def test_validate_extraction_quality_rejects_short_text():
 
     score, _ = validate_extraction_quality("Short")
     assert score < 0.3  # Low quality
+
+
+def test_pdf_metadata_carries_hidden_text_report(monkeypatch):
+    import fitz
+
+    from app.services import parser
+
+    doc = fitz.open()
+    page = doc.new_page()
+    page.insert_text((72, 72), "Visible CV experience " * 3)
+    page.insert_text((72, 100), "Hidden", color=(1, 1, 1))
+    monkeypatch.setattr(parser, "validate_extraction_quality", lambda text: (0.9, {}))
+    _, metadata = parse_document(doc.tobytes(), ".pdf")
+    doc.close()
+    assert metadata["hidden_text"] == {"count": 1, "snippets": ["Hidden"]}
