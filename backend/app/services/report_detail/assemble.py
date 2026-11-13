@@ -15,7 +15,7 @@ from app.services.versions_view.chain import versions
 def report_detail(job: Job, jobs_by_id: dict) -> ReportDetail:
     history = versions(job, jobs_by_id)
     previous = jobs_by_id.get(job.parent_job_id)
-    if previous and previous.id not in {item.id for item in history}:
+    if previous and str(previous.id) not in {item.id for item in history}:
         previous = None
     score = int((job.scores or {}).get("overall", 0))
     changes, gains = fixes(job)

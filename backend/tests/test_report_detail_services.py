@@ -98,7 +98,34 @@ def test_bullet_strength_rules(text, expected):
 def test_first_version_has_no_delta_and_same_previous_score():
     job = make_job()
     assert versions(job, {job.id: job})[0].delta is None
-    assert report_detail(job, {job.id: job}).previous_score == 70
+    report = report_detail(job, {job.id: job})
+    assert report.previous_score == 70
+    assert all(item.previous == item.score for item in report.dimensions)
+
+
+def test_report_uses_immediate_parent_scores():
+    first = make_job(score=52)
+    second = make_job(parent=first.id, score=68)
+    third = make_job(parent=second.id, score=81)
+    second.scores.update(impact=65, clarity=68, relevance=70, completeness=70)
+    third.scores.update(impact=78, clarity=82, relevance=84, completeness=82)
+    report = report_detail(third, {item.id: item for item in (first, second, third)})
+    assert report.previous_score == 68
+    assert {item.key: item.previous for item in report.dimensions} == {
+        "impact": 65,
+        "clarity": 68,
+        "relevance": 70,
+        "completeness": 70,
+    }
+
+
+def test_report_parent_without_scores_falls_back_to_current_scores():
+    first = make_job()
+    first.scores = None
+    second = make_job(parent=first.id, score=81)
+    report = report_detail(second, {first.id: first, second.id: second})
+    assert report.previous_score == 81
+    assert all(item.previous == item.score for item in report.dimensions)
 
 
 def test_versions_are_oldest_first_with_labels_and_requested_current():
