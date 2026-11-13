@@ -17,7 +17,9 @@ class AtsCompatibility(ViewModel):
 class AtsParsedField(ViewModel):
     field: str
     value: str
-    confidence: float
+    confidence: int = Field(
+        ge=0, le=100, description="Confidence percentage from 0 to 100"
+    )
 
 
 class AtsLine(ViewModel):

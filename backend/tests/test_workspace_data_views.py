@@ -29,7 +29,8 @@ def test_parsed_fields_use_real_entities_and_validated_contacts():
         for item in parsed_fields(nlp, "Ada Lovelace\nada@example.com\nLondon")
     }
     assert fields["Name"].value == "Ada Lovelace"
-    assert fields["Email"].confidence == 1.0
+    assert fields["Email"].confidence == 100
+    assert fields["Name"].confidence == 80
     assert fields["Phone"].value == ""
     assert fields["Phone"].confidence == 0
 

@@ -6,9 +6,10 @@ from app.services.contact_signals import has_phone_number
 EMAIL = re.compile(r"\b[\w.+-]+@[\w-]+\.[A-Za-z]{2,}\b")
 PHONE = re.compile(r"(?<![\w@/])\+?\(?\d[\d\s().-]{6,20}\d(?![\w@])")
 LINK = re.compile(r"\b(?:https?://|www\.)[^\s<>]+", re.IGNORECASE)
-ENTITY_CONFIDENCE = 0.8
-SECTION_CONFIDENCE = 0.7
-ROLE_CONFIDENCE = 0.7
+CONFIDENCE_ENTITY = 80
+CONFIDENCE_SECTION = 70
+CONFIDENCE_ROLE = 70
+CONFIDENCE_PATTERN_VALIDATED = 100
 
 
 def first_entity(entities: dict, key: str, text: str) -> str:
@@ -45,14 +46,14 @@ def parsed_fields(nlp_result: dict | None, text: str) -> list[AtsParsedField]:
     link = LINK.search(text)
     role = nlp.get("detected_role") or ""
     values = [
-        ("Name", first_entity(entities, "persons", text), ENTITY_CONFIDENCE),
-        ("Email", email.group() if email else "", 1.0),
-        ("Phone", phone, 1.0),
-        ("Location", first_entity(entities, "locations", text), ENTITY_CONFIDENCE),
-        ("Links", link.group() if link else "", 1.0),
-        ("Headline", section_value(sections, "summary"), SECTION_CONFIDENCE),
-        ("Latest role", role if role in text else "", ROLE_CONFIDENCE),
-        ("Education", section_value(sections, "education"), SECTION_CONFIDENCE),
+        ("Name", first_entity(entities, "persons", text), CONFIDENCE_ENTITY),
+        ("Email", email.group() if email else "", CONFIDENCE_PATTERN_VALIDATED),
+        ("Phone", phone, CONFIDENCE_PATTERN_VALIDATED),
+        ("Location", first_entity(entities, "locations", text), CONFIDENCE_ENTITY),
+        ("Links", link.group() if link else "", CONFIDENCE_PATTERN_VALIDATED),
+        ("Headline", section_value(sections, "summary"), CONFIDENCE_SECTION),
+        ("Latest role", role if role in text else "", CONFIDENCE_ROLE),
+        ("Education", section_value(sections, "education"), CONFIDENCE_SECTION),
     ]
     return [
         AtsParsedField(field=field, value=value, confidence=confidence if value else 0)

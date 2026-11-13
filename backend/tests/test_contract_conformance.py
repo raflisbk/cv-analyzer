@@ -111,3 +111,7 @@ def test_seed_payload_keys_match_frontend_interfaces():
     for path, keys in NESTED.items():
         name, nested = path.split(".", 1)
         assert set(at_path(payloads[name], nested)) == set(keys.split()), path
+    assert all(
+        isinstance(field["confidence"], int) and 0 <= field["confidence"] <= 100
+        for field in payloads["AtsData"]["parsed"]
+    )
