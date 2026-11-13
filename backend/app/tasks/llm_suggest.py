@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 
 import redis as redis_lib
 from celery import Task
+from json_repair import repair_json
 from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
@@ -12,7 +13,7 @@ from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
 from app.services.llm.koboi_llm_service import KoboiLLMService
-from app.services.llm.protocol import SuggestionsOutput  # noqa: TC001
+from app.services.llm.protocol import SuggestionsOutput
 from app.services.memory.indexer import index_analysis_summary, index_cv_sections
 from app.services.rag.embeddings import get_rag_embedding
 from app.services.rag.ingestor import ingest_cv_for_user
@@ -35,7 +36,7 @@ def _repair_llm_output(raw_json: str, cv_text: str) -> str:
     try:
         data = json.loads(raw_json)
     except json.JSONDecodeError:
-        return raw_json
+        return repair_json(raw_json)
 
     suggestions_list = data.get("suggestions", [])
 
@@ -118,36 +119,7 @@ def _build_cv_document(
             )
 
     if suggestions_json:
-        cv_document["suggestions"] = [
-            {
-                "section": (
-                    s.get("section", "unknown") if isinstance(s, dict) else s.section
-                ),
-                "suggestions": [
-                    {
-                        "priority": (
-                            sug.get("priority", "medium")
-                            if isinstance(sug, dict)
-                            else sug.priority
-                        ),
-                        "text": (
-                            sug.get("text", "") if isinstance(sug, dict) else sug.text
-                        ),
-                        "type": (
-                            sug.get("type", "action_verb")
-                            if isinstance(sug, dict)
-                            else sug.type
-                        ),
-                    }
-                    for sug in (
-                        s.get("suggestions", [])
-                        if isinstance(s, dict)
-                        else s.suggestions
-                    )
-                ],
-            }
-            for s in suggestions_json
-        ]
+        cv_document["suggestions"] = suggestions_json
 
     if scores:
         _s = scores if isinstance(scores, dict) else scores.__dict__
@@ -204,7 +176,13 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         cached = redis_client.get(cache_key)
         if cached:
             logger.info("llm_suggest_cache_hit", job_id=job_id)
-            cached_suggestions = json.loads(cached)
+            cached_suggestions = [
+                card.model_dump()
+                for card in SuggestionsOutput.model_validate(
+                    {"suggestions": json.loads(cached)},
+                    context={"cv_text": cv_text or ""},
+                ).suggestions
+            ]
             await _persist_results(
                 job_id, cached_suggestions, 0, file_id, nlp_result, scores
             )
@@ -260,7 +238,9 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
                 rag_context=rag_context,
             )
             repaired_json = _repair_llm_output(result["raw_json"], cv_text)
-            validated: SuggestionsOutput = _llm_service.validate_output(repaired_json)
+            validated = SuggestionsOutput.model_validate_json(
+                repaired_json, context={"cv_text": cv_text}
+            )
             suggestions_list = [card.model_dump() for card in validated.suggestions]
             total_tokens = result["prompt_tokens"] + result["completion_tokens"]
             redis_client.setex(cache_key, cache_ttl, json.dumps(suggestions_list))

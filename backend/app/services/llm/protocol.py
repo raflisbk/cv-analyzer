@@ -1,9 +1,15 @@
 import re
 from typing import Literal, Protocol, Self
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, ValidationInfo, field_validator, model_validator
 
-_BRACKET_PLACEHOLDER = re.compile(r"\[[^\]\n]{1,80}\]")
+from app.services.llm.fact_guard import (
+    PLACEHOLDER,
+    NeedsInput,
+    allowed_input,
+    input_question,
+    numbers_in,
+)
 
 
 class SuggestionItemOutput(BaseModel):
@@ -14,15 +20,29 @@ class SuggestionItemOutput(BaseModel):
     type: Literal["action_verb", "impact_metric", "missing_section"] = "action_verb"
     original_text: str | None = None
     after_text: str | None = None
+    needs_input: list[NeedsInput] = []
 
     @model_validator(mode="after")
-    def drop_invented_placeholders(self) -> Self:
+    def drop_invented_placeholders(self, info: ValidationInfo) -> Self:
         if not self.after_text:
+            self.needs_input = []
             return self
         original = self.original_text or ""
-        placeholders = _BRACKET_PLACEHOLDER.findall(self.after_text)
-        if any(placeholder not in original for placeholder in placeholders):
+        placeholders = PLACEHOLDER.findall(self.after_text)
+        if any(p not in original and not allowed_input(p) for p in placeholders):
             self.after_text = None
+            self.needs_input = []
+            return self
+        self.needs_input = [
+            NeedsInput(token=p, question=input_question(p))
+            for p in dict.fromkeys(placeholders)
+            if p not in original and allowed_input(p)
+        ]
+        without_placeholders = PLACEHOLDER.sub("", self.after_text)
+        source = (info.context or {}).get("cv_text", "") + " " + original
+        if not numbers_in(without_placeholders) <= numbers_in(source):
+            self.after_text = None
+            self.needs_input = []
         return self
 
     @field_validator("priority", mode="before")
