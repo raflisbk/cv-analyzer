@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getExportPreview, getExportTemplates } from "@/lib/app-api/export";
+import { getJobFileUrl } from "@/lib/app-api/workspace";
+import { USE_APP_MOCKS } from "@/lib/app-api/mode";
 import { useAppExportDownload } from "./use-app-export-download";
 
 export function useAppExport(
@@ -22,6 +24,12 @@ export function useAppExport(
   const selected =
     templates.data?.find((template) => template.id === selectedId) ??
     templates.data?.[0];
+  const originalFile = useQuery({
+    queryKey: ["app-file", jobId],
+    queryFn: () => getJobFileUrl(jobId),
+    enabled: !USE_APP_MOCKS && Boolean(selected?.original),
+    retry: false,
+  });
   const { downloading, error, resultMessage, download } = useAppExportDownload({
     jobId,
     selected,
@@ -34,6 +42,7 @@ export function useAppExport(
     preview,
     selected,
     selectedId,
+    originalFile,
     setSelectedId,
     downloading,
     error,

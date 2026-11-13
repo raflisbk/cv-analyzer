@@ -23,16 +23,27 @@ export default function ExportDialogReady({
         selectedId={state.selectedId}
         onSelect={state.setSelectedId}
       />
-      <ExportPreview template={state.selected} data={state.preview.data} />
-      <ExportOptions
-        template={state.selected}
-        fileName={state.preview.data.fileName}
-        downloading={state.downloading}
-        error={state.error}
-        resultMessage={state.resultMessage}
-        onDownload={state.download}
-        onCancel={onClose}
-      />
+      {state.selected.original && state.originalFile.isLoading ? (
+        <p role="status">Checking original file…</p>
+      ) : state.selected.original && state.originalFile.isError ? (
+        <p role="alert">
+          Original layout is unavailable because the uploaded file is missing.
+          Choose another template to export.
+        </p>
+      ) : (
+        <>
+          <ExportPreview template={state.selected} data={state.preview.data} />
+          <ExportOptions
+            template={state.selected}
+            fileName={state.preview.data.fileName}
+            downloading={state.downloading}
+            error={state.error}
+            resultMessage={state.resultMessage}
+            onDownload={state.download}
+            onCancel={onClose}
+          />
+        </>
+      )}
     </div>
   );
 }
