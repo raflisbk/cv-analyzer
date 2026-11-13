@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useJobStream } from "@/hooks/use-job-stream";
 import { useJobResults } from "@/hooks/use-job-results";
 import { usePathy } from "@/components/pathy/pathy-context";
+import { useAppShellScoreCount } from "./use-app-shell-score-count";
 
 const stages: Record<string, number> = {
   extracting: 0,
@@ -21,7 +22,6 @@ export function useAppShellAnalysisProgress(
   onComplete?: () => void,
 ) {
   const [complete, setComplete] = useState(false);
-  const [count, setCount] = useState(0);
   const { progress, error } = useJobStream(jobId, {
     onComplete: () => {
       setComplete(true);
@@ -31,6 +31,7 @@ export function useAppShellAnalysisProgress(
   const result = useJobResults(complete ? jobId : null);
   const pathy = usePathy();
   const score = result.data?.scores?.overall ?? 0;
+  const count = useAppShellScoreCount(complete, score);
   useEffect(() => {
     pathy.react("running", "Reading your CV now.");
   }, [jobId, pathy]);
@@ -39,20 +40,6 @@ export function useAppShellAnalysisProgress(
       pathy.react("trophy", "Your score is ready!");
     }
   }, [complete, pathy]);
-  useEffect(() => {
-    if (!complete || !score) {
-      return;
-    }
-    let current = 0;
-    const timer = setInterval(() => {
-      current = Math.min(score, current + Math.ceil(score / 20));
-      setCount(current);
-      if (current >= score) {
-        clearInterval(timer);
-      }
-    }, 30);
-    return () => clearInterval(timer);
-  }, [complete, score]);
   return {
     active: stages[progress?.stage ?? "extracting"] ?? 0,
     message: progress?.message,
