@@ -14,25 +14,10 @@
   color: var(--brand-red-deep);
   margin: 18px 0 0;
 }
-.gauge {
-  display: block;
-  width: 130px;
-  height: 130px;
-  object-fit: contain;
-  rotate: -6deg;
-  margin-top: 36px;
-}
 .visual {
   display: grid;
   min-width: 0;
   padding: 15px 14px 14px 0;
-}
-.star {
-  justify-self: end;
-  width: 76px;
-  height: 76px;
-  object-fit: contain;
-  margin-bottom: 12px;
 }
 .card {
   background: var(--brand-ink);
@@ -143,10 +128,6 @@
   }
   .visual {
     padding-right: 10px;
-  }
-  .star {
-    width: 60px;
-    height: 60px;
   }
   .bar {
     grid-template-columns: 96px 1fr 26px;

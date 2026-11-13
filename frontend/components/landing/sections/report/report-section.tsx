@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { reportMotion } from "@/components/landing/motion/report";
@@ -26,26 +25,8 @@ export default function ReportSection() {
           Try it on my CV <PlaneIcon size={52} />
         </Link>
         <span className={`${base.hand} ${styles.note}`}>no mystery scores</span>
-        <Image
-          width={360}
-          height={360}
-          data-report-object
-          className={styles.gauge}
-          src="/landing/3d/gauge.webp"
-          alt=""
-          aria-hidden="true"
-        />
       </div>
       <div className={styles.visual}>
-        <Image
-          width={360}
-          height={360}
-          data-report-object
-          className={styles.star}
-          src="/landing/3d/star.webp"
-          alt=""
-          aria-hidden="true"
-        />
         <ScoreCard />
       </div>
     </section>
