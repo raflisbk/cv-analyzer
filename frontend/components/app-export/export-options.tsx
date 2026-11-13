@@ -1,6 +1,8 @@
 import type { ExportTemplate } from "@/lib/app-api/export.types";
 import { exportFilename } from "@/lib/app-export/download";
 import styles from "./export-options.module.css";
+import ExportOptionDetails from "./export-option-details";
+import ExportOptionActions from "./export-option-actions";
 
 interface Props {
   template: ExportTemplate;
@@ -27,58 +29,16 @@ export default function ExportOptions({
       : "PDF";
   return (
     <aside className={styles.side}>
-      <div className={styles.scoreCard}>
-        <span className={styles.score}>{template.atsScore ?? "—"}</span>
-        <div>
-          <strong>{template.name}</strong>
-          <small>{template.description}</small>
-        </div>
-      </div>
-      <ul className={styles.traits}>
-        {template.traits.map((trait) => (
-          <li key={trait}>
-            <span aria-hidden="true">✓</span>
-            {trait}
-          </li>
-        ))}
-      </ul>
-      {template.original && (
-        <p className={styles.note}>
-          Your uploaded layout is preserved in the final export. Only applied
-          fixes change.
-        </p>
-      )}
-      <div className={styles.format}>
-        <span>Format</span>
-        <strong>{format}</strong>
-        <small>
-          {format === "PDF" ? "A4 · selectable text" : "Editable document"}
-        </small>
-      </div>
-      <div className={styles.actions}>
-        <small>{exportFilename(fileName, template.id)}</small>
-        {error && (
-          <p role="alert" className={styles.error}>
-            {error}
-          </p>
-        )}
-        {resultMessage && <p role="status">{resultMessage}</p>}
-        <button
-          type="button"
-          className={styles.download}
-          disabled={downloading}
-          onClick={(event) => onDownload(event.currentTarget)}
-        >
-          {downloading
-            ? `Preparing ${format}…`
-            : error
-              ? "Retry download"
-              : `Download ${format}`}
-        </button>
-        <button type="button" className={styles.cancel} onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+      <ExportOptionDetails template={template} format={format} />
+      <ExportOptionActions
+        fileName={exportFilename(fileName, template.id)}
+        format={format}
+        downloading={downloading}
+        error={error}
+        resultMessage={resultMessage}
+        onDownload={onDownload}
+        onCancel={onCancel}
+      />
     </aside>
   );
 }
