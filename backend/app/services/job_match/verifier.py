@@ -5,6 +5,29 @@ from app.schemas.job_match import ExtractedRequirement, MatchRequirement
 MISSING_EVIDENCE = "Not found in your CV"
 MAX_EVIDENCE_CHARS = 120
 WINDOW_WORDS = 8
+STOP_WORDS = {"and", "are", "for", "from", "has", "the", "this", "was", "with"}
+
+
+def _meaningful_tokens(text: str) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", text.lower())
+        if len(token) >= 3 and token not in STOP_WORDS
+    }
+
+
+def _relevant(quote: str, label: str) -> bool:
+    if len(quote.split()) >= 3:
+        return True
+    return any(
+        left == right
+        or (
+            min(len(left), len(right)) >= 5
+            and (left.startswith(right) or right.startswith(left))
+        )
+        for left in _meaningful_tokens(quote)
+        for right in _meaningful_tokens(label)
+    )
 
 
 def _find_quote(quote: str, cv_text: str) -> str | None:
@@ -29,7 +52,11 @@ def verify_requirement(
     requirement: ExtractedRequirement, cv_text: str
 ) -> MatchRequirement:
     evidence = _find_quote(requirement.evidence_quote, cv_text)
-    status = requirement.status if evidence else "missing"
+    status = (
+        requirement.status
+        if evidence and _relevant(evidence, requirement.label)
+        else "missing"
+    )
     return MatchRequirement(
         label=requirement.label,
         weight=requirement.weight,
