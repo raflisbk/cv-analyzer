@@ -6,6 +6,7 @@ import Image from "next/image";
 import { HERO_OBJECTS, HERO_STICKERS } from "@/lib/landing-hero-layout";
 import styles from "./hero-objects.module.css";
 import MarginNote from "../pen/margin-note";
+import PenHighlight from "../pen/pen-highlight";
 
 export default function HeroObjects() {
   const { t } = useT();
@@ -17,7 +18,7 @@ export default function HeroObjects() {
         className={styles.sheet}
         data-hero-object
         id="hero-cv-sheet"
-        aria-describedby="hero-cv-sheet-note"
+        aria-describedby="hero-cv-bullet-note"
         role="img"
         aria-label={t("landing.hero.sheet")}
       >
@@ -27,9 +28,12 @@ export default function HeroObjects() {
           fill
           sizes="(max-width: 768px) 220px, 400px"
         />
+        <span className={styles.bullet} id="hero-cv-bullet" aria-hidden="true">
+          <PenHighlight play={false} />
+        </span>
       </div>
       <div className={styles.note}>
-        <MarginNote targetId="hero-cv-sheet" variant={2} delay={0.7}>
+        <MarginNote targetId="hero-cv-bullet" variant={2} delay={0.7}>
           {t("landing.hero.note")}
         </MarginNote>
       </div>
