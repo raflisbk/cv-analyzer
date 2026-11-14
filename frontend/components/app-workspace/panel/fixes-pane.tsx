@@ -9,6 +9,7 @@ interface Props {
   error?: boolean;
   loading?: boolean;
   retry?: () => void;
+  onShow?: (id: string, section: string) => void;
   onApply: (
     fix: WorkspaceFix,
     text: string,
@@ -17,7 +18,14 @@ interface Props {
   ) => boolean;
 }
 
-export function FixesPane({ fixes, error, loading, retry, onApply }: Props) {
+export function FixesPane({
+  fixes,
+  error,
+  loading,
+  retry,
+  onApply,
+  onShow,
+}: Props) {
   if (error) {
     return (
       <div role="alert">
@@ -37,7 +45,7 @@ export function FixesPane({ fixes, error, loading, retry, onApply }: Props) {
         <span className={styles.eyebrow}>Suggested fixes</span>
         <HelpButton helpKey="paneFixes" />
       </div>
-      <FixCardList fixes={fixes} onApply={onApply} />
+      <FixCardList fixes={fixes} onApply={onApply} onShow={onShow} />
     </div>
   );
 }

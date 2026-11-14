@@ -39,7 +39,7 @@ export function flattenFixes(
         points: item.priority === "high_impact" ? 3 : 1,
         needsInput: item.needsInput ?? [],
       }))
-      .filter((item) => Boolean(item.after)),
+      .filter((item) => Boolean(item.after || item.before || item.explanation)),
   );
 }
 
