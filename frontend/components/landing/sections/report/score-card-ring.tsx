@@ -1,6 +1,11 @@
 import styles from "./report.module.css";
+import { afterScore } from "@/lib/landing-score-demo";
 
-export default function ScoreCardRing() {
+export default function ScoreCardRing({
+  score = afterScore,
+}: {
+  score?: number;
+}) {
   return (
     <div
       className={styles.ring}
@@ -25,10 +30,12 @@ export default function ScoreCardRing() {
           stroke="var(--brand-punk)"
           strokeWidth="14"
           strokeLinecap="round"
-          strokeDasharray="292 340"
+          strokeDasharray={`${score * 3.4} 340`}
         />
       </svg>
-      <b>86</b>
+      <b data-score-number aria-live="polite" aria-atomic="true">
+        {score}
+      </b>
     </div>
   );
 }

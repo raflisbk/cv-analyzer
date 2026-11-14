@@ -27,7 +27,6 @@
   display: grid;
   gap: 22px;
   box-shadow: 14px 14px 0 var(--brand-red);
-  rotate: 1.5deg;
 }
 .top {
   display: flex;
@@ -123,6 +122,43 @@
 .chip {
   background: var(--brand-punk);
   color: var(--brand-ink);
+  border: 0;
+  cursor: pointer;
+}
+.chip:disabled {
+  cursor: default;
+}
+.chip:focus-visible,
+.undo:focus-visible {
+  outline: 3px solid var(--brand-punk);
+  outline-offset: 3px;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.undo {
+  color: var(--brand-snow);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.hidden {
+  visibility: hidden;
+}
+.visible {
+  visibility: visible;
+}
+.before [data-score-strike] path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .before [data-score-strike] path {
+    stroke-dashoffset: 0;
+  }
 }
 @media (max-width: 860px) {
   .layout {
