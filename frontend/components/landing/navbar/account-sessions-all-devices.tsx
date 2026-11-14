@@ -1,10 +1,12 @@
 import { ShieldOff } from "lucide-react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { useAccountMenu } from "@/hooks/use-account-menu";
 import styles from "./account-menu.module.css";
 
 type Menu = ReturnType<typeof useAccountMenu>;
 
 export default function AccountSessionsAllDevices({ menu }: { menu: Menu }) {
+  const { t } = useT();
   if (menu.confirmAll) {
     return (
       <div
@@ -18,16 +20,16 @@ export default function AccountSessionsAllDevices({ menu }: { menu: Menu }) {
           pointerEvents: "auto",
         }}
       >
-        <span>Sign out everywhere?</span>
+        <span>{t("account.confirmAll")}</span>
         <button
           type="button"
           onClick={menu.logoutAll}
-          aria-label="Confirm log out of all devices"
+          aria-label={t("account.confirmAllLabel")}
         >
-          Yes
+          {t("account.confirm")}
         </button>
         <button type="button" onClick={() => menu.setConfirmAll(false)}>
-          Cancel
+          {t("account.cancel")}
         </button>
       </div>
     );
@@ -47,7 +49,7 @@ export default function AccountSessionsAllDevices({ menu }: { menu: Menu }) {
       }}
       onClick={() => menu.setConfirmAll(true)}
     >
-      <ShieldOff size={22} aria-hidden="true" /> Log out of all devices
+      <ShieldOff size={22} aria-hidden="true" /> {t("account.logoutAll")}
     </button>
   );
 }

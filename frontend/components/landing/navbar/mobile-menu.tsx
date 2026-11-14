@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
+import LanguageSwitch from "./language-switch";
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -20,6 +22,7 @@ import styles from "./navbar.module.css";
 import mobileStyles from "./mobile-menu.module.css";
 
 export default function MobileMenu() {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const { user, setUser } = useAuthStore();
   const isHydrated = useAuthStore((state) => state.isHydrated);
@@ -40,14 +43,14 @@ export default function MobileMenu() {
       <SheetTrigger asChild>
         <button
           className={styles.menuButton}
-          aria-label="Open navigation menu"
+          aria-label={t("nav.openMenu")}
           aria-expanded={open}
         >
           <Menu aria-hidden="true" />
         </button>
       </SheetTrigger>
       <SheetContent side="right" className={mobileStyles.sheet}>
-        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+        <SheetTitle className="sr-only">{t("nav.menu")}</SheetTitle>
         <div className={mobileStyles.sheetTop}>
           <Image
             src="/landing/logo/pathkr-lockup-on-light.svg"
@@ -57,12 +60,15 @@ export default function MobileMenu() {
           />
           <SheetClose asChild>
             <button
-              aria-label="Close menu"
+              aria-label={t("nav.closeMenu")}
               className={mobileStyles.closeButton}
             >
               <X aria-hidden="true" />
             </button>
           </SheetClose>
+        </div>
+        <div className="px-5 pt-4">
+          <LanguageSwitch />
         </div>
         <MobileNavigation
           onNavigate={(event, sectionId, anchor) => {

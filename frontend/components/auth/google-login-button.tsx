@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ export function GoogleLoginButton({
   className,
   variant = "default",
 }: GoogleLoginButtonProps) {
+  const { t } = useT();
   const setUser = useAuthStore((s) => s.setUser);
   const [isLoading, setIsLoading] = useState(false);
   const landing = variant === "landing";
@@ -32,8 +34,8 @@ export function GoogleLoginButton({
         setUser(user);
         onSuccess?.();
       } catch {
-        toast.error("Sign in failed", {
-          description: "Could not sign in with Google. Please try again.",
+        toast.error(t("auth.failed"), {
+          description: t("auth.failedDescription"),
         });
       } finally {
         setIsLoading(false);
@@ -81,7 +83,7 @@ export function GoogleLoginButton({
           <GoogleIcon />
         )}
       </span>
-      <span>{isLoading ? "Signing in..." : "Sign in with Google"}</span>
+      <span>{isLoading ? t("auth.loading") : t("auth.button")}</span>
     </button>
   );
 }

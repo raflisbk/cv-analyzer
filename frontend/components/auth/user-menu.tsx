@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { logoutApi } from "@/lib/auth";
@@ -12,6 +13,7 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ onLoginSuccess }: UserMenuProps) {
+  const { t } = useT();
   const { user, setUser } = useAuthStore();
   const router = useRouter();
 
@@ -72,7 +74,7 @@ export function UserMenu({ onLoginSuccess }: UserMenuProps) {
           border border-transparent text-[#141414]/[0.45]
           hover:bg-[#141414]/[0.06] hover:border-[#141414]/10 hover:text-[#141414]/[0.75]"
       >
-        Logout
+        {t("account.logout")}
       </button>
     </div>
   );
