@@ -4,11 +4,9 @@ import HeroSection from "@/components/landing/hero/hero-section";
 import IntroLoader from "@/components/landing/intro/intro-loader";
 import ProductsSection from "@/components/landing/sections/products/products-section";
 import ReportSection from "@/components/landing/sections/report/report-section";
-import StickersSection from "@/components/landing/sections/stickers/stickers-section";
 import LaptopSection from "@/components/landing/sections/laptop/laptop-section";
 import ProcessSection from "@/components/landing/sections/process/process-section";
 import FeaturesSection from "@/components/landing/sections/features/features-section";
-import StatsSection from "@/components/landing/sections/stats/stats-section";
 import FaqSection from "@/components/landing/sections/faq/faq-section";
 import CtaSection from "@/components/landing/sections/cta/cta-section";
 import FooterSection from "@/components/landing/sections/footer/footer-section";
@@ -31,11 +29,9 @@ export default function Home() {
         <HeroSection />
         <ProductsSection />
         <ReportSection />
-        <StickersSection />
         <LaptopSection />
         <ProcessSection />
         <FeaturesSection />
-        <StatsSection />
         <FaqSection />
         <CtaSection />
       </main>

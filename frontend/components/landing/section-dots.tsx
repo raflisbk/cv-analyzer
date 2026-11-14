@@ -16,11 +16,9 @@ const SECTIONS = [
   { id: "hero", label: "Start" },
   { id: "products", label: "Products" },
   { id: "report", label: "Score report" },
-  { id: "stickers", label: "Benefits" },
   { id: "features", label: "Open your CV" },
   { id: "how", label: "How it works" },
   { id: "inside", label: "Features" },
-  { id: "stats", label: "Stats" },
   { id: "faq", label: "FAQ" },
   { id: "start", label: "Get started" },
 ];
