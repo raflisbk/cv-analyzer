@@ -73,7 +73,6 @@
   background: var(--brand-red);
   margin-left: 3px;
   vertical-align: middle;
-  animation: blink 1s steps(1) infinite;
 }
 .skeleton {
   display: grid;
@@ -107,14 +106,4 @@
 .roles b {
   white-space: nowrap;
   color: var(--brand-punk);
-}
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .caret {
-    animation: none;
-  }
 }

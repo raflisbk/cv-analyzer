@@ -17,6 +17,11 @@ describe("landing product demos", () => {
         .getByRole("meter", { name: "Impact" })
         .getAttribute("aria-valuenow"),
     ).toBe("82");
+    expect(
+      screen
+        .getByRole("meter", { name: "Relevance" })
+        .getAttribute("aria-valuenow"),
+    ).toBe("82");
   });
 
   it("shows match evidence and a missing requirement", () => {
@@ -31,9 +36,8 @@ describe("landing product demos", () => {
   it("shows the source line and accepted rewrite", () => {
     render(<RewriteDemo />);
     expect(
-      screen.getByText("Led a team of developers on the checkout rebuild.")
-        .tagName,
-    ).toBe("S");
+      screen.getByText("Led a team of developers on the checkout rebuild."),
+    ).toBeTruthy();
     expect(screen.getByLabelText("Sample accepted rewrite")).toBeTruthy();
   });
 

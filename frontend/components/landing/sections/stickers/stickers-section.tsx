@@ -1,6 +1,7 @@
 "use client";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { stickersMotion } from "@/components/landing/motion/stickers";
+import { useDemoOnce } from "@/components/landing/motion/demo-once";
 import ScoreBarsDemo from "@/components/landing/product-demos/score-bars-demo";
 import MatchDemo from "@/components/landing/product-demos/match-demo";
 import RewriteDemo from "@/components/landing/product-demos/rewrite-demo";
@@ -10,6 +11,7 @@ import styles from "./stickers.module.css";
 
 export default function StickersSection() {
   const ref = useLandingStory(stickersMotion);
+  useDemoOnce(ref);
   return (
     <section
       ref={ref}
