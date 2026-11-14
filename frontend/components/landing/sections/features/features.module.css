@@ -12,19 +12,12 @@
   padding: 26px;
   min-height: 240px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(110px, 10vw, 140px);
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 1.1fr);
   grid-template-areas: "h i" "p i";
   column-gap: 14px;
   row-gap: 10px;
   align-content: start;
-  transition:
-    translate 0.2s,
-    box-shadow 0.2s;
-}
-.card:hover {
-  translate: 0 -12px;
-  box-shadow: 0 28px 34px -18px rgba(60, 6, 0, 0.55);
-  z-index: 3;
+  box-shadow: 0 8px 22px rgba(26, 11, 7, 0.08);
 }
 .card h3 {
   grid-area: h;
@@ -35,23 +28,13 @@
   align-self: start;
   margin: 0;
 }
-.card img {
-  grid-area: i;
-  align-self: end;
-  width: 100%;
-  height: auto;
-  transition: scale 0.2s;
-}
-.card:hover img {
-  scale: 1.08;
-}
 .card0,
 .card1 {
   grid-column: span 3;
 }
 .card0 {
-  background: var(--brand-red);
-  color: var(--brand-snow);
+  background: var(--brand-blush);
+  color: var(--brand-ink);
 }
 .card0 p {
   font-weight: 700;
@@ -59,10 +42,12 @@
 .card1 {
   background: var(--brand-snow);
   color: var(--brand-ink);
+  border: 1px solid var(--brand-blush);
 }
 @media (max-width: 1100px) {
   .card {
-    grid-template-columns: 1fr 110px;
+    grid-template-columns: 1fr;
+    grid-template-areas: "h" "p" "i";
   }
   .card h3 {
     font-size: 32px;
@@ -79,7 +64,6 @@
 }
 @media (max-width: 480px) {
   .card {
-    grid-template-columns: 1fr 100px;
     padding: 20px;
   }
   .card h3 {
