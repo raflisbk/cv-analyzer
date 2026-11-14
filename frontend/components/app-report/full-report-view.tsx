@@ -42,11 +42,7 @@ export default function FullReportView({ jobId }: { jobId: string }) {
       />
       <ReportNav />
       <div className={styles.grid}>
-        <ReportHero
-          data={data}
-          fixHref={fixHref}
-          onExport={() => setExportOpen(true)}
-        />
+        <ReportHero data={data} jobId={jobId} />
         <ReportOverallCard data={data} />
         <ReportRadarCard data={data} />
         <ReportFixesCard data={data} fixHref={fixHref} />

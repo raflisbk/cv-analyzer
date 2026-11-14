@@ -1,6 +1,7 @@
 import type { useAppWorkspaceData } from "@/hooks/use-app-workspace-data";
 import type { useAppWorkspaceEdits } from "@/hooks/use-app-workspace-edits";
 import type { useDraftSave } from "@/hooks/use-draft-save";
+import { useAppWorkspaceFixFocus } from "@/hooks/use-app-workspace-fix-focus";
 import { WorkspaceEditor } from "./workspace-editor";
 
 export function WorkspaceEditorContainer({
@@ -15,6 +16,7 @@ export function WorkspaceEditorContainer({
   draft: ReturnType<typeof useDraftSave>;
 }) {
   const hydration = data.hydration.data;
+  useAppWorkspaceFixFocus("editor", edits.fixes);
   return (
     <WorkspaceEditor
       jobId={jobId}

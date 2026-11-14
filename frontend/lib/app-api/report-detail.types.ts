@@ -19,7 +19,13 @@ export interface ReportDetail {
   verdict: { title: string; body: string };
   topPercent: number;
   facts: string[];
-  fixes: { title: string; text: string; points: number }[];
+  fixes: {
+    title: string;
+    text: string;
+    points: number;
+    section?: string;
+    type?: string;
+  }[];
   dimensions: ReportDimension[];
   sections: { name: string; score: number; note: string }[];
   bullets: {
