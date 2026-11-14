@@ -26,7 +26,7 @@
   position: absolute;
   z-index: 3;
   top: 25%;
-  left: 10%;
+  left: 13%;
 }
 .note > span {
   color: var(--brand-ink);
