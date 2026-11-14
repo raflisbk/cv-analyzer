@@ -1,0 +1,79 @@
+.target {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+}
+.mark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: #f42902;
+}
+.light {
+  color: #ff9b83;
+}
+.mark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.strike {
+  top: 43%;
+  height: 20%;
+}
+.underline {
+  top: 88%;
+  height: 22%;
+}
+.circle {
+  inset: -12% -9%;
+  width: 118%;
+  height: 124%;
+}
+.arrow {
+  position: relative;
+  display: block;
+  width: min(100%, 112px);
+  height: 42px;
+  margin-left: 12px;
+}
+.highlight {
+  top: 44%;
+  height: 56%;
+  color: #f2ff00;
+  opacity: 0.58;
+  mix-blend-mode: multiply;
+  z-index: -1;
+}
+.highlight path {
+  stroke-width: 25;
+}
+.darkHighlight {
+  mix-blend-mode: normal;
+  opacity: 0.36;
+}
+.note {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: min(100%, 240px);
+  color: #9c1c00;
+  font: 700 clamp(20px, 2vw, 28px)/1.1 var(--font-hand);
+  rotate: -3deg;
+}
+.noteLight {
+  color: #f2ff00;
+}
+.note .arrow {
+  color: currentColor;
+}
+@media (max-width: 520px) {
+  .note {
+    rotate: 0deg;
+  }
+}
