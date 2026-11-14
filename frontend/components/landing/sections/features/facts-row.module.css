@@ -1,0 +1,25 @@
+.row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.fact {
+  display: grid;
+  gap: 6px;
+  padding-top: 16px;
+  border-top: 2px solid var(--brand-ink);
+}
+.fact b {
+  font: 800 clamp(36px, 4vw, 56px)/1 var(--font-display);
+}
+.fact span {
+  font-size: clamp(13px, 1.3vw, 18px);
+  font-weight: 700;
+}
+@media (max-width: 600px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -49,11 +49,6 @@
 .card1 {
   grid-column: span 3;
 }
-.card2,
-.card3,
-.card4 {
-  grid-column: span 2;
-}
 .card0 {
   background: var(--brand-red);
   color: var(--brand-snow);
@@ -64,21 +59,6 @@
 .card1 {
   background: var(--brand-snow);
   color: var(--brand-ink);
-}
-.card2 {
-  background: var(--brand-ink);
-  color: var(--brand-snow);
-}
-.card3 {
-  background: var(--brand-blush);
-  color: var(--brand-ink);
-}
-.card4 {
-  background: var(--brand-red-deep);
-  color: var(--brand-snow);
-}
-.card4 p {
-  font-weight: 700;
 }
 @media (max-width: 1100px) {
   .card {
