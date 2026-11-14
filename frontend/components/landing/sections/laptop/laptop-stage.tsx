@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import { useLaptopFrames } from "./use-laptop-frames";
 import LaptopScene from "./scene/laptop-scene";
 import styles from "./laptop.module.css";
@@ -5,6 +7,7 @@ import quadsData from "@/public/landing/laptop/screen-quads.json";
 import { screenSize } from "@/lib/landing-laptop-screen";
 
 export default function LaptopStage() {
+  const { t } = useT();
   const canvasRef = useLaptopFrames();
   return (
     <div
@@ -19,7 +22,7 @@ export default function LaptopStage() {
           data-laptop-canvas
           width={quadsData.width}
           height={quadsData.height}
-          aria-label="Opening laptop"
+          aria-label={t("landing.inside.opening")}
           role="img"
         />
         <div
