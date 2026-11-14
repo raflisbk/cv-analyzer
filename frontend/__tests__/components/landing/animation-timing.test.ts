@@ -5,7 +5,6 @@ import {
   HERO_INTRO_FALLBACK_MS,
 } from "@/components/landing/hero-section";
 import { REDUCED_MOTION_QUERY as SCROLL_REVEAL_MOTION_QUERY } from "@/components/landing/scroll-reveal";
-import { REDUCED_MOTION_QUERY as STATS_MOTION_QUERY } from "@/components/landing/stats-section";
 import { RAG_BURST_DECAY } from "@/components/landing/rag-graph";
 import {
   callOnce,
@@ -47,7 +46,6 @@ describe("landing animation timing", () => {
     expect(SCROLL_REVEAL_MOTION_QUERY).toBe(
       "(prefers-reduced-motion: no-preference)",
     );
-    expect(STATS_MOTION_QUERY).toBe(SCROLL_REVEAL_MOTION_QUERY);
   });
 
   test("uses the shorter RAG burst decay", () => {

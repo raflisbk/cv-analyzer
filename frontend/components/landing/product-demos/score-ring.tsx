@@ -1,7 +1,13 @@
 import styles from "./demos.module.css";
 import { afterScore } from "@/lib/landing-score-demo";
 
-export default function ScoreRing({ score = afterScore, label = "Overall score" }: { score?: number; label?: string }) {
+export default function ScoreRing({
+  score = afterScore,
+  label = "Overall score",
+}: {
+  score?: number;
+  label?: string;
+}) {
   return (
     <div
       className={styles.ring}
