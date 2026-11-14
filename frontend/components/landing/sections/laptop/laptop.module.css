@@ -11,16 +11,13 @@
   position: relative;
   z-index: 2;
 }
-.text h2 {
-  font-size: clamp(48px, 7vw, 104px);
-}
 .text > span {
   color: #b81d00;
 }
 .text p {
   max-width: 34ch;
   margin: 22px 0 0;
-  font-size: clamp(17px, 1.5vw, 21px);
+  font-size: 18px;
   font-weight: 600;
 }
 .chips {
@@ -87,9 +84,6 @@
     min-height: calc(100vh - 24px);
     align-content: center;
     gap: 20px;
-  }
-  .text h2 {
-    font-size: clamp(38px, 11vw, 52px);
   }
   .text p {
     margin-top: 12px;

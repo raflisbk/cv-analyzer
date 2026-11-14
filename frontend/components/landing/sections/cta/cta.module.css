@@ -21,9 +21,6 @@
   align-items: flex-start;
   gap: 20px;
 }
-.copy h2 {
-  font-size: clamp(46px, 7vw, 108px);
-}
 .copy p {
   font-size: 20px;
   font-weight: 700;
