@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import Image from "next/image";
 import { features } from "@/lib/landing-features";
 import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
@@ -11,13 +13,16 @@ export default function FeatureCard({
   feature: (typeof features)[number];
   index: number;
 }) {
+  const { t } = useT();
   const description =
-    feature.title === "Real scoring"
-      ? `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions, with a plain reason for every score.`
-      : feature.description;
+    feature.key === "scoring"
+      ? t("landing.features.scoringBody", {
+          count: formatLandingCount(landingFacts.scoreDimensions),
+        })
+      : t("landing.features.editorBody");
   return (
     <article className={`${styles.card} ${styles[`card${index}`]}`}>
-      <h3>{feature.title}</h3>
+      <h3>{t(`landing.features.${feature.key}Title`)}</h3>
       <p>{description}</p>
       <Image
         width={360}

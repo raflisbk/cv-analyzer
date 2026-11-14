@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import { useRef } from "react";
 import { processSteps } from "@/lib/landing-process";
 import { useLandingStory } from "@/hooks/use-landing-story";
@@ -20,6 +21,7 @@ function prepareProcess(panel: HTMLElement) {
   panel.dataset.processPinned = String(panel.classList.contains(styles.pinned));
 }
 export default function ProcessSection() {
+  const { t } = useT();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const ref = useLandingStory(
     processMotion,
@@ -38,15 +40,13 @@ export default function ProcessSection() {
         className={`${base.panel} ${base.ink} ${styles.section}`}
       >
         <div className={base.head}>
-          <h2>
-            How <em>CV Analyzer</em> works
-          </h2>
-          <span className={base.hand}>six steps, about a minute</span>
+          <h2>{t("landing.process.heading")}</h2>
+          <span className={base.hand}>{t("landing.process.detail")}</span>
         </div>
         <div className={styles.stage}>
           <div className={styles.items}>
             {processSteps.map((step, index) => (
-              <ProcessStep key={step.title} step={step} index={index} />
+              <ProcessStep key={step.key} step={step} index={index} />
             ))}
           </div>
           <ProcessRail />

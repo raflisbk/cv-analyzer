@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import Link from "next/link";
 import PlaneIcon from "../plane-icon";
 import PenUnderline from "../../pen/pen-underline";
@@ -6,25 +8,25 @@ import base from "../section.module.css";
 import styles from "./cta.module.css";
 
 export default function CtaCopy() {
+  const { t } = useT();
   return (
     <div className={styles.copy}>
       <span data-cta-tag className={styles.tag}>
-        Free to try
+        {t("landing.cta.tag")}
       </span>
       <h2>
-        Ready when your{" "}
         <span className={pen.target}>
-          CV is
+          {t("landing.cta.heading")}
           <PenUnderline variant={1} />
         </span>
       </h2>
-      <p>Upload it now. Your first report is ready before your coffee cools.</p>
+      <p>{t("landing.cta.body")}</p>
       <div className={styles.actions}>
         <Link href="/app" className={`${base.button} ${styles.primary}`}>
-          Score my CV <PlaneIcon size={52} />
+          {t("landing.cta.button")} <PlaneIcon size={52} />
         </Link>
         <a href="#report" className={styles.sample}>
-          See a sample report
+          {t("landing.cta.sample")}
         </a>
       </div>
     </div>
