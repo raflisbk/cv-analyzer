@@ -15,10 +15,13 @@ interface AccountMenuProps {
   app?: boolean;
 }
 
-function accountTrigger(
-  user: AuthUser,
-  menu: ReturnType<typeof useAccountMenu>,
-) {
+function AccountTrigger({
+  user,
+  menu,
+}: {
+  user: AuthUser;
+  menu: ReturnType<typeof useAccountMenu>;
+}) {
   const { t } = useT();
   return (
     <button
@@ -56,7 +59,7 @@ export default function AccountMenu({ user, app = false }: AccountMenuProps) {
     <div className={styles.account} ref={menu.rootRef}>
       <div className={styles.wrapper}>
         <div className={styles.surface} data-open={menu.open}>
-          {accountTrigger(user, menu)}
+          <AccountTrigger user={user} menu={menu} />
           <div
             className={styles.grid}
             style={{ gridTemplateRows: "repeat(3, 1fr)" }}

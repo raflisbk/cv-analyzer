@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
 import FloatingFooter from "@/components/landing/floating-footer";
 import StatsSection from "@/components/landing/sections/stats/stats-section";
 import FeaturesSection from "@/components/landing/sections/features/features-section";
@@ -8,7 +9,11 @@ import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 
 describe("provable landing claims", () => {
   test("ticker shows sourced counts and no unsupported skills claim", () => {
-    const html = renderToStaticMarkup(<FloatingFooter />);
+    const html = renderToStaticMarkup(
+      <I18nProvider initialLocale="en">
+        <FloatingFooter />
+      </I18nProvider>,
+    );
     expect(html).toContain(
       `${formatLandingCount(landingFacts.archetypeCount)} Role Archetypes`,
     );

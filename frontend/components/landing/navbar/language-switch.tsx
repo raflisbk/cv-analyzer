@@ -8,7 +8,9 @@ export default function LanguageSwitch() {
   const { locale, setLocale, t } = useT();
   const router = useRouter();
   function choose(next: Locale) {
-    if (next === locale) return;
+    if (next === locale) {
+      return;
+    }
     document.cookie = `${LOCALE_COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
     setLocale(next);
     router.refresh();

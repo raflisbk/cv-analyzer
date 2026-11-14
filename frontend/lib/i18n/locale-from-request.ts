@@ -4,7 +4,9 @@ export function localeFromRequest(
   cookie?: string | null,
   acceptLanguage?: string | null,
 ): Locale {
-  if (cookie && LOCALES.includes(cookie as Locale)) return cookie as Locale;
+  if (cookie && LOCALES.includes(cookie as Locale)) {
+    return cookie as Locale;
+  }
   const candidates = (acceptLanguage ?? "").split(",").map((part, index) => {
     const [tag, ...params] = part.trim().toLowerCase().split(";");
     const quality = params.find((param) => param.trim().startsWith("q="));

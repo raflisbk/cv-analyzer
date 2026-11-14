@@ -60,6 +60,8 @@ export function I18nProvider({
 
 export function useT() {
   const value = useContext(Context);
-  if (!value) throw new Error("useT must be used within I18nProvider");
+  if (!value) {
+    throw new Error("useT must be used within I18nProvider");
+  }
   return value;
 }
