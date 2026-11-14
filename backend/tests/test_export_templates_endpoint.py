@@ -147,7 +147,30 @@ def test_export_returns_counts_and_filename(client):
     assert response.status_code == 200
     assert response.headers["x-export-applied"] == "1"
     assert response.headers["x-export-skipped"] == "0"
+    assert response.headers["x-export-skipped-reasons"] == "{}"
     assert "My_CV-plain.pdf" in response.headers["content-disposition"]
+
+
+def test_export_exposes_skip_reason_by_fix_id(client):
+    test_client, job, _ = client
+    with patch("app.api.v1.endpoints.export_templates.render_pdf", return_value=b"PDF"):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export",
+            json={"templateId": "plain", "fixIds": ["missing_fix"]},
+        )
+    assert (
+        response.headers["x-export-skipped-reasons"] == '{"missing_fix":"unknown_fix"}'
+    )
+
+
+def test_export_skip_reasons_never_include_cv_text(client):
+    test_client, job, _ = client
+    with patch("app.api.v1.endpoints.export_templates.render_pdf", return_value=b"PDF"):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export",
+            json={"templateId": "plain", "fixIds": ["private CV text@example.com"]},
+        )
+    assert "private" not in response.headers["x-export-skipped-reasons"]
 
 
 def test_image_original_returns_422(client):
