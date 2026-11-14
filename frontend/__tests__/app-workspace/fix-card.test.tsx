@@ -54,6 +54,7 @@ it("asks every backend question before applying the rewrite", async () => {
     />,
   );
   await user.type(screen.getByLabelText("How many people?"), "6");
+  expect(screen.getByRole("button", { name: "Apply" })).toBeDisabled();
   await user.click(screen.getByRole("button", { name: "Apply" }));
   expect(onApply).not.toHaveBeenCalled();
   await user.type(screen.getByLabelText("Over what period?"), "2 years");
@@ -66,4 +67,34 @@ it("asks every backend question before applying the rewrite", async () => {
       "[timeframe]": "2 years",
     },
   );
+});
+
+it("offers manual editing when the suggestion has no rewrite", async () => {
+  const user = userEvent.setup();
+  const onApply = vi.fn(() => true);
+  const onShow = vi.fn();
+  render(
+    <FixCard
+      fix={{
+        id: "Summary_0_0",
+        section: "Summary",
+        before: "Generic summary",
+        after: "",
+        explanation: "Make the summary specific",
+        label: "Missing section",
+        points: 1,
+      }}
+      onApply={onApply}
+      onShow={onShow}
+    />,
+  );
+  expect(screen.getByText("Make the summary specific")).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Apply" }),
+  ).not.toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", { name: "Edit this line yourself" }),
+  );
+  expect(onShow).toHaveBeenCalledWith("Summary_0_0", "Summary");
+  expect(onApply).not.toHaveBeenCalled();
 });

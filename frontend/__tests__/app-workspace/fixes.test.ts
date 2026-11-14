@@ -48,3 +48,23 @@ it("substitutes every supplied backend token", () => {
     fillInputs("Led [team size] people", inputs, { "[team size]": "6" }),
   ).toBeNull();
 });
+
+it("keeps a suggestion with original text and no rewrite", () => {
+  const fixes = flattenFixes([
+    {
+      section: "Summary",
+      suggestions: [
+        {
+          priority: "quick_win",
+          type: "missing_section",
+          text: "Be more specific",
+          originalText: "Experienced professional",
+          afterText: undefined,
+        },
+      ],
+    },
+  ]);
+  expect(fixes).toMatchObject([
+    { id: "Summary_0_0", before: "Experienced professional", after: "" },
+  ]);
+});

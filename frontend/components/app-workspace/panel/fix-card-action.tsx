@@ -14,6 +14,7 @@ interface Props {
     answers: Record<string, string>,
   ) => boolean;
   setError: (message: string) => void;
+  onShow: (id: string, section: string) => void;
 }
 
 export function FixCardAction({
@@ -24,6 +25,7 @@ export function FixCardAction({
   requiresNumber,
   onApply,
   setError,
+  onShow,
 }: Props) {
   const apply = (anchor: HTMLElement) => {
     const text = inputs.length
@@ -41,10 +43,23 @@ export function FixCardAction({
       );
     }
   };
+  if (!fix.after) {
+    return (
+      <button
+        type="button"
+        className={`${styles.pill} ${styles.punk}`}
+        onClick={() => onShow(fix.id, fix.section)}
+      >
+        Edit this line yourself
+      </button>
+    );
+  }
+  const incomplete = inputs.some(({ token }) => !answers[token]?.trim());
   return (
     <button
       type="button"
       className={`${styles.pill} ${styles.punk}`}
+      disabled={incomplete}
       onClick={(event) => apply(event.currentTarget)}
     >
       Apply

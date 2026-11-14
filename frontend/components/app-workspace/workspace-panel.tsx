@@ -13,7 +13,13 @@ import { ScrollMore } from "./scroll-more";
 import styles from "./workspace-styles";
 
 export type WorkspaceTab =
-  "report" | "fixes" | "ats" | "match" | "grammar" | "history" | "chat";
+  | "report"
+  | "fixes"
+  | "ats"
+  | "match"
+  | "grammar"
+  | "history"
+  | "chat";
 export interface WorkspacePanelProps {
   jobId: string;
   fileName: string;
@@ -41,7 +47,7 @@ export interface WorkspacePanelProps {
   onAddSkill: (skill: string) => boolean;
   onExport: () => void;
   onGrammar: (id: string, action: "accept" | "ignore") => Promise<void>;
-  onShow: (anchorId: string) => void;
+  onShow: (anchorId: string, section?: string) => void;
   retryReport?: () => void;
   retryFixes?: () => void;
   retryAts?: () => void;
