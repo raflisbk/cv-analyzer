@@ -34,7 +34,7 @@ def test_rewrite_accepts_number_in_cv_context():
     assert item.after_text == "Led 12 people"
 
 
-def test_rewrite_drops_invented_number():
+def test_rewrite_requests_invented_count():
     item = SuggestionItemOutput.model_validate(
         {
             "priority": "quick_win",
@@ -43,6 +43,55 @@ def test_rewrite_drops_invented_number():
             "after_text": "Led 12 people",
         },
         context={"cv_text": "Led team"},
+    )
+    assert item.after_text == "Led [how many?] people"
+    assert item.needs_input[0].token == "[how many?]"
+
+
+@pytest.mark.parametrize(
+    ("original", "rewrite", "token"),
+    [
+        ("Was involved in A/B testing", "Ran 12 A/B tests", "[how many?]"),
+        ("Helped improve conversion", "Improved conversion by 20%", "[%]"),
+        ("Supported reporting", "Saved $5,000 through reporting", "[amount]"),
+    ],
+)
+def test_experience_rewrites_request_missing_numeric_facts(original, rewrite, token):
+    item = SuggestionItemOutput.model_validate(
+        {
+            "priority": "quick_win",
+            "text": "Clarify",
+            "original_text": original,
+            "after_text": rewrite,
+        },
+        context={"cv_text": original},
+    )
+    assert token in item.after_text
+    assert item.needs_input[0].token == token
+
+
+def test_rewrite_with_more_than_three_inputs_is_dropped():
+    item = SuggestionItemOutput.model_validate(
+        {
+            "priority": "quick_win",
+            "text": "Clarify",
+            "original_text": "Built tools",
+            "after_text": "Built 2 tools for 3 teams over 4 years and saved 5 hours",
+        },
+        context={"cv_text": "Built tools"},
+    )
+    assert item.after_text is None
+
+
+def test_rewrite_with_four_existing_placeholders_is_dropped():
+    item = SuggestionItemOutput.model_validate(
+        {
+            "priority": "quick_win",
+            "text": "Clarify",
+            "original_text": "Built tools",
+            "after_text": "Built [how many?] tools for [team size] in [timeframe] and saved [amount]",
+        },
+        context={"cv_text": "Built tools"},
     )
     assert item.after_text is None
 
@@ -68,7 +117,7 @@ def test_unknown_placeholder_drops_rewrite():
     assert item.after_text is None
 
 
-def test_invented_number_is_absent_from_results_item():
+def test_invented_number_requests_input_in_results_item():
     guarded = SuggestionItemOutput.model_validate(
         {
             "priority": "quick_win",
@@ -81,7 +130,9 @@ def test_invented_number_is_absent_from_results_item():
     result_item = SuggestionItem.model_validate(
         {**guarded.model_dump(), "needsInput": []}
     )
-    assert result_item.model_dump(by_alias=True)["after_text"] is None
+    assert (
+        result_item.model_dump(by_alias=True)["after_text"] == "Led [how many?] people"
+    )
 
 
 def test_malformed_llm_json_is_repaired_before_fact_guard():
