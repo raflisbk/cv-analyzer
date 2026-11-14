@@ -9,6 +9,7 @@ from app.services.llm.fact_guard import (
     allowed_input,
     input_question,
     numbers_in,
+    replace_invented_numbers,
 )
 
 
@@ -33,13 +34,20 @@ class SuggestionItemOutput(BaseModel):
             self.after_text = None
             self.needs_input = []
             return self
+        source = (info.context or {}).get("cv_text", "") + " " + original
+        rewrite = replace_invented_numbers(self.after_text, source)
+        if rewrite is None:
+            self.after_text = None
+            self.needs_input = []
+            return self
+        self.after_text = rewrite
+        placeholders = PLACEHOLDER.findall(rewrite)
         self.needs_input = [
             NeedsInput(token=p, question=input_question(p))
             for p in dict.fromkeys(placeholders)
             if p not in original and allowed_input(p)
         ]
         without_placeholders = PLACEHOLDER.sub("", self.after_text)
-        source = (info.context or {}).get("cv_text", "") + " " + original
         if not numbers_in(without_placeholders) <= numbers_in(source):
             self.after_text = None
             self.needs_input = []
