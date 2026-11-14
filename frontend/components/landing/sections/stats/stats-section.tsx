@@ -1,13 +1,11 @@
 "use client";
-import Image from "next/image";
-import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
+import { landingFacts } from "@/lib/landing-facts";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { statsMotion } from "@/components/landing/motion/stats";
 import { useLandingExpand } from "@/hooks/use-landing-expand";
 import base from "../section.module.css";
 import styles from "./stats.module.css";
-import PenUnderline from "../../pen/pen-underline";
-import pen from "../../pen/pen.module.css";
+import StatItem from "./stat-item";
 
 const stats = [
   {
@@ -44,29 +42,7 @@ export default function StatsSection() {
       className={`${base.panel} ${base.red} ${styles.grid}`}
     >
       {stats.map((stat) => (
-        <div data-stat className={styles.stat} key={stat.label}>
-          <Image
-            width={360}
-            height={360}
-            className={base.object}
-            src={`/landing/3d/${stat.image}.webp`}
-            alt=""
-            aria-hidden="true"
-          />
-          <b data-value={stat.value} data-suffix="">
-            {formatLandingCount(stat.value)}
-          </b>
-          <span>
-            {stat.label === "ATS checks" ? (
-              <span className={pen.target}>
-                ATS checks
-                <PenUnderline variant={2} onDark />
-              </span>
-            ) : (
-              stat.label
-            )}
-          </span>
-        </div>
+        <StatItem stat={stat} key={stat.label} />
       ))}
     </section>
   );

@@ -1,13 +1,12 @@
 "use client";
-import Image from "next/image";
 import { features } from "@/lib/landing-features";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { featuresMotion } from "@/components/landing/motion/features";
-import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import base from "../section.module.css";
 import styles from "./features.module.css";
 import PenUnderline from "../../pen/pen-underline";
 import pen from "../../pen/pen.module.css";
+import FeatureCard from "./feature-card";
 export default function FeaturesSection() {
   const ref = useLandingStory(featuresMotion, 120);
   return (
@@ -25,28 +24,8 @@ export default function FeaturesSection() {
           </span>
         </h2>
       </div>
-      {features.map((feature, i) => (
-        <article
-          className={`${styles.card} ${styles[`card${i}`]}`}
-          key={feature.title}
-        >
-          <h3>{feature.title}</h3>
-          <p>
-            {feature.title === "Real scoring"
-              ? `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions, with a plain reason for every score.`
-              : feature.title === "Job match"
-                ? "A match percentage and a clear list of missing keywords."
-                : feature.description}
-          </p>
-          <Image
-            width={360}
-            height={360}
-            className={base.object}
-            src={`/landing/3d/${feature.image}.webp`}
-            alt=""
-            aria-hidden="true"
-          />
-        </article>
+      {features.map((feature, index) => (
+        <FeatureCard feature={feature} index={index} key={feature.title} />
       ))}
     </section>
   );
