@@ -1,19 +1,19 @@
 export const footerColumns = [
   {
-    title: "Products",
+    key: "products",
     links: [
-      { label: "CV Analyzer", href: "/app" },
-      { label: "CV Builder", href: null },
-      { label: "Job Connect", href: null },
+      { key: "analyzer", href: "/app" },
+      { key: "builder", href: null },
+      { key: "connect", href: null },
     ],
   },
   {
-    title: "Resources",
+    key: "resources",
     links: [
-      { label: "Sample report", href: "#report" },
-      { label: "FAQ", href: "#faq" },
-      { label: "How it works", href: "#how" },
+      { key: "report", href: "#report" },
+      { key: "faq", href: "#faq" },
+      { key: "how", href: "#how" },
     ],
   },
-  { title: "Legal", links: [{ label: "Your CV stays yours", href: null }] },
+  { key: "legal", links: [{ key: "privacy", href: null }] },
 ] as const;
