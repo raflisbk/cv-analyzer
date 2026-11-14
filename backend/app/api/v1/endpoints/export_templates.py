@@ -95,7 +95,8 @@ async def get_export_templates(
     score = None
     if job_id:
         job = await _owner_job(db, user, job_id)
-        if job.file_id:
+        score = (job.scores or {}).get("ats_score")
+        if score is None and job.file_id:
             try:
                 data = await asyncio.to_thread(storage_service.get_file, job.file_id)
             except StorageError:

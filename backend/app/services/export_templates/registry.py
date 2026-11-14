@@ -3,6 +3,7 @@ from typing import Any
 
 from app.services.ats.checker import check_ats_compatibility, compute_ats_score
 from app.services.export_templates.html_pdf import extract_pdf_text, render_pdf
+from app.services.nlp.section_detector import detect_sections
 
 _TEMPLATES = (
     (
@@ -38,13 +39,34 @@ _TEMPLATES = (
 )
 _SAMPLE = {
     "sections": [
-        {"type": "header", "content": "Alex Morgan\nalex@example.com\n+1 555 0100"},
+        {
+            "type": "header",
+            "content": "Alex Morgan\nSenior Software Engineer\nalex@example.com\n+1 555 0100\nlinkedin.com/in/alexmorgan",
+        },
         {
             "type": "experience",
-            "content": "Experience\nEngineer at Acme, 2020-2024\nBuilt reporting tools for 5 teams.",
+            "content": "Engineer at Acme, 2020-2024\n"
+            + "\n".join(
+                (
+                    "- Built reporting tools for 5 teams and documented results for product leaders across the organization.",
+                    "- Led 12 engineers and improved release quality by 20% through careful reviews and clearer planning.",
+                    "- Designed dashboards for 200 users and delivered weekly insights to sales and operations teams.",
+                    "- Launched a new intake process that reduced response time by 35% for customer requests.",
+                    "- Automated recurring reports and saved 40 hours each month for the finance department.",
+                    "- Managed cross functional projects and implemented shared standards for reliable team communication.",
+                    "- Created training material for new analysts and supported their first production assignments.",
+                    "- Developed accessible documentation and tested workflows with colleagues from multiple departments.",
+                    "- Increased adoption of internal tools through workshops and practical examples for managers.",
+                    "- Coordinated planning sessions and evaluated progress against clear quarterly business goals.",
+                )
+            )
+            + "\nAnalyst at Beta, 2018-2020\nSenior Analyst at Gamma, 2020-2022",
         },
-        {"type": "education", "content": "Education\nBS Computer Science, 2019"},
-        {"type": "skills", "content": "Skills\nPython, SQL, communication"},
+        {"type": "education", "content": "BS Computer Science, State University, 2019"},
+        {
+            "type": "skills",
+            "content": "Python, SQL, Tableau, Excel, reporting, communication",
+        },
     ]
 }
 
@@ -52,7 +74,7 @@ _SAMPLE = {
 @lru_cache(maxsize=4)
 def template_ats_score(template_id: str) -> int:
     text = extract_pdf_text(render_pdf(template_id, _SAMPLE))
-    return compute_ats_score(check_ats_compatibility(text))
+    return compute_ats_score(check_ats_compatibility(text, detect_sections(text)))
 
 
 def template_list(original_score: int | None = None) -> list[dict[str, Any]]:
