@@ -115,6 +115,27 @@ describe("ExportDialog", () => {
       "2 fixes applied, 1 skipped",
     );
   });
+  it("lists affected fix titles and reasons after export", async () => {
+    exportCv.mockResolvedValue({
+      blob: new Blob(["pdf"]),
+      applied: 0,
+      skipped: 2,
+      skippedReasons: { "fix-1": "no_room", "fix-2": "needs_input" },
+    });
+    show();
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Download PDF" }),
+    );
+    expect(
+      await screen.findByRole("list", { name: "Skipped fixes" }),
+    ).toHaveTextContent("Fix fix-1");
+    expect(
+      screen.getByRole("list", { name: "Skipped fixes" }),
+    ).toHaveTextContent("No room");
+    expect(
+      screen.getByRole("list", { name: "Skipped fixes" }),
+    ).toHaveTextContent("needs your answer");
+  });
   it("shows the error and allows a retry", async () => {
     exportCv
       .mockRejectedValueOnce(new Error("Network unavailable"))
