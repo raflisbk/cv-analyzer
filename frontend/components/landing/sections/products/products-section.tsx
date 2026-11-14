@@ -13,7 +13,11 @@ export default function ProductsSection() {
   const ref = useLandingStory(productsMotion);
   useDemoOnce(ref);
   return (
-    <section ref={ref} id="products" className={`${base.panel} ${base.snow} ${base.calm}`}>
+    <section
+      ref={ref}
+      id="products"
+      className={`${base.panel} ${base.snow} ${base.calm}`}
+    >
       <div className={base.head}>
         <h2>{t("landing.products.heading")}</h2>
       </div>

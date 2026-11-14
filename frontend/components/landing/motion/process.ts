@@ -172,12 +172,7 @@ export function processMotion(
   steps.forEach((step, i) => {
     const img = step.querySelector("img");
     if (i === 0) {
-      tl.fromTo(
-        img,
-        { scale: 0.6 },
-        { scale: 1, duration: 0.5 },
-        0,
-      );
+      tl.fromTo(img, { scale: 0.6 }, { scale: 1, duration: 0.5 }, 0);
       return;
     }
     animateProcessStep(tl, step, steps[i - 1], i, steps.length, rail);
