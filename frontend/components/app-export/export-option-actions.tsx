@@ -6,6 +6,7 @@ interface Props {
   downloading: boolean;
   error: string | null;
   resultMessage: string | null;
+  reasons: { id: string; title: string; message: string }[];
   onDownload: (anchor: HTMLElement) => void;
   onCancel: () => void;
 }
@@ -16,6 +17,7 @@ export default function ExportOptionActions({
   downloading,
   error,
   resultMessage,
+  reasons,
   onDownload,
   onCancel,
 }: Props) {
@@ -27,7 +29,20 @@ export default function ExportOptionActions({
           {error}
         </p>
       )}
-      {resultMessage && <p role="status">{resultMessage}</p>}
+      {resultMessage && (
+        <p role="status" aria-live="polite">
+          {resultMessage}
+        </p>
+      )}
+      {reasons.length > 0 && (
+        <ul aria-label="Skipped fixes" aria-live="polite">
+          {reasons.map((reason) => (
+            <li key={reason.id}>
+              <strong>{reason.title}</strong>: {reason.message}
+            </li>
+          ))}
+        </ul>
+      )}
       <button
         type="button"
         className={styles.download}

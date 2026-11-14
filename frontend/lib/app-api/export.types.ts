@@ -18,6 +18,7 @@ export interface ExportResult {
   applied: number;
   skipped: number;
   fileName?: string;
+  skippedReasons?: Record<string, string>;
 }
 
 export interface ExportPreview {

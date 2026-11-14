@@ -2,6 +2,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { getWorkspaceHydration } from "@/lib/workspace";
 import { USE_APP_MOCKS } from "./mode";
 import { draftText } from "@/lib/app-export/draft-text";
+import { parseSkippedReasons } from "@/lib/app-export/skipped-reasons";
 import { responseError } from "./response-error";
 import { rawRequest } from "./raw-request";
 import {
@@ -76,6 +77,9 @@ export async function exportCv(
     blob,
     applied: Number(response.headers.get("X-Export-Applied") ?? 0),
     skipped: Number(response.headers.get("X-Export-Skipped") ?? 0),
+    skippedReasons: parseSkippedReasons(
+      response.headers.get("X-Export-Skipped-Reasons"),
+    ),
     fileName: response.headers
       .get("Content-Disposition")
       ?.match(/filename="?([^";]+)"?/)?.[1],
