@@ -21,6 +21,7 @@ def client():
     job.file_id = "test-file"
     job.file_metadata = {"filename": "My CV.pdf"}
     job.cv_document = {"sections": [{"type": "experience", "content": "Old line"}]}
+    job.scores = None
     job.suggestions = [
         {
             "section": "experience",
@@ -146,7 +147,30 @@ def test_export_returns_counts_and_filename(client):
     assert response.status_code == 200
     assert response.headers["x-export-applied"] == "1"
     assert response.headers["x-export-skipped"] == "0"
+    assert response.headers["x-export-skipped-reasons"] == "{}"
     assert "My_CV-plain.pdf" in response.headers["content-disposition"]
+
+
+def test_export_exposes_skip_reason_by_fix_id(client):
+    test_client, job, _ = client
+    with patch("app.api.v1.endpoints.export_templates.render_pdf", return_value=b"PDF"):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export",
+            json={"templateId": "plain", "fixIds": ["missing_fix"]},
+        )
+    assert (
+        response.headers["x-export-skipped-reasons"] == '{"missing_fix":"unknown_fix"}'
+    )
+
+
+def test_export_skip_reasons_never_include_cv_text(client):
+    test_client, job, _ = client
+    with patch("app.api.v1.endpoints.export_templates.render_pdf", return_value=b"PDF"):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export",
+            json={"templateId": "plain", "fixIds": ["private CV text@example.com"]},
+        )
+    assert "private" not in response.headers["x-export-skipped-reasons"]
 
 
 def test_image_original_returns_422(client):
@@ -213,6 +237,7 @@ def test_template_list_scores_owners_original(client):
     import fitz
 
     test_client, job, _ = client
+    job.scores = {"ats_score": 68}
     pdf = fitz.open()
     pdf.new_page().insert_text((50, 50), "Alex Morgan")
     source = pdf.tobytes()
@@ -223,7 +248,7 @@ def test_template_list_scores_owners_original(client):
     ):
         response = test_client.get(f"/api/v1/export/templates?jobId={job.id}")
     assert response.status_code == 200
-    assert isinstance(response.json()["data"][0]["atsScore"], int)
+    assert response.json()["data"][0]["atsScore"] == 68
 
 
 def test_original_docx_endpoint_returns_docx(client):

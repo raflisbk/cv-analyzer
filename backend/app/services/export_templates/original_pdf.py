@@ -43,21 +43,42 @@ def _style(
 
 def _placement(
     page: fitz.Page, fix: Fix
-) -> tuple[list[fitz.Rect], float, tuple] | None:
+) -> tuple[list[fitz.Rect], fitz.Shape | None] | None:
     rectangles = _rectangles(page, fix.original)
     if not rectangles:
         return None
     size, color = _style(page, rectangles[0])
     target = rectangles[0]
-    width = target.width
+    blocks = [fitz.Rect(block[:4]) for block in page.get_text("blocks")]
+    right = max(
+        max((block.x1 for block in blocks), default=target.x1),
+        page.rect.width - target.x0,
+    )
+    lines = [
+        fitz.Rect(line["bbox"])
+        for block in page.get_text("dict")["blocks"]
+        for line in block.get("lines", [])
+    ]
+    below = [
+        rect.y0
+        for rect in blocks + lines
+        if rect.y0 > target.y0 and rect.y1 > max(r.y1 for r in rectangles)
+    ]
+    bottom = min(below) - 4 if below else page.rect.y1 - 4
+    box = fitz.Rect(target.x0, target.y0, right, bottom)
     for scale in (1.0, 0.95, 0.9, 0.85, 0.8):
         current = size * scale
+        if box.width <= 0 or box.height <= 0:
+            break
+        shape = page.new_shape()
         if (
-            fitz.get_text_length(fix.replacement, fontname="helv", fontsize=current)
-            <= width
+            shape.insert_textbox(
+                box, fix.replacement, fontname="helv", fontsize=current, color=color
+            )
+            >= 0
         ):
-            return rectangles, current, color
-    return rectangles, 0.0, color
+            return rectangles, shape
+    return rectangles, None
 
 
 def render_original_pdf(data: bytes, result: FixResult) -> bytes:
@@ -69,21 +90,14 @@ def render_original_pdf(data: bytes, result: FixResult) -> bytes:
                 if placement is None:
                     continue
                 found = True
-                rects, size, color = placement
-                if not size:
+                rects, shape = placement
+                if shape is None:
                     result.skipped[fix.id] = "no_room"
                     break
-                baseline = rects[0].y1 - max(1, rects[0].height * 0.18)
                 for rect in rects:
                     page.add_redact_annot(rect, fill=(1, 1, 1))
                 page.apply_redactions(images=0, graphics=0)
-                page.insert_text(
-                    (rects[0].x0, baseline),
-                    fix.replacement,
-                    fontname="helv",
-                    fontsize=size,
-                    color=color,
-                )
+                shape.commit()
                 break
             if not found:
                 result.skipped[fix.id] = "text_not_found"

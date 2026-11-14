@@ -68,19 +68,31 @@ def test_fixes_and_projection_use_weighted_room_to_improve():
 
 
 @pytest.mark.parametrize(
-    ("text", "expected"),
+    ("kind", "text", "minimum"),
     [
-        ("", 0),
-        ("one two three four five", 4),
         (
-            " ".join(["word"] * 50)
-            + "\n- Built 3 tools\n- Led 4 teams\n- Saved 5 hours",
-            100,
+            "header",
+            "Dewi Putri\nProduct Analyst\ndewi@example.com\n+62 812 3456 7890\nJakarta",
+            80,
         ),
+        ("education", "BSc Information Systems, University of Indonesia, 2020", 70),
+        ("skills", "SQL, Python, Tableau, Excel", 60),
     ],
 )
-def test_section_score_rubric(text, expected):
-    assert section_score(text) == expected
+def test_section_score_uses_section_evidence(kind, text, minimum):
+    assert section_score(text, kind) >= minimum
+
+
+@pytest.mark.parametrize(
+    "kind", ["header", "education", "skills", "summary", "experience"]
+)
+def test_empty_section_scores_zero(kind):
+    assert section_score("", kind) == 0
+
+
+def test_header_accepts_any_role_and_location_line():
+    text = "Dewi Putri\nProduct Owner\ndewi@example.com\n+62 812 3456 7890\nBogor"
+    assert section_score(text, "header") == 100
 
 
 @pytest.mark.parametrize(

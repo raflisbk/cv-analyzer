@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 from pathlib import Path
 
@@ -70,6 +71,20 @@ def _apply_export_fixes(job: Job, body: ExportRequest) -> FixResult:
     )
 
 
+def _skipped_reasons(skipped: dict[str, str]) -> str:
+    safe = {}
+    for fix_id, reason in skipped.items():
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", fix_id):
+            continue
+        candidate = json.dumps(
+            {**safe, fix_id: reason}, separators=(",", ":"), ensure_ascii=True
+        )
+        if len(candidate) > 1024:
+            break
+        safe[fix_id] = reason
+    return json.dumps(safe, separators=(",", ":"), ensure_ascii=True)
+
+
 async def _original_output(job: Job, file_type: str, result: FixResult) -> bytes:
     data = await asyncio.to_thread(storage_service.get_file, job.file_id)
     if file_type == ".pdf":
@@ -95,7 +110,8 @@ async def get_export_templates(
     score = None
     if job_id:
         job = await _owner_job(db, user, job_id)
-        if job.file_id:
+        score = (job.scores or {}).get("ats_score")
+        if score is None and job.file_id:
             try:
                 data = await asyncio.to_thread(storage_service.get_file, job.file_id)
             except StorageError:
@@ -115,6 +131,7 @@ async def export_job(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(require_user),
 ) -> Response:
+    """Export a CV; X-Export-Skipped-Reasons carries up to 1 KB of safe fix IDs and skip reasons as JSON."""
     if not known_template(body.template_id):
         raise HTTPException(status_code=404, detail="Template not found.")
     job = await _owner_job(db, user, job_id)
@@ -145,6 +162,7 @@ async def export_job(
             "Content-Disposition": f'attachment; filename="{_filename(job, body.template_id, extension)}"',
             "X-Export-Applied": str(len(result.applied)),
             "X-Export-Skipped": str(len(result.skipped)),
-            "Access-Control-Expose-Headers": "X-Export-Applied, X-Export-Skipped, Content-Disposition",
+            "X-Export-Skipped-Reasons": _skipped_reasons(result.skipped),
+            "Access-Control-Expose-Headers": "X-Export-Applied, X-Export-Skipped, X-Export-Skipped-Reasons, Content-Disposition",
         },
     )
