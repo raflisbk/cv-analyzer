@@ -6,6 +6,8 @@ import { statsMotion } from "@/components/landing/motion/stats";
 import { useLandingExpand } from "@/hooks/use-landing-expand";
 import base from "../section.module.css";
 import styles from "./stats.module.css";
+import PenUnderline from "../../pen/pen-underline";
+import pen from "../../pen/pen.module.css";
 
 const stats = [
   {
@@ -54,7 +56,16 @@ export default function StatsSection() {
           <b data-value={stat.value} data-suffix="">
             {formatLandingCount(stat.value)}
           </b>
-          <span>{stat.label}</span>
+          <span>
+            {stat.label === "ATS checks" ? (
+              <span className={pen.target}>
+                ATS checks
+                <PenUnderline variant={2} onDark />
+              </span>
+            ) : (
+              stat.label
+            )}
+          </span>
         </div>
       ))}
     </section>
