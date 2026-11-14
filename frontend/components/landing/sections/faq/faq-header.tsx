@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import Image from "next/image";
 import PenUnderline from "../../pen/pen-underline";
 import pen from "../../pen/pen.module.css";
@@ -5,12 +7,12 @@ import base from "../section.module.css";
 import styles from "./faq.module.css";
 
 export default function FaqHeader() {
+  const { t } = useT();
   return (
     <div>
       <h2>
-        Questions,{" "}
         <span className={pen.target}>
-          answered
+          {t("landing.faq.heading")}
           <PenUnderline variant={2} />
         </span>
       </h2>

@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import { faqItems } from "@/lib/landing-faq";
 import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import styles from "./faq.module.css";
@@ -9,10 +11,10 @@ type Props = {
   onToggle: () => void;
 };
 export default function FaqItem({ item, index, open, onToggle }: Props) {
-  const answer =
-    item.question === "How is the score calculated?"
-      ? `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions are combined, then adjusted by rule checks such as numbers per bullet and action verbs.`
-      : item.answer;
+  const { t } = useT();
+  const answer = t(`landing.faq.items.${item.key}.a`, {
+    count: formatLandingCount(landingFacts.scoreDimensions),
+  });
   return (
     <div data-faq-item className={styles.item}>
       <h3>
@@ -22,7 +24,7 @@ export default function FaqItem({ item, index, open, onToggle }: Props) {
           aria-controls={`faq-answer-${index}`}
           onClick={onToggle}
         >
-          {item.question}
+          {t(`landing.faq.items.${item.key}.q`)}
           <span aria-hidden="true">{open ? "×" : "+"}</span>
         </button>
       </h3>

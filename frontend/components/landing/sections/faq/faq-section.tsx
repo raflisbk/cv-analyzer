@@ -21,7 +21,7 @@ export default function FaqSection() {
             index={i}
             open={open === i}
             onToggle={() => toggle(i)}
-            key={item.question}
+            key={item.key}
           />
         ))}
       </div>
