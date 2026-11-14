@@ -1,18 +1,22 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./demos.module.css";
 import { afterScore } from "@/lib/landing-score-demo";
 
 export default function ScoreRing({
   score = afterScore,
-  label = "Overall score",
+  label,
 }: {
   score?: number;
   label?: string;
 }) {
+  const { t } = useT();
+  const ringLabel = label ?? t("landing.report.ring");
   return (
     <div
       className={styles.ring}
       role="img"
-      aria-label={`${label} ${score} out of 100`}
+      aria-label={t("landing.report.scoreOutOf", { label: ringLabel, score })}
     >
       <svg viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="42" className={styles.ringTrack} />

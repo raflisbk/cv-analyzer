@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import Link from "next/link";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { reportMotion } from "@/components/landing/motion/report";
@@ -11,6 +12,7 @@ import ReportSupport from "./report-support";
 import { useDemoOnce } from "@/components/landing/motion/demo-once";
 
 export default function ReportSection() {
+  const { t } = useT();
   const ref = useLandingStory(reportMotion, 120);
   useDemoOnce(ref);
   return (
@@ -20,19 +22,16 @@ export default function ReportSection() {
       className={`${base.panel} ${base.blush} ${styles.layout}`}
     >
       <div>
-        <h2>Your score, with receipts</h2>
-        <p>
-          Every number comes with the exact line that earned or cost it, and a
-          rewrite you can accept in one click.
-        </p>
+        <h2>{t("landing.report.heading")}</h2>
+        <p>{t("landing.report.intro")}</p>
         <Link href="/app" className={base.button}>
-          Try it on my CV <PlaneIcon size={52} />
+          {t("landing.report.button")} <PlaneIcon size={52} />
         </Link>
       </div>
       <div className={styles.visual}>
         <div className={styles.note}>
           <MarginNote targetId="report-score-ring" variant={0}>
-            No mystery scores
+            {t("landing.report.note")}
           </MarginNote>
         </div>
         <ScoreCard />

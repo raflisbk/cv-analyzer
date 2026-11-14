@@ -1,6 +1,7 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import PenStrike from "../../pen/pen-strike";
 import PenHighlight from "../../pen/pen-highlight";
-import { scoreRewrite } from "@/lib/landing-report";
 import type { ScoreDemoStage } from "@/lib/landing-score-demo";
 import styles from "./report.module.css";
 
@@ -9,16 +10,17 @@ export default function ScoreRewriteLines({
 }: {
   stage: ScoreDemoStage;
 }) {
+  const { t } = useT();
   const rewritten = stage === "rewritten" || stage === "improved";
   return (
     <>
       <span
         className={`${styles.flag} ${stage === "idle" || stage === "counting" ? styles.hidden : ""}`}
       >
-        {scoreRewrite.flag}
+        {t("landing.report.flag")}
       </span>
       <span className={styles.before}>
-        {scoreRewrite.before}
+        {t("landing.report.before")}
         <span
           data-score-strike
           className={
@@ -31,7 +33,7 @@ export default function ScoreRewriteLines({
       <strong
         className={`${styles.after} ${rewritten ? styles.visible : styles.hidden}`}
       >
-        {scoreRewrite.after}
+        {t("landing.report.after")}
         <span data-score-highlight>
           <PenHighlight variant={1} play={false} onDark />
         </span>
