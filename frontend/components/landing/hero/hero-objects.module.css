@@ -33,13 +33,18 @@
   white-space: nowrap;
   box-shadow: 0 8px 18px rgba(80, 8, 0, 0.25);
 }
-.callout::after {
-  content: "";
+.callout i {
   position: absolute;
   width: 28px;
   height: 3px;
   background: currentColor;
   top: 50%;
+  transform: scaleX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .callout i {
+    transform: scaleX(1);
+  }
 }
 .ats {
   color: var(--brand-ink);
@@ -47,7 +52,7 @@
   top: 12%;
   left: 6%;
 }
-.ats::after {
+.ats i {
   left: 100%;
   rotate: -15deg;
   transform-origin: left;
@@ -58,7 +63,7 @@
   top: 49%;
   left: 0;
 }
-.impact::after {
+.impact i {
   left: 100%;
   rotate: 14deg;
   transform-origin: left;
@@ -69,7 +74,7 @@
   bottom: 13%;
   right: 0;
 }
-.gap::after {
+.gap i {
   right: 100%;
   rotate: -18deg;
   transform-origin: right;
@@ -92,7 +97,7 @@
     font-size: 15px;
     padding: 7px 10px 9px;
   }
-  .callout::after {
+  .callout i {
     width: 12px;
   }
   .ats {

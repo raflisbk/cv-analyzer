@@ -1,11 +1,16 @@
+"use client";
+import { useRef } from "react";
+import { useHeroLines } from "../motion/hero-lines";
 import Image from "next/image";
 import { HERO_OBJECTS, HERO_STICKERS } from "@/lib/landing-hero-layout";
 import styles from "./hero-objects.module.css";
 import MarginNote from "../pen/margin-note";
 
 export default function HeroObjects() {
+  const ref = useRef<HTMLDivElement>(null);
+  useHeroLines(ref);
   return (
-    <div className={styles.stage}>
+    <div ref={ref} className={styles.stage}>
       <div
         className={styles.sheet}
         data-hero-object
@@ -33,6 +38,7 @@ export default function HeroObjects() {
           data-hero-sticker
         >
           {item.label}
+          <i data-leader-line aria-hidden="true" />
         </span>
       ))}
     </div>

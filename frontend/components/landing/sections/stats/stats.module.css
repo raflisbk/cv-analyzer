@@ -22,7 +22,6 @@
   width: clamp(72px, 7vw, 96px);
   height: clamp(72px, 7vw, 96px);
   margin-bottom: 6px;
-  rotate: -6deg;
 }
 .stat b {
   display: block;
