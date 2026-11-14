@@ -7,6 +7,7 @@ import styles from "./features.module.css";
 import PenUnderline from "../../pen/pen-underline";
 import pen from "../../pen/pen.module.css";
 import FeatureCard from "./feature-card";
+import FactsRow from "./facts-row";
 export default function FeaturesSection() {
   const ref = useLandingStory(featuresMotion, 120);
   return (
@@ -27,6 +28,7 @@ export default function FeaturesSection() {
       {features.map((feature, index) => (
         <FeatureCard feature={feature} index={index} key={feature.title} />
       ))}
+      <FactsRow />
     </section>
   );
 }

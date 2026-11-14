@@ -14,9 +14,7 @@ export default function FeatureCard({
   const description =
     feature.title === "Real scoring"
       ? `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions, with a plain reason for every score.`
-      : feature.title === "Job match"
-        ? "A match percentage and a clear list of missing keywords."
-        : feature.description;
+      : feature.description;
   return (
     <article className={`${styles.card} ${styles[`card${index}`]}`}>
       <h3>{feature.title}</h3>
