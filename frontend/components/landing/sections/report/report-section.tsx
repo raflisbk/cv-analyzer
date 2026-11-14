@@ -19,7 +19,7 @@ export default function ReportSection() {
     <section
       ref={ref}
       id="report"
-      className={`${base.panel} ${base.blush} ${styles.layout}`}
+      className={`${base.panel} ${base.snow} ${base.calm} ${styles.layout}`}
     >
       <div>
         <h2>{t("landing.report.heading")}</h2>

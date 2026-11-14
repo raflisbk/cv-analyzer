@@ -23,6 +23,16 @@
 .panel p {
   line-height: 1.5;
 }
+.calm {
+  padding-block: 72px;
+}
+.calm h2 {
+  font-size: clamp(40px, 5vw, 68px);
+}
+.calm p {
+  font-size: 18px;
+  max-width: 66ch;
+}
 .hand {
   font-family: var(--font-hand);
   font-size: clamp(28px, 3vw, 36px);
@@ -161,6 +171,12 @@
   }
   .panel h3 {
     font-size: 34px;
+  }
+  .calm {
+    padding-block: 40px;
+  }
+  .calm h2 {
+    font-size: clamp(38px, 11vw, 52px);
   }
 }
 .ink .hand {

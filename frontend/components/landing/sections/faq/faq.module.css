@@ -3,15 +3,6 @@
   grid-template-columns: 0.8fr 1.2fr;
   gap: 40px;
 }
-.grid .objects {
-  display: flex;
-  gap: 16px;
-  margin-top: 24px;
-}
-.objects img {
-  width: clamp(110px, 10vw, 140px);
-  height: clamp(110px, 10vw, 140px);
-}
 .item {
   background: var(--brand-blush);
   border-radius: 20px;

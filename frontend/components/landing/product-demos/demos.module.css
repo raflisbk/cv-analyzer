@@ -141,3 +141,15 @@
   font-weight: 800;
   opacity: 1;
 }
+:global([data-report-support]) .ring strong {
+  color: var(--brand-ink);
+}
+:global([data-report-support]) .ringTrack,
+:global([data-report-support]) .track {
+  stroke: var(--brand-snow);
+  background: var(--brand-snow);
+}
+:global([data-report-support]) .requirement small,
+:global([data-report-support]) .rewrite > span[data-demo-before] {
+  color: var(--brand-ink);
+}
