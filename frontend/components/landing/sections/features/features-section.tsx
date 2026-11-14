@@ -5,13 +5,14 @@ import { useLandingStory } from "@/hooks/use-landing-story";
 import { featuresMotion } from "@/components/landing/motion/features";
 import base from "../section.module.css";
 import styles from "./features.module.css";
-import PenUnderline from "../../pen/pen-underline";
+import PenHighlight from "../../pen/pen-highlight";
 import pen from "../../pen/pen.module.css";
 import FeatureCard from "./feature-card";
 import FactsRow from "./facts-row";
 export default function FeaturesSection() {
   const { t } = useT();
   const ref = useLandingStory(featuresMotion, 120);
+  const [before, after] = t("landing.features.heading").split("analyzer");
   return (
     <section
       ref={ref}
@@ -20,11 +21,12 @@ export default function FeaturesSection() {
     >
       <div className={`${base.head} ${styles.head}`}>
         <h2>
-          {t("landing.features.heading")}{" "}
+          {before}
           <span className={pen.target}>
-            CV Analyzer
-            <PenUnderline variant={0} />
+            analyzer
+            <PenHighlight variant={0} />
           </span>
+          {after}
         </h2>
       </div>
       {features.map((feature, index) => (

@@ -1,4 +1,4 @@
 export const features = [
-  { key: "scoring", image: "podium" },
-  { key: "editor", image: "magic-wand" },
+  { key: "scoring" },
+  { key: "editor" },
 ] as const;

@@ -1,0 +1,41 @@
+.bars,
+.rewrite {
+  grid-area: i;
+  align-self: center;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border-radius: 20px;
+  background: var(--brand-snow);
+  box-shadow: 0 8px 22px rgba(26, 11, 7, 0.08);
+}
+.bar {
+  display: grid;
+  grid-template-columns: 82px minmax(36px, 1fr) 24px;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+.track {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--brand-blush);
+  overflow: hidden;
+}
+.track span {
+  display: block;
+  height: 100%;
+  background: var(--brand-red-deep);
+}
+.rewrite {
+  font-size: 14px;
+  line-height: 1.45;
+}
+.rewrite del {
+  color: var(--brand-red-deep);
+}
+.rewrite strong {
+  border-left: 3px solid var(--brand-red-deep);
+  padding-left: 10px;
+}
