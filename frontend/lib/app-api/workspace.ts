@@ -1,6 +1,7 @@
 import { getWorkspaceHydration as loadWorkspaceHydration } from "@/lib/workspace";
 export { getJobFileUrl } from "@/lib/workspace";
 import { apiFetch, getJobResults as loadJobResults } from "@/lib/api";
+import { rawRequest } from "./raw-request";
 import type { WorkspaceHydration } from "@/lib/workspace";
 import type {
   AnalysisResult,
@@ -47,6 +48,20 @@ export async function getWorkspaceHydration(
       suggestions: normalizeSuggestions(result.analysis.suggestions),
     },
   };
+}
+
+export async function getJobPdf(jobId: string): Promise<Blob> {
+  const response = await rawRequest(
+    `/api/v1/jobs/${encodeURIComponent(jobId)}/file/proxy`,
+  );
+  if (!response.ok) {
+    throw new Error("Original file unavailable for this CV.");
+  }
+  const file = await response.blob();
+  if (!file.size) {
+    throw new Error("Original file unavailable for this CV.");
+  }
+  return file;
 }
 
 export async function requestInlineRewrite(
