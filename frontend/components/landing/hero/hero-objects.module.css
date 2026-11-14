@@ -15,11 +15,18 @@
 .sheet img {
   object-fit: contain;
 }
+.bullet {
+  position: absolute;
+  left: 35%;
+  top: 57%;
+  width: 45%;
+  height: 4%;
+}
 .note {
   position: absolute;
   z-index: 3;
-  top: 70%;
-  left: 3%;
+  top: 25%;
+  left: 10%;
 }
 .note > span {
   color: var(--brand-ink);
@@ -54,7 +61,6 @@
 }
 .ats i {
   left: 100%;
-  rotate: -15deg;
   transform-origin: left;
 }
 .impact {
@@ -65,7 +71,6 @@
 }
 .impact i {
   left: 100%;
-  rotate: 14deg;
   transform-origin: left;
 }
 .gap {
@@ -76,7 +81,6 @@
 }
 .gap i {
   right: 100%;
-  rotate: -18deg;
   transform-origin: right;
 }
 @media (max-width: 860px) {
@@ -104,14 +108,13 @@
     left: 0;
   }
   .impact {
-    top: 50%;
+    top: 65%;
   }
   .gap {
-    bottom: 7%;
+    bottom: 0;
   }
   .note {
-    top: auto;
-    bottom: 0;
+    top: 30%;
     left: 4%;
   }
 }
