@@ -82,6 +82,12 @@
     inset 0 -1px 0 rgba(120, 30, 10, 0.18),
     0 3px 6px -3px rgba(60, 6, 0, 0.6);
 }
+.actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .action {
   justify-self: end;
   background: var(--brand-punk);
@@ -162,7 +168,7 @@
     grid-template-columns: 1fr auto;
   }
   .links,
-  .action {
+  .actions {
     display: none;
   }
   .menuButton {
