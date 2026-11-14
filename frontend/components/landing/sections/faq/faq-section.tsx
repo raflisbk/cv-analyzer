@@ -5,6 +5,8 @@ import { useLandingFaq } from "@/hooks/use-landing-faq";
 import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import base from "../section.module.css";
 import styles from "./faq.module.css";
+import PenUnderline from "../../pen/pen-underline";
+import pen from "../../pen/pen.module.css";
 export default function FaqSection() {
   const { ref, open, toggle } = useLandingFaq();
   return (
@@ -14,8 +16,13 @@ export default function FaqSection() {
       className={`${base.panel} ${base.blush} ${styles.grid}`}
     >
       <div>
-        <h2>Questions, answered</h2>
-        <span className={base.hand}>still unsure? just try it</span>
+        <h2>
+          Questions,{" "}
+          <span className={pen.target}>
+            answered
+            <PenUnderline variant={2} />
+          </span>
+        </h2>
         <div className={styles.objects} aria-hidden="true">
           <Image
             width={360}

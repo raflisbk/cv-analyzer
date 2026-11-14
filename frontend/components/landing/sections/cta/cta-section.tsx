@@ -8,6 +8,8 @@ import { useLandingExpand } from "@/hooks/use-landing-expand";
 import base from "../section.module.css";
 import PlaneIcon from "../plane-icon";
 import styles from "./cta.module.css";
+import PenUnderline from "../../pen/pen-underline";
+import pen from "../../pen/pen.module.css";
 export default function CtaSection() {
   const ref = useLandingStory(ctaMotion, 100, undefined, {
     start: "top 92%",
@@ -27,7 +29,13 @@ export default function CtaSection() {
         <span data-cta-tag className={styles.tag}>
           Free to try
         </span>
-        <h2>Ready when your CV is</h2>
+        <h2>
+          Ready when your{" "}
+          <span className={pen.target}>
+            CV is
+            <PenUnderline variant={1} />
+          </span>
+        </h2>
         <p>
           Upload it now. Your first report is ready before your coffee cools.
         </p>
@@ -39,7 +47,6 @@ export default function CtaSection() {
             See a sample report
           </a>
         </div>
-        <span className={base.hand}>no card, no spam</span>
       </div>
       <div className={styles.art} aria-label="Sample CV analysis and rewrite">
         <div className={styles.sampleScore}>

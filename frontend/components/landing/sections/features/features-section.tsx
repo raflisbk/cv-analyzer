@@ -6,6 +6,8 @@ import { featuresMotion } from "@/components/landing/motion/features";
 import { formatLandingCount, landingFacts } from "@/lib/landing-facts";
 import base from "../section.module.css";
 import styles from "./features.module.css";
+import PenUnderline from "../../pen/pen-underline";
+import pen from "../../pen/pen.module.css";
 export default function FeaturesSection() {
   const ref = useLandingStory(featuresMotion, 120);
   return (
@@ -15,8 +17,13 @@ export default function FeaturesSection() {
       className={`${base.panel} ${base.punk} ${styles.grid}`}
     >
       <div className={`${base.head} ${styles.head}`}>
-        <h2>Inside CV Analyzer</h2>
-        <span className={base.hand}>no spreadsheets needed</span>
+        <h2>
+          Inside{" "}
+          <span className={pen.target}>
+            CV Analyzer
+            <PenUnderline variant={0} />
+          </span>
+        </h2>
       </div>
       {features.map((feature, i) => (
         <article
