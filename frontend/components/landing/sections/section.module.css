@@ -15,7 +15,7 @@
   text-wrap: balance;
 }
 .panel h2 {
-  font-size: clamp(40px, 6vw, 84px);
+  font-size: clamp(40px, 5vw, 68px);
 }
 .panel h3 {
   font-size: clamp(32px, 3.5vw, 50px);
@@ -25,9 +25,6 @@
 }
 .calm {
   padding-block: 72px;
-}
-.calm h2 {
-  font-size: clamp(40px, 5vw, 68px);
 }
 .calm p {
   font-size: 18px;
@@ -172,9 +169,6 @@
   }
   .calm {
     padding-block: 40px;
-  }
-  .calm h2 {
-    font-size: clamp(38px, 11vw, 52px);
   }
 }
 .ink .hand {

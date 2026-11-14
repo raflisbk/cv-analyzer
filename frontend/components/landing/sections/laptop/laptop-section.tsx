@@ -15,7 +15,7 @@ export default function LaptopSection() {
     <section
       id="features"
       ref={ref}
-      className={`${base.panel} ${base.blush} ${styles.section}`}
+      className={`${base.panel} ${base.blush} ${base.calm} ${styles.section}`}
     >
       <div className={styles.text} data-laptop-text>
         <h2>{t("landing.inside.heading")}</h2>
