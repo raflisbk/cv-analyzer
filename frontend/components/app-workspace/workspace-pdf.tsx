@@ -14,10 +14,10 @@ const PdfViewer = dynamic(
 
 export function WorkspacePdf({
   jobId,
-  url,
+  file,
 }: {
   jobId: string;
-  url: string | null;
+  file: Blob | null;
 }) {
   const { pdfRef, pageWidth } = useAppWorkspacePdfWidth("pdf");
   return (
@@ -26,7 +26,7 @@ export function WorkspacePdf({
       className={styles.frame}
       aria-label="Original PDF preview"
     >
-      <PdfViewer url={url} containerWidth={pageWidth} jobId={jobId} />
+      <PdfViewer file={file} containerWidth={pageWidth} jobId={jobId} />
     </div>
   );
 }

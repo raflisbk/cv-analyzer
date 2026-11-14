@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   getWorkspaceHydration,
-  getJobFileUrl,
+  getJobPdf,
   getJobResults,
 } from "@/lib/app-api/workspace";
 import { getAts } from "@/lib/app-api/ats";
@@ -21,7 +21,8 @@ export function useAppWorkspaceData(jobId: string) {
   });
   const file = useQuery({
     queryKey: ["app-file", jobId],
-    queryFn: () => getJobFileUrl(jobId),
+    queryFn: () => getJobPdf(jobId),
+    retry: false,
   });
   const ats = useQuery({
     queryKey: ["app-ats", jobId],
