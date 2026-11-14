@@ -14,7 +14,11 @@ export const scoreRewrite = {
 export const demoMatch = {
   score: 78,
   requirements: [
-    { label: "Product design", evidence: "Payly · Product Designer", status: "Met" },
+    {
+      label: "Product design",
+      evidence: "Payly · Product Designer",
+      status: "Met",
+    },
     { label: "Checkout flows", evidence: "Checkout rebuild", status: "Met" },
     { label: "Research ops", evidence: "Not shown in CV", status: "Missing" },
   ],

@@ -1,19 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { scoreBars } from "@/lib/landing-report";
 import {
   demoMatch,
-  demoRewrite,
-  demoScores,
   demoTemplates,
-} from "@/lib/landing-stickers";
+  scoreBars,
+  scoreRewrite,
+} from "@/lib/landing-report";
 
 describe("landing demo data", () => {
   it("uses the report score dimensions and source rewrite", () => {
-    expect(demoScores).toEqual(scoreBars);
-    expect(demoRewrite.before).toBe(
+    expect(scoreBars).toHaveLength(4);
+    expect(scoreRewrite.before).toBe(
       "Led a team of developers on the checkout rebuild.",
     );
-    expect(demoRewrite.after).toBe(
+    expect(scoreRewrite.after).toBe(
       "Led the checkout rebuild with a team of developers.",
     );
   });

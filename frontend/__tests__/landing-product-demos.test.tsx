@@ -27,7 +27,7 @@ describe("landing product demos", () => {
   it("shows match evidence and a missing requirement", () => {
     render(<MatchDemo />);
     expect(
-      screen.getByRole("img", { name: "Overall score 78 out of 100" }),
+      screen.getByRole("img", { name: "Job match 78 out of 100" }),
     ).toBeTruthy();
     expect(screen.getByText("Not shown in CV")).toBeTruthy();
     expect(screen.getAllByText("Met")).toHaveLength(2);
