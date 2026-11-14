@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
-import { footerColumns } from "@/lib/landing-footer";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { footerMotion } from "@/components/landing/motion/footer";
 import PlaneIcon from "../plane-icon";
 import base from "../section.module.css";
 import styles from "./footer.module.css";
+import FooterColumns from "./footer-columns";
 const footerScroll = { start: "top 92%", end: "bottom bottom" };
 
 export default function FooterSection() {
@@ -19,33 +19,7 @@ export default function FooterSection() {
             Score my CV <PlaneIcon size={52} />
           </Link>
         </div>
-        <div className={styles.columns}>
-          {footerColumns.map((column) => (
-            <nav
-              data-footer-column
-              aria-label={column.title}
-              key={column.title}
-            >
-              <h2>{column.title}</h2>
-              <ul>
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    {link.href ? (
-                      <Link href={link.href}>{link.label}</Link>
-                    ) : (
-                      <span>
-                        {link.label}
-                        {link.label !== "Your CV stays yours" && (
-                          <small>soon</small>
-                        )}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
-        </div>
+        <FooterColumns />
       </div>
       <div data-footer-bottom className={styles.bottom}>
         © {new Date().getFullYear()} pathkr. Your CV stays yours.
