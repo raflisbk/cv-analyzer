@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
 import AccountMenu from "@/components/landing/navbar/account-menu";
 
 const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
@@ -15,15 +16,28 @@ const user = {
 };
 
 describe("AccountMenu", () => {
-  function renderMenu(app = false) {
+  function renderMenu(app = false, locale: "en" | "id" = "en") {
     const client = new QueryClient();
     render(
       <QueryClientProvider client={client}>
-        <AccountMenu user={user} app={app} />
+        <I18nProvider initialLocale={locale}>
+          <AccountMenu user={user} app={app} />
+        </I18nProvider>
       </QueryClientProvider>,
     );
     return client;
   }
+
+  it("renders Indonesian account actions", () => {
+    renderMenu(false, "id");
+    fireEvent.click(screen.getByRole("button", { name: "Menu akun" }));
+    expect(
+      screen.getByRole("menuitem", { name: "Sesi aktif" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Keluar" }),
+    ).toBeInTheDocument();
+  });
 
   it("links to My CVs inside the app", () => {
     renderMenu(true);
