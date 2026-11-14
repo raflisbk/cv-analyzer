@@ -1,3 +1,4 @@
+import landingEn from "./landing-en";
 const en = {
   nav: {
     main: "Main navigation",
@@ -48,19 +49,7 @@ const en = {
     signOut: "Sign out",
     mobileLogin: "Log in to start",
   },
-  footer: {
-    scoring: "CV Scoring",
-    grammar: "Grammar Check",
-    ats: "ATS Compliance",
-    gaps: "Skill Gap Analysis",
-    jd: "JD Comparison",
-    inline: "Inline Edit",
-    editor: "Smart Editor",
-    archetypes: "{count} Role Archetypes",
-    domains: "{count} Domains",
-    checks: "{count} ATS Checks",
-    languages: "{count} Languages",
-  },
+  landing: landingEn,
   common: { language: "Language" },
 } as const;
 export default en;

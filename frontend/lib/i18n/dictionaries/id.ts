@@ -1,3 +1,4 @@
+import landingId from "./landing-id";
 import type en from "./en";
 
 type Shape<T> = { [K in keyof T]: T[K] extends string ? string : Shape<T[K]> };
@@ -51,19 +52,7 @@ const id = {
     signOut: "Keluar",
     mobileLogin: "Masuk buat mulai",
   },
-  footer: {
-    scoring: "Skor CV",
-    grammar: "Cek tata bahasa",
-    ats: "Kesesuaian ATS",
-    gaps: "Analisis skill gap",
-    jd: "Bandingkan lowongan",
-    inline: "Edit langsung",
-    editor: "Editor pintar",
-    archetypes: "{count} Arketipe peran",
-    domains: "{count} Domain",
-    checks: "{count} Cek ATS",
-    languages: "{count} Bahasa",
-  },
+  landing: landingId,
   common: { language: "Bahasa" },
 } as const satisfies Shape<typeof en>;
 export default id;
