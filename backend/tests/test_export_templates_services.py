@@ -148,19 +148,47 @@ def test_original_pdf_only_changes_fixed_line(document, suggestions):
     assert result.applied == ["experience_0_0"]
 
 
-def test_original_pdf_no_room_keeps_source(document, suggestions):
+def test_original_pdf_wraps_longer_rewrite_in_free_gap(document, suggestions):
     pdf = fitz.open()
     page = pdf.new_page()
+    page.insert_text((50, 30), "Kept line")
     page.insert_text((50, 50), "Old line")
+    page.insert_text((50, 120), "Last line")
     source = pdf.tobytes()
     pdf.close()
     suggestions[0]["suggestions"][0][
         "after_text"
-    ] = "A replacement much longer than the source line"
+    ] = "A replacement much longer than the source line that wraps across two lines"
+    result = apply_fixes(document, suggestions, ["experience_0_0"], original=True)
+    output = render_original_pdf(source, result)
+    text = extract_pdf_text(output)
+    assert "Old line" not in text
+    assert "Kept line" in text
+    assert "Last line" in text
+    assert "wraps across" in text
+    assert len(text.splitlines()) >= 4
+    assert result.applied == ["experience_0_0"]
+
+
+def test_original_pdf_no_room_keeps_source(document, suggestions):
+    pdf = fitz.open()
+    page = pdf.new_page()
+    page.insert_text((50, 50), "Old line")
+    page.insert_text((50, 66), "Last line")
+    source = pdf.tobytes()
+    pdf.close()
+    suggestions[0]["suggestions"][0]["after_text"] = (
+        "A replacement much longer than the source line " * 4
+    )
     result = apply_fixes(document, suggestions, ["experience_0_0"], original=True)
     output = render_original_pdf(source, result)
     assert "Old line" in extract_pdf_text(output)
     assert result.skipped == {"experience_0_0": "no_room"}
+
+
+@pytest.mark.parametrize("template_id", ["classic", "modern", "compact", "plain"])
+def test_ats_safe_template_scores_at_least_80(template_id):
+    assert template_ats_score(template_id) >= 80
 
 
 def test_original_docx_preserves_other_runs(document, suggestions):
