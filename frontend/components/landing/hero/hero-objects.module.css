@@ -15,6 +15,15 @@
 .sheet img {
   object-fit: contain;
 }
+.note {
+  position: absolute;
+  z-index: 3;
+  top: 70%;
+  left: 3%;
+}
+.note > span {
+  color: var(--brand-ink);
+}
 .callout {
   position: absolute;
   z-index: 2;
@@ -94,5 +103,10 @@
   }
   .gap {
     bottom: 7%;
+  }
+  .note {
+    top: auto;
+    bottom: 0;
+    left: 4%;
   }
 }
