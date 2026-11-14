@@ -1,4 +1,4 @@
-import { scoreBars } from "@/lib/landing-report";
+import { scoreBars, scoreRewrite } from "@/lib/landing-report";
 
 export const demoScores = scoreBars;
 export const demoMatch = {
@@ -13,8 +13,5 @@ export const demoMatch = {
     { label: "Research ops", evidence: "Not shown in CV", status: "Missing" },
   ],
 } as const;
-export const demoRewrite = {
-  before: "Led a team of developers on the checkout rebuild.",
-  after: "Led the checkout rebuild with a team of developers.",
-} as const;
+export const demoRewrite = scoreRewrite;
 export const demoTemplates = ["Clean", "Classic", "Modern"] as const;
