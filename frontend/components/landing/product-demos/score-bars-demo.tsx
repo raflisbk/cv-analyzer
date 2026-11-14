@@ -1,4 +1,4 @@
-import { demoScores } from "@/lib/landing-stickers";
+import { scoreBars as demoScores } from "@/lib/landing-report";
 import styles from "./demos.module.css";
 
 export default function ScoreBarsDemo({

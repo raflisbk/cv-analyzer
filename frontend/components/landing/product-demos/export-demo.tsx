@@ -1,4 +1,4 @@
-import { demoTemplates } from "@/lib/landing-stickers";
+import { demoTemplates } from "@/lib/landing-report";
 import styles from "./document-demos.module.css";
 
 export default function ExportDemo() {

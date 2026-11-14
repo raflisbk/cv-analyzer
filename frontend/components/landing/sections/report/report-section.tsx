@@ -7,9 +7,12 @@ import styles from "./report.module.css";
 import ScoreCard from "./score-card";
 import PlaneIcon from "../plane-icon";
 import MarginNote from "../../pen/margin-note";
+import ReportSupport from "./report-support";
+import { useDemoOnce } from "@/components/landing/motion/demo-once";
 
 export default function ReportSection() {
   const ref = useLandingStory(reportMotion, 120);
+  useDemoOnce(ref);
   return (
     <section
       ref={ref}
@@ -34,6 +37,7 @@ export default function ReportSection() {
         </div>
         <ScoreCard />
       </div>
+      <ReportSupport />
     </section>
   );
 }

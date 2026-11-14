@@ -1,4 +1,4 @@
-import { demoRewrite } from "@/lib/landing-stickers";
+import { scoreRewrite as demoRewrite } from "@/lib/landing-report";
 import styles from "./demos.module.css";
 import PenStrike from "../pen/pen-strike";
 import PenHighlight from "../pen/pen-highlight";
