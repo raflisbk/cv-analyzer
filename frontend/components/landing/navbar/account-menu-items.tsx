@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useT } from "@/components/i18n/i18n-provider";
 import { ArrowUpRight, LayoutGrid, LogOut, Monitor } from "lucide-react";
 import type { useAccountMenu } from "@/hooks/use-account-menu";
 import AccountSessionsAllDevices from "./account-sessions-all-devices";
@@ -11,6 +12,7 @@ interface AccountMenuItemsProps {
 }
 
 function WorkspaceItem({ menu, app = false }: AccountMenuItemsProps) {
+  const { t } = useT();
   return (
     <Link
       ref={(node) => {
@@ -24,13 +26,14 @@ function WorkspaceItem({ menu, app = false }: AccountMenuItemsProps) {
       <span className={styles.icon}>
         <LayoutGrid size={22} strokeWidth={2.4} />
       </span>
-      <span>{app ? "My CVs" : "Workspace"}</span>
+      <span>{t(app ? "account.cvs" : "account.workspace")}</span>
       <ArrowUpRight className={styles.arrow} size={28} aria-hidden="true" />
     </Link>
   );
 }
 
 function SessionsItem({ menu }: { menu: Menu }) {
+  const { t } = useT();
   return (
     <button
       ref={(node) => {
@@ -47,12 +50,13 @@ function SessionsItem({ menu }: { menu: Menu }) {
       <span className={styles.icon}>
         <Monitor size={22} aria-hidden="true" />
       </span>
-      Active sessions
+      {t("account.sessions")}
     </button>
   );
 }
 
 function LogoutItem({ menu }: { menu: Menu }) {
+  const { t } = useT();
   return (
     <button
       ref={(node) => {
@@ -66,7 +70,7 @@ function LogoutItem({ menu }: { menu: Menu }) {
       <span className={styles.icon}>
         <LogOut size={22} strokeWidth={2.4} />
       </span>
-      Log out
+      {t("account.logout")}
     </button>
   );
 }

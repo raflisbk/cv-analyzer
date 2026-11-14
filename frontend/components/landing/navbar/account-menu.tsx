@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import { ChevronDown } from "lucide-react";
 import { useAccountMenu } from "@/hooks/use-account-menu";
 import { accountDisplayName, accountShortName } from "@/lib/account-menu";
@@ -18,12 +19,13 @@ function accountTrigger(
   user: AuthUser,
   menu: ReturnType<typeof useAccountMenu>,
 ) {
+  const { t } = useT();
   return (
     <button
       ref={menu.triggerRef}
       className={styles.trigger}
       type="button"
-      aria-label="Account menu"
+      aria-label={t("account.menu")}
       aria-haspopup="menu"
       aria-expanded={menu.open}
       onClick={() => menu.setOpen(!menu.open)}
@@ -49,6 +51,7 @@ function accountTrigger(
 
 export default function AccountMenu({ user, app = false }: AccountMenuProps) {
   const menu = useAccountMenu();
+  const { t } = useT();
   return (
     <div className={styles.account} ref={menu.rootRef}>
       <div className={styles.wrapper}>
@@ -58,7 +61,7 @@ export default function AccountMenu({ user, app = false }: AccountMenuProps) {
             className={styles.grid}
             style={{ gridTemplateRows: "repeat(3, 1fr)" }}
             role="menu"
-            aria-label="Account"
+            aria-label={t("account.menu")}
             aria-hidden={!menu.open}
             inert={!menu.open}
             onKeyDown={menu.onMenuKeyDown}

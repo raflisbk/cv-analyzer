@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { MouseEvent } from "react";
 import { SheetClose } from "@/components/ui/sheet";
 import { NAV_LINKS } from "./nav-links";
@@ -13,8 +14,9 @@ type Props = {
 };
 
 export default function MobileNavigation({ onNavigate }: Props) {
+  const { t } = useT();
   return (
-    <nav aria-label="Mobile navigation" className={styles.mobileLinks}>
+    <nav aria-label={t("nav.mobile")} className={styles.mobileLinks}>
       {NAV_LINKS.map((link) => (
         <SheetClose key={link.href} asChild>
           <Link
@@ -23,21 +25,21 @@ export default function MobileNavigation({ onNavigate }: Props) {
               onNavigate(event, link.href.slice(1), event.currentTarget)
             }
           >
-            {link.label}
+            {t(link.key)}
           </Link>
         </SheetClose>
       ))}
       <SheetClose asChild>
-        <Link href="/cv-analyzer">CV Analyzer</Link>
+        <Link href="/cv-analyzer">{t("nav.analyzer")}</Link>
       </SheetClose>
       <SheetClose asChild>
         <Link href="/cv-builder">
-          CV Builder <small>Coming soon</small>
+          {t("nav.builder")} <small>{t("nav.comingSoon")}</small>
         </Link>
       </SheetClose>
       <SheetClose asChild>
         <Link href="/job-finding">
-          Job Connect <small>Coming soon</small>
+          {t("nav.connect")} <small>{t("nav.comingSoon")}</small>
         </Link>
       </SheetClose>
     </nav>

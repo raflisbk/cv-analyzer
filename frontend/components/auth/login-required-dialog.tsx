@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,6 +15,7 @@ import { safeNextPath } from "@/lib/auth-next-path";
 import styles from "./login-dialog.module.css";
 
 export function LoginRequiredDialog() {
+  const { t } = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -64,7 +66,7 @@ export function LoginRequiredDialog() {
         <button
           type="button"
           onClick={() => handleOpenChange(false)}
-          aria-label="Close"
+          aria-label={t("auth.close")}
           className={styles.close}
         >
           <svg
@@ -82,14 +84,13 @@ export function LoginRequiredDialog() {
             />
           </svg>
         </button>
-        <DialogTitle className={styles.title}>Sign in to continue</DialogTitle>
-        <span className={styles.hand}>path karir kamu menunggu</span>
+        <DialogTitle className={styles.title}>{t("auth.title")}</DialogTitle>
+        <span className={styles.hand}>{t("auth.tagline")}</span>
         <DialogDescription className={styles.description}>
-          You need an account to analyze your CV and come back to your results
-          anytime.
+          {t("auth.body")}
         </DialogDescription>
         <GoogleLoginButton variant="landing" onSuccess={handleLoginSuccess} />
-        <small className={styles.footnote}>Your CV stays yours.</small>
+        <small className={styles.footnote}>{t("auth.footnote")}</small>
       </DialogContent>
     </Dialog>
   );

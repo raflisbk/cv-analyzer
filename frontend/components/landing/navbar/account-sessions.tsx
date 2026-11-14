@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import {
   Dialog,
   DialogContent,
@@ -24,15 +25,16 @@ function SessionRow({
   busy: boolean;
   signOut: (id: string) => void;
 }) {
+  const { t } = useT();
   return (
     <li className="flex items-center justify-between gap-3 rounded-2xl bg-white p-3">
       <div>
         <strong>{sessionDevice(session.userAgent)}</strong>
         <small className="block">
-          Last used {sessionLastUsed(session.lastUsedAt)}
+          {t("account.lastUsed", { date: sessionLastUsed(session.lastUsedAt) })}
         </small>
         {session.current && (
-          <span className="text-sm font-bold">Current session</span>
+          <span className="text-sm font-bold">{t("account.current")}</span>
         )}
       </div>
       {!session.current && (
@@ -42,7 +44,7 @@ function SessionRow({
           onClick={() => signOut(session.id)}
           className="rounded-full bg-[#b81d00] px-3 py-2 font-bold text-white"
         >
-          Sign out
+          {t("account.signOut")}
         </button>
       )}
     </li>
@@ -51,15 +53,22 @@ function SessionRow({
 
 export default function AccountSessions({ open, onOpenChange }: Props) {
   const { sessions, error, busy, signOut } = useAuthSessions(open);
+  const { t } = useT();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md rounded-3xl bg-[#fff4ee] text-[#1a0b07]">
-        <DialogTitle>Active sessions</DialogTitle>
-        <DialogDescription>
-          Devices signed in to your account.
-        </DialogDescription>
-        {error && <p role="alert">{error}</p>}
+        <DialogTitle>{t("account.sessions")}</DialogTitle>
+        <DialogDescription>{t("account.sessionDescription")}</DialogDescription>
+        {error && (
+          <p role="alert">
+            {t(
+              error === "Could not load sessions."
+                ? "account.sessionsError"
+                : "account.signOutError",
+            )}
+          </p>
+        )}
         <ul className="max-h-80 space-y-3 overflow-y-auto">
           {sessions.map((session) => (
             <SessionRow
