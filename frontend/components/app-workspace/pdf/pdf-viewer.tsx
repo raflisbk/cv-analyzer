@@ -9,7 +9,7 @@ const PdfViewerInner = dynamic(() => import("./pdf-viewer-inner"), {
 });
 
 interface PdfViewerProps {
-  file: Blob | null;
+  url: string | null;
   containerWidth: number;
   currentPage?: number;
   scale?: number;
@@ -21,7 +21,7 @@ interface PdfViewerProps {
 }
 
 export function PdfViewer({
-  file,
+  url,
   containerWidth,
   currentPage = 1,
   scale = 1.0,
@@ -31,7 +31,7 @@ export function PdfViewer({
   suggestions,
   jobId,
 }: PdfViewerProps) {
-  if (!file) {
+  if (!url) {
     return (
       <div
         className="flex min-h-[1080px] items-center justify-center"
@@ -50,7 +50,7 @@ export function PdfViewer({
 
   return (
     <PdfViewerInner
-      file={file}
+      url={url}
       containerWidth={containerWidth}
       currentPage={currentPage}
       scale={scale}

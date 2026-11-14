@@ -15,7 +15,7 @@ import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import type { SuggestionCard } from "@/lib/types";
 
 interface PdfViewerInnerProps {
-  file: Blob;
+  url: string;
   containerWidth: number;
   currentPage?: number;
   scale?: number;
@@ -38,7 +38,7 @@ function PageLoadingSkeleton({ width }: { width: number }) {
 }
 
 export default function PdfViewerInner({
-  file,
+  url,
   containerWidth,
   currentPage = 1,
   scale = 1.0,
@@ -90,7 +90,7 @@ export default function PdfViewerInner({
         role="alert"
       >
         <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
-          Original file unavailable for this CV.
+          Could not load PDF. Please try refreshing.
         </p>
       </div>
     );
@@ -99,7 +99,7 @@ export default function PdfViewerInner({
   return (
     <div className="relative" onMouseUp={handleSelectionChange}>
       <Document
-        file={file}
+        file={url}
         onLoadSuccess={({ numPages: n }: { numPages: number }) => {
           setNumPages(n);
           if (onDocumentLoadSuccess) {
