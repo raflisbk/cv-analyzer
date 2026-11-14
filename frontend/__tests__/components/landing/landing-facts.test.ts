@@ -18,6 +18,7 @@ describe("landing facts", () => {
   test("formatter groups thousands without implying a lower bound", () => {
     expect(formatLandingCount(1088)).toBe("1,088");
     expect(formatLandingCount(5)).toBe("5");
+    expect(formatLandingCount(1088, false, "id")).toBe("1.088");
   });
 
   test("formatter adds plus only for an explicit lower bound", () => {

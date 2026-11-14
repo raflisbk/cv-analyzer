@@ -6,6 +6,7 @@ import ReportSection from "@/components/landing/sections/report/report-section";
 import FeaturesSection from "@/components/landing/sections/features/features-section";
 import { NAV_LINKS } from "@/components/landing/navbar/nav-links";
 import { landingFacts } from "@/lib/landing-facts";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
 
 const frontend = process.cwd();
 const page = readFileSync(join(frontend, "app/page.tsx"), "utf8");
@@ -34,7 +35,7 @@ it("keeps page, dots, and navigation aligned on eight sections", () => {
     const component = readFileSync(join(frontend, `${source}.tsx`), "utf8");
     return component.match(/id="([^"]+)"/)?.[1];
   });
-  const dotIds = [...dots.matchAll(/\{ id: "([^"]+)", label:/g)].map(
+  const dotIds = [...dots.matchAll(/\{ id: "([^"]+)" \}/g)].map(
     (match) => match[1],
   );
   expect(ids).toEqual([
@@ -69,17 +70,25 @@ it("leaves no retired section references in landing code", () => {
 });
 
 it("renders the score demo and three distinct supporting demos", () => {
-  const html = renderToStaticMarkup(<ReportSection />);
+  const html = renderToStaticMarkup(
+    <I18nProvider initialLocale="en">
+      <ReportSection />
+    </I18nProvider>,
+  );
   expect(html).toContain("Accept rewrite");
-  expect(html).toContain("Job match");
-  expect(html).toContain("ATS ready");
+  expect(html).toContain("Job requirements");
+  expect(html).toContain("ATS checks passed");
   expect(html).toContain("SQL");
   expect(html).toContain("A/B testing");
   expect(html).not.toContain("Why people stick with it");
 });
 
 it("renders computed facts in the merged inside section", () => {
-  const html = renderToStaticMarkup(<FeaturesSection />);
+  const html = renderToStaticMarkup(
+    <I18nProvider initialLocale="en">
+      <FeaturesSection />
+    </I18nProvider>,
+  );
   expect(html).toContain(`data-value="${landingFacts.scoreDimensions}"`);
   expect(html).toContain(`data-value="${landingFacts.atsCheckCount}"`);
   expect(html).toContain(`data-value="${landingFacts.exportTemplateCount}"`);

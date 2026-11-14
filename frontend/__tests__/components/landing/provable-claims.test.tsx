@@ -14,17 +14,21 @@ describe("provable landing claims", () => {
       </I18nProvider>,
     );
     expect(html).toContain(
-      `${formatLandingCount(landingFacts.archetypeCount)} Role Archetypes`,
+      `${formatLandingCount(landingFacts.archetypeCount)} role archetypes`,
     );
     expect(html).toContain(
-      `${formatLandingCount(landingFacts.domainCount)} Domains`,
+      `${formatLandingCount(landingFacts.domainCount)} domains`,
     );
     expect(html).not.toContain("195+ Skills");
   });
 
   test("inside facts row uses sourced figures without time or ownership percentages", () => {
-    const html = renderToStaticMarkup(<FeaturesSection />);
-    expect(html).toContain('aria-label="CV Analyzer at a glance"');
+    const html = renderToStaticMarkup(
+      <I18nProvider initialLocale="en">
+        <FeaturesSection />
+      </I18nProvider>,
+    );
+    expect(html).toContain('aria-label="Checks and exports in CV Analyzer"');
     expect(html).toContain(`data-value="${landingFacts.scoreDimensions}"`);
     expect(html).toContain(`data-value="${landingFacts.atsCheckCount}"`);
     expect(html).toContain(`data-value="${landingFacts.exportTemplateCount}"`);
@@ -34,10 +38,18 @@ describe("provable landing claims", () => {
 
   test("feature and FAQ scoring claims use the sourced dimension count", () => {
     const html =
-      renderToStaticMarkup(<FeaturesSection />) +
-      renderToStaticMarkup(<FaqSection />);
+      renderToStaticMarkup(
+        <I18nProvider initialLocale="en">
+          <FeaturesSection />
+        </I18nProvider>,
+      ) +
+      renderToStaticMarkup(
+        <I18nProvider initialLocale="en">
+          <FaqSection />
+        </I18nProvider>,
+      );
     expect(html).toContain(
-      `${formatLandingCount(landingFacts.scoreDimensions)} scored dimensions`,
+      `${formatLandingCount(landingFacts.scoreDimensions)} scoring dimensions`,
     );
     expect(html).not.toContain("Four dimensions");
   });
