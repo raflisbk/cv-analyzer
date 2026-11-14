@@ -1,8 +1,11 @@
 .layout {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(24px, 4vw, 56px);
   align-items: center;
+}
+.layout > :first-child {
+  min-width: 0;
 }
 .layout p {
   max-width: 36ch;

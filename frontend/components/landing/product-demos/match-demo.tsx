@@ -1,16 +1,11 @@
-import { demoMatch } from "@/lib/landing-stickers";
+import { demoMatch } from "@/lib/landing-report";
 import ScoreRing from "./score-ring";
 import styles from "./demos.module.css";
-import PenCircle from "../pen/pen-circle";
-import pen from "../pen/pen.module.css";
 
 export default function MatchDemo() {
   return (
     <div className={styles.match}>
-      <span className={pen.target}>
-        <ScoreRing score={demoMatch.score} />
-        <PenCircle variant={2} delay={0.5} />
-      </span>
+      <ScoreRing score={demoMatch.score} label="Job match" />
       <div className={styles.requirements}>
         {demoMatch.requirements.map(({ label, evidence, status }) => (
           <div data-demo-requirement className={styles.requirement} key={label}>
