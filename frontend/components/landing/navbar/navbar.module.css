@@ -30,7 +30,6 @@
   font-family: var(--font-hand);
   font-size: 21px;
   font-weight: 700;
-  rotate: -5deg;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -136,15 +135,12 @@
 }
 .key {
   object-fit: contain;
-  rotate: -24deg;
   margin: -6px -4px -6px 0;
   filter: drop-shadow(0 6px 4px rgba(60, 6, 0, 0.4));
   transition:
-    rotate 0.35s cubic-bezier(0.3, 1.9, 0.5, 1),
     translate 0.35s;
 }
 .action:hover .key {
-  rotate: 12deg;
   translate: 3px -2px;
 }
 .menuButton {

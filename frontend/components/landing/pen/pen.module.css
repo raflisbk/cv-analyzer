@@ -64,16 +64,10 @@
   max-width: min(100%, 240px);
   color: #9c1c00;
   font: 700 clamp(20px, 2vw, 28px)/1.1 var(--font-hand);
-  rotate: -3deg;
 }
 .noteLight {
   color: #f2ff00;
 }
 .note .arrow {
   color: currentColor;
-}
-@media (max-width: 520px) {
-  .note {
-    rotate: 0deg;
-  }
 }

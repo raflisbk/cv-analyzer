@@ -69,7 +69,6 @@
 .visual img {
   width: min(58%, 300px);
   height: auto;
-  rotate: -6deg;
 }
 .sticker {
   background: var(--brand-punk);

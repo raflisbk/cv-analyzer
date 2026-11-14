@@ -134,8 +134,8 @@ function animateProcessStep(
     )
     .fromTo(
       img,
-      { scale: 0.55, rotate: -30 },
-      { scale: 1, rotate: -6, duration: 0.6, ease: "back.out(1.6)" },
+      { scale: 0.55 },
+      { scale: 1, duration: 0.6, ease: "back.out(1.6)" },
       index - 0.1,
     )
     .to(
@@ -174,8 +174,8 @@ export function processMotion(
     if (i === 0) {
       tl.fromTo(
         img,
-        { scale: 0.6, rotate: -26 },
-        { scale: 1, rotate: -6, duration: 0.5 },
+        { scale: 0.6 },
+        { scale: 1, duration: 0.5 },
         0,
       );
       return;

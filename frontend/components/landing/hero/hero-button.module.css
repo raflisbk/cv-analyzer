@@ -42,7 +42,6 @@
   flex: none;
   object-fit: contain;
   margin: -10px -6px;
-  rotate: 8deg;
   filter: drop-shadow(0 8px 6px rgba(60, 6, 0, 0.4));
   transition: translate 0.2s;
 }
