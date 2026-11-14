@@ -52,10 +52,7 @@ export function WorkspaceBody({
           ) : data.file.error ? (
             <p role="alert">Original file unavailable for this CV.</p>
           ) : (
-            <WorkspacePdf
-              jobId={jobId}
-              url={data.file.data?.file_url ?? null}
-            />
+            <WorkspacePdf jobId={jobId} file={data.file.data ?? null} />
           ))}
         <WorkspacePanelContainer
           jobId={jobId}

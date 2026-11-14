@@ -4,18 +4,17 @@ import Image from "next/image";
 import { usePathy } from "@/components/pathy/pathy-context";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { formatDelta } from "@/lib/app-report/format";
+import { reportFixAction } from "@/lib/app-report/fix-action";
 import { USE_APP_MOCKS } from "@/lib/app-api/mode";
 import { ReportHeading } from "./report-heading";
 import styles from "./report.module.css";
 
 export function ReportHero({
   data,
-  fixHref,
-  onExport,
+  jobId,
 }: {
   data: ReportDetail;
-  fixHref: string;
-  onExport: () => void;
+  jobId: string;
 }) {
   const pathy = usePathy();
   return (
@@ -61,22 +60,12 @@ export function ReportHero({
               <strong>{fix.title}</strong>
               <span>{fix.text}</span>
             </div>
-            {index === 2 ? (
-              <button
-                type="button"
-                className={`${styles.pill} ${styles.snow}`}
-                onClick={onExport}
-              >
-                Pick an ATS template
-              </button>
-            ) : (
-              <a
-                href={fixHref}
-                className={`${styles.pill} ${index === 0 ? styles.punk : styles.snow}`}
-              >
-                {index === 0 ? "Show fix" : "Review skill"}
-              </a>
-            )}
+            <a
+              href={reportFixAction(fix, jobId, index).href}
+              className={`${styles.pill} ${index === 0 ? styles.punk : styles.snow}`}
+            >
+              {reportFixAction(fix, jobId, index).label}
+            </a>
           </li>
         ))}
       </ol>

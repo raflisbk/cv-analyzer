@@ -25,6 +25,7 @@ export function PanelContent(props: WorkspacePanelProps) {
         loading={props.fixesLoading}
         retry={props.retryFixes}
         onApply={props.onApply}
+        onShow={(id, section) => props.onShow(id, section)}
       />
     );
   }

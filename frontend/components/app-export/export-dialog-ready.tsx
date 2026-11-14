@@ -39,6 +39,7 @@ export default function ExportDialogReady({
             downloading={state.downloading}
             error={state.error}
             resultMessage={state.resultMessage}
+            reasons={state.reasons}
             onDownload={state.download}
             onCancel={onClose}
           />

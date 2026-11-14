@@ -16,9 +16,10 @@ interface Props {
     anchor: HTMLElement,
     answers: Record<string, string>,
   ) => boolean;
+  onShow?: (id: string, section: string) => void;
 }
 
-export function FixCard({ fix, onApply }: Props) {
+export function FixCard({ fix, onApply, onShow = () => {} }: Props) {
   const [value, setValue] = useState("");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
@@ -26,7 +27,7 @@ export function FixCard({ fix, onApply }: Props) {
   const requiresNumber =
     USE_APP_MOCKS && !inputs.length && needsNumber(fix.after);
   return (
-    <article className={styles.card}>
+    <article className={styles.card} data-fix-card={fix.id}>
       <span className={styles.eyebrow}>{fix.section}</span>
       <strong>{fix.explanation}</strong>
       {fix.before && (
@@ -50,6 +51,7 @@ export function FixCard({ fix, onApply }: Props) {
         requiresNumber={requiresNumber}
         onApply={onApply}
         setError={setError}
+        onShow={onShow}
       />
     </article>
   );

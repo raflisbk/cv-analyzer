@@ -12,9 +12,13 @@ interface Props {
   navigate: (key: "view" | "tab", value: string) => void;
   onExport: () => void;
 }
-function showAnchor(navigate: Props["navigate"], anchorId: string) {
+function showAnchor(
+  navigate: Props["navigate"],
+  anchorId: string,
+  section?: string,
+) {
   navigate("view", "editor");
-  requestAnimationFrame(() => showWorkspaceAnchor(anchorId));
+  requestAnimationFrame(() => showWorkspaceAnchor(anchorId, section));
 }
 function panelQueryState(data: Props["data"]) {
   const scores =
@@ -60,7 +64,7 @@ export function WorkspacePanelContainer({
       onAddSkill={edits.addSkill}
       onExport={onExport}
       onGrammar={edits.onGrammar}
-      onShow={(anchorId) => showAnchor(navigate, anchorId)}
+      onShow={(anchorId, section) => showAnchor(navigate, anchorId, section)}
       retryReport={() => void data.results.refetch()}
       retryFixes={() => retryFixQueries(data)}
       retryAts={() => void data.ats.refetch()}

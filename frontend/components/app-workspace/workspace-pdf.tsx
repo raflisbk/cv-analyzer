@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useAppWorkspacePdfWidth } from "@/hooks/use-app-workspace-pdf-width";
+import { useAppWorkspacePdfUrl } from "@/hooks/use-app-workspace-pdf-url";
+import { PdfViewerSkeleton } from "./pdf/pdf-viewer-skeleton";
 import styles from "./workspace-styles";
 
 const PdfViewer = dynamic(
@@ -14,19 +16,24 @@ const PdfViewer = dynamic(
 
 export function WorkspacePdf({
   jobId,
-  url,
+  file,
 }: {
   jobId: string;
-  url: string | null;
+  file: Blob | null;
 }) {
   const { pdfRef, pageWidth } = useAppWorkspacePdfWidth("pdf");
+  const url = useAppWorkspacePdfUrl(file);
   return (
     <div
       ref={pdfRef}
       className={styles.frame}
       aria-label="Original PDF preview"
     >
-      <PdfViewer url={url} containerWidth={pageWidth} jobId={jobId} />
+      {url ? (
+        <PdfViewer url={url} containerWidth={pageWidth} jobId={jobId} />
+      ) : (
+        <PdfViewerSkeleton />
+      )}
     </div>
   );
 }

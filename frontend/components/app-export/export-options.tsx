@@ -10,6 +10,7 @@ interface Props {
   downloading: boolean;
   error: string | null;
   resultMessage: string | null;
+  reasons: { id: string; title: string; message: string }[];
   onDownload: (anchor: HTMLElement) => void;
   onCancel: () => void;
 }
@@ -20,6 +21,7 @@ export default function ExportOptions({
   downloading,
   error,
   resultMessage,
+  reasons,
   onDownload,
   onCancel,
 }: Props) {
@@ -36,6 +38,7 @@ export default function ExportOptions({
         downloading={downloading}
         error={error}
         resultMessage={resultMessage}
+        reasons={reasons}
         onDownload={onDownload}
         onCancel={onCancel}
       />
