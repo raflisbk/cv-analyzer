@@ -10,6 +10,7 @@ import RolesDemo from "@/components/landing/product-demos/roles-demo";
 import base from "../section.module.css";
 import styles from "./products.module.css";
 import PlaneIcon from "../plane-icon";
+import MarginNote from "../../pen/margin-note";
 
 export default function ProductsSection() {
   const ref = useLandingStory(productsMotion);
@@ -17,7 +18,6 @@ export default function ProductsSection() {
     <section ref={ref} id="products" className={`${base.panel} ${base.punk}`}>
       <div className={base.head}>
         <h2>One platform, three tools</h2>
-        <span className={base.hand}>starting with the CV</span>
       </div>
       <div className={styles.grid}>
         {products.map((product, index) => (
@@ -36,7 +36,20 @@ export default function ProductsSection() {
                 {index === 1 && <BuilderDemo />}
                 {index === 2 && <RolesDemo />}
               </div>
-              <span className={styles.status}>{product.status}</span>
+              <span
+                className={styles.status}
+                id={index === 0 ? "live-product" : undefined}
+                aria-describedby={index === 0 ? "live-product-note" : undefined}
+              >
+                {product.status}
+              </span>
+              {index === 0 && (
+                <div className={styles.note}>
+                  <MarginNote targetId="live-product" variant={1}>
+                    Start here
+                  </MarginNote>
+                </div>
+              )}
               <h3>{product.name}</h3>
               <p>{product.description}</p>
               {product.live && (

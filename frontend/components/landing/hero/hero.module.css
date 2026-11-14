@@ -36,7 +36,7 @@
   letter-spacing: -0.03em;
   margin: 28px 0 0;
 }
-.copy h1 span {
+.copy h1 > span {
   display: block;
   white-space: nowrap;
 }
@@ -105,7 +105,7 @@
     line-height: 1.05;
     max-width: none;
   }
-  .copy h1 span {
+  .copy h1 > span {
     white-space: normal;
   }
   .copy p {

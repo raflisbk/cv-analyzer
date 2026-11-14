@@ -7,12 +7,25 @@
   min-width: 0;
 }
 .cardInner {
+  position: relative;
   border-radius: 32px;
   padding: 30px;
   min-height: 440px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+.note {
+  position: absolute;
+  top: 210px;
+  right: 20px;
+  max-width: 42%;
+}
+.note > span {
+  color: var(--brand-ink);
+}
+.note svg {
+  transform: scaleX(-1);
 }
 .fragment {
   order: -1;
@@ -79,5 +92,9 @@
   }
   .cardInner {
     min-height: 350px;
+  }
+  .note {
+    position: static;
+    max-width: 100%;
   }
 }
