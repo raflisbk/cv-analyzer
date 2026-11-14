@@ -7,11 +7,11 @@ export function footerMotion(
 ) {
   tl.from(
     panel.querySelectorAll("[data-footer-column]"),
-    { y: 60, autoAlpha: 0, stagger: 0.12, duration: 0.6 },
+    { autoAlpha: 0, stagger: 0.08, duration: 0.3 },
     0,
   ).from(
     panel.querySelector("[data-footer-bottom]"),
-    { autoAlpha: 0, y: 30, duration: 0.4 },
+    { autoAlpha: 0, duration: 0.3 },
     0.5,
   );
 }

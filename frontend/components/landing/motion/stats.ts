@@ -9,18 +9,18 @@ export function statsMotion(
   panel.querySelectorAll<HTMLElement>("[data-stat]").forEach((column, i) => {
     const number = column.querySelector<HTMLElement>("b")!;
     const count = { progress: 0 };
-    tl.from(column, { scaleX: 0, duration: 0.45 }, i * 0.55)
+    tl.from(column, { scaleX: 0, duration: 0.35 }, i * 0.55)
       .fromTo(
         number,
         { clipPath: "inset(0 100% 0 0)" },
-        { clipPath: "inset(0 0% 0 0)", duration: 0.55 },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.35 },
         i * 0.55 + 0.15,
       )
       .to(
         count,
         {
           progress: 1,
-          duration: 0.7,
+          duration: 0.55,
           onUpdate: () => {
             number.textContent = countUpValue(
               count.progress,
@@ -39,12 +39,8 @@ export function statsMotion(
       .from(
         column.querySelector("img"),
         {
-          x: i === 0 ? -360 : i === 2 ? 360 : 0,
-          y: i === 1 ? -300 : 0,
-          rotate: (i - 1) * 300,
-          scale: 0.4,
           autoAlpha: 0,
-          duration: 0.8,
+          duration: 0.3,
         },
         i * 0.55 + 0.2,
       );
