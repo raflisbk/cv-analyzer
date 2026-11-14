@@ -1,6 +1,7 @@
 import styles from "./demos.module.css";
+import { afterScore } from "@/lib/landing-score-demo";
 
-export default function ScoreRing({ score = 86 }: { score?: number }) {
+export default function ScoreRing({ score = afterScore }: { score?: number }) {
   return (
     <div
       className={styles.ring}
@@ -10,6 +11,7 @@ export default function ScoreRing({ score = 86 }: { score?: number }) {
       <svg viewBox="0 0 100 100" aria-hidden="true">
         <circle cx="50" cy="50" r="42" className={styles.ringTrack} />
         <circle
+          data-demo-ring
           cx="50"
           cy="50"
           r="42"

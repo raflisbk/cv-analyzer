@@ -1,6 +1,7 @@
 "use client";
 import { useLandingStory } from "@/hooks/use-landing-story";
 import { ctaMotion } from "@/components/landing/motion/cta";
+import { useDemoOnce } from "@/components/landing/motion/demo-once";
 import { useLandingExpand } from "@/hooks/use-landing-expand";
 import base from "../section.module.css";
 import styles from "./cta.module.css";
@@ -12,6 +13,7 @@ export default function CtaSection() {
     end: "bottom top",
   });
   const expandRef = useLandingExpand("expand");
+  useDemoOnce(ref);
   return (
     <section
       ref={(node) => {

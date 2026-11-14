@@ -13,7 +13,7 @@ export default function MatchDemo() {
       </span>
       <div className={styles.requirements}>
         {demoMatch.requirements.map(({ label, evidence, status }) => (
-          <div className={styles.requirement} key={label}>
+          <div data-demo-requirement className={styles.requirement} key={label}>
             <span className={status === "Met" ? styles.met : styles.missing}>
               {status}
             </span>

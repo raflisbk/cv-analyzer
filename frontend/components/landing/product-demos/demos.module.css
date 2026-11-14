@@ -99,8 +99,24 @@
   text-align: left;
   font-size: 13px;
 }
-.rewrite s {
+.rewriteLine {
+  position: relative;
+  isolation: isolate;
+}
+.rewrite > span[data-demo-before] {
   color: #e5d8d1;
+}
+.rewrite [data-pen-mark="strike"] {
+  opacity: 0;
+}
+.rewrite [data-demo-after] {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rewrite [data-pen-mark="strike"],
+  .rewrite [data-demo-after] {
+    opacity: 1;
+  }
 }
 .rewrite strong {
   font-weight: 700;
