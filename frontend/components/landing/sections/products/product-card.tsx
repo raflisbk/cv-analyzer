@@ -1,3 +1,5 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import Link from "next/link";
 import { products } from "@/lib/landing-products";
 import PlaneIcon from "../plane-icon";
@@ -13,6 +15,7 @@ export default function ProductCard({
   product: (typeof products)[number];
   index: number;
 }) {
+  const { t } = useT();
   return (
     <article className={`${styles.card} ${styles[`card${index}`]}`}>
       <div className={styles.cardInner}>
@@ -22,20 +25,20 @@ export default function ProductCard({
           id={index === 0 ? "live-product" : undefined}
           aria-describedby={index === 0 ? "live-product-note" : undefined}
         >
-          {product.status}
+          {t(`landing.products.statuses.${product.live ? "live" : "planned"}`)}
         </span>
         {index === 0 && (
           <div className={styles.note}>
             <MarginNote targetId="live-product" variant={1}>
-              Start here
+              {t("landing.products.note")}
             </MarginNote>
           </div>
         )}
-        <h3>{product.name}</h3>
-        <p>{product.description}</p>
+        <h3>{t(`landing.products.names.${product.key}`)}</h3>
+        <p>{t(`landing.products.descriptions.${product.key}`)}</p>
         {product.live && (
           <Link className={base.button} href="/app">
-            Try it free <PlaneIcon size={52} />
+            {t("landing.products.button")} <PlaneIcon size={52} />
           </Link>
         )}
       </div>

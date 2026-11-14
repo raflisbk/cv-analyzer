@@ -12,26 +12,26 @@ const separator = (
 );
 
 export default function FloatingFooter() {
-  const { t } = useT();
+  const { t, locale } = useT();
   const marqueeItems = [
-    t("footer.scoring"),
-    t("footer.grammar"),
-    t("footer.ats"),
-    t("footer.gaps"),
-    t("footer.jd"),
-    t("footer.inline"),
-    t("footer.editor"),
-    t("footer.archetypes", {
-      count: formatLandingCount(landingFacts.archetypeCount),
+    t("landing.ticker.scoring"),
+    t("landing.ticker.grammar"),
+    t("landing.ticker.ats"),
+    t("landing.ticker.gaps"),
+    t("landing.ticker.jd"),
+    t("landing.ticker.inline"),
+    t("landing.ticker.editor"),
+    t("landing.ticker.archetypes", {
+      count: formatLandingCount(landingFacts.archetypeCount, false, locale),
     }),
-    t("footer.domains", {
-      count: formatLandingCount(landingFacts.domainCount),
+    t("landing.ticker.domains", {
+      count: formatLandingCount(landingFacts.domainCount, false, locale),
     }),
-    t("footer.checks", {
-      count: formatLandingCount(landingFacts.atsCheckCount),
+    t("landing.ticker.checks", {
+      count: formatLandingCount(landingFacts.atsCheckCount, false, locale),
     }),
-    t("footer.languages", {
-      count: formatLandingCount(landingFacts.languages.length),
+    t("landing.ticker.languages", {
+      count: formatLandingCount(landingFacts.languages.length, false, locale),
     }),
   ];
   return (

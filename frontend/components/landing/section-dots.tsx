@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 
 /* Fixed dot navigation on the right edge (scroll-spy section pagination,
    the cloudstudio.es-style pager): one dot per landing section, the dot
@@ -13,17 +14,18 @@ import { useEffect, useState } from "react";
    cream and the dark sections without tracking section themes manually. */
 
 const SECTIONS = [
-  { id: "hero", label: "Start" },
-  { id: "products", label: "Products" },
-  { id: "report", label: "Score report" },
-  { id: "features", label: "Open your CV" },
-  { id: "how", label: "How it works" },
-  { id: "inside", label: "Features" },
-  { id: "faq", label: "FAQ" },
-  { id: "start", label: "Get started" },
+  { id: "hero" },
+  { id: "products" },
+  { id: "report" },
+  { id: "features" },
+  { id: "how" },
+  { id: "inside" },
+  { id: "faq" },
+  { id: "start" },
 ];
 
 export default function SectionDots() {
+  const { t } = useT();
   const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
 
   const scrollToSection = (id: string) => {
@@ -63,17 +65,17 @@ export default function SectionDots() {
 
   return (
     <nav
-      aria-label="Page sections"
+      aria-label={t("landing.dots.label")}
       className="fixed right-2.5 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-1 lg:flex"
       style={{ mixBlendMode: "difference" }}
     >
-      {SECTIONS.map(({ id, label }) => {
+      {SECTIONS.map(({ id }) => {
         const active = activeId === id;
         return (
           <button
             key={id}
             type="button"
-            aria-label={label}
+            aria-label={t(`landing.dots.${id}`)}
             aria-current={active ? "true" : undefined}
             onClick={() => scrollToSection(id)}
             className="group relative flex min-h-11 min-w-11 items-center justify-center p-1"
@@ -84,7 +86,7 @@ export default function SectionDots() {
               className="pointer-events-none absolute right-full top-1/2 mr-2 -translate-y-1/2 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.25em] text-[#F5F2D8] opacity-0 transition-opacity duration-200 group-hover:opacity-60"
               aria-hidden="true"
             >
-              {label}
+              {t(`landing.dots.${id}`)}
             </span>
             <span
               className={`block w-2 rounded-full border border-[#F5F2D8] transition-all duration-300 ${

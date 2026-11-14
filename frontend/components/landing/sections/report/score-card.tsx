@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import { scoreBars } from "@/lib/landing-report";
 import { beforeScore } from "@/lib/landing-score-demo";
 import { useScoreDemoMotion } from "@/components/landing/motion/score-demo";
@@ -6,6 +7,7 @@ import styles from "./report.module.css";
 import ScoreCardRing from "./score-card-ring";
 import ScoreRewrite from "./score-rewrite";
 export default function ScoreCard() {
+  const { t } = useT();
   const { ref, stage, accept, undo } = useScoreDemoMotion();
   const accepted = stage === "improved";
   return (
@@ -14,18 +16,18 @@ export default function ScoreCard() {
         <ScoreCardRing score={accepted ? undefined : beforeScore} />
         <div className={styles.bars}>
           {scoreBars.map((bar) => (
-            <div className={styles.bar} key={bar.label}>
-              <span>{bar.label}</span>
+            <div className={styles.bar} key={bar.key}>
+              <span>{t(`landing.report.bars.${bar.key}`)}</span>
               <i
                 role="meter"
-                aria-label={bar.label}
+                aria-label={t(`landing.report.bars.${bar.key}`)}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={accepted ? bar.value : bar.before}
               >
                 <i
                   data-score-bar
-                  data-score-impact={bar.label === "Impact" ? "" : undefined}
+                  data-score-impact={bar.key === "impact" ? "" : undefined}
                   style={{ width: `${accepted ? bar.value : bar.before}%` }}
                 />
               </i>

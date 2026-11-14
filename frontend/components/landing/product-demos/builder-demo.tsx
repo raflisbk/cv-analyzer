@@ -1,19 +1,22 @@
+"use client";
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./document-demos.module.css";
 
 export default function BuilderDemo() {
+  const { t } = useT();
   return (
     <div
       className={styles.builder}
       role="img"
-      aria-label="Blank CV page with profile, experience and skills sections ready to fill"
+      aria-label={t("landing.products.builderAlt")}
     >
       <span>
-        YOUR NAME
+        {t("landing.products.builderName")}
         <span className={styles.caret} />
       </span>
-      {["Profile", "Experience", "Skills"].map((section) => (
+      {["profile", "experience", "skills"].map((section) => (
         <div className={styles.skeleton} key={section}>
-          <strong>{section}</strong>
+          <strong>{t(`landing.products.builderSections.${section}`)}</strong>
           <i />
           <i />
         </div>
