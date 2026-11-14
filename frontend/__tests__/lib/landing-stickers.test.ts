@@ -13,7 +13,9 @@ describe("landing demo data", () => {
     expect(demoRewrite.before).toBe(
       "Led a team of developers on the checkout rebuild.",
     );
-    expect(demoRewrite.after).toContain("cutting load time 40%");
+    expect(demoRewrite.after).toBe(
+      "Led the checkout rebuild with a team of developers.",
+    );
   });
 
   it("shows evidence for each job requirement and PDF options", () => {

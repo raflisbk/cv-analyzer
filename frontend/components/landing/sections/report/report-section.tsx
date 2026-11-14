@@ -6,6 +6,7 @@ import base from "../section.module.css";
 import styles from "./report.module.css";
 import ScoreCard from "./score-card";
 import PlaneIcon from "../plane-icon";
+import MarginNote from "../../pen/margin-note";
 
 export default function ReportSection() {
   const ref = useLandingStory(reportMotion, 120);
@@ -24,9 +25,13 @@ export default function ReportSection() {
         <Link href="/app" className={base.button}>
           Try it on my CV <PlaneIcon size={52} />
         </Link>
-        <span className={`${base.hand} ${styles.note}`}>no mystery scores</span>
       </div>
       <div className={styles.visual}>
+        <div className={styles.note}>
+          <MarginNote targetId="report-score-ring" variant={0}>
+            No mystery scores
+          </MarginNote>
+        </div>
         <ScoreCard />
       </div>
     </section>

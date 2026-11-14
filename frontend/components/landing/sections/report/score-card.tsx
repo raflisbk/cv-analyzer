@@ -1,5 +1,7 @@
 import { scoreBars } from "@/lib/landing-report";
 import styles from "./report.module.css";
+import PenStrike from "../../pen/pen-strike";
+import PenHighlight from "../../pen/pen-highlight";
 export default function ScoreCard() {
   return (
     <div
@@ -7,9 +9,14 @@ export default function ScoreCard() {
       className={styles.card}
       role="img"
       aria-label="Sample score report: overall 86, with four dimension bars and one flagged line"
+      aria-describedby="report-score-ring-note"
     >
       <div className={styles.top}>
-        <div className={styles.ring}>
+        <div
+          className={styles.ring}
+          id="report-score-ring"
+          aria-describedby="report-score-ring-note"
+        >
           <svg viewBox="0 0 130 130" aria-hidden="true">
             <circle
               cx="65"
@@ -50,9 +57,13 @@ export default function ScoreCard() {
       </div>
       <div data-rewrite className={styles.rewrite}>
         <span className={styles.flag}>No number</span>
-        <s>Led a team of developers on the checkout rebuild.</s>
-        <strong>
-          Led 6 engineers on the checkout rebuild, cutting load time 40%.
+        <span className={styles.before}>
+          Led a team of developers on the checkout rebuild.
+          <PenStrike variant={0} delay={0.2} />
+        </span>
+        <strong className={styles.after}>
+          Led the checkout rebuild with a team of developers.
+          <PenHighlight variant={1} delay={0.4} onDark />
         </strong>
         <span className={styles.chip}>Accept rewrite</span>
       </div>

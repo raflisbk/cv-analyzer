@@ -10,9 +10,9 @@
   margin: 20px 0 24px;
 }
 .note {
-  display: block;
-  color: var(--brand-red-deep);
-  margin: 18px 0 0;
+  justify-self: start;
+  margin: 0 0 -12px 20px;
+  z-index: 1;
 }
 .visual {
   display: grid;
@@ -95,8 +95,15 @@
   display: grid;
   gap: 8px;
 }
-.rewrite s {
+.rewrite .before {
   opacity: 0.65;
+}
+.before,
+.after {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  isolation: isolate;
 }
 .rewrite strong {
   font-weight: 600;
