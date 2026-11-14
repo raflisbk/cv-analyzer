@@ -8,8 +8,7 @@
   min-width: 0;
 }
 .layout p {
-  max-width: 36ch;
-  font-size: 19px;
+  max-width: 66ch;
   margin: 20px 0 24px;
 }
 .note {
@@ -29,7 +28,8 @@
   padding: 28px;
   display: grid;
   gap: 22px;
-  box-shadow: 14px 14px 0 var(--brand-red);
+  rotate: 1.5deg;
+  box-shadow: 0 14px 32px rgba(26, 11, 7, 0.18);
 }
 .top {
   display: flex;

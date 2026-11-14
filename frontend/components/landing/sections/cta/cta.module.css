@@ -27,7 +27,7 @@
 .copy p {
   font-size: 20px;
   font-weight: 700;
-  max-width: 30ch;
+  max-width: 65ch;
   margin: 0;
 }
 .tag {
@@ -89,7 +89,7 @@
   background: var(--brand-ink);
   color: var(--brand-snow);
   padding: clamp(20px, 3vw, 34px);
-  box-shadow: 12px 12px 0 var(--brand-red);
+  box-shadow: 0 14px 32px rgba(26, 11, 7, 0.18);
 }
 .sampleScore {
   display: flex;

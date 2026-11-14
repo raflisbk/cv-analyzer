@@ -7,15 +7,6 @@ export function faqMotion(
 ) {
   tl.from(panel.querySelector("h2"), { autoAlpha: 0, duration: 0.3 }, 0)
     .from(
-      panel.querySelectorAll("[data-faq-object]"),
-      {
-        autoAlpha: 0,
-        stagger: 0.08,
-        duration: 0.3,
-      },
-      0.35,
-    )
-    .from(
       panel.querySelectorAll("[data-faq-item]"),
       {
         autoAlpha: 0,

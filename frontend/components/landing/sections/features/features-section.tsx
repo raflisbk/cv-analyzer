@@ -16,7 +16,7 @@ export default function FeaturesSection() {
     <section
       ref={ref}
       id="inside"
-      className={`${base.panel} ${base.punk} ${styles.grid}`}
+      className={`${base.panel} ${base.snow} ${base.calm} ${styles.grid}`}
     >
       <div className={`${base.head} ${styles.head}`}>
         <h2>

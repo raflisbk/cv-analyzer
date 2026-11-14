@@ -8,7 +8,7 @@ import styles from "./support.module.css";
 export default function ReportSupport() {
   const { t } = useT();
   return (
-    <div className={styles.grid}>
+    <div className={styles.grid} data-report-support>
       <article className={styles.card}>
         <h3>{t("landing.report.match")}</h3>
         <MatchDemo />

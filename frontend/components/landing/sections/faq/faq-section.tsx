@@ -11,7 +11,7 @@ export default function FaqSection() {
     <section
       ref={ref}
       id="faq"
-      className={`${base.panel} ${base.blush} ${styles.grid}`}
+      className={`${base.panel} ${base.snow} ${base.calm} ${styles.grid}`}
     >
       <FaqHeader />
       <div>
