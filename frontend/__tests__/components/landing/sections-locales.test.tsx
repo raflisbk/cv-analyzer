@@ -40,14 +40,27 @@ describe.each([
         </I18nProvider>,
       );
       const copy = dictionary.landing[key];
-      expect(html).toContain(
-        "heading" in copy
-          ? copy.heading
-          : "live" in copy
-            ? copy.live
-            : copy.body,
-      );
+      if ("heading" in copy) {
+        const heading = html
+          .match(/<h[12][^>]*>([\s\S]*?)<\/h[12]>/)?.[1]
+          .replace(/<[^>]+>/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+        expect(heading).toBe(copy.heading);
+      } else {
+        expect(html).toContain("live" in copy ? copy.live : copy.body);
+      }
       expect(html).not.toMatch(/landing\.[a-z]+\./);
     },
   );
+  it("renders inside and FAQ without decorative images", () => {
+    for (const Section of [FeaturesSection, FaqSection]) {
+      const html = renderToStaticMarkup(
+        <I18nProvider initialLocale={locale}>
+          <Section />
+        </I18nProvider>,
+      );
+      expect(html).not.toMatch(/<img\b/);
+    }
+  });
 });

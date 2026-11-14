@@ -137,8 +137,7 @@
   object-fit: contain;
   margin: -6px -4px -6px 0;
   filter: drop-shadow(0 6px 4px rgba(60, 6, 0, 0.4));
-  transition:
-    translate 0.35s;
+  transition: translate 0.35s;
 }
 .action:hover .key {
   translate: 3px -2px;
