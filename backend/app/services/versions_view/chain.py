@@ -25,11 +25,9 @@ def versions(job: Job, jobs_by_id: dict) -> list[VersionData]:
             if previous
             else {}
         )
-        changed = (
-            max(changes, key=lambda key: abs(changes[key]))
-            if any(changes.values())
-            else ""
-        )
+        changed = ""
+        if any(changes.values()):
+            changed = max(changes, key=lambda key: abs(changes[key]))
         summary = (
             f"Score {delta:+d}; {changed} {changes[changed]:+d}."
             if changed
