@@ -1,3 +1,6 @@
+"use client";
+
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ChatMessage } from "@/lib/app-api/conversations.types";
 import ChatAction from "./chat-action";
 import styles from "./home-thread.module.css";
@@ -9,6 +12,7 @@ export default function ChatThread({
   messages: ChatMessage[];
   typing: boolean;
 }) {
+  const { t } = useT();
   return (
     <div className={styles.thread} aria-live="polite">
       {messages.map((message) => (
@@ -27,7 +31,7 @@ export default function ChatThread({
         </div>
       ))}
       {typing && (
-        <div className={styles.typing} aria-label="Pathy is typing">
+        <div className={styles.typing} aria-label={t("app.home.typing")}>
           <i />
           <i />
           <i />

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ChatMessage } from "@/lib/app-api/conversations.types";
 
 export default function ChatAction({
@@ -6,10 +9,11 @@ export default function ChatAction({
 }: {
   action: NonNullable<ChatMessage["actions"]>[number];
 }) {
+  const { t } = useT();
   if (action.type === "open_workspace") {
     return (
       <Link href={`/app/cvs/${action.jobId}?view=${action.view}`}>
-        Open workspace
+        {t("app.home.openWorkspace")}
       </Link>
     );
   }
@@ -23,13 +27,13 @@ export default function ChatAction({
             ?.scrollIntoView({ behavior: "smooth" })
         }
       >
-        Show in editor
+        {t("app.home.showInEditor")}
       </button>
     );
   }
   return (
     <button type="button" data-fix-id={action.fixId}>
-      Apply fix
+      {t("app.home.applyFix")}
     </button>
   );
 }

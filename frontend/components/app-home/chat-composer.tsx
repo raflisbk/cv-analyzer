@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import UploadCvButton from "@/components/app-shell/upload-cv-button";
 import styles from "./home.module.css";
@@ -18,6 +19,7 @@ export default function ChatComposer({
   busy,
   onUploaded,
 }: ChatComposerProps) {
+  const { t } = useT();
   const [text, setText] = useState("");
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -37,18 +39,16 @@ export default function ChatComposer({
       <input
         value={text}
         onChange={(event) => setText(event.target.value)}
-        aria-label="Ask about your CV or career"
-        placeholder="Ask about your CV or career"
+        aria-label={t("app.home.composer")}
+        placeholder={t("app.home.composer")}
       />
-      {onUploaded && (
-        <UploadCvButton label="Upload CV" onUploaded={onUploaded} />
-      )}
+      {onUploaded && <UploadCvButton onUploaded={onUploaded} />}
       <button
         className={styles.ask}
         type="submit"
         disabled={!text.trim() || busy}
       >
-        Ask <Image src={arrow} alt="" width={40} height={40} />
+        {t("app.home.ask")} <Image src={arrow} alt="" width={40} height={40} />
       </button>
     </form>
   );
