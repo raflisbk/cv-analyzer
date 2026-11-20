@@ -8,7 +8,11 @@ def nonnegative_int(value: object) -> int:
 
 
 def file_pages(job: Job) -> int:
-    return nonnegative_int((job.file_metadata or {}).get("pages"))
+    declared = nonnegative_int((job.file_metadata or {}).get("pages"))
+    if declared:
+        return declared
+    parsed = (job.result or {}).get("metadata") or {}
+    return nonnegative_int(parsed.get("page_count"))
 
 
 def cv_summaries(jobs: list[Job]) -> list[CvSummary]:

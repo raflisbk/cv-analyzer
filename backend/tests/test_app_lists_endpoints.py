@@ -222,3 +222,14 @@ def test_missing_metadata_uses_zero_values(api):
     report = client.get("/api/v1/reports").json()["data"]["reports"][0]
     assert (cv["pages"], cv["wordCount"]) == (0, 0)
     assert report["fileFacts"] == {"type": "", "pages": 0, "sizeKb": 0, "bullets": 0}
+
+
+def test_pages_fall_back_to_parsed_page_count(api):
+    client, owner, jobs, _ = api
+    job = make_job(owner)
+    job.file_metadata = {"filename": "resume.pdf", "size": 2048}
+    job.result = {"metadata": {"page_count": 3}}
+    jobs.append(job)
+    cv = client.get("/api/v1/cvs").json()["data"][0]
+    report = client.get("/api/v1/reports").json()["data"]["reports"][0]
+    assert (cv["pages"], report["fileFacts"]["pages"]) == (3, 3)
