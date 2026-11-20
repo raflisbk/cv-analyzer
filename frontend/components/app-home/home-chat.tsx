@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useT } from "@/components/i18n/i18n-provider";
 import { listCvs } from "@/lib/app-api/cvs";
 import { useConversationHome } from "@/hooks/use-conversation-home";
 import ChatComposer from "./chat-composer";
@@ -13,6 +14,7 @@ import styles from "./home.module.css";
 import threadStyles from "./home-thread.module.css";
 
 export default function HomeChat() {
+  const { t } = useT();
   const { messages, busy, error, jobId, setJobId, send, retry } =
     useConversationHome();
   const { data: cvs } = useQuery({ queryKey: ["app-cvs"], queryFn: listCvs });
@@ -30,7 +32,7 @@ export default function HomeChat() {
             <p className={threadStyles.assistantMessage} role="alert">
               {error}{" "}
               <button type="button" onClick={retry}>
-                Retry
+                {t("app.home.retry")}
               </button>
             </p>
           )}
