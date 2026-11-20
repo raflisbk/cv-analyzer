@@ -45,6 +45,7 @@ Rules:
 - Build "after_text" ONLY from facts already present in the CV. NEVER invent numbers, percentages, names, tools or outcomes. For missing metrics use a bracket placeholder question, never estimate.
 - When a stronger version needs data the CV does not contain, use a bracket placeholder question and name the missing figure in "text" so the user can add it themselves
 - Generate 2-4 suggestions per section, focusing on sections with most room for improvement
+- Omit a section entirely when it has no suggestions
 - Be specific: reference actual content from the CV text"""
 
 USER_PROMPT_TEMPLATE = """CV Text:
