@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import CvsList from "@/components/app-cvs/cvs-list";
+import { withLocale } from "../i18n/with-locale";
 import { listCvs } from "@/lib/app-api/cvs";
 
 vi.mock("@/lib/app-api/cvs", () => ({ listCvs: vi.fn() }));
@@ -19,7 +20,7 @@ function show() {
   });
   return render(
     <QueryClientProvider client={client}>
-      <CvsList />
+      {withLocale(<CvsList />)}
     </QueryClientProvider>,
   );
 }

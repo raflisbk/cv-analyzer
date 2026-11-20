@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReportsList from "@/components/app-reports/reports-list";
+import { withLocale } from "../i18n/with-locale";
 import { listReports } from "@/lib/app-api/reports";
 import { reportFixtures } from "@/lib/app-api/fixtures/reports";
 
@@ -20,7 +21,7 @@ function show() {
   });
   return render(
     <QueryClientProvider client={client}>
-      <ReportsList />
+      {withLocale(<ReportsList />)}
     </QueryClientProvider>,
   );
 }
