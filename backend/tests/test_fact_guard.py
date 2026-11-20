@@ -4,8 +4,8 @@ import pytest
 
 from app.services.llm.fact_guard import numbers_in
 from app.services.llm.protocol import SuggestionItemOutput
+from app.services.llm.suggestions_parse import _repair_llm_output
 from app.schemas.analysis import SuggestionItem
-from app.tasks.llm_suggest import _repair_llm_output
 
 
 @pytest.mark.parametrize(
