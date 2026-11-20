@@ -1,5 +1,6 @@
 import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
+import { ReportHistoryGrid } from "./report-history-grid";
 import styles from "./report.module.css";
 
 export function ReportHistoryChart({
@@ -26,20 +27,7 @@ export function ReportHistoryChart({
         score: projectedScore,
       })}
     >
-      {[25, 50, 75, 100].map((score) => (
-        <g key={score}>
-          <line
-            x1="60"
-            x2={width - 20}
-            y1={180 - score * 1.4}
-            y2={180 - score * 1.4}
-            stroke="#f3dcd5"
-          />
-          <text x="48" y={185 - score * 1.4} textAnchor="end" fontSize="12">
-            {score}
-          </text>
-        </g>
-      ))}
+      <ReportHistoryGrid width={width} />
       <polyline
         points={versions
           .map((version, index) => point(version.score, index))

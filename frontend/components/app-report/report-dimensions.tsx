@@ -4,6 +4,7 @@ import type { ReportDimension } from "@/lib/app-api/report-detail.types";
 import { reportWeights } from "@/lib/app-report/format";
 import { ReportHeading } from "./report-heading";
 import { ScoreRing } from "./score-ring";
+import { ReportDimensionEvidence } from "./report-dimension-evidence";
 import styles from "./report.module.css";
 
 export function ReportDimensions({
@@ -65,26 +66,10 @@ export function ReportDimensions({
           <p className={styles.caption}>
             {t("appReport.dimensions.drag", { hint: dimension.hint })}
           </p>
-          <details className={styles.evidence}>
-            <summary>
-              {t("appReport.dimensions.evidence", {
-                count: dimension.evidence.length,
-              })}
-            </summary>
-            <ul>
-              {dimension.evidence.map((item) => (
-                <li key={item.text} data-positive={item.positive}>
-                  <div>
-                    {item.text}
-                    <small>{item.note}</small>
-                  </div>
-                  <a className={styles.mini} href={fixHref}>
-                    {t("appReport.dimensions.fix")}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </details>
+          <ReportDimensionEvidence
+            evidence={dimension.evidence}
+            fixHref={fixHref}
+          />
         </section>
       ))}
     </>

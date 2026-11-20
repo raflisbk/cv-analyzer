@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDimension } from "@/lib/app-api/report-detail.types";
+import { ReportRadarLegend } from "./report-radar-legend";
 import styles from "./report.module.css";
 
 export function ReportRadar({
@@ -75,21 +76,11 @@ export function ReportRadar({
           </text>
         ))}
       </svg>
-      <div className={styles.legend}>
-        <span>
-          <i style={{ background: "#f42902" }} />
-          {t("appReport.radar.current")}
-        </span>
-        {dimensions.length === 4 && (
-          <button
-            type="button"
-            aria-pressed={showPrevious}
-            onClick={() => setShowPrevious(!showPrevious)}
-          >
-            ◌ {t("appReport.radar.previous")}
-          </button>
-        )}
-      </div>
+      <ReportRadarLegend
+        showPrevious={showPrevious}
+        togglePrevious={() => setShowPrevious(!showPrevious)}
+        canCompare={dimensions.length === 4}
+      />
     </>
   );
 }
