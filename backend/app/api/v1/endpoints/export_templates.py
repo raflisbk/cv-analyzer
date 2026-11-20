@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -73,15 +74,16 @@ def _apply_export_fixes(job: Job, body: ExportRequest) -> FixResult:
 
 def _skipped_reasons(skipped: dict[str, str]) -> str:
     safe = {}
+    safe_ids = {
+        fix_id for fix_id in skipped if re.fullmatch(r"[A-Za-z0-9_-]{1,100}", fix_id)
+    }
     for fix_id, reason in skipped.items():
-        if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", fix_id):
-            continue
-        candidate = json.dumps(
-            {**safe, fix_id: reason}, separators=(",", ":"), ensure_ascii=True
-        )
-        if len(candidate) > 1024:
-            break
-        safe[fix_id] = reason
+        key = fix_id
+        if fix_id not in safe_ids:
+            key = f"id_{hashlib.sha256(fix_id.encode()).hexdigest()}"
+            while key in safe_ids or key in safe:
+                key += "_"
+        safe[key] = reason
     return json.dumps(safe, separators=(",", ":"), ensure_ascii=True)
 
 
@@ -131,7 +133,7 @@ async def export_job(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(require_user),
 ) -> Response:
-    """Export a CV; X-Export-Skipped-Reasons carries up to 1 KB of safe fix IDs and skip reasons as JSON."""
+    """Export a CV with skip reasons keyed by safe IDs or hashed unsafe IDs."""
     if not known_template(body.template_id):
         raise HTTPException(status_code=404, detail="Template not found.")
     job = await _owner_job(db, user, job_id)

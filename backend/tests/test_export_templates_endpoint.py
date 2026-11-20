@@ -1,13 +1,15 @@
+import hashlib
+import json
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from app.services.storage import StorageError
-
 from app.api.dependencies import require_user
+from app.api.v1.endpoints.export_templates import _skipped_reasons
 from app.db.session import get_db
 from app.main import app
+from app.services.storage import StorageError
 
 
 @pytest.fixture
@@ -171,6 +173,58 @@ def test_export_skip_reasons_never_include_cv_text(client):
             json={"templateId": "plain", "fixIds": ["private CV text@example.com"]},
         )
     assert "private" not in response.headers["x-export-skipped-reasons"]
+
+
+def test_original_export_reasons_match_skipped_count(client):
+    import fitz
+
+    test_client, job, _ = client
+    job.suggestions = [
+        {
+            "section": "Work Experience",
+            "suggestions": [
+                {"original_text": "Last line", "after_text": "Better [metric]"}
+            ],
+        },
+        {
+            "section": "Projects",
+            "suggestions": [
+                {
+                    "original_text": "Old line",
+                    "after_text": "A replacement much longer than the source line " * 4,
+                }
+            ],
+        },
+    ]
+    pdf = fitz.open()
+    page = pdf.new_page()
+    page.insert_text((50, 50), "Old line")
+    page.insert_text((50, 66), "Last line")
+    source = pdf.tobytes()
+    pdf.close()
+    with patch(
+        "app.api.v1.endpoints.export_templates.storage_service.get_file",
+        return_value=source,
+    ):
+        response = test_client.post(
+            f"/api/v1/jobs/{job.id}/export", json={"templateId": "original"}
+        )
+    reasons = json.loads(response.headers["x-export-skipped-reasons"])
+    assert response.status_code == 200
+    assert len(reasons) == int(response.headers["x-export-skipped"]) == 2
+    assert set(reasons.values()) == {"needs_input", "no_room"}
+    assert "Work Experience" not in response.headers["x-export-skipped-reasons"]
+
+
+def test_skip_reason_keys_remain_unique_when_safe_id_matches_masked_id():
+    private_id = "private CV text@example.com"
+    safe_id = f"id_{hashlib.sha256(private_id.encode()).hexdigest()}"
+    reasons = json.loads(
+        _skipped_reasons({private_id: "unknown_fix", safe_id: "unknown_fix"})
+    )
+    assert len(reasons) == 2
+    assert safe_id in reasons
+    assert private_id not in reasons
 
 
 def test_image_original_returns_422(client):
