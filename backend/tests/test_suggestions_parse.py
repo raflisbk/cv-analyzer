@@ -75,6 +75,29 @@ def test_valid_output_matches_strict_validation_byte_for_byte():
     )
 
 
+def test_valid_empty_group_matches_strict_validation():
+    raw = '{"suggestions":[{"section":"Experience","suggestions":[]}]}'
+
+    assert parse_suggestions(raw, "CV text").model_dump_json() == (
+        SuggestionsOutput.model_validate_json(raw).model_dump_json()
+    )
+
+
+def test_valid_empty_output_matches_strict_validation():
+    raw = '{"suggestions":[]}'
+
+    assert parse_suggestions(raw, "CV text").model_dump_json() == (
+        SuggestionsOutput.model_validate_json(raw).model_dump_json()
+    )
+
+
+def test_group_with_only_invalid_items_raises():
+    raw = '{"suggestions":[{"section":"Experience","suggestions":[{}]}]}'
+
+    with pytest.raises(ValueError, match="No valid suggestions"):
+        parse_suggestions(raw, "CV text")
+
+
 def test_logs_counts_and_error_types_without_cv_text():
     raw = json.dumps(
         {
