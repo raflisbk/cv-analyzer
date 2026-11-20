@@ -85,7 +85,7 @@
   border-radius: 99px;
   background: #ffffff20;
 }
-.drawerFooter button {
+.drawerFooter > button {
   border: 0;
   border-radius: 99px;
   padding: 9px;

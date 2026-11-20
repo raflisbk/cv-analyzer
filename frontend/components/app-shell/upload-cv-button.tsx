@@ -1,15 +1,17 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import { useAppShellUploadButton } from "@/hooks/use-app-shell-upload-button";
 import styles from "./app-shell.module.css";
 
 export default function UploadCvButton({
-  label = "Upload CV",
+  label,
   onUploaded,
 }: {
   label?: string;
   onUploaded?: (jobId: string) => void;
 }) {
+  const { t } = useT();
   const { input, upload, onChange } = useAppShellUploadButton(onUploaded);
   return (
     <>
@@ -18,7 +20,7 @@ export default function UploadCvButton({
         type="file"
         accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         hidden
-        aria-label="Choose a CV file"
+        aria-label={t("app.upload.choose")}
         onChange={onChange}
       />
       <button
@@ -27,7 +29,9 @@ export default function UploadCvButton({
         disabled={upload.isPending}
         onClick={() => input.current?.click()}
       >
-        {upload.isPending ? "Uploading…" : label}
+        {upload.isPending
+          ? t("app.upload.uploading")
+          : (label ?? t("app.upload.label"))}
       </button>
     </>
   );

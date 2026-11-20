@@ -1,3 +1,6 @@
+"use client";
+
+import { useT } from "@/components/i18n/i18n-provider";
 import type { useAppShellHistoryDrawer } from "@/hooks/use-app-shell-history-drawer";
 import HistoryGroup from "./history-group";
 import DrawerAccountFooter from "./drawer-account-footer";
@@ -16,29 +19,40 @@ export default function HistoryDrawerBody({
   close,
   newChat,
 }: HistoryDrawerBodyProps) {
+  const { t } = useT();
   const { user, isLoading, isError, refetch, groups, logOut } = state;
   return (
     <>
       <HistoryDrawerActions close={close} newChat={newChat} />
       {isError && (
         <p role="alert">
-          Could not load chats.{" "}
-          <button onClick={() => refetch()}>Try again</button>
+          {t("app.drawer.loadError")}{" "}
+          <button onClick={() => refetch()}>{t("app.drawer.retry")}</button>
         </p>
       )}
-      {isLoading && <LoadingSkeleton label="Loading conversations" />}
+      {isLoading && <LoadingSkeleton label={t("app.drawer.loading")} />}
       {!isLoading &&
         !isError &&
         !groups.today.length &&
         !groups.lastWeek.length &&
-        !groups.older.length && (
-          <p>No conversations yet. Start a new chat above.</p>
-        )}
-      <HistoryGroup title="Today" items={groups.today} close={close} />
-      <HistoryGroup title="Last 7 days" items={groups.lastWeek} close={close} />
-      <HistoryGroup title="Older" items={groups.older} close={close} />
+        !groups.older.length && <p>{t("app.drawer.empty")}</p>}
+      <HistoryGroup
+        title={t("app.drawer.today")}
+        items={groups.today}
+        close={close}
+      />
+      <HistoryGroup
+        title={t("app.drawer.lastWeek")}
+        items={groups.lastWeek}
+        close={close}
+      />
+      <HistoryGroup
+        title={t("app.drawer.older")}
+        items={groups.older}
+        close={close}
+      />
       <DrawerAccountFooter
-        name={user?.name ?? user?.email ?? "Account"}
+        name={user?.name ?? user?.email ?? t("app.drawer.account")}
         logOut={logOut}
       />
     </>
