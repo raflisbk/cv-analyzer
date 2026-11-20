@@ -1,4 +1,5 @@
 import type { RefObject } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { useAppWorkspaceInlineRewrite } from "@/hooks/use-app-workspace-inline-rewrite";
 import { InlineEditPrompt } from "./inline-edit-prompt";
 import { InlineEditPreview } from "./inline-edit-preview";
@@ -20,12 +21,13 @@ export function InlineEditDialog({
   onClose,
   rewrite,
 }: Props) {
+  const { t } = useT();
   return (
     <div
       ref={dialogRef}
       className={styles.popover}
       role="dialog"
-      aria-label="Edit with AI"
+      aria-label={t("appWorkspace.inline.label")}
       style={{
         left: Math.max(12, Math.min(rect.left, window.innerWidth - 392)),
         top: Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - 280)),

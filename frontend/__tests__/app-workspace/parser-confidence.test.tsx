@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import { parserConfidence } from "@/lib/app-workspace/parser-confidence";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { render } from "../i18n/render-with-locale";
 import { AtsCompat } from "@/components/app-workspace/panel/ats-compat";
 
 it.each([

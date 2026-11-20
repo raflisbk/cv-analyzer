@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { InlineEditChips } from "./inline-edit-chips";
 import styles from "./workspace-styles";
 
@@ -12,6 +13,7 @@ export function InlineEditPrompt({
   busy: boolean;
 }) {
   const [prompt, setPrompt] = useState("");
+  const { t } = useT();
   return (
     <>
       <InlineEditChips request={request} />
@@ -22,7 +24,9 @@ export function InlineEditPrompt({
           request(prompt);
         }}
       >
-        <label htmlFor="inline-instruction">What should change?</label>
+        <label htmlFor="inline-instruction">
+          {t("appWorkspace.inline.prompt")}
+        </label>
         <input
           id="inline-instruction"
           className={styles.input}
@@ -34,7 +38,7 @@ export function InlineEditPrompt({
           className={`${styles.pill} ${styles.punk}`}
           disabled={busy}
         >
-          Send
+          {t("appWorkspace.inline.send")}
         </button>
       </form>
     </>

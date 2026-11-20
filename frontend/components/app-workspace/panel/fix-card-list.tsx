@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
 import { FixCard } from "./fix-card";
 
@@ -15,8 +16,9 @@ export function FixCardList({
   ) => boolean;
   onShow?: (id: string, section: string) => void;
 }) {
+  const { t } = useT();
   if (!fixes.length) {
-    return <p>All fixes reviewed. Your CV is ready for another look.</p>;
+    return <p>{t("appWorkspacePanel.fixes.done")}</p>;
   }
   return (
     <>

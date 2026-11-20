@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
 import styles from "../workspace-styles";
 
@@ -11,6 +12,7 @@ export function GrammarFilters({
   setFilter: (filter: GrammarFilter) => void;
   notes: GrammarData["notes"];
 }) {
+  const { t } = useT();
   return (
     <div className={styles.row}>
       {(["all", "spelling", "grammar", "style"] as const).map((item) => (
@@ -21,7 +23,7 @@ export function GrammarFilters({
           className={styles.filter}
           onClick={() => setFilter(item)}
         >
-          {item}{" "}
+          {t(`appWorkspacePanel.grammar.${item}`)}{" "}
           {notes.filter((note) => item === "all" || note.type === item).length}
         </button>
       ))}

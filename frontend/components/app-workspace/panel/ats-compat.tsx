@@ -1,16 +1,23 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { AtsData } from "@/lib/app-api/ats.types";
 import styles from "../workspace-styles";
 import { parserConfidence } from "@/lib/app-workspace/parser-confidence";
 
 export function AtsCompat({ data }: { data: AtsData }) {
+  const { t } = useT();
   return (
     <>
       <section className={styles.detailBox}>
-        <h3 className={styles.eyebrow}>Works with</h3>
+        <h3 className={styles.eyebrow}>
+          {t("appWorkspacePanel.ats.worksWith")}
+        </h3>
         {data.compat.map(({ system, rating }) => (
           <div className={styles.barHead} key={system}>
             <span>{system}</span>
-            <span className={styles.dots} aria-label={`${rating} of 5`}>
+            <span
+              className={styles.dots}
+              aria-label={t("appWorkspacePanel.ats.rating", { rating })}
+            >
               {"●".repeat(rating)}
               {"○".repeat(5 - rating)}
             </span>
@@ -18,12 +25,14 @@ export function AtsCompat({ data }: { data: AtsData }) {
         ))}
       </section>
       <section className={styles.detailBox}>
-        <h3 className={styles.eyebrow}>What a parser extracted</h3>
+        <h3 className={styles.eyebrow}>{t("appWorkspacePanel.ats.parsed")}</h3>
         {data.parsed.map(({ field, value, confidence }) => (
           <div key={field} className={styles.parserRow}>
             <span>{field}</span>
             <span>
-              {parserConfidence(confidence) === 0 ? "not found" : value}
+              {parserConfidence(confidence) === 0
+                ? t("appWorkspacePanel.ats.notFound")
+                : value}
             </span>
             <div
               className={styles.parserTrack}
@@ -36,7 +45,7 @@ export function AtsCompat({ data }: { data: AtsData }) {
             </div>
           </div>
         ))}
-        {!data.parsed.length && <p>No fields were extracted.</p>}
+        {!data.parsed.length && <p>{t("appWorkspacePanel.ats.noFields")}</p>}
       </section>
     </>
   );

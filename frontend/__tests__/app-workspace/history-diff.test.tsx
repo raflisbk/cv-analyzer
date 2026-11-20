@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { render } from "../i18n/render-with-locale";
 import { expect, it } from "vitest";
 import { HistoryDiff } from "@/components/app-workspace/panel/history-diff";
 import { getVersionDiff } from "@/lib/app-api/history";

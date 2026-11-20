@@ -1,6 +1,8 @@
 import appEn from "./app-en";
 import appExportEn from "./app-export-en";
 import appReportEn from "./app-report-en";
+import appWorkspaceEn from "./app-workspace-en";
+import appWorkspacePanelEn from "./app-workspace-panel-en";
 import pathyEn from "./pathy-en";
 import landingEn from "./landing-en";
 const en = {
@@ -58,6 +60,8 @@ const en = {
   pathy: pathyEn,
   appExport: appExportEn,
   appReport: appReportEn,
+  appWorkspace: appWorkspaceEn,
+  appWorkspacePanel: appWorkspacePanelEn,
   common: { language: "Language" },
 } as const;
 export default en;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
 import { GrammarNote } from "./grammar-note";
 import { GrammarFilters, type GrammarFilter } from "./grammar-filters";
@@ -13,6 +14,7 @@ export function GrammarNotes({
   notes: GrammarData["notes"];
   onResolve: (id: string, action: "accept" | "ignore") => Promise<void>;
 }) {
+  const { t } = useT();
   const [filter, setFilter] = useState<GrammarFilter>("all");
   const [error, setError] = useState("");
   async function resolve(id: string, action: "accept" | "ignore") {
@@ -20,7 +22,7 @@ export function GrammarNotes({
       setError("");
       await onResolve(id, action);
     } catch {
-      setError("The note could not be updated. Try again.");
+      setError(t("appWorkspacePanel.grammar.updateFailed"));
     }
   }
   return (

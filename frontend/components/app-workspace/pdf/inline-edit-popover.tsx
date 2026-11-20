@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Loader2, X, Sparkles } from "lucide-react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import { InlineEditPreview, type RewritePreview } from "./inline-edit-preview";
 
@@ -26,6 +27,7 @@ export function InlineEditPopover({
   jobId,
   onClose,
 }: InlineEditPopoverProps) {
+  const { t } = useT();
   const popoverRef = useRef<HTMLDivElement>(null);
   const { applyInlineEdit, hydration } = useWorkspaceV2Store();
 
@@ -93,7 +95,7 @@ export function InlineEditPopover({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate rewrite");
+        throw new Error(t("appWorkspace.popover.failedTitle"));
       }
 
       const data = await response.json();
@@ -112,7 +114,7 @@ export function InlineEditPopover({
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to generate rewrite. Please try again.",
+          : t("appWorkspace.popover.failedRetry"),
       );
       setPopoverState("error");
     }
@@ -139,7 +141,7 @@ export function InlineEditPopover({
     <div
       ref={popoverRef}
       role="dialog"
-      aria-label="Edit with AI"
+      aria-label={t("appWorkspace.inline.label")}
       className="fixed z-50 w-[380px] max-w-[90vw] rounded-lg border border-[#111111]/15 bg-white shadow-[0_6px_20px_rgba(0,0,0,0.2)] animate-in fade-in slide-in-from-bottom-2 duration-200"
       style={{
         top: `${top}px`,
@@ -151,12 +153,12 @@ export function InlineEditPopover({
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-[#111111]" />
           <span className="text-sm font-bold text-[#111111] uppercase tracking-wider">
-            AI Edit
+            {t("appWorkspace.popover.title")}
           </span>
         </div>
         <button
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t("appWorkspace.inline.close")}
           className="rounded-md border border-transparent p-1 text-[#111111] transition-colors hover:border-[#111111]/15 hover:bg-[#F5F2D8]"
         >
           <X className="h-4 w-4" />
@@ -167,17 +169,18 @@ export function InlineEditPopover({
         {popoverState === "too_long" && (
           <div className="space-y-3">
             <p className="text-sm text-[#111111]">
-              Please select <strong>500 characters or less</strong> to edit with
-              AI.
+              {t("appWorkspace.popover.tooLong")}
             </p>
             <p className="text-xs text-[#111111]/70 font-mono">
-              Current selection: {selectedText.length} characters
+              {t("appWorkspace.popover.selection", {
+                count: selectedText.length,
+              })}
             </p>
             <button
               onClick={onClose}
               className="w-full rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35]"
             >
-              Got it
+              {t("appWorkspace.popover.gotIt")}
             </button>
           </div>
         )}
@@ -186,7 +189,7 @@ export function InlineEditPopover({
           <div className="space-y-4">
             <div className="rounded-lg border border-[#111111]/15 bg-white p-3">
               <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[#111111]">
-                Selected text
+                {t("appWorkspace.popover.selected")}
               </p>
               <p className="text-sm text-[#111111] line-clamp-3 font-serif italic">
                 {selectedText}
@@ -198,13 +201,13 @@ export function InlineEditPopover({
                 htmlFor="prompt-input"
                 className="mb-2 block text-[10px] font-black uppercase tracking-widest text-[#111111]"
               >
-                How should we improve this?
+                {t("appWorkspace.popover.how")}
               </label>
               <textarea
                 id="prompt-input"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="e.g., Make this more impactful, Add metrics, Improve clarity..."
+                placeholder={t("appWorkspace.popover.placeholder")}
                 maxLength={1000}
                 className="w-full min-h-[80px] resize-y rounded-md border border-[#111111]/15 bg-white px-3 py-2 text-sm text-[#111111] placeholder:text-[#111111]/40 transition-colors focus:border-[#111111]/40 focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30"
                 rows={3}
@@ -218,7 +221,7 @@ export function InlineEditPopover({
               disabled={!prompt.trim()}
               className="w-full rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Generate rewrite
+              {t("appWorkspace.popover.generate")}
             </button>
           </div>
         )}
@@ -227,7 +230,7 @@ export function InlineEditPopover({
           <div className="flex flex-col items-center gap-3 py-6">
             <Loader2 className="h-8 w-8 animate-spin text-[#CAFF43]" />
             <p className="text-sm font-medium text-[#111111]/80">
-              Generating rewrite...
+              {t("appWorkspace.popover.generating")}
             </p>
           </div>
         )}
@@ -244,7 +247,7 @@ export function InlineEditPopover({
           <div className="space-y-4">
             <div className="rounded-lg border border-[#ff5555]/35 border-t border-t-[#ff5555] bg-white p-3">
               <p className="text-sm font-bold text-[#111111]">
-                Failed to generate rewrite
+                {t("appWorkspace.popover.failedTitle")}
               </p>
               <p className="text-xs text-[#111111]/70 mt-1">{error}</p>
             </div>
@@ -253,13 +256,13 @@ export function InlineEditPopover({
                 onClick={handleReset}
                 className="flex-1 rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35]"
               >
-                Try again
+                {t("appWorkspace.popover.tryAgain")}
               </button>
               <button
                 onClick={onClose}
                 className="flex-1 rounded-md border border-[#111111]/15 bg-white px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#F5F2D8]"
               >
-                Cancel
+                {t("appWorkspace.popover.cancel")}
               </button>
             </div>
           </div>

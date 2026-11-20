@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import FullReportView from "@/components/app-report/full-report-view";
 import type { useAppWorkspaceData } from "@/hooks/use-app-workspace-data";
 import type { useAppWorkspaceEdits } from "@/hooks/use-app-workspace-edits";
@@ -32,8 +33,9 @@ export function WorkspaceBody({
   draft,
   onExport,
 }: Props) {
+  const { t } = useT();
   const hydration = data.hydration.data;
-  const fileName = hydration?.file.filename ?? "Your CV";
+  const fileName = hydration?.file.filename ?? t("appWorkspace.yourCv");
   return (
     <>
       {view === "report" && <FullReportView jobId={jobId} />}
@@ -48,9 +50,9 @@ export function WorkspaceBody({
         </div>
         {view === "pdf" &&
           (data.file.isLoading ? (
-            <p role="status">Loading original file…</p>
+            <p role="status">{t("appWorkspace.state.loadingFile")}</p>
           ) : data.file.error ? (
-            <p role="alert">Original file unavailable for this CV.</p>
+            <p role="alert">{t("appWorkspace.state.fileMissing")}</p>
           ) : (
             <WorkspacePdf jobId={jobId} file={data.file.data ?? null} />
           ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import { useAppWorkspaceChatMessages } from "@/hooks/use-app-workspace-chat-messages";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
 import { suggestedChatMessage } from "@/lib/app-workspace/suggested-chat";
@@ -21,6 +22,7 @@ export function ChatPane({
   onShow: (anchorId: string) => void;
   suggestedFix?: WorkspaceFix;
 }) {
+  const { t } = useT();
   const { messages, stream, send } = useAppWorkspaceChatMessages(jobId);
   const displayedMessages = messages.length
     ? messages
@@ -34,7 +36,7 @@ export function ChatPane({
         onShow={onShow}
       />
       <ChatComposer send={send} busy={stream.isStreaming} />
-      {stream.error && <p role="alert">Chat could not respond. Try again.</p>}
+      {stream.error && <p role="alert">{t("appWorkspacePanel.chat.error")}</p>}
     </div>
   );
 }

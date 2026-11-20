@@ -1,27 +1,28 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "../workspace-styles";
 
-const questions = [
-  "What should I fix first?",
-  "Rewrite my first bullet",
-  "Which keywords am I missing?",
-];
+const questions = ["quickFirst", "quickRewrite", "quickKeywords"];
 export function ChatQuickQuestions({
   send,
 }: {
   send: (value: string) => void;
 }) {
+  const { t } = useT();
   return (
     <div className={styles.row}>
-      {questions.map((question) => (
-        <button
-          key={question}
-          type="button"
-          className={`${styles.pill} ${styles.snow}`}
-          onClick={() => send(question)}
-        >
-          {question}
-        </button>
-      ))}
+      {questions.map((key) => {
+        const question = t(`appWorkspacePanel.chat.${key}`);
+        return (
+          <button
+            key={key}
+            type="button"
+            className={`${styles.pill} ${styles.snow}`}
+            onClick={() => send(question)}
+          >
+            {question}
+          </button>
+        );
+      })}
     </div>
   );
 }

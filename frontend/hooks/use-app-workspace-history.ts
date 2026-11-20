@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { useT } from "@/components/i18n/i18n-provider";
 import { getVersionDiff, restoreVersion } from "@/lib/app-api/history";
 import type { VersionDiffResult } from "@/lib/app-api/history.types";
 
@@ -11,6 +12,7 @@ export function useAppWorkspaceHistory(jobId: string) {
   const [restoreId, setRestoreId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState("");
   const [restoring, setRestoring] = useState(false);
+  const { t } = useT();
   const router = useRouter();
   const queryClient = useQueryClient();
   async function compare(versionId: string) {
@@ -23,13 +25,13 @@ export function useAppWorkspaceHistory(jobId: string) {
         (!Array.isArray(changes) && !changes.before && !changes.after)
       ) {
         setDiff(null);
-        setLoadError("Version text is unavailable for comparison.");
+        setLoadError(t("appWorkspace.history.unavailable"));
         return;
       }
       setDiff(changes);
     } catch {
       setDiff(null);
-      setLoadError("Version text is unavailable for comparison.");
+      setLoadError(t("appWorkspace.history.unavailable"));
     }
   }
   async function restore() {
@@ -46,7 +48,7 @@ export function useAppWorkspaceHistory(jobId: string) {
       setRestoreId(null);
       router.push(`/app/cvs/${created.jobId}?view=editor&tab=history`);
     } catch {
-      setLoadError("Could not restore this version. Try again.");
+      setLoadError(t("appWorkspace.history.restoreFailed"));
     } finally {
       setRestoring(false);
     }

@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import { GrammarSummary } from "./grammar-summary";
@@ -17,18 +18,19 @@ export function GrammarPane({
   resolved: Set<string>;
   onResolve: (id: string, action: "accept" | "ignore") => Promise<void>;
 }) {
+  const { t } = useT();
   if (error) {
     return (
       <div role="alert">
-        Grammar notes could not load.{" "}
+        {t("appWorkspacePanel.grammar.error")}{" "}
         <button type="button" onClick={retry}>
-          Try again
+          {t("appWorkspacePanel.retry")}
         </button>
       </div>
     );
   }
   if (!data) {
-    return <LoadingSkeleton label="Loading grammar notes" />;
+    return <LoadingSkeleton label={t("appWorkspacePanel.grammar.loading")} />;
   }
   const remaining = data.notes.filter((note) => !resolved.has(note.id));
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { ChatQuickQuestions } from "./chat-quick-questions";
 import styles from "../workspace-styles";
 
@@ -12,6 +13,7 @@ export function ChatComposer({
   busy: boolean;
 }) {
   const [input, setInput] = useState("");
+  const { t } = useT();
   return (
     <>
       <ChatQuickQuestions send={send} />
@@ -23,7 +25,7 @@ export function ChatComposer({
           setInput("");
         }}
       >
-        <label htmlFor="cv-chat">Ask about this CV</label>
+        <label htmlFor="cv-chat">{t("appWorkspacePanel.chat.ask")}</label>
         <input
           id="cv-chat"
           className={styles.input}
@@ -35,7 +37,7 @@ export function ChatComposer({
           className={`${styles.pill} ${styles.punk}`}
           disabled={busy}
         >
-          Send
+          {t("appWorkspacePanel.chat.send")}
         </button>
       </form>
     </>

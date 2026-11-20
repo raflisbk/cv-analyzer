@@ -1,9 +1,11 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { AtsData } from "@/lib/app-api/ats.types";
 import { AtsPlainText } from "./ats-plain-text";
 import { AtsCheckGroups } from "./ats-check-groups";
 import styles from "../workspace-styles";
 
 export function AtsChecks({ data }: { data: AtsData }) {
+  const { t } = useT();
   return (
     <>
       <AtsPlainText plainText={data.plainText} />
@@ -13,8 +15,10 @@ export function AtsChecks({ data }: { data: AtsData }) {
           {data.hiddenText.found ? "!" : "✓"}
         </span>
         {data.hiddenText.found
-          ? `Hidden text found: ${data.hiddenText.items.join(", ")}`
-          : "No hidden text found"}
+          ? t("appWorkspacePanel.ats.hidden", {
+              items: data.hiddenText.items.join(", "),
+            })
+          : t("appWorkspacePanel.ats.noHidden")}
       </div>
     </>
   );

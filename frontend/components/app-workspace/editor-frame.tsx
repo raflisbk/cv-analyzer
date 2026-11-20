@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import { EditorContent } from "@tiptap/react";
 import type { Editor } from "@tiptap/core";
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./workspace-styles";
 
 export function EditorFrame({
@@ -14,6 +15,7 @@ export function EditorFrame({
   onSelection: () => void;
   onHighlight: (target: HTMLElement) => void;
 }) {
+  const { t } = useT();
   return (
     <div
       ref={frame}
@@ -28,7 +30,7 @@ export function EditorFrame({
         }
       }}
     >
-      <EditorContent editor={editor} aria-label="CV editor" />
+      <EditorContent editor={editor} aria-label={t("appWorkspace.editor")} />
     </div>
   );
 }

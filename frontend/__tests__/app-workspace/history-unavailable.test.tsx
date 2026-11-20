@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
+import { localeWrapper } from "../i18n/render-with-locale";
 import { useAppWorkspaceHistory } from "@/hooks/use-app-workspace-history";
 import { getVersionDiff } from "@/lib/app-api/history";
 
@@ -14,7 +15,9 @@ vi.mock("@tanstack/react-query", () => ({
 
 it("shows unavailable text instead of a blank comparison", async () => {
   vi.mocked(getVersionDiff).mockResolvedValue([]);
-  const { result } = renderHook(() => useAppWorkspaceHistory("job"));
+  const { result } = renderHook(() => useAppWorkspaceHistory("job"), {
+    wrapper: localeWrapper,
+  });
   await act(async () => {
     await result.current.compare("v1");
   });

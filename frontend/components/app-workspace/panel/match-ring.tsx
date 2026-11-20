@@ -1,8 +1,14 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "../workspace-styles";
 
 export function MatchRing({ score }: { score: number }) {
+  const { t } = useT();
   return (
-    <div className={styles.ring} role="img" aria-label={`${score}% job match`}>
+    <div
+      className={styles.ring}
+      role="img"
+      aria-label={t("appWorkspacePanel.match.ring", { score })}
+    >
       <svg viewBox="0 0 88 88" aria-hidden="true">
         <circle
           cx="44"

@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { useAppWorkspaceData } from "@/hooks/use-app-workspace-data";
 import type { useAppWorkspaceNavigation } from "@/hooks/use-app-workspace-navigation";
 import type { useDraftSave } from "@/hooks/use-draft-save";
@@ -14,12 +15,13 @@ export function WorkspacePageHeader({
   navigation: ReturnType<typeof useAppWorkspaceNavigation>;
   onExport: () => void;
 }) {
+  const { t } = useT();
   const hydration = data.hydration.data;
   const scores = data.results.data?.scores ?? hydration?.analysis.scores;
   return (
     <WorkspaceHeader
-      name={hydration?.file.filename ?? "Your CV"}
-      role={scores?.target_role ?? "Your CV"}
+      name={hydration?.file.filename ?? t("appWorkspace.yourCv")}
+      role={scores?.target_role ?? t("appWorkspace.yourCv")}
       version={data.history.data?.find((item) => item.current)?.label}
       saveState={draft.saveState}
       view={navigation.view}

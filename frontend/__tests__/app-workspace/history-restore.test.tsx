@@ -1,4 +1,5 @@
-import { act, renderHook, render, screen } from "@testing-library/react";
+import { act, renderHook, screen } from "@testing-library/react";
+import { localeWrapper, render } from "../i18n/render-with-locale";
 import { beforeEach, expect, it, vi } from "vitest";
 import { useAppWorkspaceHistory } from "@/hooks/use-app-workspace-history";
 import { HistoryRestoreDialog } from "@/components/app-workspace/panel/history-restore-dialog";
@@ -19,7 +20,9 @@ vi.mock("@tanstack/react-query", () => ({
 beforeEach(() => vi.clearAllMocks());
 
 async function restoreFrom(versionId: string) {
-  const hook = renderHook(() => useAppWorkspaceHistory("job"));
+  const hook = renderHook(() => useAppWorkspaceHistory("job"), {
+    wrapper: localeWrapper,
+  });
   act(() => hook.result.current.setRestoreId(versionId));
   await act(async () => {
     await hook.result.current.restore();
@@ -46,7 +49,9 @@ it("shows an error and stays put when restore fails", async () => {
 });
 
 it("does nothing without a selected version", async () => {
-  const { result } = renderHook(() => useAppWorkspaceHistory("job"));
+  const { result } = renderHook(() => useAppWorkspaceHistory("job"), {
+    wrapper: localeWrapper,
+  });
   await act(async () => {
     await result.current.restore();
   });

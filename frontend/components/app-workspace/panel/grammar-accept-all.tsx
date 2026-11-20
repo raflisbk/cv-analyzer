@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
 import styles from "../workspace-styles";
 
@@ -8,6 +9,7 @@ export function GrammarAcceptAll({
   notes: GrammarData["notes"];
   accept: (id: string) => Promise<void>;
 }) {
+  const { t } = useT();
   if (!notes.length) {
     return null;
   }
@@ -23,7 +25,7 @@ export function GrammarAcceptAll({
         )
       }
     >
-      Accept all spelling and grammar
+      {t("appWorkspacePanel.grammar.acceptAll")}
     </button>
   );
 }

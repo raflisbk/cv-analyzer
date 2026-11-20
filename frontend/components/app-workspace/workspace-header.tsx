@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import { ViewSwitch } from "./view-switch";
 import { WorkspaceBack } from "./workspace-back";
@@ -25,6 +26,7 @@ export function WorkspaceHeader({
   setView: (view: WorkspaceView) => void;
   onExport: () => void;
 }) {
+  const { t } = useT();
   return (
     <header className={styles.head}>
       <WorkspaceBack />
@@ -42,7 +44,7 @@ export function WorkspaceHeader({
         className={`${styles.pill} ${styles.punk}`}
         onClick={onExport}
       >
-        Export ↗
+        {t("appWorkspace.export")}
       </button>
     </header>
   );

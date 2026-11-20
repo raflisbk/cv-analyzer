@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { render } from "../i18n/render-with-locale";
 import { describe, expect, it, vi } from "vitest";
 import { InlineEditPreview } from "@/components/app-workspace/pdf/inline-edit-preview";
 

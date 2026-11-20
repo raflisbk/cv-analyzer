@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
@@ -26,23 +27,26 @@ export function FixesPane({
   onApply,
   onShow,
 }: Props) {
+  const { t } = useT();
   if (error) {
     return (
       <div role="alert">
-        Fixes could not load.{" "}
+        {t("appWorkspacePanel.fixes.error")}{" "}
         <button type="button" onClick={retry}>
-          Try again
+          {t("appWorkspacePanel.retry")}
         </button>
       </div>
     );
   }
   if (loading) {
-    return <LoadingSkeleton label="Loading suggested fixes" />;
+    return <LoadingSkeleton label={t("appWorkspacePanel.fixes.loading")} />;
   }
   return (
     <div className={styles.pane}>
       <div className={styles.row}>
-        <span className={styles.eyebrow}>Suggested fixes</span>
+        <span className={styles.eyebrow}>
+          {t("appWorkspacePanel.fixes.title")}
+        </span>
         <HelpButton helpKey="paneFixes" />
       </div>
       <FixCardList fixes={fixes} onApply={onApply} onShow={onShow} />

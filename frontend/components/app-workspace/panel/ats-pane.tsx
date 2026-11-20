@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { AtsData } from "@/lib/app-api/ats.types";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import { AtsCompat } from "./ats-compat";
@@ -16,18 +17,19 @@ export function AtsPane({
   retry?: () => void;
   onExport: () => void;
 }) {
+  const { t } = useT();
   if (error) {
     return (
       <div role="alert">
-        ATS details could not load.{" "}
+        {t("appWorkspacePanel.ats.error")}{" "}
         <button type="button" onClick={retry}>
-          Try again
+          {t("appWorkspacePanel.retry")}
         </button>
       </div>
     );
   }
   if (!data) {
-    return <LoadingSkeleton label="Loading ATS details" />;
+    return <LoadingSkeleton label={t("appWorkspacePanel.ats.loading")} />;
   }
   return (
     <div className={styles.pane}>
@@ -39,7 +41,7 @@ export function AtsPane({
         className={`${styles.pill} ${styles.punk}`}
         onClick={onExport}
       >
-        Switch to a single-column template
+        {t("appWorkspacePanel.ats.switch")}
       </button>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { needsNumber } from "@/lib/app-workspace/fixes";
 import { InlineEditActions } from "./inline-edit-actions";
 import styles from "./workspace-styles";
@@ -17,6 +18,7 @@ export function InlineEditPreview({
   retry: () => void;
 }) {
   const [provided, setProvided] = useState("");
+  const { t } = useT();
   return (
     <>
       <p>
@@ -25,7 +27,7 @@ export function InlineEditPreview({
       <p>{rewrite}</p>
       {needsNumber(rewrite) && (
         <label>
-          Enter your number
+          {t("appWorkspace.inline.enterNumber")}
           <input
             className={styles.input}
             inputMode="decimal"

@@ -1,5 +1,6 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { VersionData } from "@/lib/app-api/history.types";
-import { formatVersionDate } from "@/lib/app-workspace/format";
+import { useAppReportFormat } from "@/hooks/use-app-report-format";
 import styles from "../workspace-styles";
 
 export function HistoryVersionCard({
@@ -11,14 +12,20 @@ export function HistoryVersionCard({
   onCompare: () => void;
   onRestore: () => void;
 }) {
+  const { t } = useT();
+  const { dateTime } = useAppReportFormat();
   return (
     <article className={styles.group}>
       <strong>
-        {version.label} · {formatVersionDate(version.at)}
+        {version.label} · {dateTime(version.at)}
       </strong>{" "}
-      {version.current && <span className={styles.eyebrow}>Current</span>}
+      {version.current && (
+        <span className={styles.eyebrow}>
+          {t("appWorkspacePanel.history.current")}
+        </span>
+      )}
       <p>
-        Score {version.score}
+        {t("appWorkspacePanel.history.score", { score: version.score })}
         {version.delta !== null && ` (+${version.delta})`}. {version.summary}
       </p>
       <div className={styles.row}>
@@ -27,7 +34,9 @@ export function HistoryVersionCard({
           className={`${styles.pill} ${styles.snow}`}
           onClick={onCompare}
         >
-          {version.current ? "See changes" : "Compare"}
+          {version.current
+            ? t("appWorkspacePanel.history.changes")
+            : t("appWorkspacePanel.history.compare")}
         </button>
         {!version.current && (
           <button
@@ -35,7 +44,7 @@ export function HistoryVersionCard({
             className={`${styles.pill} ${styles.snow}`}
             onClick={onRestore}
           >
-            Restore
+            {t("appWorkspacePanel.history.restore")}
           </button>
         )}
       </div>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import { pathyPoseSrc } from "@/lib/pathy/pose";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function GrammarSummary({ count, stats }: Props) {
+  const { t } = useT();
   return (
     <>
       <div className={styles.paneHead}>
@@ -22,24 +24,29 @@ export function GrammarSummary({ count, stats }: Props) {
         />
         <div>
           <div className={styles.row}>
-            <span className={styles.eyebrow}>Grammar and style</span>
+            <span className={styles.eyebrow}>
+              {t("appWorkspacePanel.grammar.title")}
+            </span>
             <HelpButton helpKey="grammarTab" />
           </div>
           <h2>
             {count
-              ? `${count} ${count === 1 ? "note" : "notes"} to review`
-              : "Clean copy!"}
+              ? t(
+                  count === 1
+                    ? "appWorkspacePanel.grammar.one"
+                    : "appWorkspacePanel.grammar.many",
+                  { count },
+                )
+              : t("appWorkspacePanel.grammar.clean")}
           </h2>
-          <p className={styles.muted}>
-            Spelling and grammar are worth fixing. Style notes are optional.
-          </p>
+          <p className={styles.muted}>{t("appWorkspacePanel.grammar.hint")}</p>
         </div>
       </div>
       <div className={styles.statGrid}>
         {Object.entries(stats).map(([key, value]) => (
           <div key={key} className={styles.stat}>
             <b>{value}</b>
-            <span>{key.replace(/([A-Z])/g, " $1").toLowerCase()}</span>
+            <span>{t(`appWorkspacePanel.grammar.${key}`)}</span>
           </div>
         ))}
       </div>

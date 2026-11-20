@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { useT } from "@/components/i18n/i18n-provider";
 import { PdfViewerSkeleton } from "./pdf-viewer-skeleton";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import type { SuggestionCard } from "@/lib/types";
@@ -31,6 +32,7 @@ export function PdfViewer({
   suggestions,
   jobId,
 }: PdfViewerProps) {
+  const { t } = useT();
   if (!url) {
     return (
       <div
@@ -38,7 +40,7 @@ export function PdfViewer({
         role="alert"
       >
         <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
-          Original file unavailable for this CV.
+          {t("appWorkspace.state.fileMissing")}
         </p>
       </div>
     );

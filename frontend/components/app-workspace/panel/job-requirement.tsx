@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { JobMatchData } from "@/lib/app-api/jobmatch.types";
 import styles from "../workspace-styles";
 
@@ -9,6 +10,7 @@ export function JobRequirement({
   requirement: Requirement;
   onAdd: (skill: string) => void;
 }) {
+  const { t } = useT();
   return (
     <div className={styles.check}>
       <span className={styles.checkIcon}>
@@ -28,7 +30,7 @@ export function JobRequirement({
           className={`${styles.pill} ${styles.snow}`}
           onClick={() => onAdd(requirement.label)}
         >
-          Add
+          {t("appWorkspacePanel.match.add")}
         </button>
       )}
     </div>
