@@ -1,3 +1,4 @@
+import appId from "./app-id";
 import landingId from "./landing-id";
 import type en from "./en";
 
@@ -52,6 +53,7 @@ const id = {
     signOut: "Keluar",
     mobileLogin: "Masuk buat mulai",
   },
+  app: appId,
   landing: landingId,
   common: { language: "Bahasa" },
 } as const satisfies Shape<typeof en>;
