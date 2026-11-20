@@ -83,7 +83,11 @@ def _parse_card(
         except ValidationError as exc:
             dropped += 1
             error_types.update(error["type"] for error in exc.errors())
-    return valid_card if valid_card.suggestions else None, dropped, error_types
+    return (
+        valid_card if valid_card.suggestions or not card["suggestions"] else None,
+        dropped,
+        error_types,
+    )
 
 
 def parse_suggestions(raw_json: str, cv_text: str) -> SuggestionsOutput:
@@ -99,6 +103,8 @@ def parse_suggestions(raw_json: str, cv_text: str) -> SuggestionsOutput:
             "llm_suggestions_parse", kept=0, dropped=0, error_types=["root_invalid"]
         )
         raise TypeError("No valid suggestions: invalid root")
+    if not data["suggestions"]:
+        return SuggestionsOutput(suggestions=[])
 
     cards = []
     dropped = 0
@@ -110,13 +116,13 @@ def parse_suggestions(raw_json: str, cv_text: str) -> SuggestionsOutput:
         if card is not None:
             cards.append(card)
     kept = sum(len(card.suggestions) for card in cards)
-    if dropped or not kept:
+    if dropped or not cards:
         logger.warning(
             "llm_suggestions_parse",
             kept=kept,
             dropped=dropped,
             error_types=sorted(error_types) if error_types else ["empty"],
         )
-    if not kept:
+    if not cards:
         raise ValueError("No valid suggestions")
     return SuggestionsOutput(suggestions=cards)
