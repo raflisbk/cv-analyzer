@@ -1,4 +1,5 @@
 import appEn from "./app-en";
+import pathyEn from "./pathy-en";
 import landingEn from "./landing-en";
 const en = {
   nav: {
@@ -52,6 +53,7 @@ const en = {
   },
   app: appEn,
   landing: landingEn,
+  pathy: pathyEn,
   common: { language: "Language" },
 } as const;
 export default en;

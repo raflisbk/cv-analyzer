@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { HELP, type HelpKey } from "@/lib/pathy/help-content";
 import { useAppShellFocusTrap } from "@/hooks/use-app-shell-focus-trap";
 import { usePathy } from "./pathy-context";
@@ -16,6 +17,7 @@ export default function HelpButton({ helpKey, label }: HelpButtonProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   const pathy = usePathy();
+  const { t } = useT();
   const content = HELP[helpKey as HelpKey];
   if (!content) {
     throw new Error(`Unknown Pathy help key: ${helpKey}`);
@@ -27,7 +29,10 @@ export default function HelpButton({ helpKey, label }: HelpButtonProps) {
         className={styles.helpButton}
         type="button"
         data-help-key={helpKey}
-        aria-label={label ?? `Help: ${content?.title ?? helpKey}`}
+        aria-label={
+          label ??
+          t("pathy.ui.helpLabel", { title: t(`pathy.help.${helpKey}.title`) })
+        }
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
@@ -37,6 +42,7 @@ export default function HelpButton({ helpKey, label }: HelpButtonProps) {
         <HelpCard
           innerRef={ref}
           content={content}
+          helpKey={helpKey}
           close={() => setOpen(false)}
           tour={() => {
             setOpen(false);
