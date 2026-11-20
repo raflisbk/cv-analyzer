@@ -1,23 +1,13 @@
 from app.models.job import Job
 from app.schemas.report_detail import VersionData
 from app.services.app_lists.version_chain import version_chain
+from app.services.versions_restore.chain import full_chain
 
 DIMENSIONS = ("impact", "clarity", "relevance", "completeness")
 
 
-def chain_jobs(job: Job, jobs_by_id: dict) -> list[Job]:
-    chain = []
-    seen = set()
-    current = job
-    while current and current.id not in seen:
-        seen.add(current.id)
-        chain.append(current)
-        current = jobs_by_id.get(current.parent_job_id)
-    return list(reversed(chain))
-
-
 def versions(job: Job, jobs_by_id: dict) -> list[VersionData]:
-    jobs = chain_jobs(job, jobs_by_id)
+    jobs = full_chain(job, jobs_by_id)
     summaries = version_chain(job, jobs_by_id)
     output = []
     for index, (item, base) in enumerate(zip(jobs, summaries, strict=True)):
@@ -53,7 +43,7 @@ def versions(job: Job, jobs_by_id: dict) -> list[VersionData]:
                 score=score,
                 delta=delta,
                 summary=summary,
-                current=item.id == job.id,
+                current=item.id == jobs[-1].id,
             )
         )
     return output
