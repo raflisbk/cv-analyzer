@@ -1,28 +1,7 @@
 import fitz
 
 from app.services.export_templates.apply_fixes import Fix, FixResult
-
-
-def _rectangles(page: fitz.Page, source: str) -> list[fitz.Rect]:
-    rectangles = page.search_for(source)
-    if rectangles:
-        selected = []
-        target = " ".join(source.split())
-        for rect in rectangles:
-            selected.append(rect)
-            found = " ".join(
-                " ".join(page.get_textbox(item) for item in selected).split()
-            )
-            if found == target:
-                break
-        return selected
-    lines = [line.strip() for line in source.splitlines() if line.strip()]
-    if len(lines) < 2:
-        return []
-    groups = [page.search_for(line) for line in lines]
-    if any(not group for group in groups):
-        return []
-    return [group[0] for group in groups]
+from app.services.export_templates.text_locator import locate_pdf_text
 
 
 def _style(
@@ -44,7 +23,7 @@ def _style(
 def _placement(
     page: fitz.Page, fix: Fix
 ) -> tuple[list[fitz.Rect], fitz.Shape | None] | None:
-    rectangles = _rectangles(page, fix.original)
+    rectangles = locate_pdf_text(page, fix.original)
     if not rectangles:
         return None
     size, color = _style(page, rectangles[0])

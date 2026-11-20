@@ -4,6 +4,7 @@ from docx import Document
 from docx.document import Document as DocumentType
 
 from app.services.export_templates.apply_fixes import Fix, FixResult
+from app.services.export_templates.text_locator import normalized_span
 
 
 def _paragraphs(document: DocumentType):
@@ -15,10 +16,10 @@ def _paragraphs(document: DocumentType):
 
 
 def _replace_runs(paragraph, fix: Fix) -> bool:
-    start = paragraph.text.find(fix.original)
-    if start < 0:
+    span = normalized_span(paragraph.text, fix.original)
+    if span is None:
         return False
-    stop = start + len(fix.original)
+    start, stop = span
     position = 0
     inserted = False
     for run in paragraph.runs:
