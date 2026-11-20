@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { useAppExport } from "@/hooks/use-app-export";
 import TemplateList from "./template-list";
 import ExportPreview from "./export-preview";
@@ -13,8 +14,9 @@ export default function ExportDialogReady({
   state: State;
   onClose: () => void;
 }) {
+  const { t } = useT();
   if (!state.selected || !state.preview.data || !state.templates.data) {
-    return <p role="status">No export templates are available.</p>;
+    return <p role="status">{t("appExport.noTemplates")}</p>;
   }
   return (
     <div className={styles.body}>
@@ -24,12 +26,9 @@ export default function ExportDialogReady({
         onSelect={state.setSelectedId}
       />
       {state.selected.original && state.originalFile.isLoading ? (
-        <p role="status">Checking original file…</p>
+        <p role="status">{t("appExport.checkingOriginal")}</p>
       ) : state.selected.original && state.originalFile.isError ? (
-        <p role="alert">
-          Original layout is unavailable because the uploaded file is missing.
-          Choose another template to export.
-        </p>
+        <p role="alert">{t("appExport.originalMissing")}</p>
       ) : (
         <>
           <ExportPreview template={state.selected} data={state.preview.data} />

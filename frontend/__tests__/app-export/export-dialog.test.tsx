@@ -7,6 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { withLocale } from "../i18n/with-locale";
 import ExportDialog from "@/components/app-export/export-dialog";
 import { PathyContext } from "@/components/pathy/pathy-context";
 import { exportPreview, exportTemplates } from "@/lib/app-api/fixtures/export";
@@ -46,19 +47,21 @@ function show(
   document.body.appendChild(opener);
   opener.focus();
   render(
-    <QueryClientProvider client={client}>
-      <PathyContext.Provider
-        value={{ react, burst: vi.fn(), startTour: vi.fn() }}
-      >
-        <ExportDialog
-          jobId="job"
-          fixIds={fixIds}
-          answers={answers}
-          open
-          onClose={onClose}
-        />
-      </PathyContext.Provider>
-    </QueryClientProvider>,
+    withLocale(
+      <QueryClientProvider client={client}>
+        <PathyContext.Provider
+          value={{ react, burst: vi.fn(), startTour: vi.fn() }}
+        >
+          <ExportDialog
+            jobId="job"
+            fixIds={fixIds}
+            answers={answers}
+            open
+            onClose={onClose}
+          />
+        </PathyContext.Provider>
+      </QueryClientProvider>,
+    ),
   );
   return { onClose, opener };
 }

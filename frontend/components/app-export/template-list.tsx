@@ -1,4 +1,5 @@
 import type { ExportTemplate } from "@/lib/app-api/export.types";
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./export-dialog.module.css";
 
 interface Props {
@@ -12,8 +13,13 @@ export default function TemplateList({
   selectedId,
   onSelect,
 }: Props) {
+  const { t } = useT();
   return (
-    <div className={styles.list} role="radiogroup" aria-label="ATS templates">
+    <div
+      className={styles.list}
+      role="radiogroup"
+      aria-label={t("appExport.templates")}
+    >
       {templates.map((template) => (
         <button
           key={template.id}
@@ -33,9 +39,13 @@ export default function TemplateList({
           <span>
             <strong>{template.name}</strong>
             <small>{template.description}</small>
-            <span className={styles.badge}>ATS {template.atsScore}</span>
+            <span className={styles.badge}>
+              {t("appExport.atsBadge", { score: template.atsScore ?? "" })}
+            </span>
             {template.original && (
-              <span className={styles.originalBadge}>Your upload</span>
+              <span className={styles.originalBadge}>
+                {t("appExport.yourUpload")}
+              </span>
             )}
           </span>
         </button>
