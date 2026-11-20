@@ -1,10 +1,15 @@
+import { useT } from "@/components/i18n/i18n-provider";
+
 export function ReportPercentile({ topPercent }: { topPercent: number }) {
+  const { t } = useT();
   const x = 300 * (1 - topPercent / 100);
   return (
     <svg
       viewBox="0 0 300 56"
       role="img"
-      aria-label={`Top ${topPercent} percent for this role`}
+      aria-label={t("appReport.overall.percentileLabel", {
+        percent: topPercent,
+      })}
       style={{ width: "100%", height: "auto" }}
     >
       <path
@@ -24,7 +29,7 @@ export function ReportPercentile({ topPercent }: { topPercent: number }) {
         fontSize="11"
         fontWeight="800"
       >
-        you
+        {t("appReport.overall.you")}
       </text>
     </svg>
   );

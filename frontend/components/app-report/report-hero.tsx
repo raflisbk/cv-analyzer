@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
+import { useAppReportFormat } from "@/hooks/use-app-report-format";
 import { usePathy } from "@/components/pathy/pathy-context";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
-import { formatDelta } from "@/lib/app-report/format";
+import { reportFixActionLabel } from "./fix-action-label";
 import { reportFixAction } from "@/lib/app-report/fix-action";
 import { USE_APP_MOCKS } from "@/lib/app-api/mode";
 import { ReportHeading } from "./report-heading";
@@ -17,6 +19,8 @@ export function ReportHero({
   jobId: string;
 }) {
   const pathy = usePathy();
+  const { t } = useT();
+  const { delta } = useAppReportFormat();
   return (
     <section
       className={`${styles.card} ${styles.hero} ${styles.span12}`}
@@ -25,7 +29,10 @@ export function ReportHero({
     >
       <div>
         <ReportHeading
-          title={`Verdict · ${data.fileName} · ${data.version}`}
+          title={t("appReport.hero.verdict", {
+            file: data.fileName,
+            version: data.version,
+          })}
           helpKey="verdict"
         />
         <h2 id="report-verdict">
@@ -42,9 +49,7 @@ export function ReportHero({
         <p>{data.verdict.body}</p>
         <div className={styles.heroPathy}>
           <Image src="/pathy/idea.webp" alt="" width={130} height={150} />
-          <span className={styles.bubble}>
-            Start with number 1. Easy points!
-          </span>
+          <span className={styles.bubble}>{t("appReport.hero.bubble")}</span>
         </div>
       </div>
       <ol className={styles.take}>
@@ -64,24 +69,33 @@ export function ReportHero({
               href={reportFixAction(fix, jobId, index).href}
               className={`${styles.pill} ${index === 0 ? styles.punk : styles.snow}`}
             >
-              {reportFixAction(fix, jobId, index).label}
+              {reportFixActionLabel(
+                t,
+                reportFixAction(fix, jobId, index).label,
+              )}
             </a>
           </li>
         ))}
       </ol>
-      {reportDeltaChip(data)}
+      {reportDeltaChip(data, t, delta)}
     </section>
   );
 }
 
-function reportDeltaChip(data: ReportDetail) {
+function reportDeltaChip(
+  data: ReportDetail,
+  t: ReturnType<typeof useT>["t"],
+  delta: (value: number) => string,
+) {
   if (data.versions.length < 2) {
     return null;
   }
   return (
     <span className={styles.chip}>
-      {USE_APP_MOCKS ? "Sample analysis · " : ""}
-      {formatDelta(data.score - data.previousScore)} since previous version
+      {USE_APP_MOCKS ? t("appReport.hero.sampleAnalysis") : ""}
+      {t("appReport.hero.since", {
+        delta: delta(data.score - data.previousScore),
+      })}
     </span>
   );
 }

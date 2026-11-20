@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { useAppReportScrollAssist } from "@/hooks/use-app-report-scroll-assist";
 import { ReportHeading } from "./report-heading";
@@ -16,19 +17,20 @@ export function ReportBullets({
   const [filter, setFilter] = useState<"all" | "weak" | "fair" | "strong">(
     "all",
   );
+  const { t } = useT();
   const ref = useRef<HTMLDivElement>(null);
   const { hasMore, scrollMore } = useAppReportScrollAssist(ref, filter);
   return (
     <section
       className={`${styles.card} ${styles.span12}`}
       id="report-bullets"
-      aria-label="All bullets"
+      aria-label={t("appReport.bullets.label")}
     >
       <ReportHeading
-        title={`All bullets · ${bullets.length}`}
+        title={t("appReport.bullets.title", { count: bullets.length })}
         helpKey="bullets"
       />
-      <div className={styles.filter} aria-label="Filter bullets">
+      <div className={styles.filter} aria-label={t("appReport.bullets.filter")}>
         {(["all", "weak", "fair", "strong"] as const).map((kind) => (
           <button
             type="button"
@@ -36,7 +38,7 @@ export function ReportBullets({
             aria-pressed={filter === kind}
             onClick={() => setFilter(kind)}
           >
-            {kind[0].toUpperCase() + kind.slice(1)}{" "}
+            {t(`appReport.bullets.${kind}`)}{" "}
             {kind === "all"
               ? bullets.length
               : bullets.filter((item) => item.strength === kind).length}
@@ -47,12 +49,14 @@ export function ReportBullets({
         <div className={styles.bulletTable}>
           {!bullets.some(
             (item) => filter === "all" || item.strength === filter,
-          ) && <p>No bullets in this group.</p>}
+          ) && <p>{t("appReport.bullets.none")}</p>}
           {bullets
             .filter((item) => filter === "all" || item.strength === filter)
             .map((bullet) => (
               <div className={styles.bulletRow} key={bullet.text}>
-                <span className={styles.meter}>{bullet.strength}</span>
+                <span className={styles.meter}>
+                  {t(`appReport.bullets.${bullet.strength}`)}
+                </span>
                 <p>
                   {bullet.text}
                   <small>{bullet.source}</small>
@@ -63,7 +67,7 @@ export function ReportBullets({
                   ))}
                 </span>
                 <a className={styles.mini} href={fixHref}>
-                  Fix this
+                  {t("appReport.bullets.fix")}
                 </a>
               </div>
             ))}
@@ -75,7 +79,7 @@ export function ReportBullets({
           className={`${styles.mini} ${styles.more}`}
           onClick={scrollMore}
         >
-          More ↓
+          {t("appReport.bullets.more")}
         </button>
       )}
     </section>

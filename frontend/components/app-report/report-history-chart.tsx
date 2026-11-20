@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import styles from "./report.module.css";
 
@@ -8,6 +9,7 @@ export function ReportHistoryChart({
   versions: ReportDetail["versions"];
   projectedScore: number;
 }) {
+  const { t } = useT();
   const values = [...versions.map((version) => version.score), projectedScore];
   const width = Math.max(900, 300 * values.length + 100);
   const point = (score: number, index: number) =>
@@ -17,7 +19,12 @@ export function ReportHistoryChart({
       className={styles.history}
       viewBox={`0 0 ${width} 220`}
       role="img"
-      aria-label={`Score by version: ${versions.map((version) => `${version.label} ${version.score}`).join(", ")}; projected ${projectedScore}`}
+      aria-label={t("appReport.history.chartLabel", {
+        list: versions
+          .map((version) => `${version.label} ${version.score}`)
+          .join(", "),
+        score: projectedScore,
+      })}
     >
       {[25, 50, 75, 100].map((score) => (
         <g key={score}>
@@ -69,11 +76,11 @@ export function ReportHistoryChart({
             fontSize="14"
           >
             {score}
-            {index === values.length - 1 ? " if fixed" : ""}
+            {index === values.length - 1 ? t("appReport.history.ifFixed") : ""}
           </text>
           <text x={150 + index * 300} y="207" textAnchor="middle" fontSize="12">
             {index === values.length - 1
-              ? "after fixes"
+              ? t("appReport.history.afterFixes")
               : versions[index].label}
           </text>
         </g>

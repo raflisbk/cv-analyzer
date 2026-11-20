@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDimension } from "@/lib/app-api/report-detail.types";
 import styles from "./report.module.css";
 
@@ -12,6 +13,7 @@ export function ReportRadar({
   hasPrevious?: boolean;
 }) {
   const [showPrevious, setShowPrevious] = useState(true);
+  const { t } = useT();
   const points = (values: number[]) =>
     values
       .map((value, index) => {
@@ -25,7 +27,14 @@ export function ReportRadar({
         className={styles.radar}
         viewBox="-18 -12 256 244"
         role="img"
-        aria-label={`Four scores: ${dimensions.map((item) => `${item.key} ${item.score}`).join(", ")}`}
+        aria-label={t("appReport.radar.label", {
+          list: dimensions
+            .map(
+              (item) =>
+                `${t(`appReport.dimensions.${item.key}`)} ${item.score}`,
+            )
+            .join(", "),
+        })}
       >
         {[25, 50, 75, 100].map((value) => (
           <polygon
@@ -62,14 +71,14 @@ export function ReportRadar({
             fontWeight="800"
             fill="#5a2a20"
           >
-            {item.key} {item.score}
+            {t(`appReport.dimensions.${item.key}`)} {item.score}
           </text>
         ))}
       </svg>
       <div className={styles.legend}>
         <span>
           <i style={{ background: "#f42902" }} />
-          Current
+          {t("appReport.radar.current")}
         </span>
         {dimensions.length === 4 && (
           <button
@@ -77,7 +86,7 @@ export function ReportRadar({
             aria-pressed={showPrevious}
             onClick={() => setShowPrevious(!showPrevious)}
           >
-            ◌ Previous version
+            ◌ {t("appReport.radar.previous")}
           </button>
         )}
       </div>

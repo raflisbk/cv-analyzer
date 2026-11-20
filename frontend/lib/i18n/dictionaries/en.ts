@@ -1,5 +1,6 @@
 import appEn from "./app-en";
 import appExportEn from "./app-export-en";
+import appReportEn from "./app-report-en";
 import pathyEn from "./pathy-en";
 import landingEn from "./landing-en";
 const en = {
@@ -56,6 +57,7 @@ const en = {
   landing: landingEn,
   pathy: pathyEn,
   appExport: appExportEn,
+  appReport: appReportEn,
   common: { language: "Language" },
 } as const;
 export default en;

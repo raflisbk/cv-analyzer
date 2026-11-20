@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { ReportHeading } from "./report-heading";
 import { ReportBulletDonut } from "./report-bullet-donut";
@@ -8,6 +9,7 @@ export function ReportBulletStrength({
 }: {
   bullets: ReportDetail["bullets"];
 }) {
+  const { t } = useT();
   const counts = {
     strong: bullets.filter((item) => item.strength === "strong").length,
     fair: bullets.filter((item) => item.strength === "fair").length,
@@ -16,18 +18,22 @@ export function ReportBulletStrength({
   return (
     <section
       className={`${styles.card} ${styles.span3}`}
-      aria-label="Bullet strength"
+      aria-label={t("appReport.strength.title")}
     >
-      <ReportHeading title="Bullet strength" helpKey="bullets" />
+      <ReportHeading title={t("appReport.strength.title")} helpKey="bullets" />
       <ReportBulletDonut counts={counts} />
       <div className={styles.legend}>
-        <span>{counts.strong} strong</span>
-        <span>{counts.fair} fair</span>
-        <span>{counts.weak} weak</span>
+        <span>
+          {counts.strong} {t("appReport.strength.strong")}
+        </span>
+        <span>
+          {counts.fair} {t("appReport.strength.fair")}
+        </span>
+        <span>
+          {counts.weak} {t("appReport.strength.weak")}
+        </span>
       </div>
-      <p className={styles.caption}>
-        Strong bullets have a verb, a number and a result.
-      </p>
+      <p className={styles.caption}>{t("appReport.strength.caption")}</p>
       {(["weak", "strong"] as const).map((kind) => {
         const item = bullets.find((bullet) => bullet.strength === kind);
         return (
@@ -38,7 +44,9 @@ export function ReportBulletStrength({
               data-good={kind === "strong"}
             >
               <strong>
-                {kind === "weak" ? "Weakest" : "Strongest"} bullet
+                {kind === "weak"
+                  ? t("appReport.strength.weakest")
+                  : t("appReport.strength.strongest")}
               </strong>
               “{item.text}”
             </div>

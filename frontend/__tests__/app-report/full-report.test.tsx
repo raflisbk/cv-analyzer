@@ -7,6 +7,7 @@ import {
   screen,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { withLocale } from "../i18n/with-locale";
 import FullReportView from "@/components/app-report/full-report-view";
 import { getReportDetail } from "@/lib/app-api/report-detail";
 import { reportDetailFixture } from "@/lib/app-api/fixtures/report-detail";
@@ -39,9 +40,11 @@ function show() {
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <QueryClientProvider client={client}>
-      <FullReportView jobId="cv-1" />
-    </QueryClientProvider>,
+    withLocale(
+      <QueryClientProvider client={client}>
+        <FullReportView jobId="cv-1" />
+      </QueryClientProvider>,
+    ),
   );
 }
 

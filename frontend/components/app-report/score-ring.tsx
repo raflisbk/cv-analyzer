@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./report.module.css";
 
 export function ScoreRing({
@@ -7,6 +8,7 @@ export function ScoreRing({
   score: number;
   large?: boolean;
 }) {
+  const { t } = useT();
   const radius = large ? 70 : 34;
   const center = large ? 88 : 44;
   const size = center * 2;
@@ -16,7 +18,7 @@ export function ScoreRing({
       <svg
         viewBox={`0 0 ${size} ${size}`}
         role="img"
-        aria-label={`${score} out of 100`}
+        aria-label={t("appReport.overall.ringLabel", { score })}
       >
         <circle
           cx={center}
@@ -40,7 +42,7 @@ export function ScoreRing({
         />
       </svg>
       <strong>{score}</strong>
-      {large && <small>of 100</small>}
+      {large && <small>{t("appReport.overall.ofHundred")}</small>}
     </div>
   );
 }
