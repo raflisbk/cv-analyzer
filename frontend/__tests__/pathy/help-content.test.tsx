@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { withLocale } from "../i18n/with-locale";
 import HelpButton from "@/components/pathy/help-button";
 import { HELP, HELP_KEYS } from "@/lib/pathy/help-content";
 import { PATHY_POSES, pathyPoseSrc } from "@/lib/pathy/pose";
@@ -17,7 +18,7 @@ describe("Pathy help", () => {
     }
   });
   it("opens a help card and closes on Escape", () => {
-    render(<HelpButton helpKey="home" />);
+    render(withLocale(<HelpButton helpKey="home" />));
     fireEvent.click(screen.getByRole("button", { name: "Help: Ask anything" }));
     expect(
       screen.getByRole("dialog", { name: "Ask anything" }),
@@ -28,7 +29,7 @@ describe("Pathy help", () => {
     ).not.toBeInTheDocument();
   });
   it("rejects a help key without content", () => {
-    expect(() => render(<HelpButton helpKey="missing" />)).toThrow(
+    expect(() => render(withLocale(<HelpButton helpKey="missing" />))).toThrow(
       "Unknown Pathy help key",
     );
   });

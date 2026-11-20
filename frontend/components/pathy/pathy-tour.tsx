@@ -41,6 +41,7 @@ export default function PathyTour({ name, close }: PathyTourProps) {
       <PathySpotlight rect={rect} />
       <PathyTourCard
         step={step}
+        tourName={name ?? ""}
         index={index}
         total={steps.length}
         missing={missing}

@@ -1,25 +1,30 @@
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { HelpContent } from "@/lib/pathy/help-content";
 import { pathyPoseSrc } from "@/lib/pathy/pose";
 import styles from "./help.module.css";
 
 export default function HelpCard({
   content,
+  helpKey,
   close,
   tour,
   innerRef,
 }: {
   content: HelpContent;
+  helpKey: string;
   close: () => void;
   tour: () => void;
   innerRef: React.RefObject<HTMLSpanElement | null>;
 }) {
+  const { t } = useT();
+  const title = t(`pathy.help.${helpKey}.title`);
   return (
     <span
       ref={innerRef}
       className={styles.helpCard}
       role="dialog"
-      aria-label={content.title}
+      aria-label={title}
     >
       <Image
         src={pathyPoseSrc(content.pose)}
@@ -28,11 +33,11 @@ export default function HelpCard({
         height={64}
         unoptimized
       />
-      <strong>{content.title}</strong>
-      <span>{content.text}</span>
+      <strong>{title}</strong>
+      <span>{t(`pathy.help.${helpKey}.text`)}</span>
       <span className={styles.helpActions}>
-        <button onClick={close}>Got it</button>
-        <button onClick={tour}>Show me the tour</button>
+        <button onClick={close}>{t("pathy.ui.gotIt")}</button>
+        <button onClick={tour}>{t("pathy.ui.showTour")}</button>
       </span>
     </span>
   );

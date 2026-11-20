@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import Image from "next/image";
 import { pathyPoseSrc, type PathyPose } from "@/lib/pathy/pose";
 import PathyMenu from "./pathy-menu";
@@ -16,6 +17,7 @@ const PathyHelper = forwardRef<HTMLButtonElement, Props>(function PathyHelper(
   ref,
 ) {
   const { open, idle, toggle, close } = usePathyHelper();
+  const { t } = useT();
   return (
     <div className={styles.helper}>
       {bubble && !open && (
@@ -28,7 +30,7 @@ const PathyHelper = forwardRef<HTMLButtonElement, Props>(function PathyHelper(
         ref={ref}
         className={styles.helperButton}
         type="button"
-        aria-label="Pathy help"
+        aria-label={t("pathy.ui.helperLabel")}
         aria-expanded={open}
         onClick={toggle}
       >

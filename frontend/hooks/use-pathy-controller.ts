@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { burstConfetti } from "@/lib/pathy/confetti";
 import type { PathyPose } from "@/lib/pathy/pose";
 import { usePathyIntro } from "./use-pathy-intro";
 
 export function usePathyController() {
+  const { t } = useT();
   const [pose, setPose] = useState<PathyPose>("helpdesk");
   const [bubble, setBubble] = useState("");
   const [tour, setTour] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export function usePathyController() {
     },
     [],
   );
-  usePathyIntro(setBubble, timer);
+  usePathyIntro(setBubble, timer, t("pathy.ui.intro"));
   const api = useMemo(
     () => ({
       react,

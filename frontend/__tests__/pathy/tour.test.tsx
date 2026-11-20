@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { withLocale } from "../i18n/with-locale";
 import PathyTour from "@/components/pathy/pathy-tour";
 
 const push = vi.fn();
@@ -11,7 +12,7 @@ vi.mock("next/navigation", () => ({
 describe("PathyTour", () => {
   it("progresses and closes from the tour controls", () => {
     const close = vi.fn();
-    render(<PathyTour name="full" close={close} />);
+    render(withLocale(<PathyTour name="full" close={close} />));
     expect(
       screen.getByRole("heading", { name: "Hi, I'm Pathy" }),
     ).toBeInTheDocument();

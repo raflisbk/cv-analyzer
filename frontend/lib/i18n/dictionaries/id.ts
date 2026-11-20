@@ -1,4 +1,5 @@
 import appId from "./app-id";
+import pathyId from "./pathy-id";
 import landingId from "./landing-id";
 import type en from "./en";
 
@@ -55,6 +56,7 @@ const id = {
   },
   app: appId,
   landing: landingId,
+  pathy: pathyId,
   common: { language: "Bahasa" },
 } as const satisfies Shape<typeof en>;
 export default id;
