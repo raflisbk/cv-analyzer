@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 
 export function ReportStatus({
@@ -7,14 +8,15 @@ export function ReportStatus({
   error?: boolean;
   retry?: () => void;
 }) {
+  const { t } = useT();
   return error ? (
     <div role="alert">
-      Report could not load.{" "}
+      {t("appWorkspacePanel.report.error")}{" "}
       <button type="button" onClick={retry}>
-        Try again
+        {t("appWorkspacePanel.retry")}
       </button>
     </div>
   ) : (
-    <LoadingSkeleton label="Your report is still processing" />
+    <LoadingSkeleton label={t("appWorkspacePanel.report.processing")} />
   );
 }

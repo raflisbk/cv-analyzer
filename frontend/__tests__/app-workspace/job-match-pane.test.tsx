@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { render } from "../i18n/render-with-locale";
 import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
 import { JobMatchPane } from "@/components/app-workspace/panel/job-match-pane";

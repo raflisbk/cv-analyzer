@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useT } from "@/components/i18n/i18n-provider";
 import { useAppWorkspacePdfWidth } from "@/hooks/use-app-workspace-pdf-width";
 import { useAppWorkspacePdfUrl } from "@/hooks/use-app-workspace-pdf-url";
 import { PdfViewerSkeleton } from "./pdf/pdf-viewer-skeleton";
@@ -21,13 +22,14 @@ export function WorkspacePdf({
   jobId: string;
   file: Blob | null;
 }) {
+  const { t } = useT();
   const { pdfRef, pageWidth } = useAppWorkspacePdfWidth("pdf");
   const url = useAppWorkspacePdfUrl(file);
   return (
     <div
       ref={pdfRef}
       className={styles.frame}
-      aria-label="Original PDF preview"
+      aria-label={t("appWorkspace.pdf.label")}
     >
       {url ? (
         <PdfViewer url={url} containerWidth={pageWidth} jobId={jobId} />

@@ -10,6 +10,13 @@ export function useAppReportFormat() {
   return {
     score,
     delta: (value: number) => `${value >= 0 ? "+" : ""}${score(value)}`,
+    dateTime: (value: string) =>
+      new Intl.DateTimeFormat(intlLocale, {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(value)),
     date: (value: string) =>
       new Intl.DateTimeFormat(intlLocale, {
         day: "numeric",

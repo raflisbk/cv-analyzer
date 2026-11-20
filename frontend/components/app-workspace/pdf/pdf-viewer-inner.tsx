@@ -10,6 +10,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 import { AnnotationOverlay } from "./annotation-overlay";
 import { InlineEditPopover } from "./inline-edit-popover";
 import { useInlineEdit } from "@/hooks/use-inline-edit";
+import { useT } from "@/components/i18n/i18n-provider";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import type { SuggestionAnchorRecord } from "@/lib/workspace";
 import type { SuggestionCard } from "@/lib/types";
@@ -27,12 +28,13 @@ interface PdfViewerInnerProps {
 }
 
 function PageLoadingSkeleton({ width }: { width: number }) {
+  const { t } = useT();
   const height = Math.round(width * 1.414);
   return (
     <div
       className="animate-pulse bg-[rgba(17,17,17,0.06)]"
       style={{ width, height }}
-      aria-label="Loading PDF page..."
+      aria-label={t("appWorkspace.pdf.loadingPage")}
     />
   );
 }
@@ -48,6 +50,7 @@ export default function PdfViewerInner({
   suggestions = [],
   jobId = "",
 }: PdfViewerInnerProps) {
+  const { t } = useT();
   const [numPages, setNumPages] = useState<number>(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pageWidth, setPageWidth] = useState<number>(595.5);
@@ -90,7 +93,7 @@ export default function PdfViewerInner({
         role="alert"
       >
         <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
-          Could not load PDF. Please try refreshing.
+          {t("appWorkspace.pdf.loadFailed")}
         </p>
       </div>
     );

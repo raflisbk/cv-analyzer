@@ -1,3 +1,5 @@
+import { useT } from "@/components/i18n/i18n-provider";
+
 export function WorkspaceLoadError({
   error,
   retry,
@@ -5,11 +7,12 @@ export function WorkspaceLoadError({
   error: Error | null;
   retry: () => void;
 }) {
+  const { t } = useT();
   return error ? (
     <p role="alert">
-      Workspace could not load.{" "}
+      {t("appWorkspace.state.loadError")}{" "}
       <button type="button" onClick={retry}>
-        Try again
+        {t("appWorkspace.state.retry")}
       </button>
     </p>
   ) : null;

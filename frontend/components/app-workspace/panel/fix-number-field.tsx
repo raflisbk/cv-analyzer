@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "../workspace-styles";
 
 export function FixNumberField({
@@ -7,15 +8,16 @@ export function FixNumberField({
   value: string;
   setValue: (value: string) => void;
 }) {
+  const { t } = useT();
   return (
     <label>
-      Enter the number from your experience
+      {t("appWorkspacePanel.fixes.enterNumber")}
       <input
         className={styles.input}
         inputMode="decimal"
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        placeholder="Your number"
+        placeholder={t("appWorkspacePanel.fixes.numberPlaceholder")}
       />
     </label>
   );

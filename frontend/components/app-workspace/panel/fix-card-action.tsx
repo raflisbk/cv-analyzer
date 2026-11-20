@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { WorkspaceFix, FixInput } from "@/lib/app-workspace/fixes";
 import { fillInputs, fillNumber } from "@/lib/app-workspace/fixes";
 import styles from "../workspace-styles";
@@ -27,6 +28,7 @@ export function FixCardAction({
   setError,
   onShow,
 }: Props) {
+  const { t } = useT();
   const apply = (anchor: HTMLElement) => {
     const text = inputs.length
       ? fillInputs(fix.after, inputs, answers)
@@ -34,13 +36,11 @@ export function FixCardAction({
         ? fillNumber(fix.after, value)
         : fix.after;
     if (!text) {
-      setError("Enter a valid number before applying.");
+      setError(t("appWorkspacePanel.fixes.invalidNumber"));
       return;
     }
     if (!onApply(text, anchor, answers)) {
-      setError(
-        "Could not apply this fix. Check the original text and supplied facts.",
-      );
+      setError(t("appWorkspacePanel.fixes.applyFailed"));
     }
   };
   if (!fix.after) {
@@ -50,7 +50,7 @@ export function FixCardAction({
         className={`${styles.pill} ${styles.punk}`}
         onClick={() => onShow(fix.id, fix.section)}
       >
-        Edit this line yourself
+        {t("appWorkspacePanel.fixes.editYourself")}
       </button>
     );
   }
@@ -62,7 +62,7 @@ export function FixCardAction({
       disabled={incomplete}
       onClick={(event) => apply(event.currentTarget)}
     >
-      Apply
+      {t("appWorkspacePanel.fixes.apply")}
     </button>
   );
 }

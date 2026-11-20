@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { GrammarData } from "@/lib/app-api/grammar.types";
 import styles from "../workspace-styles";
 
@@ -9,10 +10,12 @@ export function GrammarNote({
   note: Note;
   onResolve: (action: "accept" | "ignore") => void;
 }) {
+  const { t } = useT();
+  const type = t(`appWorkspacePanel.grammar.${note.type}`);
   return (
     <article className={styles.card}>
       <div className={styles.row}>
-        <span className={styles.eyebrow}>{note.type}</span>
+        <span className={styles.eyebrow}>{type}</span>
         <span>{note.location}</span>
       </div>
       <p>
@@ -21,19 +24,26 @@ export function GrammarNote({
       <div className={styles.row}>
         <button
           type="button"
-          aria-label={`Accept ${note.type} change from ${note.before} to ${note.after}`}
+          aria-label={t("appWorkspacePanel.grammar.acceptLabel", {
+            type,
+            before: note.before,
+            after: note.after,
+          })}
           className={`${styles.pill} ${styles.punk}`}
           onClick={() => onResolve("accept")}
         >
-          ✓ Accept
+          {t("appWorkspacePanel.grammar.accept")}
         </button>
         <button
           type="button"
-          aria-label={`Ignore ${note.type} change from ${note.before}`}
+          aria-label={t("appWorkspacePanel.grammar.ignoreLabel", {
+            type,
+            before: note.before,
+          })}
           className={`${styles.pill} ${styles.snow}`}
           onClick={() => onResolve("ignore")}
         >
-          × Ignore
+          {t("appWorkspacePanel.grammar.ignore")}
         </button>
       </div>
     </article>

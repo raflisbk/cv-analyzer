@@ -1,6 +1,8 @@
 import appId from "./app-id";
 import appExportId from "./app-export-id";
 import appReportId from "./app-report-id";
+import appWorkspaceId from "./app-workspace-id";
+import appWorkspacePanelId from "./app-workspace-panel-id";
 import pathyId from "./pathy-id";
 import landingId from "./landing-id";
 import type en from "./en";
@@ -61,6 +63,8 @@ const id = {
   pathy: pathyId,
   appExport: appExportId,
   appReport: appReportId,
+  appWorkspace: appWorkspaceId,
+  appWorkspacePanel: appWorkspacePanelId,
   common: { language: "Bahasa" },
 } as const satisfies Shape<typeof en>;
 export default id;

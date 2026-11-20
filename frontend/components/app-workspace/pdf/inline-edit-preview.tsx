@@ -1,3 +1,5 @@
+import { useT } from "@/components/i18n/i18n-provider";
+
 export interface RewritePreview {
   original: string;
   rewritten: string;
@@ -12,13 +14,14 @@ export function InlineEditPreview({
   onApply: () => void;
   onClose: () => void;
 }) {
+  const { t } = useT();
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-3">
         <div className="relative rounded-lg border border-[#ff5555]/35 bg-white p-3">
           <div className="absolute -top-2.5 left-2 rounded border border-[#ff5555]/35 bg-[#ff5555] px-2 py-0.5">
             <p className="text-[9px] font-black uppercase tracking-widest text-white">
-              Before
+              {t("appWorkspace.popover.before")}
             </p>
           </div>
           <p className="text-xs text-[#111111] line-clamp-4 mt-2 font-serif italic line-through decoration-[#ff5555]/50">
@@ -29,7 +32,7 @@ export function InlineEditPreview({
         <div className="relative rounded-lg border border-[#CAFF43]/35 bg-white p-3">
           <div className="absolute -top-2.5 left-2 rounded border border-[#CAFF43]/35 bg-[#CAFF43] px-2 py-0.5">
             <p className="text-[9px] font-black uppercase tracking-widest text-[#111111]">
-              After
+              {t("appWorkspace.popover.after")}
             </p>
           </div>
           <p className="text-xs text-[#111111] line-clamp-4 mt-2 font-serif">
@@ -43,13 +46,13 @@ export function InlineEditPreview({
           onClick={onApply}
           className="flex-1 rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35]"
         >
-          Apply
+          {t("appWorkspace.popover.apply")}
         </button>
         <button
           onClick={onClose}
           className="flex-1 rounded-md border border-[#111111]/15 bg-white px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#F5F2D8]"
         >
-          Cancel
+          {t("appWorkspace.popover.cancel")}
         </button>
       </div>
     </div>

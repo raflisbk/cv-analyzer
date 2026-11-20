@@ -1,9 +1,11 @@
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import { pathyPoseSrc } from "@/lib/pathy/pose";
 import styles from "../workspace-styles";
 
 export function JobMatchIntro() {
+  const { t } = useT();
   return (
     <div className={styles.paneHead}>
       <Image
@@ -15,13 +17,13 @@ export function JobMatchIntro() {
       />
       <div>
         <div className={styles.row}>
-          <span className={styles.eyebrow}>Job match</span>
+          <span className={styles.eyebrow}>
+            {t("appWorkspacePanel.match.title")}
+          </span>
           <HelpButton helpKey="match" />
         </div>
-        <h2>Paste a job, see the gap</h2>
-        <p className={styles.muted}>
-          Compare the job with your CV and see what is missing.
-        </p>
+        <h2>{t("appWorkspacePanel.match.heading")}</h2>
+        <p className={styles.muted}>{t("appWorkspacePanel.match.hint")}</p>
       </div>
     </div>
   );

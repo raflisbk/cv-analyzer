@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { VersionData } from "@/lib/app-api/history.types";
 import { HistoryVersionCard } from "./history-version-card";
 import styles from "../workspace-styles";
@@ -11,6 +12,7 @@ export function HistoryTimeline({
   onCompare: (id: string) => void;
   onRestore: (id: string) => void;
 }) {
+  const { t } = useT();
   return (
     <>
       {versions.length ? (
@@ -23,11 +25,11 @@ export function HistoryTimeline({
           />
         ))
       ) : (
-        <p>No versions have been saved yet.</p>
+        <p>{t("appWorkspacePanel.history.none")}</p>
       )}
       <div className={styles.group}>
-        <strong>Autosave</strong>
-        <p>Draft saved automatically.</p>
+        <strong>{t("appWorkspacePanel.history.autosave")}</strong>
+        <p>{t("appWorkspacePanel.history.autosaveBody")}</p>
       </div>
     </>
   );

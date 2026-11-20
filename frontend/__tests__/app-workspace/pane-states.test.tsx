@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { render } from "../i18n/render-with-locale";
 import { expect, it, vi } from "vitest";
 import { AtsPane } from "@/components/app-workspace/panel/ats-pane";
 import { GrammarPane } from "@/components/app-workspace/panel/grammar-pane";

@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import AnalysisProgress from "@/components/app-home/analysis-progress";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import type { useAppWorkspaceData } from "@/hooks/use-app-workspace-data";
@@ -25,17 +26,18 @@ export function WorkspacePageState({
   onExport,
   onComplete,
 }: Props) {
+  const { t } = useT();
   const status = data.hydration.data?.status;
   return (
     <>
       {data.hydration.isLoading && (
-        <LoadingSkeleton label="Loading workspace" />
+        <LoadingSkeleton label={t("appWorkspace.state.loading")} />
       )}
       {status === "preparing" && (
         <AnalysisProgress jobId={jobId} onComplete={onComplete} />
       )}
       {status === "failed" && (
-        <p role="alert">Analysis failed. Please try another CV.</p>
+        <p role="alert">{t("appWorkspace.state.failed")}</p>
       )}
       {status === "ready" && (
         <WorkspaceBody

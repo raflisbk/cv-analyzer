@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { WorkspaceView } from "./workspace-header";
 import styles from "./workspace-styles";
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function ViewSwitch({ view, setView }: Props) {
+  const { t } = useT();
   const switchRef = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState({ left: 4, width: 80 });
   useEffect(() => {
@@ -26,7 +28,7 @@ export function ViewSwitch({ view, setView }: Props) {
       ref={switchRef}
       data-tour="workspace-view-switch"
       role="group"
-      aria-label="Document view"
+      aria-label={t("appWorkspace.views.label")}
     >
       <span className={styles.indicator} style={indicator} aria-hidden="true" />
       {(["editor", "pdf", "report"] as const).map((item) => (
@@ -36,11 +38,7 @@ export function ViewSwitch({ view, setView }: Props) {
           aria-pressed={view === item}
           onClick={() => setView(item)}
         >
-          {item === "report"
-            ? "Full report"
-            : item === "pdf"
-              ? "PDF"
-              : "Editor"}
+          {t(`appWorkspace.views.${item}`)}
         </button>
       ))}
     </div>

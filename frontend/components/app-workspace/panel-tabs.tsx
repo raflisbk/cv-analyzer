@@ -2,19 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { WorkspaceTab } from "./workspace-panel";
 import { nextTabIndex } from "@/lib/app-workspace/tabs";
 import { PanelTabButton } from "./panel-tab-button";
 import styles from "./workspace-styles";
 
-const tabs: { key: WorkspaceTab; label: string }[] = [
-  { key: "report", label: "Report" },
-  { key: "fixes", label: "Fixes" },
-  { key: "ats", label: "ATS" },
-  { key: "match", label: "Job match" },
-  { key: "grammar", label: "Grammar" },
-  { key: "history", label: "History" },
-  { key: "chat", label: "Chat" },
+const tabs: { key: WorkspaceTab }[] = [
+  { key: "report" },
+  { key: "fixes" },
+  { key: "ats" },
+  { key: "match" },
+  { key: "grammar" },
+  { key: "history" },
+  { key: "chat" },
 ];
 
 interface Props {
@@ -40,6 +41,7 @@ function activateTabOnKey(
 }
 
 export function PanelTabs({ tab, setTab, fixCount, grammarCount }: Props) {
+  const { t } = useT();
   const row = useRef<HTMLDivElement>(null);
   const [underline, setUnderline] = useState({ left: 0, width: 54 });
   useEffect(() => {
@@ -63,14 +65,14 @@ export function PanelTabs({ tab, setTab, fixCount, grammarCount }: Props) {
       ref={row}
       className={styles.tabs}
       role="tablist"
-      aria-label="Workspace panel"
+      aria-label={t("appWorkspace.tabs.label")}
       data-tour="workspace-panel-tabs"
     >
-      {tabs.map(({ key, label }, index) => (
+      {tabs.map(({ key }, index) => (
         <PanelTabButton
           key={key}
           value={key}
-          label={label}
+          label={t(`appWorkspace.tabs.${key}`)}
           selected={tab === key}
           fixCount={fixCount}
           grammarCount={grammarCount}

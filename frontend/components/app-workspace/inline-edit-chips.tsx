@@ -1,18 +1,20 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./workspace-styles";
 
 const chips = [
-  ["Shorter", "Make this shorter"],
+  ["shorter", "Make this shorter"],
   [
-    "Add numbers",
+    "addNumbers",
     "Suggest where a user-provided number would clarify this. Use a placeholder, never invent a number.",
   ],
-  ["Stronger verb", "Use a stronger action verb without adding facts"],
+  ["strongerVerb", "Use a stronger action verb without adding facts"],
 ];
 export function InlineEditChips({
   request,
 }: {
   request: (instruction: string) => void;
 }) {
+  const { t } = useT();
   return (
     <div className={styles.row}>
       {chips.map(([label, instruction]) => (
@@ -22,7 +24,7 @@ export function InlineEditChips({
           className={`${styles.pill} ${styles.snow}`}
           onClick={() => request(instruction)}
         >
-          {label}
+          {t(`appWorkspace.inline.${label}`)}
         </button>
       ))}
     </div>

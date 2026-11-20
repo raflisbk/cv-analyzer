@@ -8,6 +8,8 @@ import {
   offset,
   flip,
 } from "@floating-ui/react";
+import { useT } from "@/components/i18n/i18n-provider";
+import { AnnotationCardActions } from "./annotation-card-actions";
 import { useWorkspaceV2Store } from "@/lib/stores/workspace-v2-store";
 import {
   getAnnotationPriorityColor,
@@ -30,6 +32,7 @@ export function AnnotationHitArea({
   onApply,
   onDismiss,
 }: AnnotationHitAreaProps) {
+  const { t } = useT();
   const setActiveSuggestionId = useWorkspaceV2Store(
     (s) => s.setActiveSuggestionId,
   );
@@ -150,7 +153,9 @@ export function AnnotationHitArea({
             transition: "opacity 200ms ease",
             pointerEvents: isApplied || isDismissed ? "none" : "auto",
           }}
-          aria-label={`Suggestion: ${suggestionText.slice(0, 60)}`}
+          aria-label={t("appWorkspace.pdf.suggestion", {
+            text: suggestionText.slice(0, 60),
+          })}
         />
       )}
 
@@ -228,7 +233,7 @@ export function AnnotationHitArea({
                     color: "rgba(17,17,17,0.40)",
                   }}
                 >
-                  CURRENT:
+                  {t("appWorkspace.pdf.current")}
                 </p>
                 <p
                   className="text-[11px] leading-snug"
@@ -247,48 +252,19 @@ export function AnnotationHitArea({
               </div>
             )}
 
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSuggestionStatus(anchor.suggestion_id, "applied");
-                  onApply?.(anchor.suggestion_id);
-                  setActiveSuggestionId(null);
-                }}
-                className="px-4 py-2 text-xs font-semibold rounded-md transition-all"
-                style={{
-                  background: color.text,
-                  color: "#ffffff",
-                  border: "none",
-                  cursor: "pointer",
-                  flex: 1,
-                  textAlign: "center",
-                }}
-              >
-                Apply
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSuggestionStatus(anchor.suggestion_id, "dismissed");
-                  onDismiss?.(anchor.suggestion_id);
-                  setActiveSuggestionId(null);
-                }}
-                className="px-4 py-2 text-xs font-semibold rounded-md transition-all"
-                style={{
-                  background: "rgba(17,17,17,0.06)",
-                  color: "rgba(17,17,17,0.60)",
-                  border: "1px solid rgba(17,17,17,0.10)",
-                  cursor: "pointer",
-                  flex: 1,
-                  textAlign: "center",
-                }}
-              >
-                Dismiss
-              </button>
-            </div>
+            <AnnotationCardActions
+              accent={color.text}
+              apply={() => {
+                setSuggestionStatus(anchor.suggestion_id, "applied");
+                onApply?.(anchor.suggestion_id);
+                setActiveSuggestionId(null);
+              }}
+              dismiss={() => {
+                setSuggestionStatus(anchor.suggestion_id, "dismissed");
+                onDismiss?.(anchor.suggestion_id);
+                setActiveSuggestionId(null);
+              }}
+            />
           </div>
         </FloatingPortal>
       )}

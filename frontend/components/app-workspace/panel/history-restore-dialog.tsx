@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import { useAppWorkspaceFocusTrap } from "@/hooks/use-app-workspace-focus-trap";
 import styles from "../workspace-styles";
 
@@ -14,18 +15,16 @@ export function HistoryRestoreDialog({
   onCancel: () => void;
   onRestore: () => void;
 }) {
+  const { t } = useT();
   const dialogRef = useAppWorkspaceFocusTrap(onCancel);
   return (
     <div
       ref={dialogRef}
       className={styles.card}
       role="dialog"
-      aria-label="Restore version"
+      aria-label={t("appWorkspacePanel.history.restoreLabel")}
     >
-      <p>
-        Restore {versionId}? This adds a new version with its content and keeps
-        all other versions.
-      </p>
+      <p>{t("appWorkspacePanel.history.restoreBody", { id: versionId })}</p>
       <div className={styles.row}>
         <button
           type="button"
@@ -33,7 +32,7 @@ export function HistoryRestoreDialog({
           disabled={restoring}
           onClick={onCancel}
         >
-          Cancel
+          {t("appWorkspacePanel.history.cancel")}
         </button>
         <button
           type="button"
@@ -41,7 +40,9 @@ export function HistoryRestoreDialog({
           disabled={restoring}
           onClick={onRestore}
         >
-          {restoring ? "Restoring…" : "Restore version"}
+          {restoring
+            ? t("appWorkspacePanel.history.restoring")
+            : t("appWorkspacePanel.history.restoreAction")}
         </button>
       </div>
     </div>

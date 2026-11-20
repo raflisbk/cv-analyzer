@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { requestInlineRewrite } from "@/lib/app-api/workspace";
 import { hasUnsupportedNumbers } from "@/lib/app-workspace/factual-rewrite";
 import { fillNumber, needsNumber } from "@/lib/app-workspace/fixes";
@@ -11,6 +12,7 @@ export function useAppWorkspaceInlineRewrite(
   source: string,
   onApply: (text: string) => void,
 ) {
+  const { t } = useT();
   const [rewrite, setRewrite] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -20,7 +22,7 @@ export function useAppWorkspaceInlineRewrite(
     try {
       setRewrite(await requestInlineRewrite(jobId, selectedText, instruction));
     } catch {
-      setError("Rewrite failed. Try again.");
+      setError(t("appWorkspace.inline.rewriteFailed"));
     } finally {
       setBusy(false);
     }
@@ -30,13 +32,11 @@ export function useAppWorkspaceInlineRewrite(
       ? fillNumber(rewrite, provided)
       : rewrite;
     if (!finalText) {
-      setError("Enter your own number before applying.");
+      setError(t("appWorkspace.inline.needNumber"));
       return;
     }
     if (hasUnsupportedNumbers(source, finalText, provided)) {
-      setError(
-        "The rewrite adds a number that is not in your CV. Add your own number instead.",
-      );
+      setError(t("appWorkspace.inline.inventedNumber"));
       return;
     }
     onApply(finalText);

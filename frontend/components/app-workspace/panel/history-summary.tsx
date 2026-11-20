@@ -1,9 +1,11 @@
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import { pathyPoseSrc } from "@/lib/pathy/pose";
 import styles from "../workspace-styles";
 
 export function HistorySummary({ count }: { count: number }) {
+  const { t } = useT();
   return (
     <div className={styles.paneHead}>
       <Image
@@ -15,13 +17,13 @@ export function HistorySummary({ count }: { count: number }) {
       />
       <div>
         <div className={styles.row}>
-          <span className={styles.eyebrow}>Version history</span>
+          <span className={styles.eyebrow}>
+            {t("appWorkspacePanel.history.title")}
+          </span>
           <HelpButton helpKey="historyTab" />
         </div>
-        <h2>{count} versions saved</h2>
-        <p className={styles.muted}>
-          Every analysis keeps a version. Restore any time.
-        </p>
+        <h2>{t("appWorkspacePanel.history.saved", { count })}</h2>
+        <p className={styles.muted}>{t("appWorkspacePanel.history.hint")}</p>
       </div>
     </div>
   );

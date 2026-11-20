@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { render } from "../i18n/render-with-locale";
 import { expect, it } from "vitest";
 import { PdfViewer } from "@/components/app-workspace/pdf/pdf-viewer";
 

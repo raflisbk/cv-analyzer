@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import type { VersionData } from "@/lib/app-api/history.types";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import { useAppWorkspaceHistory } from "@/hooks/use-app-workspace-history";
@@ -16,19 +17,20 @@ export function HistoryPane({
   error?: Error | null;
   retry?: () => void;
 }) {
+  const { t } = useT();
   const history = useAppWorkspaceHistory(jobId);
   if (error) {
     return (
       <div role="alert">
-        Version history could not load.{" "}
+        {t("appWorkspacePanel.history.error")}{" "}
         <button type="button" onClick={retry}>
-          Try again
+          {t("appWorkspacePanel.retry")}
         </button>
       </div>
     );
   }
   if (!versions) {
-    return <LoadingSkeleton label="Loading versions" />;
+    return <LoadingSkeleton label={t("appWorkspacePanel.history.loading")} />;
   }
   return <HistoryContent versions={versions} history={history} />;
 }

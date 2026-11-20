@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "../workspace-styles";
 
 export function JobSkillConfirm({
@@ -9,24 +10,25 @@ export function JobSkillConfirm({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useT();
   return (
     <div className={styles.card}>
-      <strong>Have you used {skill} in your work?</strong>
-      <p>Add it only if you can speak about this experience.</p>
+      <strong>{t("appWorkspacePanel.match.confirmTitle", { skill })}</strong>
+      <p>{t("appWorkspacePanel.match.confirmBody")}</p>
       <div className={styles.row}>
         <button
           type="button"
           className={`${styles.pill} ${styles.punk}`}
           onClick={onConfirm}
         >
-          Yes, add to Skills
+          {t("appWorkspacePanel.match.confirmYes")}
         </button>
         <button
           type="button"
           className={`${styles.pill} ${styles.snow}`}
           onClick={onCancel}
         >
-          Cancel
+          {t("appWorkspacePanel.match.cancel")}
         </button>
       </div>
     </div>
