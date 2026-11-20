@@ -1,17 +1,23 @@
+"use client";
+
 import type { ReportsData } from "@/lib/app-api/reports.types";
-import { relativeDate } from "@/lib/app-shell/format";
+import { useT } from "@/components/i18n/i18n-provider";
+import { relativeDate } from "@/lib/i18n/format-date";
 import styles from "./reports.module.css";
 
 export default function ReportStats({ data }: { data: ReportsData }) {
+  const { t, locale } = useT();
   return (
     <div className={styles.stats}>
       <div>
-        <strong>Reports</strong>
+        <strong>{t("app.reports.statReports")}</strong>
         <b>{data.aggregate.count}</b>
-        <small>across {data.aggregate.count} CVs</small>
+        <small>
+          {t("app.reports.acrossCvs", { count: data.aggregate.count })}
+        </small>
       </div>
       <div>
-        <strong>Best score</strong>
+        <strong>{t("app.reports.bestScore")}</strong>
         <b>{data.aggregate.bestScore}</b>
         <small>
           {
@@ -22,14 +28,16 @@ export default function ReportStats({ data }: { data: ReportsData }) {
         </small>
       </div>
       <div>
-        <strong>Average impact</strong>
+        <strong>{t("app.reports.averageImpact")}</strong>
         <b>{data.aggregate.averageImpact}</b>
-        <small>your weakest dimension</small>
+        <small>{t("app.reports.weakest")}</small>
       </div>
       <div>
-        <strong>Last analysis</strong>
-        <b>{relativeDate(data.aggregate.lastAnalysisAt)}</b>
-        <small>{data.aggregate.openFixes} fixes still open</small>
+        <strong>{t("app.reports.lastAnalysis")}</strong>
+        <b>{relativeDate(locale, data.aggregate.lastAnalysisAt)}</b>
+        <small>
+          {t("app.reports.openFixes", { count: data.aggregate.openFixes })}
+        </small>
       </div>
     </div>
   );

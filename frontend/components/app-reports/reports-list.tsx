@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useT } from "@/components/i18n/i18n-provider";
 import { listReports } from "@/lib/app-api/reports";
 import ListHeader from "@/components/app-shell/list-header";
 import EmptyState from "@/components/app-shell/empty-state";
@@ -12,6 +13,7 @@ import shell from "@/components/app-shell/app-shell.module.css";
 import styles from "./reports.module.css";
 
 export default function ReportsList() {
+  const { t } = useT();
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["app-reports"],
     queryFn: listReports,
@@ -19,11 +21,11 @@ export default function ReportsList() {
   return (
     <section className={`${shell.sheet} ${styles.list}`}>
       <ListHeader type="reports" />
-      {isLoading && <LoadingSkeleton label="Loading reports" />}
+      {isLoading && <LoadingSkeleton label={t("app.reports.loading")} />}
       {isError && (
         <p role="alert">
-          Could not load reports.{" "}
-          <button onClick={() => refetch()}>Try again</button>
+          {t("app.reports.loadError")}{" "}
+          <button onClick={() => refetch()}>{t("app.reports.retry")}</button>
         </p>
       )}
       {data?.reports.length === 0 && <EmptyState type="reports" />}
