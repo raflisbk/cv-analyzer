@@ -1,3 +1,4 @@
+import appEn from "./app-en";
 import landingEn from "./landing-en";
 const en = {
   nav: {
@@ -49,6 +50,7 @@ const en = {
     signOut: "Sign out",
     mobileLogin: "Log in to start",
   },
+  app: appEn,
   landing: landingEn,
   common: { language: "Language" },
 } as const;
