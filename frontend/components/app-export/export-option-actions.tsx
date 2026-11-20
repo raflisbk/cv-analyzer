@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./export-options.module.css";
 
 interface Props {
@@ -21,6 +22,7 @@ export default function ExportOptionActions({
   onDownload,
   onCancel,
 }: Props) {
+  const { t } = useT();
   return (
     <div className={styles.actions}>
       <small>{fileName}</small>
@@ -35,7 +37,7 @@ export default function ExportOptionActions({
         </p>
       )}
       {reasons.length > 0 && (
-        <ul aria-label="Skipped fixes" aria-live="polite">
+        <ul aria-label={t("appExport.skippedFixes")} aria-live="polite">
           {reasons.map((reason) => (
             <li key={reason.id}>
               <strong>{reason.title}</strong>: {reason.message}
@@ -50,13 +52,13 @@ export default function ExportOptionActions({
         onClick={(event) => onDownload(event.currentTarget)}
       >
         {downloading
-          ? `Preparing ${format}…`
+          ? t("appExport.preparing", { format })
           : error
-            ? "Retry download"
-            : `Download ${format}`}
+            ? t("appExport.retryDownload")
+            : t("appExport.download", { format })}
       </button>
       <button type="button" className={styles.cancel} onClick={onCancel}>
-        Cancel
+        {t("appExport.cancel")}
       </button>
     </div>
   );

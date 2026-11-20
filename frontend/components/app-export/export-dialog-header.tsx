@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useT } from "@/components/i18n/i18n-provider";
 import HelpButton from "@/components/pathy/help-button";
 import styles from "./export-dialog.module.css";
 
@@ -7,12 +8,13 @@ export default function ExportDialogHeader({
 }: {
   onClose: () => void;
 }) {
+  const { t } = useT();
   return (
     <header className={styles.header}>
       <div>
-        <span>Export</span>
+        <span>{t("appExport.title")}</span>
         <h2 id="export-title">
-          Choose an ATS template <HelpButton helpKey="exportHelp" />
+          {t("appExport.heading")} <HelpButton helpKey="exportHelp" />
         </h2>
       </div>
       <Image
@@ -25,7 +27,7 @@ export default function ExportDialogHeader({
       <button
         className={styles.close}
         type="button"
-        aria-label="Close export"
+        aria-label={t("appExport.close")}
         onClick={onClose}
       >
         ×

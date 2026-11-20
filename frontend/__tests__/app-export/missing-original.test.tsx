@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import type { useAppExport } from "@/hooks/use-app-export";
+import { withLocale } from "../i18n/with-locale";
 import ExportDialogReady from "@/components/app-export/export-dialog-ready";
 import { exportPreview, exportTemplates } from "@/lib/app-api/fixtures/export";
 
@@ -13,7 +14,7 @@ it("keeps templates selectable when original layout is unavailable", () => {
     originalFile: { isLoading: false, isError: true },
     setSelectedId: () => {},
   } as unknown as ReturnType<typeof useAppExport>;
-  render(<ExportDialogReady state={state} onClose={() => {}} />);
+  render(withLocale(<ExportDialogReady state={state} onClose={() => {}} />));
   expect(screen.getByRole("alert")).toHaveTextContent(
     "uploaded file is missing",
   );

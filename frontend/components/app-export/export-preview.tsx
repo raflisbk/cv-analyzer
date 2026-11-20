@@ -2,6 +2,7 @@ import type {
   ExportTemplate,
   ExportPreview as PreviewData,
 } from "@/lib/app-api/export.types";
+import { useT } from "@/components/i18n/i18n-provider";
 import { markChangedLines } from "@/lib/app-export/preview";
 import styles from "./export-preview.module.css";
 
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function ExportPreview({ template, data }: Props) {
+  const { t } = useT();
   const lines = markChangedLines(data.originalText, data.editedText);
   const format =
     template.original && data.fileName.toLowerCase().endsWith(".docx")
@@ -20,13 +22,16 @@ export default function ExportPreview({ template, data }: Props) {
     <div className={styles.preview}>
       <p className={styles.banner}>
         {template.original
-          ? "Only your applied fixes change; everything else stays as you wrote it."
-          : `${template.name} template: your content is reflowed into this layout. Applied fixes stay highlighted.`}
+          ? t("appExport.bannerOriginal")
+          : t("appExport.bannerTemplate", { name: template.name })}
       </p>
       <div
         className={`${styles.paper} ${styles[template.id]}`}
         data-template={template.id}
-        aria-label={`${template.name} ${format} preview`}
+        aria-label={t("appExport.previewLabel", {
+          name: template.name,
+          format,
+        })}
       >
         {lines.map((line, index) => {
           const first = index === 0;

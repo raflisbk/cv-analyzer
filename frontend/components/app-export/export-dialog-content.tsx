@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { useAppExport } from "@/hooks/use-app-export";
 import LoadingSkeleton from "@/components/app-shell/loading-skeleton";
 import ExportDialogReady from "./export-dialog-ready";
@@ -11,13 +12,14 @@ export default function ExportDialogContent({
   state: State;
   onClose: () => void;
 }) {
+  const { t } = useT();
   if (state.templates.isLoading || state.preview.isLoading) {
-    return <LoadingSkeleton label="Loading export preview" />;
+    return <LoadingSkeleton label={t("appExport.loading")} />;
   }
   if (state.templates.isError || state.preview.isError) {
     return (
       <p role="alert">
-        Could not load export options.{" "}
+        {t("appExport.loadError")}{" "}
         <button
           type="button"
           onClick={() => {
@@ -25,7 +27,7 @@ export default function ExportDialogContent({
             void state.preview.refetch();
           }}
         >
-          Try again
+          {t("appExport.retry")}
         </button>
       </p>
     );
