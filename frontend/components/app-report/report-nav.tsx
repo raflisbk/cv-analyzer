@@ -1,5 +1,6 @@
 "use client";
 
+import { useT } from "@/components/i18n/i18n-provider";
 import {
   reportSections,
   useAppReportScrollSpy,
@@ -8,10 +9,11 @@ import styles from "./report.module.css";
 
 export function ReportNav() {
   const { active, setActive } = useAppReportScrollSpy();
+  const { t } = useT();
   return (
     <nav
       className={styles.nav}
-      aria-label="Report sections"
+      aria-label={t("appReport.nav.label")}
       data-tour="report-nav"
     >
       {reportSections.map((section) => (
@@ -30,7 +32,7 @@ export function ReportNav() {
             });
           }}
         >
-          {section[0].toUpperCase() + section.slice(1)}
+          {t(`appReport.nav.${section}`)}
         </button>
       ))}
     </nav>

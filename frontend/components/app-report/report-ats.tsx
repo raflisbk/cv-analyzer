@@ -1,23 +1,25 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { ReportHeading } from "./report-heading";
 import { ScoreRing } from "./score-ring";
 import styles from "./report.module.css";
 
 export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
+  const { t } = useT();
   return (
     <section
       className={`${styles.card} ${styles.span6}`}
       id="report-ats"
-      aria-label="ATS readiness"
+      aria-label={t("appReport.ats.title")}
     >
-      <ReportHeading title="ATS readiness" helpKey="atsCard" />
+      <ReportHeading title={t("appReport.ats.title")} helpKey="atsCard" />
       <div className={styles.dimTop}>
         <ScoreRing score={ats.score} />
         <svg
           className={styles.atsDiagram}
           viewBox="0 0 200 130"
           role="img"
-          aria-label="Two-column layout can be read out of order"
+          aria-label={t("appReport.ats.diagram")}
         >
           <rect
             x="6"
@@ -61,13 +63,13 @@ export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
         </svg>
       </div>
       <div className={styles.facts}>
-        {!ats.facts.length && <p>No ATS details available yet.</p>}
+        {!ats.facts.length && <p>{t("appReport.ats.noFacts")}</p>}
         {ats.facts.map((fact) => (
           <span key={fact}>{fact}</span>
         ))}
       </div>
       <div className={styles.atsChecks}>
-        {!ats.checks.length && <p>No ATS checks available yet.</p>}
+        {!ats.checks.length && <p>{t("appReport.ats.noChecks")}</p>}
         {ats.checks.map((check) => (
           <span key={check.text} data-ok={check.ok}>
             <b aria-hidden="true">{check.ok ? "✓" : "!"}</b>

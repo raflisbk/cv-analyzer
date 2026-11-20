@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./report.module.css";
 
 export function ReportBulletDonut({
@@ -5,6 +6,7 @@ export function ReportBulletDonut({
 }: {
   counts: { strong: number; fair: number; weak: number };
 }) {
+  const { t } = useT();
   const total = counts.strong + counts.fair + counts.weak;
   const length = 2 * Math.PI * 52;
   return (
@@ -12,7 +14,7 @@ export function ReportBulletDonut({
       className={styles.donut}
       viewBox="0 0 140 140"
       role="img"
-      aria-label={`${counts.strong} strong, ${counts.fair} fair, ${counts.weak} weak bullets`}
+      aria-label={t("appReport.strength.donutLabel", counts)}
     >
       <circle
         cx="70"
@@ -50,7 +52,7 @@ export function ReportBulletDonut({
         {total}
       </text>
       <text x="70" y="86" textAnchor="middle" fontSize="12">
-        bullets
+        {t("appReport.strength.bullets")}
       </text>
     </svg>
   );

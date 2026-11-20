@@ -1,3 +1,4 @@
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { ReportHeading } from "./report-heading";
 import styles from "./report.module.css";
@@ -7,15 +8,16 @@ export function ReportSections({
 }: {
   sections: ReportDetail["sections"];
 }) {
+  const { t } = useT();
   return (
     <section
       className={`${styles.card} ${styles.span6}`}
       id="report-sections"
-      aria-label="Section by section"
+      aria-label={t("appReport.sections.title")}
     >
-      <ReportHeading title="Section by section" helpKey="sections" />
+      <ReportHeading title={t("appReport.sections.title")} helpKey="sections" />
       <div className={styles.sectionRows}>
-        {!sections.length && <p>No section scores available yet.</p>}
+        {!sections.length && <p>{t("appReport.sections.none")}</p>}
         {sections.map((section) => (
           <div
             className={styles.sectionRow}
@@ -26,7 +28,10 @@ export function ReportSections({
             <span
               className={styles.track}
               role="img"
-              aria-label={`${section.name}: ${section.score} out of 100`}
+              aria-label={t("appReport.sections.label", {
+                name: section.name,
+                score: section.score,
+              })}
             >
               <i style={{ width: `${section.score}%` }} />
             </span>
@@ -35,9 +40,7 @@ export function ReportSections({
           </div>
         ))}
       </div>
-      <p className={styles.caption}>
-        Section scores weigh how much each section helps the target role.
-      </p>
+      <p className={styles.caption}>{t("appReport.sections.caption")}</p>
     </section>
   );
 }

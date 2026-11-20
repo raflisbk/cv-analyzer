@@ -1,5 +1,7 @@
+import { useT } from "@/components/i18n/i18n-provider";
+import { useAppReportFormat } from "@/hooks/use-app-report-format";
 import type { ReportDimension } from "@/lib/app-api/report-detail.types";
-import { formatDelta, reportWeights } from "@/lib/app-report/format";
+import { reportWeights } from "@/lib/app-report/format";
 import { ReportHeading } from "./report-heading";
 import { ScoreRing } from "./score-ring";
 import styles from "./report.module.css";
@@ -11,6 +13,8 @@ export function ReportDimensions({
   dimensions: ReportDimension[];
   fixHref: string;
 }) {
+  const { t } = useT();
+  const { delta } = useAppReportFormat();
   return (
     <>
       {dimensions.map((dimension, index) => (
@@ -18,13 +22,18 @@ export function ReportDimensions({
           key={dimension.key}
           className={`${styles.card} ${styles.span3}`}
           id={index === 0 ? "report-scores" : undefined}
-          aria-label={`${dimension.key} score`}
+          aria-label={t("appReport.dimensions.aria", {
+            name: t(`appReport.dimensions.${dimension.key}`),
+          })}
         >
-          <ReportHeading title="Score detail" helpKey="dims" />
+          <ReportHeading
+            title={t("appReport.dimensions.detail")}
+            helpKey="dims"
+          />
           <div className={styles.dimTop}>
             <ScoreRing score={dimension.score} />
             <div>
-              <h2>{dimension.key[0].toUpperCase() + dimension.key.slice(1)}</h2>
+              <h2>{t(`appReport.dimensions.${dimension.key}`)}</h2>
               <p>{dimension.description}</p>
             </div>
           </div>
@@ -42,14 +51,26 @@ export function ReportDimensions({
             ))}
           </div>
           <div className={styles.facts}>
-            <span>{reportWeights[dimension.key]}% of the score</span>
             <span>
-              {formatDelta(dimension.score - dimension.previous)} vs previous
+              {t("appReport.dimensions.weight", {
+                percent: reportWeights[dimension.key],
+              })}
+            </span>
+            <span>
+              {t("appReport.dimensions.vsPrevious", {
+                delta: delta(dimension.score - dimension.previous),
+              })}
             </span>
           </div>
-          <p className={styles.caption}>Biggest drag: {dimension.hint}</p>
+          <p className={styles.caption}>
+            {t("appReport.dimensions.drag", { hint: dimension.hint })}
+          </p>
           <details className={styles.evidence}>
-            <summary>Evidence · {dimension.evidence.length}</summary>
+            <summary>
+              {t("appReport.dimensions.evidence", {
+                count: dimension.evidence.length,
+              })}
+            </summary>
             <ul>
               {dimension.evidence.map((item) => (
                 <li key={item.text} data-positive={item.positive}>
@@ -58,7 +79,7 @@ export function ReportDimensions({
                     <small>{item.note}</small>
                   </div>
                   <a className={styles.mini} href={fixHref}>
-                    Fix this
+                    {t("appReport.dimensions.fix")}
                   </a>
                 </li>
               ))}
