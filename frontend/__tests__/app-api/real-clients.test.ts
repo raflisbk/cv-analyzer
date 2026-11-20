@@ -191,6 +191,15 @@ it.each([
     "GET",
   ],
   [
+    "version restore",
+    () =>
+      import("@/lib/app-api/history").then((m) =>
+        m.restoreVersion("job", "v1"),
+      ),
+    "/api/v1/jobs/job/versions/v1/restore",
+    "POST",
+  ],
+  [
     "ATS",
     () => import("@/lib/app-api/ats").then((m) => m.getAts("job")),
     "/api/v1/jobs/job/ats",

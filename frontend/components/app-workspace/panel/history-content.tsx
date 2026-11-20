@@ -28,8 +28,9 @@ export function HistoryContent({
       {history.restoreId && (
         <HistoryRestoreDialog
           versionId={history.restoreId}
+          restoring={history.restoring}
           onCancel={() => history.setRestoreId(null)}
-          onRestore={history.restore}
+          onRestore={() => void history.restore()}
         />
       )}
     </div>

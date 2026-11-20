@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { getVersionDiff } from "@/lib/app-api/history";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { getVersionDiff, restoreVersion } from "@/lib/app-api/history";
 import type { VersionDiffResult } from "@/lib/app-api/history.types";
 
 export function useAppWorkspaceHistory(jobId: string) {
   const [diff, setDiff] = useState<VersionDiffResult | null>(null);
   const [restoreId, setRestoreId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState("");
+  const [restoring, setRestoring] = useState(false);
+  const router = useRouter();
+  const queryClient = useQueryClient();
   async function compare(versionId: string) {
     try {
       setLoadError("");
@@ -27,11 +32,32 @@ export function useAppWorkspaceHistory(jobId: string) {
       setLoadError("Version text is unavailable for comparison.");
     }
   }
-  function restore() {
-    setLoadError(
-      "Restore is unavailable because version text cannot be loaded.",
-    );
-    setRestoreId(null);
+  async function restore() {
+    if (!restoreId || restoring) return;
+    try {
+      setLoadError("");
+      setRestoring(true);
+      const created = await restoreVersion(jobId, restoreId);
+      await Promise.all(
+        ["app-history", "job-results", "app-workspace"].map((key) =>
+          queryClient.invalidateQueries({ queryKey: [key, jobId] }),
+        ),
+      );
+      setRestoreId(null);
+      router.push(`/app/cvs/${created.jobId}?view=editor&tab=history`);
+    } catch {
+      setLoadError("Could not restore this version. Try again.");
+    } finally {
+      setRestoring(false);
+    }
   }
-  return { diff, restoreId, loadError, compare, setRestoreId, restore };
+  return {
+    diff,
+    restoreId,
+    restoring,
+    loadError,
+    compare,
+    setRestoreId,
+    restore,
+  };
 }

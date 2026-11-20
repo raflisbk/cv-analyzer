@@ -1,4 +1,8 @@
-import type { VersionData, VersionDiff } from "../history.types";
+import type {
+  RestoredVersion,
+  VersionData,
+  VersionDiff,
+} from "../history.types";
 
 export const historyFixture: VersionData[] = [
   {
@@ -32,3 +36,8 @@ export const historyDiffFixture: VersionDiff[] = [
   },
   { before: "recieve", after: "receive" },
 ];
+
+export const restoredVersionFixture: RestoredVersion = {
+  jobId: "restored-job",
+  version: "v3",
+};

@@ -1,9 +1,16 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import { useAppWorkspaceHistory } from "@/hooks/use-app-workspace-history";
 import { getVersionDiff } from "@/lib/app-api/history";
 
-vi.mock("@/lib/app-api/history", () => ({ getVersionDiff: vi.fn() }));
+vi.mock("@/lib/app-api/history", () => ({
+  getVersionDiff: vi.fn(),
+  restoreVersion: vi.fn(),
+}));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("@tanstack/react-query", () => ({
+  useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+}));
 
 it("shows unavailable text instead of a blank comparison", async () => {
   vi.mocked(getVersionDiff).mockResolvedValue([]);
@@ -13,12 +20,4 @@ it("shows unavailable text instead of a blank comparison", async () => {
   });
   expect(result.current.diff).toBeNull();
   expect(result.current.loadError).toContain("unavailable");
-});
-
-it("explains why a version cannot be restored", async () => {
-  const { result } = renderHook(() => useAppWorkspaceHistory("job"));
-  act(() => result.current.restore());
-  await waitFor(() =>
-    expect(result.current.loadError).toContain("unavailable"),
-  );
 });

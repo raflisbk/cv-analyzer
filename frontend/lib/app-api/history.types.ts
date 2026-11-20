@@ -14,3 +14,8 @@ export interface VersionDiff {
 }
 
 export type VersionDiffResult = VersionDiff | VersionDiff[];
+
+export interface RestoredVersion {
+  jobId: string;
+  version: string;
+}

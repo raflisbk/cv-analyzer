@@ -1,10 +1,15 @@
 import { render, screen } from "@testing-library/react";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { AtsPane } from "@/components/app-workspace/panel/ats-pane";
 import { GrammarPane } from "@/components/app-workspace/panel/grammar-pane";
 import { HistoryPane } from "@/components/app-workspace/panel/history-pane";
 import { ReportPane } from "@/components/app-workspace/panel/report-pane";
 import { FixesPane } from "@/components/app-workspace/panel/fixes-pane";
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("@tanstack/react-query", () => ({
+  useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+}));
 
 it("shows an ATS request failure", () => {
   render(<AtsPane error={new Error("offline")} onExport={() => {}} />);
