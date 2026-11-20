@@ -5,10 +5,12 @@ import styles from "../workspace-styles";
 
 export function HistoryRestoreDialog({
   versionId,
+  restoring,
   onCancel,
   onRestore,
 }: {
   versionId: string;
+  restoring: boolean;
   onCancel: () => void;
   onRestore: () => void;
 }) {
@@ -20,11 +22,15 @@ export function HistoryRestoreDialog({
       role="dialog"
       aria-label="Restore version"
     >
-      <p>Restore {versionId}? This will replace the current draft.</p>
+      <p>
+        Restore {versionId}? This adds a new version with its content and keeps
+        all other versions.
+      </p>
       <div className={styles.row}>
         <button
           type="button"
           className={`${styles.pill} ${styles.snow}`}
+          disabled={restoring}
           onClick={onCancel}
         >
           Cancel
@@ -32,9 +38,10 @@ export function HistoryRestoreDialog({
         <button
           type="button"
           className={`${styles.pill} ${styles.punk}`}
+          disabled={restoring}
           onClick={onRestore}
         >
-          Restore version
+          {restoring ? "Restoring…" : "Restore version"}
         </button>
       </div>
     </div>
