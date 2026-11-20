@@ -140,7 +140,7 @@ def test_report_parent_without_scores_falls_back_to_current_scores():
     assert all(item.previous == item.score for item in report.dimensions)
 
 
-def test_versions_are_oldest_first_with_labels_and_requested_current():
+def test_versions_are_oldest_first_with_labels_and_tip_current():
     first = make_job(score=60)
     second = make_job(parent=first.id, score=70)
     third = make_job(parent=second.id, score=80)
@@ -149,6 +149,34 @@ def test_versions_are_oldest_first_with_labels_and_requested_current():
         ("v1", None, False),
         ("v2", 10, False),
         ("v3", 10, True),
+    ]
+
+
+def test_versions_from_first_job_include_four_versions_and_tip_current():
+    jobs = [make_job(score=60)]
+    for score in (70, 80, 90):
+        jobs.append(make_job(parent=jobs[-1].id, score=score))
+    history = versions(jobs[0], {item.id: item for item in jobs})
+    assert [item.id for item in history] == [str(item.id) for item in jobs]
+    assert [item.current for item in history] == [False, False, False, True]
+
+
+def test_versions_follow_newest_child_on_branch():
+    first = make_job(score=60)
+    older = make_job(parent=first.id, score=70)
+    newer = make_job(parent=first.id, score=80)
+    older.created_at = datetime(2026, 11, 14, tzinfo=UTC)
+    newer.created_at = datetime(2026, 11, 15, tzinfo=UTC)
+    history = versions(first, {item.id: item for item in (first, older, newer)})
+    assert [item.id for item in history] == [str(first.id), str(newer.id)]
+    assert [item.current for item in history] == [False, True]
+
+
+def test_single_job_history_keeps_one_current_version():
+    job = make_job()
+    history = versions(job, {job.id: job})
+    assert [(item.id, item.label, item.current) for item in history] == [
+        (str(job.id), "v1", True)
     ]
 
 
