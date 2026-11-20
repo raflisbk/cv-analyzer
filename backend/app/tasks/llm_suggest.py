@@ -1,11 +1,9 @@
 import asyncio
 import json
-import re
 from datetime import UTC, datetime
 
 import redis as redis_lib
 from celery import Task
-from json_repair import repair_json
 from sqlalchemy import select
 
 from app.core.logging import structured_logger as logger
@@ -14,6 +12,7 @@ from app.models import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
 from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.services.llm.protocol import SuggestionsOutput
+from app.services.llm.suggestions_parse import parse_suggestions
 from app.services.memory.indexer import index_analysis_summary, index_cv_sections
 from app.services.rag.embeddings import get_rag_embedding
 from app.services.rag.ingestor import ingest_cv_for_user
@@ -30,68 +29,6 @@ def _get_redis_client() -> redis_lib.Redis:
     if _redis_client is None:
         _redis_client = redis_lib.from_url(celery_app.conf.broker_url)
     return _redis_client
-
-
-def _repair_llm_output(raw_json: str, cv_text: str) -> str:
-    try:
-        data = json.loads(raw_json)
-    except json.JSONDecodeError:
-        return repair_json(raw_json)
-
-    suggestions_list = data.get("suggestions", [])
-
-    for card in suggestions_list:
-        _section = card.get("section", "unknown")
-        card_suggestions = card.get("suggestions", [])
-
-        for _, suggestion in enumerate(card_suggestions):
-            if "type" not in suggestion or not suggestion["type"]:
-                text_lower = suggestion.get("text", "").lower()
-                if any(
-                    word in text_lower
-                    for word in ["add", "include", "missing", "section"]
-                ):
-                    suggestion["type"] = "missing_section"
-                elif any(
-                    word in text_lower
-                    for word in ["metric", "quantif", "number", "%", "increased"]
-                ):
-                    suggestion["type"] = "impact_metric"
-                else:
-                    suggestion["type"] = "action_verb"
-
-            if "original_text" not in suggestion or not suggestion["original_text"]:
-                suggestion_text = suggestion.get("text", "")
-                if suggestion.get("type") == "action_verb":
-                    weak_verbs = [
-                        "managed",
-                        "helped",
-                        "worked on",
-                        "assisted",
-                        "responsible for",
-                    ]
-                    for verb in weak_verbs:
-                        if verb.lower() in cv_text.lower():
-                            pos = cv_text.lower().find(verb.lower())
-                            start = max(0, pos - 20)
-                            end = min(len(cv_text), pos + 80)
-                            suggestion["original_text"] = cv_text[start:end].strip()
-                            break
-                    if not suggestion.get("original_text"):
-                        suggestion["original_text"] = suggestion_text[:100]
-                else:
-                    suggestion["original_text"] = suggestion_text[:100]
-
-            if "after_text" not in suggestion:
-                suggestion["after_text"] = None
-
-            # Normalize whitespace: collapse newlines/tabs/multiple spaces into one space
-            for field in ("original_text", "after_text"):
-                val = suggestion.get(field)
-                if val and isinstance(val, str):
-                    suggestion[field] = re.sub(r"\s+", " ", val).strip()
-
-    return json.dumps(data)
 
 
 def _build_cv_document(
@@ -237,10 +174,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
                 sections=sections,
                 rag_context=rag_context,
             )
-            repaired_json = _repair_llm_output(result["raw_json"], cv_text)
-            validated = SuggestionsOutput.model_validate_json(
-                repaired_json, context={"cv_text": cv_text}
-            )
+            validated = parse_suggestions(result["raw_json"], cv_text)
             suggestions_list = [card.model_dump() for card in validated.suggestions]
             total_tokens = result["prompt_tokens"] + result["completion_tokens"]
             redis_client.setex(cache_key, cache_ttl, json.dumps(suggestions_list))
