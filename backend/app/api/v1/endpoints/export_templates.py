@@ -133,7 +133,6 @@ async def export_job(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(require_user),
 ) -> Response:
-    """Export a CV with skip reasons keyed by safe IDs or hashed unsafe IDs."""
     if not known_template(body.template_id):
         raise HTTPException(status_code=404, detail="Template not found.")
     job = await _owner_job(db, user, job_id)
