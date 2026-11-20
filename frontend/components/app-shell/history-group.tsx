@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { ConversationSummary } from "@/lib/app-api/conversations.types";
 import styles from "./drawer.module.css";
 
@@ -11,6 +14,7 @@ export default function HistoryGroup({
   items: ConversationSummary[];
   close: () => void;
 }) {
+  const { t } = useT();
   return (
     <section>
       <h2>{title}</h2>
@@ -24,7 +28,9 @@ export default function HistoryGroup({
           <small
             className={item.scope.type === "cv" ? styles.cvTag : styles.tag}
           >
-            {item.scope.type === "cv" ? item.scope.fileName : "General"}
+            {item.scope.type === "cv"
+              ? item.scope.fileName
+              : t("app.drawer.general")}
           </small>
         </Link>
       ))}

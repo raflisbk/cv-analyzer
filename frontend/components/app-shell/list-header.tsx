@@ -1,3 +1,6 @@
+"use client";
+
+import { useT } from "@/components/i18n/i18n-provider";
 import { USE_APP_MOCKS } from "@/lib/app-api/mode";
 import Image from "next/image";
 import HelpButton from "@/components/pathy/help-button";
@@ -7,6 +10,7 @@ import compass from "./compass.webp";
 import styles from "./list-header.module.css";
 
 export default function ListHeader({ type }: { type: "cvs" | "reports" }) {
+  const { t } = useT();
   return (
     <header className={styles.header}>
       <Image
@@ -16,16 +20,16 @@ export default function ListHeader({ type }: { type: "cvs" | "reports" }) {
         width={54}
         height={54}
       />
-      <h1>{type === "cvs" ? "My CVs" : "Reports"}</h1>
+      <h1>
+        {t(type === "cvs" ? "app.list.cvsTitle" : "app.list.reportsTitle")}
+      </h1>
       {USE_APP_MOCKS && (
         <span className={styles.badge}>
-          Sample data <HelpButton helpKey={type} />
+          {t("app.list.sample")} <HelpButton helpKey={type} />
         </span>
       )}
       <span className={styles.note}>
-        {type === "cvs"
-          ? "your files, your scores"
-          : "every version, one place"}
+        {t(type === "cvs" ? "app.list.cvsNote" : "app.list.reportsNote")}
       </span>
       <span className={styles.spacer} />
       <UploadCvButton />

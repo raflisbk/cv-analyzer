@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./app-shell.module.css";
 
 export default function AppNav() {
   const pathname = usePathname();
+  const { t } = useT();
   const active = pathname.startsWith("/app/cvs")
     ? 1
     : pathname.startsWith("/app/reports")
@@ -14,15 +16,15 @@ export default function AppNav() {
   return (
     <nav
       className={styles.nav}
-      aria-label="Main"
+      aria-label={t("app.header.nav")}
       data-tour="main-nav"
       style={{ "--nav-index": active } as React.CSSProperties}
     >
       <span className={styles.indicator} aria-hidden="true" />
       {[
-        ["Chat", "/app"],
-        ["My CVs", "/app/cvs"],
-        ["Reports", "/app/reports"],
+        [t("app.header.chat"), "/app"],
+        [t("app.header.cvs"), "/app/cvs"],
+        [t("app.header.reports"), "/app/reports"],
       ].map(([name, href], index) => (
         <Link
           key={href}

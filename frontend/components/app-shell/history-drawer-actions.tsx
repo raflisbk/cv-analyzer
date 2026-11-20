@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useT } from "@/components/i18n/i18n-provider";
 import styles from "./app-shell.module.css";
 import drawerStyles from "./drawer.module.css";
 
@@ -9,11 +12,16 @@ export default function HistoryDrawerActions({
   close: () => void;
   newChat: () => void;
 }) {
+  const { t } = useT();
   return (
     <>
       <div className={drawerStyles.drawerTop}>
-        <strong>Chat history</strong>
-        <button type="button" onClick={close} aria-label="Close chat history">
+        <strong>{t("app.drawer.title")}</strong>
+        <button
+          type="button"
+          onClick={close}
+          aria-label={t("app.drawer.close")}
+        >
           ×
         </button>
       </div>
@@ -25,7 +33,7 @@ export default function HistoryDrawerActions({
           close();
         }}
       >
-        + New chat
+        {t("app.drawer.newChat")}
       </Link>
     </>
   );
