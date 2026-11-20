@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import HistoryDrawer from "@/components/app-shell/history-drawer";
+import { withLocale } from "../i18n/with-locale";
 import { listConversations } from "@/lib/app-api/conversations";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -18,7 +19,9 @@ function show(open: boolean, close = vi.fn()) {
     close,
     ...render(
       <QueryClientProvider client={client}>
-        <HistoryDrawer open={open} close={close} newChat={vi.fn()} />
+        {withLocale(
+          <HistoryDrawer open={open} close={close} newChat={vi.fn()} />,
+        )}
       </QueryClientProvider>,
     ),
   };
