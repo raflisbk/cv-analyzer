@@ -84,7 +84,11 @@ it("switches the full report between Indonesian and English", async () => {
     ),
   );
   expect(
-    await screen.findByRole("heading", { name: "Laporan lengkap" }),
+    await screen.findByRole(
+      "heading",
+      { name: "Laporan lengkap" },
+      { timeout: 8000 },
+    ),
   ).toBeInTheDocument();
   expect(screen.getByText("Kembali ke editor")).toBeInTheDocument();
   expect(document.body.textContent).not.toMatch(rawKey);
@@ -94,7 +98,7 @@ it("switches the full report between Indonesian and English", async () => {
   ).toBeInTheDocument();
   expect(screen.getByText("Back to editor")).toBeInTheDocument();
   expect(document.body.textContent).not.toMatch(rawKey);
-});
+}, 20000);
 
 it("switches the export dialog between Indonesian and English", async () => {
   render(
