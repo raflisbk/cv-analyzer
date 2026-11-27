@@ -97,7 +97,8 @@
 }
 @media (max-width: 520px) {
   .hero {
-    margin-inline: 16px;
+    margin-inline: 0;
+    border-radius: 0 0 28px 28px;
     padding: 28px 20px 34px;
   }
   .copy h1 {

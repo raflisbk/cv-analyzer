@@ -7,6 +7,16 @@
   isolation: isolate;
   overflow: visible;
 }
+@media (min-width: 861px) {
+  :global(.pin-spacer):has(> .section) {
+    width: 100% !important;
+    margin-inline: 0 !important;
+    overflow-x: clip !important;
+  }
+  .section {
+    margin-inline: auto !important;
+  }
+}
 .text {
   position: relative;
   z-index: 2;
