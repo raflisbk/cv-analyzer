@@ -25,12 +25,12 @@ const landingId = {
     how: "Cara kerja",
     inside: "Pemeriksaan",
     faq: "Pertanyaan",
-    start: "Analisis CV lu",
+    start: "Analisis CV kamu",
   },
   metadata: {
-    title: "pathkr — Lihat bukti di CV lu",
+    title: "pathkr — Lihat bukti di CV kamu",
     description:
-      "Cek bullet CV, masalah ATS, dan syarat lowongan berdasarkan isi CV lu. Edit baris yang perlu, lalu ekspor hasilnya.",
+      "Cek bullet CV, masalah ATS, dan syarat lowongan berdasarkan isi CV kamu. Edit baris yang perlu, lalu ekspor hasilnya.",
   },
   announcement: {
     text: "CV Analyzer sudah bisa dipakai. CV Builder dan Job Connect masih direncanakan.",
@@ -41,8 +41,8 @@ const landingId = {
     line1: "Cari baris CV",
     line2: "yang perlu",
     line3: "bukti",
-    body: "Temukan bullet tanpa hasil terukur, kalimat yang menyamarkan peran lu, dan syarat lowongan yang belum didukung CV lu.",
-    button: "Analisis CV gua",
+    body: "Temukan bullet tanpa hasil terukur, kalimat yang menyamarkan peranmu, dan syarat lowongan yang belum didukung CV kamu.",
+    button: "Analisis CV kamu",
     sheet: "Contoh CV dengan bullet yang belum menunjukkan hasil terukur",
     note: "Bullet ini butuh hasil yang nyata",
     ats: "Teks ATS dicek",
@@ -50,11 +50,11 @@ const landingId = {
     gap: "Syarat lowongan belum ada",
   },
   products: {
-    heading: "Alat buat revisi CV lu",
-    note: "Mulai dari CV yang lu punya",
-    button: "Analisis CV gua",
+    heading: "Alat untuk merevisi CV kamu",
+    note: "Mulai dari CV yang kamu punya",
+    button: "Analisis CV kamu",
     builderAlt: "Template CV kosong dengan bagian yang siap diisi",
-    builderName: "NAMA LU",
+    builderName: "NAMA KAMU",
     builderSections: {
       profile: "Profil",
       experience: "Pengalaman",
@@ -74,18 +74,18 @@ const landingId = {
     statuses: { live: "Bisa dipakai", planned: "Direncanakan" },
     descriptions: {
       analyzer:
-        "Lihat bullet yang belum punya angka, bandingkan lowongan, lalu edit baris yang mau lu pertahankan.",
+        "Lihat bullet yang belum punya angka, bandingkan lowongan, lalu edit baris yang mau kamu pertahankan.",
       builder:
-        "Panduan bikin CV masih direncanakan. Sekarang lu bisa analisis CV yang sudah ada.",
+        "Panduan membuat CV masih direncanakan. Sekarang kamu bisa menganalisis CV yang sudah ada.",
       connect:
-        "Pencarian lowongan masih direncanakan. Lu sudah bisa membandingkan iklan kerja dengan CV di analyzer.",
+        "Pencarian lowongan masih direncanakan. Kamu sudah bisa membandingkan iklan kerja dengan CV di analyzer.",
     },
   },
   report: {
     heading: "Lihat baris yang memengaruhi skor",
     intro:
       "Di contoh ini, bullet soal checkout belum punya hasil. Saran tulisannya tetap mengikuti klaim yang ada di CV.",
-    button: "Analisis CV gua",
+    button: "Analisis CV kamu",
     note: "Bullet ini belum punya hasil",
     bars: {
       impact: "Dampak",
@@ -129,23 +129,23 @@ const landingId = {
   },
   features: {
     heading: "Yang dicek analyzer",
-    scoringTitle: "Skor yang bisa lu telusuri",
+    scoringTitle: "Skor yang bisa kamu telusuri",
     scoringBody:
       "Ada {count} dimensi skor, termasuk dampak dan kejelasan. Bullet tanpa hasil terukur bisa memengaruhi skor dampak.",
     editorTitle: "Edit baris yang ditandai",
     editorBody:
-      "Ubah kalimat di workspace dan batalkan kalau hasilnya enggak terdengar seperti lu.",
+      "Ubah kalimat di workspace dan batalkan kalau hasilnya tidak terdengar seperti kamu.",
     factsLabel: "Pemeriksaan dan ekspor di CV Analyzer",
     dimensions: "dimensi skor",
     ats: "pemeriksaan ATS",
     templates: "template ekspor",
   },
   process: {
-    heading: "Cara CV Analyzer membaca file lu",
+    heading: "Cara CV Analyzer membaca file kamu",
     detail: "Dari unggahan sampai laporan yang bisa diedit",
     steps: {
       upload: {
-        title: "Unggah CV lu",
+        title: "Unggah CV kamu",
         body: "Kirim PDF, DOCX, atau hasil pindai. OCR membaca teks gambar bila diperlukan.",
         sticker: "PDF atau DOCX, termasuk pindai",
         label: "Unggah",
@@ -164,7 +164,7 @@ const landingId = {
       },
       match: {
         title: "Bandingkan lowongan",
-        body: "Syarat yang cocok ditautkan ke baris CV lu. Yang belum ada tetap ditandai belum ada.",
+        body: "Syarat yang cocok ditautkan ke baris CV kamu. Yang belum ada tetap ditandai belum ada.",
         sticker: "Contoh kecocokan",
         label: "Bandingkan",
       },
@@ -176,7 +176,7 @@ const landingId = {
       },
       export: {
         title: "Ekspor CV yang direvisi",
-        body: "Pertahankan tata letak awal atau pilih template ATS untuk CV yang sudah lu edit.",
+        body: "Pertahankan tata letak awal atau pilih template ATS untuk CV yang sudah kamu edit.",
         sticker: "Ekspor PDF",
         label: "Ekspor",
       },
@@ -201,23 +201,23 @@ const landingId = {
     heading: "Pertanyaan soal cara kerja CV Analyzer",
     items: {
       what: {
-        q: "Apa yang sudah bisa gua pakai?",
-        a: "CV Analyzer memeriksa file lu dan membuka editor. CV Builder dan Job Connect masih direncanakan.",
+        q: "Apa yang sudah bisa aku pakai?",
+        a: "CV Analyzer memeriksa file kamu dan membuka editor. CV Builder dan Job Connect masih direncanakan.",
       },
       stored: {
-        q: "CV yang gua unggah disimpan di mana, dan berapa lama?",
-        a: "File lu disimpan di penyimpanan cloud dan terhubung ke akun lu selama dianalisis. File ditandai untuk dihapus satu hari setelah diunggah, dan tugas pembersihan menghapus file yang kedaluwarsa setiap jam.",
+        q: "CV yang aku unggah disimpan di mana, dan berapa lama?",
+        a: "File kamu disimpan di penyimpanan cloud dan terhubung ke akun kamu selama dianalisis. File ditandai untuk dihapus satu hari setelah diunggah, dan tugas pembersihan menghapus file yang kedaluwarsa setiap jam.",
       },
       formats: {
         q: "CV hasil pindai bisa dibaca?",
         a: "Bisa. Unggah PDF, DOC, DOCX, JPG, atau PNG sampai lima megabyte. Kalau PDF tidak punya teks yang bisa dibaca atau filenya berupa gambar, OCR membaca teks dari halamannya. Kalau teks yang terbaca terlalu sedikit, unggahan menampilkan error.",
       },
       score: {
-        q: "Kenapa skor dampak CV gua berubah?",
-        a: "Dampak adalah satu dari {count} dimensi skor, bersama kejelasan, relevansi, dan kelengkapan. AI menilai CV lu beberapa kali dan mengambil nilai tengahnya, lalu pemeriksaan aturan untuk hasil bernomor, kata kerja aktif, kalimat pasif, cakupan bagian, dan jeda karier menyesuaikannya. Ubah bullet itu dan analisis berikutnya bisa memberi skor berbeda.",
+        q: "Kenapa skor dampak CV aku berubah?",
+        a: "Dampak adalah satu dari {count} dimensi skor, bersama kejelasan, relevansi, dan kelengkapan. AI menilai CV kamu beberapa kali dan mengambil nilai tengahnya, lalu pemeriksaan aturan untuk hasil bernomor, kata kerja aktif, kalimat pasif, cakupan bagian, dan jeda karier menyesuaikannya. Ubah bullet itu dan analisis berikutnya bisa memberi skor berbeda.",
       },
       job: {
-        q: "Kalau syarat lowongan belum ada di CV, gimana?",
+        q: "Kalau syarat lowongan belum ada di CV, bagaimana?",
         a: "Hasil kecocokan menandai tiap syarat sebagai terpenuhi, sebagian, atau belum ada. Yang terpenuhi dan sebagian mengutip teks CV yang cocok. Syarat yang belum ada menampilkan Not found in your CV.",
       },
     },
@@ -225,16 +225,16 @@ const landingId = {
   cta: {
     tag: "Pakai CV yang sekarang",
     heading: "Mulai dari bullet yang perlu bukti",
-    body: "Unggah CV lu untuk melihat baris yang butuh hasil, lalu pilih apa yang mau lu tulis ulang.",
-    button: "Analisis CV gua",
+    body: "Unggah CV kamu untuk melihat baris yang butuh hasil, lalu pilih apa yang mau kamu tulis ulang.",
+    button: "Analisis CV kamu",
     sample: "Lihat contoh laporan Samuel",
     art: "Contoh skor CV dan revisi",
     designer: "Desainer Produk · Payly",
   },
   footer: {
-    body: "Cek bukti di CV lu sebelum dikirim.",
-    button: "Analisis CV gua",
-    rights: "© {year} pathkr. CV lu tetap milik lu.",
+    body: "Cek bukti di CV kamu sebelum dikirim.",
+    button: "Analisis CV kamu",
+    rights: "© {year} pathkr. CV kamu tetap milik kamu.",
     soon: "direncanakan",
     columns: {
       products: "Produk",
@@ -246,7 +246,7 @@ const landingId = {
       report: "Contoh laporan",
       faq: "FAQ",
       how: "Cara kerja",
-      privacy: "CV lu tetap milik lu",
+      privacy: "CV kamu tetap milik kamu",
     },
   },
   sample: landingDemo.sample,
