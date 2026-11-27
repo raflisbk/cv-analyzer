@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import en from "@/lib/i18n/dictionaries/en";
 import { format, getDictionary } from "@/lib/i18n/translate";
 import type { Locale } from "@/lib/i18n/locales";
@@ -34,6 +34,9 @@ export function I18nProvider({
   initialLocale: Locale;
 }) {
   const [locale, setLocale] = useState(initialLocale);
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
   const value = useMemo<ContextValue>(
     () => ({
       locale,

@@ -23,6 +23,15 @@ const en = {
     connect: "Job Connect",
     comingSoon: "Coming soon",
   },
+  dock: {
+    label: "Quick settings",
+    open: "Open quick settings",
+    close: "Close quick settings",
+    theme: "Dark mode",
+    themeLight: "Switch to dark mode",
+    themeDark: "Switch to light mode",
+    language: "Language",
+  },
   auth: {
     title: "Sign in to continue",
     body: "You need an account to analyze your CV and come back to your results anytime.",
