@@ -98,7 +98,7 @@ const landingDemo = {
     degreeName: "BA Visual Communication",
     school: "Jakarta Design Institute",
     years: "2012 – 2016",
-    gpa: "GPA 3.72 of 4.00",
+    gpa: "GPA: 3.72 on a 4-point scale",
     thesis: "Thesis: wallet app navigation for first-time users.",
     experience: "Experience",
     senior: "Senior Product Designer · Payly",
@@ -146,7 +146,7 @@ const landingDemo = {
     indonesian: "Indonesian",
     english: "English",
     native: "native",
-    fluent: "fluent, IELTS 7.5",
+    fluent: "fluent (IELTS 7.5)",
     scoreSample: "Sample score",
   },
 } as const;

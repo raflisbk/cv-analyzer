@@ -63,6 +63,22 @@ describe.each(["id", "en"] as const)("sample CV paper in %s", (locale) => {
       });
   });
 
+  it("is a dense one-page CV with three roles, three projects and grouped skills", () => {
+    const jobs = html.match(/<div class="[^"]*job[^"]*"/g) ?? [];
+    const bullets = html.match(/<li/g) ?? [];
+    expect(jobs).toHaveLength(3);
+    expect(bullets.length).toBeGreaterThanOrEqual(13);
+    expect(html.match(/<h6/g)).toHaveLength(7);
+  });
+
+  it("lists the contact links in the header", () => {
+    [
+      "samuel@email.com",
+      "+62 812 5550 142",
+      "linkedin.com/in/samuelsamdono",
+    ].forEach((item) => expect(html).toContain(item));
+  });
+
   it("has a name header and no avatar or analyzer tags on the sheet", () => {
     expect(html).toContain("Samuel Samdono");
     expect(html).not.toContain("✓");

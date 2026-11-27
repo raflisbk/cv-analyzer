@@ -8,6 +8,6 @@ export function paintLaptopLid(stage: HTMLElement, lid: number) {
   stage.style.setProperty("--laptop-sweep", `${-100 + 200 * sweep}%`);
   stage.style.setProperty(
     "--laptop-sweep-alpha",
-    String(sweep > 0 && sweep < 1 ? Math.sin(Math.PI * sweep) : 0),
+    Math.sin(Math.PI * sweep).toFixed(3),
   );
 }
