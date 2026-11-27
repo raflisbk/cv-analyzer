@@ -2,6 +2,7 @@
 
 import { useT } from "@/components/i18n/i18n-provider";
 import Image from "next/image";
+import lockup from "./navbar/pathkr-lockup-transparent.svg";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNavScroll } from "@/hooks/use-nav-scroll";
@@ -19,13 +20,7 @@ export default function Navbar() {
     <header className={styles.header} data-landing-nav>
       <nav className={styles.nav} aria-label={t("nav.main")}>
         <Link href="/" className={styles.logo} aria-label={t("nav.home")}>
-          <Image
-            src="/landing/logo/pathkr-lockup-on-red.svg"
-            alt="pathkr"
-            width={165}
-            height={42}
-            priority
-          />
+          <Image src={lockup} alt="pathkr" width={165} height={42} priority />
           <span className={styles.logoNote} aria-hidden="true">
             path karir
           </span>
