@@ -1,0 +1,49 @@
+.surface {
+  --tone: var(--nav-tone-red);
+  --surface-h: 60px;
+  --fade: 14px;
+}
+.surface[data-tone="snow"] {
+  --tone: var(--nav-tone-snow);
+}
+.surface[data-tone="ink"] {
+  --tone: var(--nav-tone-ink);
+}
+.surface::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(var(--surface-h) + var(--fade));
+  background: var(--tone);
+  opacity: calc(var(--bar-p, 0) * 0.9);
+  backdrop-filter: blur(calc(var(--bar-p, 0) * 14px));
+  mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - var(--fade)),
+    transparent
+  );
+  transition: background-color 0.25s;
+}
+.lockupLight,
+.lockupInk {
+  transition: opacity 0.25s;
+}
+.lockupInk {
+  position: absolute;
+  inset: 50% auto auto 0;
+  translate: 0 -50%;
+  opacity: 0;
+}
+.surface[data-tone="snow"] .lockupLight {
+  opacity: 0;
+}
+.surface[data-tone="snow"] .lockupInk {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .surface::before,
+  .lockupLight,
+  .lockupInk {
+    transition: none;
+  }
+}

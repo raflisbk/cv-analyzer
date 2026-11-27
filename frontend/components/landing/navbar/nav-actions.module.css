@@ -15,6 +15,7 @@
     box-shadow 0.2s;
 }
 .login {
+  scale: calc(1 - var(--bar-p, 0) * var(--shrink, 0));
   gap: 4px;
   padding: 2px 6px 2px 18px;
   background: linear-gradient(
@@ -28,7 +29,23 @@
     inset 0 -4px 0 rgba(120, 30, 10, 0.18),
     0 8px 16px -8px rgba(60, 6, 0, 0.6);
 }
+.slot {
+  display: inline-flex;
+  transform-origin: right center;
+  transition:
+    opacity 0.35s,
+    scale 0.35s;
+}
+.slot[data-shown="false"] {
+  opacity: 0;
+  scale: 0.9;
+  pointer-events: none;
+}
+.slot[data-shown="false"] .plane {
+  translate: -16px 8px;
+}
 .cta {
+  scale: calc(1 - var(--bar-p, 0) * var(--shrink, 0));
   gap: 10px;
   padding: 4px 4px 4px 18px;
   background: linear-gradient(
@@ -112,7 +129,8 @@
 @media (prefers-reduced-motion: reduce) {
   .login,
   .cta,
-  .plane {
+  .plane,
+  .slot {
     transition: none;
   }
 }
