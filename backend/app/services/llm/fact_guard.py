@@ -7,7 +7,17 @@ NUMBER = re.compile(
     r"(?<![\w])(?:[$€£])?(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?\s*([kKmM])?(?:\s*(?:%|percent))?(?!\w)"
 )
 PLACEHOLDER = re.compile(r"\[[^\]\n]+\]")
-KNOWN_INPUTS = {"[%]", "[amount]", "[N]", "[how many?]", "[timeframe]", "[team size]"}
+KNOWN_INPUTS = {
+    "[%]",
+    "[amount]",
+    "[N]",
+    "[how many?]",
+    "[timeframe]",
+    "[team size]",
+    "[year]",
+    "[month year]",
+    "[project name]",
+}
 
 
 class NeedsInput(BaseModel):
@@ -39,6 +49,9 @@ def input_question(token: str) -> str:
         "[how many?]": "How many?",
         "[timeframe]": "What timeframe?",
         "[team size]": "What was the team size?",
+        "[year]": "What year?",
+        "[month year]": "Which month and year?",
+        "[project name]": "What is the project name?",
     }.get(token, token[1:-1].strip())
 
 
