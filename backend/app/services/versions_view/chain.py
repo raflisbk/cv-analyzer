@@ -2,8 +2,7 @@ from app.models.job import Job
 from app.schemas.report_detail import VersionData
 from app.services.app_lists.version_chain import version_chain
 from app.services.versions_restore.chain import full_chain
-
-DIMENSIONS = ("impact", "clarity", "relevance", "completeness")
+from app.services.versions_view.summary import dimension_changes, version_summary
 
 
 def versions(job: Job, jobs_by_id: dict) -> list[VersionData]:
@@ -16,22 +15,8 @@ def versions(job: Job, jobs_by_id: dict) -> list[VersionData]:
         delta = (
             score - int((previous.scores or {}).get("overall", 0)) if previous else None
         )
-        changes = (
-            {
-                key: int((item.scores or {}).get(key, 0))
-                - int((previous.scores or {}).get(key, 0))
-                for key in DIMENSIONS
-            }
-            if previous
-            else {}
-        )
-        changed = ""
-        if any(changes.values()):
-            changed = max(changes, key=lambda key: abs(changes[key]))
-        summary = (
-            f"Score {delta:+d}; {changed} {changes[changed]:+d}."
-            if changed
-            else "No dimension changed." if previous else "First analysis."
+        summary = version_summary(
+            dimension_changes(item, previous), delta, previous is not None
         )
         output.append(
             VersionData(
@@ -40,7 +25,10 @@ def versions(job: Job, jobs_by_id: dict) -> list[VersionData]:
                 at=base.at,
                 score=score,
                 delta=delta,
-                summary=summary,
+                summary=summary.text,
+                summary_kind=summary.kind,
+                changed_dimension=summary.dimension,
+                changed_delta=summary.dimension_delta,
                 current=item.id == jobs[-1].id,
             )
         )
