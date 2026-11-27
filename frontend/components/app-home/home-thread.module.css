@@ -135,6 +135,7 @@
 }
 .scoreCard a + a {
   background: var(--app-snow);
+  color: var(--app-ink);
 }
 @keyframes bob {
   50% {

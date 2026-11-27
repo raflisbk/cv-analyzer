@@ -123,6 +123,7 @@
 .tourActions button:last-child {
   margin-left: auto;
   background: var(--app-blush);
+  color: var(--app-ink);
 }
 .dots {
   grid-column: 1/-1;
