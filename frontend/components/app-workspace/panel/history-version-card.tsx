@@ -1,5 +1,6 @@
 import { useT } from "@/components/i18n/i18n-provider";
 import type { VersionData } from "@/lib/app-api/history.types";
+import { versionSummaryText } from "@/lib/app-report/version-summary";
 import { useAppReportFormat } from "@/hooks/use-app-report-format";
 import styles from "../workspace-styles";
 
@@ -26,7 +27,8 @@ export function HistoryVersionCard({
       )}
       <p>
         {t("appWorkspacePanel.history.score", { score: version.score })}
-        {version.delta !== null && ` (+${version.delta})`}. {version.summary}
+        {version.delta !== null && ` (+${version.delta})`}.{" "}
+        {versionSummaryText(t, version, version.delta)}
       </p>
       <div className={styles.row}>
         <button
