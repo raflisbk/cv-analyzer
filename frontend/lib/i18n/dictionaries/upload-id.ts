@@ -1,0 +1,47 @@
+const uploadId = {
+  toast: {
+    checkFile: "Cek file kamu, lalu coba lagi ya.",
+    invalidTitle: "File tidak valid",
+    invalidBody: "Hanya file PDF atau DOCX sampai 5MB yang didukung.",
+  },
+  zone: {
+    drop: "Lepas di sini!",
+    title: "Taruh CV kamu di sini",
+    lead: "AI menilai CV kamu dari kejelasan, dampak, kelengkapan, dan relevansi",
+    time: "Kebanyakan analisis selesai dalam sekitar 20 detik.",
+    aiScoring: "Skor AI",
+    skillGap: "Celah skill",
+    atsCheck: "Cek ATS",
+    choose: "Pilih file",
+    limits: "PDF atau DOCX · maks 5 MB",
+  },
+  preview: {
+    ready: "Siap",
+    targetRole: "Posisi tujuan",
+    targetRoleHint: "(opsional, bikin penilaian lebih akurat)",
+    general: "Umum (tanpa posisi tertentu)",
+    custom: "Posisi lain (tulis sendiri)…",
+    customPlaceholder:
+      "mis. Backend Engineer, UI/UX Designer, DevOps Engineer…",
+    customLabel: "Posisi tujuan sendiri",
+    calibrated: "Acuan disesuaikan untuk {role}",
+    cached: "(dibuat AI, disimpan 24 jam)",
+    clarity: "Skor kejelasan",
+    keywords: "Kecocokan kata kunci",
+    ats: "Skor ATS",
+    impact: "Skor dampak",
+    starting: "Memulai analisis…",
+    analyze: "Analisis CV saya",
+  },
+  stages: {
+    title: "Menganalisis CV kamu",
+    done: "Selesai",
+    uploading: "Mengunggah",
+    extracting: "Mengambil teks",
+    analyzing: "Menganalisis isi",
+    generating: "Menyusun saran",
+    comparing: "Membandingkan dengan posisi tujuan",
+    complete: "Selesai",
+  },
+} as const;
+export default uploadId;
