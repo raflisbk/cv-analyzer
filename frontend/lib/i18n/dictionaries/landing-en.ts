@@ -195,27 +195,27 @@ const landingEn = {
     panel: "Insights for this CV section",
   },
   faq: {
-    heading: "Questions about your CV report",
+    heading: "Questions about how CV Analyzer works",
     items: {
       what: {
         q: "What can I use today?",
         a: "CV Analyzer checks your file and lets you edit it. CV Builder and Job Connect are planned.",
       },
       stored: {
-        q: "Where does my uploaded CV go?",
-        a: "Your file is linked to your account and deleted when its storage period ends.",
+        q: "Where is my uploaded CV stored, and for how long?",
+        a: "Your file is kept in cloud storage and linked to your account while it is analyzed. It is marked for deletion a day after upload, and a cleanup job removes expired files every hour.",
       },
       formats: {
         q: "Can it read a scanned CV?",
-        a: "Upload PDF or DOCX. OCR reads text from scans when the document needs it.",
+        a: "Yes. Upload a PDF, DOC, DOCX, JPG or PNG up to five megabytes. When a PDF has no readable text or the file is an image, OCR reads the text from the page. If too little text can be read, the upload reports an error.",
       },
       score: {
         q: "Why did my impact score change?",
-        a: "The {count} scoring dimensions are adjusted by checks including numbered results in bullets, action verbs and passive wording.",
+        a: "Impact is one of {count} scoring dimensions, next to clarity, relevance and completeness. The AI scores your CV several times and takes the median, then rule checks for numbered results, action verbs, passive wording, section coverage and gaps adjust it. Edit those bullets and the next analysis can score differently.",
       },
       job: {
         q: "What happens when a job requirement is missing?",
-        a: "The job match quotes CV text for supported requirements. If it cannot find evidence, the requirement stays marked missing.",
+        a: "The job match marks each requirement as met, partial or missing. Met and partial ones quote the matching CV text. A missing one shows Not found in your CV.",
       },
     },
   },

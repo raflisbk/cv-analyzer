@@ -198,27 +198,27 @@ const landingId = {
     panel: "Temuan untuk bagian CV ini",
   },
   faq: {
-    heading: "Pertanyaan soal laporan CV lu",
+    heading: "Pertanyaan soal cara kerja CV Analyzer",
     items: {
       what: {
         q: "Apa yang sudah bisa gua pakai?",
         a: "CV Analyzer memeriksa file lu dan membuka editor. CV Builder dan Job Connect masih direncanakan.",
       },
       stored: {
-        q: "CV yang gua unggah disimpan di mana?",
-        a: "File lu terhubung ke akun lu dan dihapus saat masa penyimpanannya berakhir.",
+        q: "CV yang gua unggah disimpan di mana, dan berapa lama?",
+        a: "File lu disimpan di penyimpanan cloud dan terhubung ke akun lu selama dianalisis. File ditandai untuk dihapus satu hari setelah diunggah, dan tugas pembersihan menghapus file yang kedaluwarsa setiap jam.",
       },
       formats: {
         q: "CV hasil pindai bisa dibaca?",
-        a: "Unggah PDF atau DOCX. OCR membaca teks dari hasil pindai saat dokumennya memerlukan itu.",
+        a: "Bisa. Unggah PDF, DOC, DOCX, JPG, atau PNG sampai lima megabyte. Kalau PDF tidak punya teks yang bisa dibaca atau filenya berupa gambar, OCR membaca teks dari halamannya. Kalau teks yang terbaca terlalu sedikit, unggahan menampilkan error.",
       },
       score: {
         q: "Kenapa skor dampak CV gua berubah?",
-        a: "Ada {count} dimensi skor yang disesuaikan lewat pemeriksaan seperti hasil bernomor di bullet, kata kerja aktif, dan kalimat pasif.",
+        a: "Dampak adalah satu dari {count} dimensi skor, bersama kejelasan, relevansi, dan kelengkapan. AI menilai CV lu beberapa kali dan mengambil nilai tengahnya, lalu pemeriksaan aturan untuk hasil bernomor, kata kerja aktif, kalimat pasif, cakupan bagian, dan jeda karier menyesuaikannya. Ubah bullet itu dan analisis berikutnya bisa memberi skor berbeda.",
       },
       job: {
         q: "Kalau syarat lowongan belum ada di CV, gimana?",
-        a: "Hasil kecocokan mengutip teks CV untuk syarat yang didukung. Kalau buktinya enggak ditemukan, syarat itu tetap ditandai belum ada.",
+        a: "Hasil kecocokan menandai tiap syarat sebagai terpenuhi, sebagian, atau belum ada. Yang terpenuhi dan sebagian mengutip teks CV yang cocok. Syarat yang belum ada menampilkan Not found in your CV.",
       },
     },
   },
