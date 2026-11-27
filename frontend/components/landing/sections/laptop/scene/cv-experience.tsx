@@ -20,7 +20,6 @@ export default function CvExperience() {
           </li>
           <li>{t("landing.sample.sourcedResult")}</li>
           <li>{t("landing.sample.mobile")}</li>
-          <li>{t("landing.sample.critique")}</li>
         </ul>
       </div>
       <div className={styles.job} data-sc-section="brightly">

@@ -24,10 +24,6 @@ export default function CvMain() {
           <li>{t("landing.sample.projectTwo")}</li>
         </ul>
       </section>
-      <section data-sc-section="education">
-        <h6>{t("landing.sample.education")}</h6>
-        <p>{t("landing.sample.degree")}</p>
-      </section>
     </div>
   );
 }
