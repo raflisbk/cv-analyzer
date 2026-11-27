@@ -1,4 +1,5 @@
 import { useT } from "@/components/i18n/i18n-provider";
+import { reportEvidenceNote } from "@/lib/app-report/copy";
 import type { ReportDimension } from "@/lib/app-api/report-detail.types";
 import styles from "./report.module.css";
 
@@ -22,7 +23,7 @@ export function ReportDimensionEvidence({
           <li key={item.text} data-positive={item.positive}>
             <div>
               {item.text}
-              <small>{item.note}</small>
+              <small>{reportEvidenceNote(t, item)}</small>
             </div>
             <a className={styles.mini} href={fixHref}>
               {t("appReport.dimensions.fix")}

@@ -19,6 +19,11 @@ const appWorkspacePanelId = {
     fixesLeft: "{count} perbaikan lagi yang perlu dicek",
   },
   fixes: {
+    labels: {
+      noNumber: "Belum ada angka",
+      vagueVerb: "Kata kerja kurang jelas",
+      missingSection: "Bagian belum ada",
+    },
     title: "Saran perbaikan",
     error: "Perbaikan belum bisa dimuat.",
     loading: "Memuat saran perbaikan",

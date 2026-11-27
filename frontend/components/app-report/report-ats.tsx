@@ -1,4 +1,5 @@
 import { useT } from "@/components/i18n/i18n-provider";
+import { reportAtsFacts } from "@/lib/app-report/copy";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { ReportHeading } from "./report-heading";
 import { ScoreRing } from "./score-ring";
@@ -6,6 +7,7 @@ import styles from "./report.module.css";
 
 export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
   const { t } = useT();
+  const atsFacts = reportAtsFacts(t, ats);
   return (
     <section
       className={`${styles.card} ${styles.span6}`}
@@ -63,8 +65,8 @@ export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
         </svg>
       </div>
       <div className={styles.facts}>
-        {!ats.facts.length && <p>{t("appReport.ats.noFacts")}</p>}
-        {ats.facts.map((fact) => (
+        {!atsFacts.length && <p>{t("appReport.ats.noFacts")}</p>}
+        {atsFacts.map((fact) => (
           <span key={fact}>{fact}</span>
         ))}
       </div>

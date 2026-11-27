@@ -7,6 +7,7 @@ import { usePathy } from "@/components/pathy/pathy-context";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { reportFixActionLabel } from "./fix-action-label";
 import { reportFixAction } from "@/lib/app-report/fix-action";
+import { reportFixTitle, reportVerdict } from "@/lib/app-report/copy";
 import { USE_APP_MOCKS } from "@/lib/app-api/mode";
 import { ReportHeading } from "./report-heading";
 import styles from "./report.module.css";
@@ -21,6 +22,7 @@ export function ReportHero({
   const pathy = usePathy();
   const { t } = useT();
   const { delta } = useAppReportFormat();
+  const verdict = reportVerdict(t, data.verdict);
   return (
     <section
       className={`${styles.card} ${styles.hero} ${styles.span12}`}
@@ -36,17 +38,17 @@ export function ReportHero({
           helpKey="verdict"
         />
         <h2 id="report-verdict">
-          {data.verdict.title
-            .split(/(strong)/i)
+          {verdict.title
+            .split(/(strong|kuat)/i)
             .map((part, index) =>
-              part.toLowerCase() === "strong" ? (
+              ["strong", "kuat"].includes(part.toLowerCase()) ? (
                 <mark key={index}>{part}</mark>
               ) : (
                 part
               ),
             )}
         </h2>
-        <p>{data.verdict.body}</p>
+        <p>{verdict.body}</p>
         <div className={styles.heroPathy}>
           <Image src="/pathy/idea.webp" alt="" width={130} height={150} />
           <span className={styles.bubble}>{t("appReport.hero.bubble")}</span>
@@ -62,7 +64,7 @@ export function ReportHero({
           >
             <b>{index + 1}</b>
             <div>
-              <strong>{fix.title}</strong>
+              <strong>{reportFixTitle(t, fix)}</strong>
               <span>{fix.text}</span>
             </div>
             <a

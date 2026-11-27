@@ -1,4 +1,5 @@
 import { useT } from "@/components/i18n/i18n-provider";
+import { reportHint, reportMetric } from "@/lib/app-report/copy";
 import { useAppReportFormat } from "@/hooks/use-app-report-format";
 import type { ReportDimension } from "@/lib/app-api/report-detail.types";
 import { reportWeights } from "@/lib/app-report/format";
@@ -42,8 +43,8 @@ export function ReportDimensions({
             {dimension.metrics.map((metric) => (
               <div className={styles.metric} key={metric.label}>
                 <div>
-                  <span>{metric.label}</span>
-                  <em>{metric.value}</em>
+                  <span>{reportMetric(t, metric).label}</span>
+                  <em>{reportMetric(t, metric).value}</em>
                 </div>
                 <span className={styles.track}>
                   <i style={{ width: `${metric.percent}%` }} />
@@ -64,7 +65,7 @@ export function ReportDimensions({
             </span>
           </div>
           <p className={styles.caption}>
-            {t("appReport.dimensions.drag", { hint: dimension.hint })}
+            {t("appReport.dimensions.drag", { hint: reportHint(t, dimension) })}
           </p>
           <ReportDimensionEvidence
             evidence={dimension.evidence}

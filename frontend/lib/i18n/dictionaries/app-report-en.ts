@@ -1,3 +1,5 @@
+import appReportCopyEn from "./app-report-copy-en";
+
 const appReportEn = {
   load: {
     loading: "Loading full report",
@@ -136,5 +138,6 @@ const appReportEn = {
     ifFixed: " if fixed",
     afterFixes: "after fixes",
   },
+  copy: appReportCopyEn,
 };
 export default appReportEn;

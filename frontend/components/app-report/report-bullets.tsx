@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useT } from "@/components/i18n/i18n-provider";
+import { reportBulletTags } from "@/lib/app-report/copy";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { useAppReportScrollAssist } from "@/hooks/use-app-report-scroll-assist";
 import { ReportHeading } from "./report-heading";
@@ -62,7 +63,7 @@ export function ReportBullets({
                   <small>{bullet.source}</small>
                 </p>
                 <span className={styles.bulletTags}>
-                  {bullet.tags.map((tag) => (
+                  {reportBulletTags(t, bullet).map((tag) => (
                     <em key={tag}>{tag}</em>
                   ))}
                 </span>
