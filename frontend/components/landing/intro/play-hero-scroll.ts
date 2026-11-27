@@ -32,18 +32,6 @@ export function playHeroScroll(gsap: Gsap, hero: HTMLElement) {
       0,
     )
     .to(
-      "[data-hero-object]:not(:first-child)",
-      {
-        x: 240,
-        y: 100,
-        rotation: 60,
-        autoAlpha: 0,
-        stagger: 0.04,
-        duration: 0.8,
-      },
-      0.15,
-    )
-    .to(
       "[data-hero-object]:first-child",
       { x: -120, scale: 1.45, rotation: 2, duration: 0.8 },
       0.2,

@@ -1,7 +1,7 @@
 .main {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 .main mark {
   background: transparent;
@@ -20,19 +20,19 @@
   align-items: baseline;
 }
 .role b {
-  font-size: 8.6px;
+  font-size: 6.8px;
 }
 .role span {
-  font-size: 7.4px;
+  font-size: 5.8px;
   font-style: normal;
   color: #6b5c57;
   font-weight: 600;
 }
 .job + .job {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 .editLine {
-  min-height: 12px;
+  min-height: 8px;
 }
 .editLine s {
   display: block;
@@ -48,31 +48,29 @@
   font-style: normal;
   font-weight: 700;
   background: #f2ff00;
-  border-radius: 5px;
-  padding: 0 4px;
+  border-radius: 3px;
+  padding: 0 3px;
   margin-top: 2px;
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition:
-    opacity 0.3s,
-    max-height 0.3s;
+  transition: opacity 0.3s;
 }
 .editLine u {
   display: inline-block;
   margin-top: 2px;
   text-decoration: none;
   font:
-    800 6px Inter,
+    800 5px Inter,
     sans-serif;
   background: #b81d00;
   color: #fdfdff;
   border-radius: 99px;
-  padding: 1px 5px;
+  padding: 0.5px 4px;
 }
 :global([data-laptop-scene][data-sc-mode="edit"]) .editLine em {
   opacity: 1;
-  max-height: 32px;
+  max-height: 24px;
 }
 :global([data-laptop-scene][data-sc-mode="edit"]) .editLine s {
   max-width: none;

@@ -22,6 +22,7 @@ export default function CvMain() {
         <ul>
           <li>{t("landing.sample.projectOne")}</li>
           <li>{t("landing.sample.projectTwo")}</li>
+          <li>{t("landing.sample.projectThree")}</li>
         </ul>
       </section>
     </div>

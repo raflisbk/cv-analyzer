@@ -9,8 +9,11 @@ export default function CvHeader() {
       <b>Samuel Samdono</b>
       <span>{t("landing.sample.role")}</span>
       <small>
-        samuel@email.com · +62 812 5550 142 · linkedin.com/in/samuelsamdono ·{" "}
-        {t("landing.sample.jakarta")}
+        <i>samuel@email.com</i>
+        <i>+62 812 5550 142</i>
+        <i>linkedin.com/in/samuelsamdono</i>
+        <i>{t("landing.sample.site")}</i>
+        <i>{t("landing.sample.jakarta")}</i>
       </small>
     </header>
   );
