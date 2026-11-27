@@ -32,7 +32,7 @@ export default function HeroObjects() {
           <PenHighlight play={false} />
         </span>
       </div>
-      <div className={styles.note}>
+      <div className={styles.note} data-hero-sticker>
         <MarginNote targetId="hero-cv-bullet" variant={2} delay={0.7}>
           {t("landing.hero.note")}
         </MarginNote>
