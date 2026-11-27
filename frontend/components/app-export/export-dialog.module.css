@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(80, 8, 0, 0.55);
+  background: var(--app-overlay);
 }
 .dialog {
   width: min(100%, 1360px);
@@ -30,7 +30,7 @@
   flex: 1;
 }
 .header span {
-  color: var(--app-red-deep, #b82005);
+  color: var(--app-deep-text);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.14em;
@@ -41,7 +41,7 @@
   font-size: clamp(26px, 3vw, 38px);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--app-red, #f42902);
+  color: var(--app-deep-text);
 }
 .pathy {
   object-fit: contain;
@@ -52,7 +52,7 @@
   height: 48px;
   border: 0;
   border-radius: 50%;
-  background: linear-gradient(180deg, #fff 0%, #fff4ee 58%, #ffd3c6 100%);
+  background: var(--app-snow-fill);
   font-size: 24px;
   font-weight: 800;
   box-shadow: 0 4px 0 #f8ae98;
@@ -95,6 +95,10 @@
 .template[aria-checked="true"] {
   background: var(--app-punk, #f2ff00);
   box-shadow: 0 0 0 3px var(--app-ink, #1a0b07);
+  color: var(--app-on-punk);
+}
+.template[aria-checked="true"] small {
+  color: var(--app-on-punk);
 }
 .template strong {
   display: block;
@@ -145,7 +149,7 @@
   margin: 5px 4px 0 0;
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--app-ink, #1a0b07);
+  background: var(--app-chip);
   color: var(--app-punk, #f2ff00);
   font-size: 11px;
   font-weight: 900;

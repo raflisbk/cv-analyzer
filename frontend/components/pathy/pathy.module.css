@@ -47,7 +47,7 @@
 }
 .menu strong {
   font: 800 20px var(--app-font-display);
-  color: var(--app-red);
+  color: var(--app-deep-text);
   padding: 0 8px 12px;
 }
 .menu button {
@@ -95,7 +95,7 @@
 }
 .tourCard small {
   font-weight: 800;
-  color: var(--app-red-deep);
+  color: var(--app-deep-text);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -114,6 +114,7 @@
   background: var(--app-punk);
   font-weight: 800;
   cursor: pointer;
+  color: var(--app-on-punk);
 }
 .tourActions button:disabled {
   opacity: 0.4;
