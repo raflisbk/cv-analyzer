@@ -9,7 +9,9 @@ const FADE_MS = 170;
 const FADE_ATTRIBUTE = "localeFade";
 
 function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return (
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+  );
 }
 
 function writeLocaleCookie(locale: Locale) {
