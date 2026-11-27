@@ -28,8 +28,7 @@ INTERFACES = {
     ),
     "VersionData": (
         "history.types.ts",
-        "id label at score delta summary current "
-        "summaryKind changedDimension changedDelta",
+        "id label at score delta summary current summaryKind changedDimension changedDelta",
     ),
     "AtsData": (
         "ats.types.ts",

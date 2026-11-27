@@ -121,7 +121,15 @@ def test_report_shape_matches_frontend_contract(api):
     }
     assert set(data["verdict"]) == {"key", "title", "body"}
     assert set(data["factCounts"]) == {"pages", "bullets", "words"}
-    assert set(data["versions"][0]) == {"label", "score", "at", "summary"}
+    assert set(data["versions"][0]) == {
+        "label",
+        "score",
+        "at",
+        "summary",
+        "summaryKind",
+        "changedDimension",
+        "changedDelta",
+    }
 
 
 def test_nested_report_shapes_match_frontend_contract(api):
@@ -188,6 +196,9 @@ def test_versions_and_diff_shapes(api):
         "delta",
         "summary",
         "current",
+        "summaryKind",
+        "changedDimension",
+        "changedDelta",
     }
     assert history[0]["delta"] is None
     assert diff == {"before": "CV text", "after": "Updated CV"}
