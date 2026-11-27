@@ -54,11 +54,11 @@ it("asks every backend question before applying the rewrite", async () => {
       onApply={onApply}
     />,
   );
-  await user.type(screen.getByLabelText("How many people?"), "6");
+  await user.type(screen.getByLabelText("What was the team size?"), "6");
   expect(screen.getByRole("button", { name: "Apply" })).toBeDisabled();
   await user.click(screen.getByRole("button", { name: "Apply" }));
   expect(onApply).not.toHaveBeenCalled();
-  await user.type(screen.getByLabelText("Over what period?"), "2 years");
+  await user.type(screen.getByLabelText("What timeframe?"), "2 years");
   await user.click(screen.getByRole("button", { name: "Apply" }));
   expect(onApply).toHaveBeenCalledWith(
     "Led 6 people in 2 years",
