@@ -89,15 +89,11 @@ function animateRewrites(
       );
     }
   });
-  timeline.to(
-    panel.querySelectorAll("[data-demo-after]"),
-    {
-      opacity: 1,
-      stagger: 0.1,
-      duration: 0.25,
-    },
-    1,
-  );
+  const after = panel.querySelectorAll("[data-demo-after]");
+  if (!after.length) {
+    return;
+  }
+  timeline.to(after, { opacity: 1, stagger: 0.1, duration: 0.25 }, 1);
 }
 
 function animateDemos(gsap: Gsap, panel: HTMLElement) {

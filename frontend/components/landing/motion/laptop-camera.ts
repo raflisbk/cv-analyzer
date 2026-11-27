@@ -5,10 +5,10 @@ import {
   screenSize,
 } from "@/lib/landing-laptop-screen";
 
-const REST_ELEVATION = 32;
-const FIT_WIDTH = laptopBody.width + 260;
-const CLOSED_SHIFT = 0.1;
-const OPEN_SHIFT = 0;
+const REST_ELEVATION = 28;
+const FIT_WIDTH = laptopBody.width + 400;
+const CLOSED_SHIFT = -520;
+const OPEN_SHIFT = -200;
 
 const mix = (from: number, to: number, amount: number) =>
   from + (to - from) * amount;
@@ -48,7 +48,7 @@ export function paintLaptopCamera(
   staticView: boolean,
 ) {
   const restScale = anchor.offsetWidth / FIT_WIDTH;
-  const restY = anchor.offsetHeight * mix(CLOSED_SHIFT, OPEN_SHIFT, lid);
+  const restY = restScale * mix(CLOSED_SHIFT, OPEN_SHIFT, lid);
   const target = zoomTarget(anchor, panel, staticView);
   const scale = mix(restScale, target.scale, zoom);
   const elevation = mix(REST_ELEVATION, LID_OPEN_DEGREES, zoom);
