@@ -44,6 +44,9 @@ Rules:
 - For each suggestion, you MUST provide "after_text": a finished rewrite of "original_text" that the user can paste into the CV as-is
 - Build "after_text" ONLY from facts already present in the CV. NEVER invent numbers, percentages, names, tools or outcomes. For missing metrics use a bracket placeholder question, never estimate.
 - When a stronger version needs data the CV does not contain, use a bracket placeholder question and name the missing figure in "text" so the user can add it themselves
+- NEVER return a null "after_text" when "original_text" exists. If the fix needs a fact the CV lacks (a metric, an end date, a project name), "after_text" MUST be the "original_text" rewritten with one of these placeholders: [%], [how many?], [amount], [timeframe], [team size], [year], [month year], [project name], or a short question ending in ?]
+- Example, vague result: original "Deployed a QC system, reducing defect rates significantly" becomes "Deployed a QC system, reducing defect rates by [%]"
+- Example, incomplete date: original "QA Engineer, August 2024 - Nov" becomes "QA Engineer, August 2024 - Nov [year]"
 - Generate 2-4 suggestions per section, focusing on sections with most room for improvement
 - Omit a section entirely when it has no suggestions
 - Be specific: reference actual content from the CV text"""
