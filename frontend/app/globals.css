@@ -75,6 +75,11 @@ main[data-landing] {
     --nav-tone-red: var(--red-section);
     --nav-tone-snow: var(--surface);
     --nav-tone-ink: var(--ink-section);
+    --nav-scroll-offset: 68px;
+  }
+
+  [data-nav-tone] {
+    scroll-margin-top: var(--nav-scroll-offset);
   }
 
   [data-theme="dark"] {
