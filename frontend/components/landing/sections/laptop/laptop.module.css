@@ -65,7 +65,7 @@
   position: relative;
   width: min(100%, 860px);
   margin: 0 auto;
-  perspective: 2600px;
+  perspective: 3600px;
   perspective-origin: 50% 50%;
 }
 .stage {
