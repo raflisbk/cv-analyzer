@@ -16,6 +16,9 @@
 .report * {
   box-sizing: border-box;
 }
+.report svg text:not([fill]) {
+  fill: currentColor;
+}
 .report button,
 .report a {
   font: inherit;
@@ -153,6 +156,9 @@
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+.deep .caption {
+  color: var(--on-red);
 }
 .deep .eyebrow {
   color: var(--punk);
