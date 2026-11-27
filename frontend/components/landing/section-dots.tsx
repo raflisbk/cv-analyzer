@@ -27,6 +27,7 @@ const SECTIONS = [
 export default function SectionDots() {
   const { t } = useT();
   const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
+  const [footerVisible, setFooterVisible] = useState(false);
 
   const scrollToSection = (id: string) => {
     const section = document.getElementById(id);
@@ -60,13 +61,26 @@ export default function SectionDots() {
         observer.observe(el);
       }
     });
-    return () => observer.disconnect();
+    const footer = document.getElementById("footer");
+    const footerObserver = new IntersectionObserver(
+      ([entry]) => setFooterVisible(entry.isIntersecting),
+      { rootMargin: "-30% 0px -30% 0px" },
+    );
+    if (footer) {
+      footerObserver.observe(footer);
+    }
+    return () => {
+      observer.disconnect();
+      footerObserver.disconnect();
+    };
   }, []);
 
   return (
     <nav
       aria-label={t("landing.dots.label")}
-      className="fixed right-2.5 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-1 lg:flex"
+      className={`fixed right-2.5 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-1 lg:flex ${
+        footerVisible ? "invisible" : ""
+      }`}
       style={{ mixBlendMode: "difference" }}
     >
       {SECTIONS.map(({ id }) => {
