@@ -12,7 +12,8 @@ function expandPanel(panel: HTMLElement, progress: number) {
   const width = wide + (window.innerWidth - wide) * amount;
   panel.style.width = `${width}px`;
   panel.style.maxWidth = `${width}px`;
-  panel.style.left = "0px";
+  const pinned = getComputedStyle(panel).position === "fixed";
+  panel.style.left = pinned ? `${(window.innerWidth - width) / 2}px` : "0px";
   panel.style.borderRadius = `${48 * (1 - amount)}px`;
 }
 
