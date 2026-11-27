@@ -1,10 +1,17 @@
+export type PenMarkKind =
+  | "circle"
+  | "underline"
+  | "arrow"
+  | "strike"
+  | "highlight";
+
 export type Insight = {
   key: string;
   eyebrow: string;
   title: string;
   chip: string;
   target: string;
-  object: string;
+  mark: PenMarkKind | "";
   mode?: "ats" | "match" | "edit" | "gap";
   body:
     | { kind: "intro"; text: string; labels: string[] }
@@ -27,7 +34,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k1",
     chip: "",
     target: "",
-    object: "",
+    mark: "",
     body: {
       kind: "intro",
       text: "landing.laptop.k2",
@@ -46,7 +53,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k8",
     chip: "landing.laptop.k9",
     target: "[data-sc-section='contact']",
-    object: "shield",
+    mark: "highlight",
     mode: "ats",
     body: {
       kind: "checks",
@@ -64,7 +71,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k14",
     chip: "landing.laptop.k15",
     target: "[data-sc-section='summary']",
-    object: "target",
+    mark: "circle",
     mode: "match",
     body: {
       kind: "match",
@@ -84,7 +91,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k23",
     chip: "landing.laptop.k24",
     target: "[data-sc-section='payly']",
-    object: "chart",
+    mark: "underline",
     body: {
       kind: "bars",
       rows: [
@@ -108,7 +115,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k32",
     chip: "landing.laptop.k33",
     target: "[data-sc-section='edit']",
-    object: "pencil",
+    mark: "strike",
     mode: "edit",
     body: {
       kind: "edit",
@@ -127,7 +134,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k40",
     chip: "landing.laptop.k41",
     target: "[data-sc-section='brightly']",
-    object: "podium",
+    mark: "highlight",
     body: {
       kind: "bars",
       rows: [
@@ -151,7 +158,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k47",
     chip: "landing.laptop.k48",
     target: "[data-sc-section='projects']",
-    object: "rocket",
+    mark: "underline",
     body: {
       kind: "checks",
       items: ["landing.laptop.k49", "landing.laptop.k50", "landing.laptop.k51"],
@@ -163,7 +170,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k53",
     chip: "landing.laptop.k54",
     target: "[data-sc-section='education']",
-    object: "star",
+    mark: "circle",
     body: {
       kind: "checks",
       items: ["landing.laptop.k55", "landing.laptop.k56", "landing.laptop.k57"],
@@ -175,7 +182,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k58",
     chip: "landing.laptop.k59",
     target: "[data-sc-section='skills']",
-    object: "magnifier",
+    mark: "arrow",
     mode: "gap",
     body: {
       kind: "bars",
@@ -192,7 +199,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k65",
     chip: "landing.laptop.k66",
     target: "[data-sc-section='certs']",
-    object: "trophy",
+    mark: "underline",
     body: {
       kind: "checks",
       items: ["landing.laptop.k67", "landing.laptop.k68", "landing.laptop.k69"],
@@ -204,7 +211,7 @@ export const laptopInsights: Insight[] = [
     title: "landing.laptop.k71",
     chip: "landing.laptop.k72",
     target: "[data-sc-section='lang']",
-    object: "speech-bubbles",
+    mark: "highlight",
     body: {
       kind: "checks",
       items: ["landing.laptop.k73", "landing.laptop.k74", "landing.laptop.k75"],

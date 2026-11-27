@@ -23,7 +23,7 @@ it("contains the intro and ten complete, ordered insights", () => {
     if (index) {
       expect(insight.chip).toBeTruthy();
       expect(insight.target).toBeTruthy();
-      expect(insight.object).toBeTruthy();
+      expect(insight.mark).toBeTruthy();
     }
   }
 });
