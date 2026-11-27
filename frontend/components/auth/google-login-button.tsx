@@ -54,9 +54,9 @@ export function GoogleLoginButton({
           : cn(
               "group relative flex items-center gap-2.5 rounded-full px-4 py-2 text-[13px] font-bold",
               "transition-all duration-200 active:scale-[0.97]",
-              "border border-[#141414]/10 bg-white text-[#141414]/80",
+              "border border-[var(--app-popover-line)] bg-[var(--app-popover)] text-[var(--app-popover-ink)]",
               "shadow-[0_1px_2px_rgba(20,20,20,0.04),0_2px_10px_rgba(20,20,20,0.06)]",
-              "hover:-translate-y-0.5 hover:border-[#141414]/[0.16] hover:text-[#141414]",
+              "hover:-translate-y-0.5 hover:border-[var(--app-popover-ink)]",
               "hover:shadow-[0_1px_2px_rgba(20,20,20,0.05),0_6px_20px_rgba(20,20,20,0.10)]",
               "disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50",
             ),
@@ -67,7 +67,7 @@ export function GoogleLoginButton({
         className={
           landing
             ? styles.googleMark
-            : "flex h-5 w-5 flex-none items-center justify-center rounded-full bg-[#141414]/[0.04] transition-colors duration-200 group-hover:bg-[#141414]/[0.07]"
+            : "flex h-5 w-5 flex-none items-center justify-center rounded-full bg-[var(--app-popover-line)] transition-colors duration-200"
         }
         aria-hidden="true"
       >
@@ -75,8 +75,8 @@ export function GoogleLoginButton({
           <span
             className="h-3 w-3 animate-spin rounded-full border-2"
             style={{
-              borderColor: "rgba(17,17,17,0.15)",
-              borderTopColor: "rgba(17,17,17,0.70)",
+              borderColor: "var(--app-popover-line)",
+              borderTopColor: "var(--app-popover-ink)",
             }}
           />
         ) : (
