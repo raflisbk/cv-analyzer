@@ -116,6 +116,22 @@ describe("landing navbar section tone", () => {
   });
 });
 
+describe("landing navbar section tone in a gap", () => {
+  it("picks the lower section when two share the sample band", () => {
+    mountPage(true);
+    const observer = intersectionObservers.find((item) =>
+      item.targets.some((target) => target.id === "a"),
+    )!;
+    act(() =>
+      observer.callback([
+        { isIntersecting: true, target: document.getElementById("b")! },
+        { isIntersecting: true, target: document.getElementById("a")! },
+      ]),
+    );
+    expect(header()).toHaveAttribute("data-tone", "ink");
+  });
+});
+
 describe("landing navbar call to action handoff", () => {
   it("hides the bar button while the hero button is in view", () => {
     mountPage(true);

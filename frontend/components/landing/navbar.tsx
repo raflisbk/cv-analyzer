@@ -34,50 +34,52 @@ export default function Navbar() {
         data-tone="red"
         data-cta={ctaShown ? "shown" : "hidden"}
       >
-        <nav className={styles.nav} aria-label={t("nav.main")}>
-          <Link href="/" className={styles.logo} aria-label={t("nav.home")}>
-            <Image
-              src={lockup}
-              alt="pathkr"
-              width={165}
-              height={42}
-              className={surface.lockupLight}
-              priority
-            />
-            <Image
-              src={lockupInk}
-              alt=""
-              width={165}
-              height={42}
-              className={surface.lockupInk}
-              aria-hidden="true"
-            />
-            <span className={styles.logoNote} aria-hidden="true">
-              path karir
-            </span>
-          </Link>
-          <div className={styles.links}>
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={(event) =>
-                  onNavScroll(event, link.href.slice(1), event.currentTarget)
-                }
-              >
-                {t(link.key)}
-              </Link>
-            ))}
-          </div>
-          <div className={styles.actions}>
-            <div className={styles.lead}>
-              {account ? <AccountMenu user={user} /> : <NavLogin />}
+        <div className={`${styles.glide} ${surface.bar}`}>
+          <nav className={styles.nav} aria-label={t("nav.main")}>
+            <Link href="/" className={styles.logo} aria-label={t("nav.home")}>
+              <Image
+                src={lockup}
+                alt="pathkr"
+                width={165}
+                height={42}
+                className={surface.lockupLight}
+                priority
+              />
+              <Image
+                src={lockupInk}
+                alt=""
+                width={165}
+                height={42}
+                className={surface.lockupInk}
+                aria-hidden="true"
+              />
+              <span className={styles.logoNote} aria-hidden="true">
+                path karir
+              </span>
+            </Link>
+            <div className={styles.links}>
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={(event) =>
+                    onNavScroll(event, link.href.slice(1), event.currentTarget)
+                  }
+                >
+                  {t(link.key)}
+                </Link>
+              ))}
             </div>
-            <NavCta slotRef={slotRef} shown={ctaShown} />
-            {account && <NavAvatarLink user={user} />}
-          </div>
-          <MobileMenu />
-        </nav>
+            <div className={styles.actions}>
+              <div className={styles.lead}>
+                {account ? <AccountMenu user={user} /> : <NavLogin />}
+              </div>
+              <NavCta slotRef={slotRef} shown={ctaShown} />
+              {account && <NavAvatarLink user={user} />}
+            </div>
+            <MobileMenu />
+          </nav>
+        </div>
       </header>
     </>
   );

@@ -9,7 +9,7 @@
 .surface[data-tone="ink"] {
   --tone: var(--nav-tone-ink);
 }
-.surface::before {
+.bar::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
@@ -41,7 +41,7 @@
   opacity: 1;
 }
 @media (prefers-reduced-motion: reduce) {
-  .surface::before,
+  .bar::before,
   .lockupLight,
   .lockupInk {
     transition: none;
