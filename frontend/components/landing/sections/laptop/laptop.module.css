@@ -7,6 +7,14 @@
   isolation: isolate;
   overflow: visible;
 }
+@media (max-width: 860px) {
+  :global(.pin-spacer):has(> .section) {
+    overflow-x: clip !important;
+  }
+  .section {
+    overflow-x: clip;
+  }
+}
 @media (min-width: 861px) {
   :global(.pin-spacer):has(> .section) {
     width: 100% !important;
