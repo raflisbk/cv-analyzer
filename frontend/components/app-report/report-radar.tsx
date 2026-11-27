@@ -42,14 +42,14 @@ export function ReportRadar({
             key={value}
             points={points([value, value, value, value])}
             fill="none"
-            stroke="#e9c9c0"
+            stroke="var(--app-line-soft)"
           />
         ))}
         {hasPrevious && showPrevious && dimensions.length === 4 && (
           <polygon
             points={points(dimensions.map((item) => item.previous))}
             fill="none"
-            stroke="#1a0b07"
+            stroke="var(--app-ink)"
             strokeWidth="2"
             strokeDasharray="6 5"
           />
@@ -70,7 +70,7 @@ export function ReportRadar({
             textAnchor="middle"
             fontSize="11"
             fontWeight="800"
-            fill="#5a2a20"
+            fill="var(--app-ink-soft)"
           >
             {t(`appReport.dimensions.${item.key}`)} {item.score}
           </text>

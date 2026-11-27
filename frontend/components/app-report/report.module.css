@@ -6,6 +6,9 @@
   --blush: var(--app-blush);
   --ink: var(--app-ink);
   --soft: var(--app-ink-soft);
+  --on-red: var(--app-on-red);
+  --on-punk: var(--app-on-punk);
+  --deep-text: var(--app-deep-text);
   width: 100%;
   padding: 0 0 28px;
   color: var(--ink);
@@ -56,10 +59,10 @@
 }
 .punk {
   background: var(--punk);
-  color: var(--ink);
+  color: var(--on-punk);
 }
 .snow {
-  background: linear-gradient(180deg, #fff 0%, #fff4ee 58%, #ffd3c6 100%);
+  background: var(--app-snow-fill);
   color: var(--ink);
 }
 .nav {
@@ -92,7 +95,7 @@
 }
 .nav button[aria-current] {
   background: var(--red);
-  color: var(--snow);
+  color: var(--on-red);
 }
 .grid {
   display: grid;
@@ -131,17 +134,21 @@
 }
 .deep {
   background: var(--deep);
-  color: var(--snow);
+  color: var(--on-red);
   box-shadow: 0 22px 34px -18px rgba(60, 6, 0, 0.7);
 }
 .yellow {
   background: var(--punk);
+  color: var(--on-punk);
+  --ink: var(--on-punk);
+  --soft: #5a2a20;
+  --deep-text: #b81d00;
 }
 .eyebrow {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--deep);
+  color: var(--deep-text);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.12em;
@@ -163,7 +170,7 @@
     120deg,
     var(--snow) 0%,
     var(--snow) 55%,
-    #ffeb9a 130%
+    var(--app-hero-glow) 130%
   );
 }
 .hero h2 {
@@ -173,8 +180,8 @@
   margin: 8px 0 12px;
 }
 .hero mark {
-  background: linear-gradient(180deg, transparent 52%, var(--punk) 52%);
-  color: var(--ink);
+  background: var(--app-mark-bg);
+  color: var(--app-mark-ink);
 }
 .hero p {
   font-size: 17px;
@@ -224,13 +231,13 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--app-chip);
   color: var(--punk);
   font: 800 24px var(--app-font-display);
 }
 .take strong {
   display: block;
-  color: var(--deep);
+  color: var(--deep-text);
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -324,7 +331,7 @@
 .track {
   display: block;
   height: 10px;
-  background: #f3dcd5;
+  background: var(--app-line-soft);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -349,13 +356,13 @@
   gap: 10px;
   align-items: center;
   padding: 7px 10px;
-  background: rgba(253, 253, 255, 0.6);
+  background: var(--app-glass);
   border-radius: 14px;
   font-size: 13px;
   font-weight: 700;
 }
 .fixList b {
-  background: var(--ink);
+  background: var(--app-chip);
   color: var(--punk);
   padding: 3px 8px;
   border-radius: 999px;
@@ -388,12 +395,12 @@
   color: var(--soft);
 }
 .evidence {
-  border-top: 2px dashed #f3dcd5;
+  border-top: 2px dashed var(--app-line-soft);
   padding-top: 8px;
 }
 .evidence summary {
   cursor: pointer;
-  color: var(--deep);
+  color: var(--deep-text);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -439,6 +446,7 @@
 }
 .mini:hover {
   background: var(--punk);
+  color: var(--on-punk);
 }
 .sectionRows {
   display: grid;
@@ -460,6 +468,7 @@
 .sectionRow .track i {
   background: var(--punk);
   box-shadow: inset 0 0 0 1px var(--ink);
+  color: var(--app-on-punk);
 }
 .sectionRow[data-low="true"] .track i {
   background: var(--red);
@@ -480,12 +489,12 @@
 }
 .quote strong {
   font-size: 11px;
-  color: var(--deep);
+  color: var(--deep-text);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 .quote[data-good="true"] {
-  background: rgba(242, 255, 0, 0.35);
+  background: var(--app-good-tint);
 }
 .grammarBars {
   display: flex;
@@ -531,7 +540,7 @@
   cursor: pointer;
 }
 .filter button[aria-pressed="true"] {
-  background: var(--ink);
+  background: var(--app-chip);
   color: var(--punk);
 }
 .bulletTable {
@@ -544,7 +553,7 @@
   align-items: center;
   padding: 10px 8px;
   border-radius: 14px;
-  border-bottom: 1px solid #fbe9e4;
+  border-bottom: 1px solid var(--app-line-soft);
   font-size: 14px;
 }
 .bulletRow p small {
@@ -566,15 +575,15 @@
   font-size: 11px;
   padding: 3px 9px;
   border-radius: 99px;
-  background: #ffe1d8;
-  color: var(--deep);
+  background: var(--app-tag);
+  color: var(--deep-text);
 }
 .keywordCard {
   background: var(--deep);
-  color: var(--snow);
+  color: var(--on-red);
 }
 .keywordCard .caption {
-  color: var(--snow);
+  color: var(--on-red);
 }
 .keywordCard .eyebrow {
   color: var(--punk);
@@ -584,12 +593,12 @@
 }
 .keywordCard .chip {
   background: var(--punk);
-  color: var(--ink);
+  color: var(--on-punk);
   font-size: 14px;
 }
 .missing {
   background: none !important;
-  color: var(--snow) !important;
+  color: var(--on-red) !important;
   border: 2px dashed var(--punk);
   text-decoration: none;
   cursor: pointer;
@@ -611,10 +620,11 @@
   margin-right: 8px;
   border-radius: 50%;
   background: var(--punk);
+  color: var(--on-punk);
 }
 .atsChecks span[data-ok="false"] b {
   background: var(--red);
-  color: var(--snow);
+  color: var(--on-red);
 }
 .atsDiagram {
   width: 160px;

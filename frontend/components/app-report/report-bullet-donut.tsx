@@ -21,7 +21,7 @@ export function ReportBulletDonut({
         cy="70"
         r="52"
         fill="none"
-        stroke="#f3dcd5"
+        stroke="var(--app-line-soft)"
         strokeWidth="22"
       />
       {(["strong", "fair", "weak"] as const).map((kind, index) => (
@@ -31,7 +31,9 @@ export function ReportBulletDonut({
           cy="70"
           r="52"
           fill="none"
-          stroke={{ strong: "#f2ff00", fair: "#f42902", weak: "#1a0b07" }[kind]}
+          stroke={
+            { strong: "#f2ff00", fair: "#f42902", weak: "var(--app-ink)" }[kind]
+          }
           strokeWidth="22"
           strokeDasharray={`${total ? (length * counts[kind]) / total : 0} ${length}`}
           strokeDashoffset={

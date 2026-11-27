@@ -8,7 +8,7 @@ export function ReportHistoryGrid({ width }: { width: number }) {
             x2={width - 20}
             y1={180 - score * 1.4}
             y2={180 - score * 1.4}
-            stroke="#f3dcd5"
+            stroke="var(--app-line-soft)"
           />
           <text x="48" y={185 - score * 1.4} textAnchor="end" fontSize="12">
             {score}
