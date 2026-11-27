@@ -54,4 +54,5 @@
 }
 .helpActions button + button {
   background: var(--app-blush);
+  color: var(--app-ink);
 }
