@@ -172,6 +172,9 @@ const pathyEn = {
     quipProud: "I read CVs for breakfast.",
     quipDetective: "I spot weak verbs from a mile.",
     scoreBubble: "Your CV scored {score} out of 100.",
+    pointsBubble: "+{points} points!",
+    readingBubble: "Reading your CV now.",
+    scoreReadyBubble: "Your score is ready!",
   },
 };
 export default pathyEn;

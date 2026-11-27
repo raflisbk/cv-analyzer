@@ -2,6 +2,7 @@
 
 import type { Editor } from "@tiptap/core";
 import type { MutableRefObject } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { usePathy } from "@/components/pathy/pathy-context";
 import type { WorkspaceFix } from "@/lib/app-workspace/fixes";
 import {
@@ -16,6 +17,7 @@ export function useAppFixApplication(
   onApplied: (fix: WorkspaceFix, answers: Record<string, string>) => void,
 ) {
   const pathy = usePathy();
+  const { t } = useT();
   return function applyFix(
     fix: WorkspaceFix,
     text: string,
@@ -34,7 +36,7 @@ export function useAppFixApplication(
     onApplied(fix, answers);
     pathy.react(
       fix.points > 1 ? "trophy" : "proud",
-      `+${fix.points} points!`,
+      t("pathy.ui.pointsBubble", { points: fix.points }),
       anchor,
     );
     return true;

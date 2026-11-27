@@ -8,7 +8,11 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export function contentHtml(text: string, fixes: WorkspaceFix[]): string {
+export function contentHtml(
+  text: string,
+  fixes: WorkspaceFix[],
+  labelOf: (label: string) => string = (label) => label,
+): string {
   if (!text.trim()) {
     return "<p></p>";
   }
@@ -16,7 +20,7 @@ export function contentHtml(text: string, fixes: WorkspaceFix[]): string {
     .split(/\n/)
     .filter(Boolean)
     .map((line, index) => {
-      const escaped = highlightLine(line.trim(), fixes);
+      const escaped = highlightLine(line.trim(), fixes, labelOf);
       if (index === 0) {
         return `<h1>${escaped}</h1>`;
       }
@@ -32,7 +36,11 @@ export function contentHtml(text: string, fixes: WorkspaceFix[]): string {
     .join("");
 }
 
-function highlightLine(line: string, fixes: WorkspaceFix[]): string {
+function highlightLine(
+  line: string,
+  fixes: WorkspaceFix[],
+  labelOf: (label: string) => string,
+): string {
   const matches = fixes
     .flatMap((fix) => {
       const quote = fix.before.trim();
@@ -56,7 +64,7 @@ function highlightLine(line: string, fixes: WorkspaceFix[]): string {
       continue;
     }
     html += escapeHtml(line.slice(offset, start));
-    html += `<span class="suggestion-highlight" data-fix-id="${escapeHtml(fix.id)}" data-label="${escapeHtml(fix.label)}">${escapeHtml(line.slice(start, end))}</span>`;
+    html += `<span class="suggestion-highlight" data-fix-id="${escapeHtml(fix.id)}" data-label="${escapeHtml(labelOf(fix.label))}">${escapeHtml(line.slice(start, end))}</span>`;
     offset = end;
   }
   return html + escapeHtml(line.slice(offset));
