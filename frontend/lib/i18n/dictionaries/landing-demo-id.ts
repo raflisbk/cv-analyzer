@@ -100,7 +100,7 @@ const landingDemo = {
     degreeName: "S1 Desain Komunikasi Visual",
     school: "Jakarta Design Institute",
     years: "2012 – 2016",
-    gpa: "IPK 3,72 dari 4,00",
+    gpa: "IPK 3,72 (skala 4)",
     thesis: "Skripsi: navigasi dompet digital untuk pengguna baru.",
     experience: "Pengalaman",
     senior: "Desainer Produk Senior · Payly",
@@ -148,7 +148,7 @@ const landingDemo = {
     indonesian: "Indonesia",
     english: "Inggris",
     native: "bahasa ibu",
-    fluent: "lancar, IELTS 7,5",
+    fluent: "lancar (IELTS 7,5)",
     scoreSample: "Contoh skor",
   },
 } as const;
