@@ -190,3 +190,6 @@
     animation: none;
   }
 }
+:global([data-theme="dark"]) .overlay {
+  background: rgb(0 0 0 / 72%);
+}
