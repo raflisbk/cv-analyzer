@@ -83,7 +83,7 @@ it("renders Indonesian first and switches the whole app shell to English", async
   expect(
     within(screen.getByRole("navigation", { name: "Utama" })).getByRole(
       "link",
-      { name: "CV gua" },
+      { name: "CV kamu" },
     ),
   ).toBeInTheDocument();
   expect(

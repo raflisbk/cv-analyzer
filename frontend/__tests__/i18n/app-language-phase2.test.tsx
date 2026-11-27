@@ -134,7 +134,7 @@ it("switches the Pathy menu and tour between Indonesian and English", () => {
     screen.getByRole("menuitem", { name: "Ikut tur 60 detik" }),
   ).toBeInTheDocument();
   expect(
-    screen.getByRole("heading", { name: "Hai, gua Pathy" }),
+    screen.getByRole("heading", { name: "Hai, aku Pathy" }),
   ).toBeInTheDocument();
   expect(screen.getByText("Langkah 1 dari 8")).toBeInTheDocument();
   expect(document.body.textContent).not.toMatch(rawKey);
