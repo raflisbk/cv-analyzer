@@ -1,3 +1,5 @@
+import errorsId from "./errors-id";
+import uploadId from "./upload-id";
 import appId from "./app-id";
 import appExportId from "./app-export-id";
 import appReportId from "./app-report-id";
@@ -74,6 +76,8 @@ const id = {
   appReport: appReportId,
   appWorkspace: appWorkspaceId,
   appWorkspacePanel: appWorkspacePanelId,
+  errors: errorsId,
+  upload: uploadId,
   common: { language: "Bahasa" },
 } as const satisfies Shape<typeof en>;
 export default id;

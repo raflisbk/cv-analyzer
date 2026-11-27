@@ -1,3 +1,5 @@
+import errorsEn from "./errors-en";
+import uploadEn from "./upload-en";
 import appEn from "./app-en";
 import appExportEn from "./app-export-en";
 import appReportEn from "./app-report-en";
@@ -71,6 +73,8 @@ const en = {
   appReport: appReportEn,
   appWorkspace: appWorkspaceEn,
   appWorkspacePanel: appWorkspacePanelEn,
+  errors: errorsEn,
+  upload: uploadEn,
   common: { language: "Language" },
 } as const;
 export default en;

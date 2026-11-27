@@ -1,0 +1,47 @@
+const uploadEn = {
+  toast: {
+    checkFile: "Please check your file and try again.",
+    invalidTitle: "Invalid file",
+    invalidBody: "Only PDF or DOCX files up to 5MB are supported.",
+  },
+  zone: {
+    drop: "Drop it!",
+    title: "Drop your CV here",
+    lead: "AI scores your CV on clarity, impact, completeness & relevance",
+    time: "Most analyses finish in about 20 seconds.",
+    aiScoring: "AI Scoring",
+    skillGap: "Skill Gap",
+    atsCheck: "ATS Check",
+    choose: "Choose File",
+    limits: "PDF or DOCX · max 5 MB",
+  },
+  preview: {
+    ready: "Ready",
+    targetRole: "Target Role",
+    targetRoleHint: "(optional — improves scoring accuracy)",
+    general: "General (no specific role)",
+    custom: "Custom role (type your own)…",
+    customPlaceholder:
+      "e.g. Backend Engineer, UI/UX Designer, DevOps Engineer…",
+    customLabel: "Custom target role",
+    calibrated: "Anchors calibrated for {role}",
+    cached: "(AI-generated, cached 24 hours)",
+    clarity: "Clarity Score",
+    keywords: "Keyword Match",
+    ats: "ATS Score",
+    impact: "Impact Score",
+    starting: "Starting Analysis…",
+    analyze: "Analyze My CV",
+  },
+  stages: {
+    title: "Analyzing your CV",
+    done: "Done",
+    uploading: "Uploading",
+    extracting: "Extracting text",
+    analyzing: "Analyzing content",
+    generating: "Generating suggestions",
+    comparing: "Comparing against job role",
+    complete: "Complete",
+  },
+} as const;
+export default uploadEn;
