@@ -6,7 +6,6 @@ import { describe, expect, it } from "vitest";
 const root = join(process.cwd(), "components/landing");
 const clippedSceneWidths = new Set([
   "sections/laptop/scene/panel.module.css:.panel:width:512px",
-  "sections/laptop/scene/paper.module.css:.paper:width:440px",
 ]);
 
 function modules(dir: string): string[] {
