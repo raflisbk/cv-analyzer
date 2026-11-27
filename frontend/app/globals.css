@@ -72,6 +72,9 @@ main[data-landing] {
     --red-section-deep: #b81d00;
     --dock-bg: rgba(253, 253, 255, 0.92);
     --dock-ring: #1a0b07;
+    --nav-tone-red: var(--red-section);
+    --nav-tone-snow: var(--surface);
+    --nav-tone-ink: var(--ink-section);
   }
 
   [data-theme="dark"] {

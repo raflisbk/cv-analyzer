@@ -37,6 +37,7 @@ export default function ProcessSection() {
       <section
         ref={ref}
         id="how"
+        data-nav-tone="ink"
         className={`${base.panel} ${base.ink} ${styles.section}`}
       >
         <div className={base.head}>
