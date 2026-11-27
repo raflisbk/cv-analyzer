@@ -80,9 +80,6 @@ const landingDemo = {
   },
   sample: {
     role: "Desainer Produk",
-    readable: "Teks terbaca",
-    contactFound: "Kontak ditemukan",
-    headings: "Judul bagian standar",
     jakarta: "Jakarta, Indonesia",
     summary: "Ringkasan",
     summaryStart:
@@ -95,8 +92,8 @@ const landingDemo = {
       "Perombakan onboarding memangkas waktu penyiapan 38%; studi kasus tersedia online.",
     projectTwo: "Audit aksesibilitas checkout mencakup 12 alur.",
     education: "Pendidikan",
-    degree:
-      "Sarjana Desain Komunikasi Visual · Jakarta Design Institute · 2017",
+    degreeName: "S1 Desain Komunikasi Visual",
+    school: "Jakarta Design Institute",
     experience: "Pengalaman",
     senior: "Desainer Produk Senior · Payly",
     present: "2021 sampai sekarang",
@@ -106,7 +103,6 @@ const landingDemo = {
       "Memimpin 6 engineer membangun ulang checkout dan memangkas waktu muat 40%.",
     noNumber: "Hasil belum ada di bullet awal",
     mobile: "Memperbaiki alur onboarding di ponsel.",
-    critique: "Memimpin diskusi desain mingguan.",
     designer: "Desainer Produk · Brightly",
     range: "2018 sampai 2021",
     merchant: "Mendesain dasbor merchant yang dipakai 1.200 toko.",

@@ -14,8 +14,10 @@ export default function CvPaper() {
       aria-label={t("landing.inside.paper")}
     >
       <CvHeader />
-      <CvSidebar />
-      <CvMain />
+      <div className={styles.columns}>
+        <CvMain />
+        <CvSidebar />
+      </div>
       <i className={styles.highlight} data-sc-highlight aria-hidden="true" />
     </article>
   );
