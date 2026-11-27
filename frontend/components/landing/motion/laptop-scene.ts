@@ -14,7 +14,7 @@ function sectionOffset(element: HTMLElement, paper: HTMLElement) {
   return { x, y };
 }
 
-export function measureLaptopScene(scene: HTMLElement) {
+export function measureLaptopScene(scene: HTMLElement, glide = false) {
   const step = Number(scene.dataset.scStep || 0);
   const insight = laptopInsights[step];
   const paper = scene.querySelector<HTMLElement>("[data-sc-paper]");
@@ -29,12 +29,17 @@ export function measureLaptopScene(scene: HTMLElement) {
     insight.key === "payly" ? target.parentElement?.querySelector("h6") : null;
   const top = heading ? sectionOffset(heading, paper).y : y;
   const pad = 4;
+  if (!glide) {
+    highlight.style.transition = "none";
+  }
   Object.assign(highlight.style, {
     left: `${x - pad}px`,
     top: `${top - pad}px`,
     width: `${target.offsetWidth + pad * 2}px`,
     height: `${target.offsetHeight + y - top + pad * 2}px`,
   });
+  highlight.getBoundingClientRect();
+  highlight.style.transition = "";
   const object = scene.querySelector<HTMLElement>(
     `[data-sc-object="${insight.key}"]`,
   );
@@ -91,7 +96,10 @@ export function paintLaptopScene(
   if (scene.dataset.scStep === String(step)) {
     return;
   }
+  const glide =
+    scene.querySelector<HTMLElement>("[data-sc-highlight]")?.dataset
+      .scActive === "true";
   scene.dataset.scStep = String(step);
   activateLaptopScene(scene, step);
-  measureLaptopScene(scene);
+  measureLaptopScene(scene, glide);
 }

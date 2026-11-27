@@ -100,7 +100,7 @@ export const laptopInsights: Insight[] = [
           value: "landing.laptop.k26",
           width: 100,
         },
-        { label: "landing.laptop.k27", value: "landing.laptop.k28", width: 33 },
+        { label: "landing.laptop.k27", value: "landing.laptop.k28", width: 75 },
         {
           label: "landing.laptop.k29",
           value: "landing.laptop.k30",
@@ -143,7 +143,7 @@ export const laptopInsights: Insight[] = [
           value: "landing.laptop.k42",
           width: 100,
         },
-        { label: "landing.laptop.k27", value: "landing.laptop.k43", width: 50 },
+        { label: "landing.laptop.k27", value: "landing.laptop.k43", width: 67 },
         {
           label: "landing.laptop.k44",
           value: "landing.laptop.k45",
