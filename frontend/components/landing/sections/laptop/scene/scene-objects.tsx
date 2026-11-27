@@ -1,22 +1,24 @@
 import { laptopInsights } from "@/lib/landing-laptop-insights";
-import Image from "next/image";
+import SceneMark from "./scene-mark";
 import styles from "./scene.module.css";
 
 export default function SceneObjects() {
   return (
     <>
-      {laptopInsights.slice(1).map((insight) => (
-        <Image
-          key={insight.key}
-          data-sc-object={insight.object}
-          className={styles.object}
-          src={`/landing/3d/${insight.object}.webp`}
-          alt=""
-          width={96}
-          height={96}
-          draggable={false}
-        />
-      ))}
+      {laptopInsights.slice(1).map(
+        (insight) =>
+          insight.mark && (
+            <span
+              key={insight.key}
+              data-sc-object={insight.key}
+              data-sc-mark={insight.mark}
+              className={styles.object}
+              aria-hidden="true"
+            >
+              <SceneMark kind={insight.mark} />
+            </span>
+          ),
+      )}
     </>
   );
 }

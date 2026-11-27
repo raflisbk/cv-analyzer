@@ -12,25 +12,42 @@
 }
 .object {
   position: absolute;
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
-  opacity: 0;
-  transform: scale(0.3) rotate(-14deg);
-  transition:
-    opacity 0.3s,
-    transform 0.45s cubic-bezier(0.3, 1.7, 0.5, 1);
-  filter: drop-shadow(0 14px 10px rgba(90, 40, 0, 0.4));
-  pointer-events: none;
   left: 0;
   top: 0;
+  display: block;
+  width: 120px;
+  height: 84px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.object[data-sc-mark="underline"],
+.object[data-sc-mark="strike"] {
+  width: 140px;
+  height: 28px;
+}
+.object[data-sc-mark="highlight"] {
+  width: 140px;
+  height: 36px;
+}
+.object[data-sc-mark="arrow"] {
+  width: 112px;
+  height: 42px;
+}
+.object path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.65s ease-out;
 }
 .object[data-sc-active="true"] {
   opacity: 1;
-  transform: scale(1) rotate(6deg);
+}
+.object[data-sc-active="true"] path {
+  stroke-dashoffset: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  .object {
+  .object,
+  .object path {
     transition: none;
   }
 }
