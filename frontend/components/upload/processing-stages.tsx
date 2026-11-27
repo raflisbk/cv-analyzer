@@ -2,6 +2,8 @@
 
 import { CheckCircle2, Loader2, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
+import { toUiStage } from "@/lib/upload/stage";
 
 interface ProcessingStagesProps {
   currentStage: string;
@@ -10,37 +12,20 @@ interface ProcessingStagesProps {
 }
 
 const stages = [
-  { id: "uploading", label: "Uploading", color: "#FF8C42" },
-  { id: "extracting", label: "Extracting text", color: "#CAFF43" },
-  { id: "analyzing", label: "Analyzing content", color: "#8B5CF6" },
-  { id: "generating", label: "Generating suggestions", color: "#FF4FCB" },
-  { id: "comparing", label: "Comparing against job role", color: "#CAFF43" },
-  { id: "complete", label: "Complete", color: "#CAFF43" },
+  { id: "uploading", color: "#FF8C42" },
+  { id: "extracting", color: "#CAFF43" },
+  { id: "analyzing", color: "#8B5CF6" },
+  { id: "generating", color: "#FF4FCB" },
+  { id: "comparing", color: "#CAFF43" },
+  { id: "complete", color: "#CAFF43" },
 ];
-
-const STAGE_MAP: Record<string, string> = {
-  uploading: "uploading",
-  extracting: "extracting",
-  validating: "extracting",
-  parsing: "extracting",
-  analyzing_sections: "analyzing",
-  extracting_skills: "analyzing",
-  scoring: "analyzing",
-  grammar_check: "analyzing",
-  generating_suggestions: "generating",
-  comparing_job: "comparing",
-  complete: "complete",
-};
-
-function toUiStage(backendStage: string): string {
-  return STAGE_MAP[backendStage] ?? "uploading";
-}
 
 export function ProcessingStages({
   currentStage,
   percentage,
   message,
 }: ProcessingStagesProps) {
+  const { t } = useT();
   const uiStage = toUiStage(currentStage);
   const currentStageIndex = stages.findIndex((s) => s.id === uiStage);
   const activeStage = stages[Math.max(0, currentStageIndex)];
@@ -49,7 +34,7 @@ export function ProcessingStages({
     <div className="w-full space-y-6">
       <div>
         <h2 className="font-display font-extrabold text-xl text-[#F5F2D8] mb-1">
-          Analyzing your CV
+          {t("upload.stages.title")}
         </h2>
         <p className="text-sm text-[#F5F2D8]/40">{message}</p>
       </div>
@@ -95,7 +80,7 @@ export function ProcessingStages({
                   isPending && "text-[#F5F2D8]/25",
                 )}
               >
-                {stage.label}
+                {t(`upload.stages.${stage.id}`)}
               </span>
 
               {isActive && (
@@ -111,7 +96,7 @@ export function ProcessingStages({
               )}
               {isComplete && (
                 <span className="text-xs font-bold text-[#F5F2D8]/25">
-                  Done
+                  {t("upload.stages.done")}
                 </span>
               )}
             </div>

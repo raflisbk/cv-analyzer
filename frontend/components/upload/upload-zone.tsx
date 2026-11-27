@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Sparkles, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 interface UploadZoneProps {
   onFileSelected: (file: File) => void;
@@ -15,6 +16,7 @@ export function UploadZone({
   onFileSelected,
   disabled = false,
 }: UploadZoneProps) {
+  const { t } = useT();
   const [isDragOver, setIsDragOver] = useState(false);
 
   const onDrop = useCallback(
@@ -28,11 +30,11 @@ export function UploadZone({
   );
 
   const onDropRejected = useCallback(() => {
-    toast.error("Invalid file", {
-      description: "Only PDF or DOCX files up to 5MB are supported.",
+    toast.error(t("upload.toast.invalidTitle"), {
+      description: t("upload.toast.invalidBody"),
       duration: 5000,
     });
-  }, []);
+  }, [t]);
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
@@ -79,27 +81,27 @@ export function UploadZone({
       </div>
 
       <h2 className="text-xl font-display font-extrabold text-[#F5F2D8] mb-2 text-center">
-        {isDragOver ? "Drop it!" : "Drop your CV here"}
+        {isDragOver ? t("upload.zone.drop") : t("upload.zone.title")}
       </h2>
       <p className="text-sm text-[#F5F2D8]/50 mb-6 text-center max-w-xs">
-        AI scores your CV on clarity, impact, completeness & relevance
+        {t("upload.zone.lead")}
       </p>
       <p className="text-xs text-[#F5F2D8]/40 mb-5 text-center max-w-xs">
-        Most analyses finish in about 20 seconds.
+        {t("upload.zone.time")}
       </p>
 
       <div className="flex items-center gap-2 mb-6 flex-wrap justify-center">
         <span className="rounded-full bg-[#CAFF43]/15 text-[#CAFF43] text-xs font-bold px-3 py-1">
-          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" /> AI
-          Scoring
+          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" />{" "}
+          {t("upload.zone.aiScoring")}
         </span>
         <span className="rounded-full bg-[#FF8C42]/15 text-[#FF8C42] text-xs font-bold px-3 py-1">
-          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" /> Skill
-          Gap
+          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" />{" "}
+          {t("upload.zone.skillGap")}
         </span>
         <span className="rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6] text-xs font-bold px-3 py-1">
-          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" /> ATS
-          Check
+          <Sparkles className="inline-block h-3 w-3" aria-hidden="true" />{" "}
+          {t("upload.zone.atsCheck")}
         </span>
       </div>
 
@@ -114,10 +116,12 @@ export function UploadZone({
                    px-8 py-3 hover:bg-[#CAFF43]/85 active:scale-95 transition-all duration-150
                    disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        Choose File
+        {t("upload.zone.choose")}
       </button>
 
-      <p className="text-xs text-[#F5F2D8]/30 mt-4">PDF or DOCX · max 5 MB</p>
+      <p className="text-xs text-[#F5F2D8]/30 mt-4">
+        {t("upload.zone.limits")}
+      </p>
     </div>
   );
 }

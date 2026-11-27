@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, FileText, Sparkles } from "lucide-react";
 import { SUPPORTED_ROLES } from "@/lib/types";
+import { useT } from "@/components/i18n/i18n-provider";
 
 interface DocumentPreviewProps {
   file: File;
@@ -21,6 +22,7 @@ export function DocumentPreview({
   targetRole = "",
   onTargetRoleChange,
 }: DocumentPreviewProps) {
+  const { t } = useT();
   const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
   const fileType = file.name.toLowerCase().endsWith(".pdf") ? "PDF" : "DOCX";
   const fileTypeColor =
@@ -76,7 +78,7 @@ export function DocumentPreview({
             </span>
             <span className="text-xs text-[#F5F2D8]/40">{fileSizeMB} MB</span>
             <span className="flex items-center gap-1 text-xs text-[#CAFF43] font-bold ml-1">
-              <CheckCircle2 className="w-3 h-3" /> Ready
+              <CheckCircle2 className="w-3 h-3" /> {t("upload.preview.ready")}
             </span>
           </div>
         </div>
@@ -88,9 +90,9 @@ export function DocumentPreview({
             htmlFor="target-role"
             className="text-xs font-extrabold uppercase tracking-widest text-[#F5F2D8]/40 block"
           >
-            Target Role{" "}
+            {t("upload.preview.targetRole")}{" "}
             <span className="normal-case font-normal">
-              (optional — improves scoring accuracy)
+              {t("upload.preview.targetRoleHint")}
             </span>
           </label>
           <select
@@ -99,14 +101,14 @@ export function DocumentPreview({
             onChange={(e) => handleSelectChange(e.target.value)}
             className="w-full bg-[#141414] border border-white/10 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30 appearance-none cursor-pointer"
           >
-            <option value="">General (no specific role)</option>
+            <option value="">{t("upload.preview.general")}</option>
             {SUPPORTED_ROLES.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.label}
               </option>
             ))}
             <option value={CUSTOM_ROLE_VALUE}>
-              Custom role (type your own)…
+              {t("upload.preview.custom")}
             </option>
           </select>
 
@@ -115,9 +117,9 @@ export function DocumentPreview({
               type="text"
               value={customInput}
               onChange={(e) => handleCustomInputChange(e.target.value)}
-              placeholder="e.g. Backend Engineer, UI/UX Designer, DevOps Engineer…"
+              placeholder={t("upload.preview.customPlaceholder")}
               maxLength={120}
-              aria-label="Custom target role"
+              aria-label={t("upload.preview.customLabel")}
               className="w-full bg-[#141414] border border-[#CAFF43]/30 rounded-xl px-4 py-3 text-sm text-[#F5F2D8] placeholder:text-[#F5F2D8]/25 focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30"
               autoFocus
             />
@@ -126,10 +128,10 @@ export function DocumentPreview({
           {activeRoleLabel && (
             <p className="text-xs text-[#CAFF43]/60">
               <Sparkles className="inline-block h-3 w-3" aria-hidden="true" />
-              Anchors calibrated for {activeRoleLabel}
+              {t("upload.preview.calibrated", { role: activeRoleLabel })}
               {selectValue === CUSTOM_ROLE_VALUE && (
                 <span className="text-[#F5F2D8]/30 ml-1">
-                  (AI-generated, cached 24 hours)
+                  {t("upload.preview.cached")}
                 </span>
               )}
             </p>
@@ -139,17 +141,17 @@ export function DocumentPreview({
 
       <div className="flex flex-wrap gap-2">
         {[
-          { label: "Clarity Score", color: "bg-[#CAFF43]/12 text-[#CAFF43]" },
-          { label: "Keyword Match", color: "bg-[#FF4FCB]/12 text-[#FF4FCB]" },
-          { label: "ATS Score", color: "bg-[#8B5CF6]/12 text-[#8B5CF6]" },
-          { label: "Impact Score", color: "bg-[#FF8C42]/12 text-[#FF8C42]" },
+          { label: "clarity", color: "bg-[#CAFF43]/12 text-[#CAFF43]" },
+          { label: "keywords", color: "bg-[#FF4FCB]/12 text-[#FF4FCB]" },
+          { label: "ats", color: "bg-[#8B5CF6]/12 text-[#8B5CF6]" },
+          { label: "impact", color: "bg-[#FF8C42]/12 text-[#FF8C42]" },
         ].map(({ label, color }) => (
           <span
             key={label}
             className={`rounded-full text-xs font-bold px-3 py-1 ${color}`}
           >
             <Sparkles className="inline-block h-3 w-3" aria-hidden="true" />{" "}
-            {label}
+            {t(`upload.preview.${label}`)}
           </span>
         ))}
       </div>
@@ -163,10 +165,10 @@ export function DocumentPreview({
                    disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isAnalyzing ? (
-          "Starting Analysis…"
+          t("upload.preview.starting")
         ) : (
           <span className="inline-flex items-center gap-1.5">
-            Analyze My CV
+            {t("upload.preview.analyze")}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </span>
         )}
