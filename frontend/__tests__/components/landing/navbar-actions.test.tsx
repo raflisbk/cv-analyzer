@@ -1,0 +1,109 @@
+import { readFileSync } from "node:fs";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen, act } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
+import Navbar from "@/components/landing/navbar";
+import { useAuthStore } from "@/stores/auth-store";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
+
+const user = { id: "u1", email: "a@b.co", name: "Rafli", picture: null };
+
+function renderNavbar(locale: "en" | "id" = "en") {
+  return render(
+    <QueryClientProvider client={new QueryClient()}>
+      <I18nProvider initialLocale={locale}>
+        <Navbar />
+      </I18nProvider>
+    </QueryClientProvider>,
+  );
+}
+
+beforeEach(() => useAuthStore.setState({ user: null, isHydrated: true }));
+afterEach(() => useAuthStore.setState({ user: null, isHydrated: false }));
+
+describe("landing navbar actions", () => {
+  it("shows login and the main call to action when logged out", () => {
+    renderNavbar();
+    const links = screen.getAllByRole("link", { name: "Log in" });
+    expect(links[0]).toHaveAttribute("href", "/app");
+    expect(screen.getByRole("link", { name: "Analyze my CV" })).toHaveAttribute(
+      "href",
+      "/app",
+    );
+  });
+
+  it("uses the casual Indonesian labels", () => {
+    renderNavbar("id");
+    expect(
+      screen.getAllByRole("link", { name: "Masuk" }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("link", { name: "Analisis CV kamu" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the account menu and the call to action when logged in", () => {
+    useAuthStore.setState({ user, isHydrated: true });
+    renderNavbar();
+    expect(
+      screen.getAllByRole("button", { name: "Account menu" }).length,
+    ).toBeGreaterThan(0);
+    expect(screen.queryByRole("link", { name: "Log in" })).toBeNull();
+    expect(
+      screen.getByRole("link", { name: "Analyze my CV" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the nav landmark attribute used by the hero entrance", () => {
+    renderNavbar();
+    expect(document.querySelector("[data-landing-nav]")).not.toBeNull();
+  });
+
+  it("condenses once the page scrolls and relaxes back at the top", () => {
+    renderNavbar();
+    const header = document.querySelector("[data-landing-nav]")!;
+    expect(header).toHaveAttribute("data-condensed", "false");
+    act(() => {
+      Object.defineProperty(window, "scrollY", {
+        value: 300,
+        configurable: true,
+      });
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(header).toHaveAttribute("data-condensed", "true");
+    act(() => {
+      Object.defineProperty(window, "scrollY", {
+        value: 0,
+        configurable: true,
+      });
+      window.dispatchEvent(new Event("scroll"));
+    });
+    expect(header).toHaveAttribute("data-condensed", "false");
+  });
+});
+
+describe("landing navbar css contract", () => {
+  const css = readFileSync(
+    "components/landing/navbar/navbar.module.css",
+    "utf8",
+  );
+
+  it("fixes the bar to the viewport above the pinned sections", () => {
+    expect(css).toMatch(/\.header\s*\{[^}]*position:\s*fixed/);
+    expect(css).toMatch(/\.header\s*\{[^}]*top:\s*0/);
+    expect(css).toMatch(/\.header\s*\{[^}]*z-index:\s*40/);
+  });
+
+  it("keeps an in-flow spacer so the hero is not covered at rest", () => {
+    expect(css).toMatch(/\.spacer\s*\{[^}]*background/);
+    expect(css).toMatch(/height:\s*var\(--bar-rest\)/);
+  });
+
+  it("tints the condensed bar with the theme red", () => {
+    expect(css).toMatch(/color-mix\(in srgb, var\(--red-section\)/);
+  });
+});
