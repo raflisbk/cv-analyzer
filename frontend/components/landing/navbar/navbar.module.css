@@ -20,6 +20,11 @@
   left: 0;
   right: 0;
   z-index: 40;
+  pointer-events: none;
+}
+.glide {
+  position: absolute;
+  inset: 0;
   padding: var(--pad-top) var(--inset) 0;
   pointer-events: none;
   translate: 0 var(--bar-y, 0px);
