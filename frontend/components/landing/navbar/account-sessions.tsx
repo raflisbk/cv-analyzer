@@ -60,15 +60,7 @@ export default function AccountSessions({ open, onOpenChange }: Props) {
       <DialogContent className="max-w-md rounded-3xl bg-[#fff4ee] text-[#1a0b07]">
         <DialogTitle>{t("account.sessions")}</DialogTitle>
         <DialogDescription>{t("account.sessionDescription")}</DialogDescription>
-        {error && (
-          <p role="alert">
-            {t(
-              error === "Could not load sessions."
-                ? "account.sessionsError"
-                : "account.signOutError",
-            )}
-          </p>
-        )}
+        {error && <p role="alert">{error}</p>}
         <ul className="max-h-80 space-y-3 overflow-y-auto">
           {sessions.map((session) => (
             <SessionRow

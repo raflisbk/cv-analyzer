@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { useT } from "@/components/i18n/i18n-provider";
 import { usePathy } from "@/components/pathy/pathy-context";
 import { ApiError } from "@/lib/api";
+import { apiErrorMessage } from "@/lib/api-error-message";
 import { exportCv } from "@/lib/app-api/export";
 import type { ExportPreview, ExportTemplate } from "@/lib/app-api/export.types";
 import { exportFilename, saveExportPdf } from "@/lib/app-export/download";
@@ -34,7 +35,9 @@ function exportErrorMessage(t: Translate, cause: unknown): string {
   if (cause instanceof ApiError && cause.code === "EMPTY_EXPORT") {
     return t("appExport.emptyExport");
   }
-  return cause instanceof Error ? cause.message : t("appExport.failed");
+  return cause instanceof ApiError
+    ? apiErrorMessage(cause, t)
+    : t("appExport.failed");
 }
 
 async function saveExport(

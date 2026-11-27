@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { toast } from "sonner";
+import { useT } from "@/components/i18n/i18n-provider";
 import type { JSONContent } from "@tiptap/core";
 
 export type SaveState = "idle" | "unsaved" | "saving" | "saved" | "error";
@@ -25,6 +26,7 @@ async function patchWorkspaceContent(
 }
 
 export function useDraftSave(jobId: string) {
+  const { t } = useT();
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -47,9 +49,7 @@ export function useDraftSave(jobId: string) {
     },
     onError: () => {
       setSaveState("error");
-      toast.error(
-        "Failed to save changes — your edits are not lost. Retrying...",
-      );
+      toast.error(t("errors.draft.saveFailed"));
     },
   });
 

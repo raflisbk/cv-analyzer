@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SSEConnection, SSEMessage } from "@/lib/sse";
+import { useT } from "@/components/i18n/i18n-provider";
 
 interface ProgressUpdate {
   stage: string;
@@ -20,6 +21,9 @@ export function useJobStream(
   const [progress, setProgress] = useState<ProgressUpdate | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const { t } = useT();
+  const tRef = useRef(t);
+  tRef.current = t;
   const completedRef = useRef(false);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onCompleteRef = useRef(options?.onComplete);
@@ -61,8 +65,8 @@ export function useJobStream(
               percentage: 100,
               message:
                 status === "complete"
-                  ? "Analysis complete!"
-                  : "Analysis failed.",
+                  ? tRef.current("errors.stream.complete")
+                  : tRef.current("errors.stream.failed"),
             });
           }
         } catch {
