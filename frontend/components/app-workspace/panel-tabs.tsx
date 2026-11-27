@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { useT } from "@/components/i18n/i18n-provider";
 import type { WorkspaceTab } from "./workspace-panel";
-import { nextTabIndex } from "@/lib/app-workspace/tabs";
+import { nextTabIndex, scrollEdges } from "@/lib/app-workspace/tabs";
 import { PanelTabButton } from "./panel-tab-button";
 import styles from "./workspace-styles";
 
@@ -44,6 +44,18 @@ export function PanelTabs({ tab, setTab, fixCount, grammarCount }: Props) {
   const { t } = useT();
   const row = useRef<HTMLDivElement>(null);
   const [underline, setUnderline] = useState({ left: 0, width: 54 });
+  const [edges, setEdges] = useState({ start: false, end: false });
+  const updateEdges = useCallback(() => {
+    const el = row.current;
+    if (el) {
+      setEdges(scrollEdges(el.scrollLeft, el.clientWidth, el.scrollWidth));
+    }
+  }, []);
+  useEffect(() => {
+    updateEdges();
+    window.addEventListener("resize", updateEdges);
+    return () => window.removeEventListener("resize", updateEdges);
+  }, [updateEdges, fixCount, grammarCount]);
   useEffect(() => {
     const current = row.current?.querySelector<HTMLElement>(
       "[aria-selected=true]",
@@ -67,6 +79,9 @@ export function PanelTabs({ tab, setTab, fixCount, grammarCount }: Props) {
       role="tablist"
       aria-label={t("appWorkspace.tabs.label")}
       data-tour="workspace-panel-tabs"
+      data-fade-start={edges.start}
+      data-fade-end={edges.end}
+      onScroll={updateEdges}
     >
       {tabs.map(({ key }, index) => (
         <PanelTabButton

@@ -17,3 +17,19 @@ export function nextTabIndex(
   }
   return null;
 }
+
+export interface ScrollEdges {
+  start: boolean;
+  end: boolean;
+}
+
+export function scrollEdges(
+  scrollLeft: number,
+  clientWidth: number,
+  scrollWidth: number,
+): ScrollEdges {
+  return {
+    start: scrollLeft > 1,
+    end: scrollLeft + clientWidth < scrollWidth - 1,
+  };
+}

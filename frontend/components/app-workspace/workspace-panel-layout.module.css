@@ -15,7 +15,7 @@
 .tabs {
   position: relative;
   display: flex;
-  gap: 4px;
+  gap: 2px;
   overflow-x: auto;
   flex: none;
   scroll-padding-inline: 8px;
@@ -25,12 +25,27 @@
 .tabs::-webkit-scrollbar {
   display: none;
 }
+.tabs[data-fade-end="true"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+.tabs[data-fade-start="true"] {
+  mask-image: linear-gradient(to right, transparent, #000 28px);
+}
+.tabs[data-fade-start="true"][data-fade-end="true"] {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 28px,
+    #000 calc(100% - 28px),
+    transparent
+  );
+}
 .tab {
   flex: none;
   border: 0;
   background: none;
   min-height: 44px;
-  padding: 0 5px;
+  padding: 0 4px;
   color: var(--app-snow);
   font-size: 13px;
   font-weight: 700;
