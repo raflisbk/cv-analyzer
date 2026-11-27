@@ -27,3 +27,10 @@ it("contains the intro and ten complete, ordered insights", () => {
     }
   }
 });
+
+it("never repeats the same pen mark on neighbouring steps", () => {
+  const marks = laptopInsights.slice(1).map(({ mark }) => mark);
+  marks.slice(1).forEach((mark, index) => {
+    expect(mark).not.toBe(marks[index]);
+  });
+});
