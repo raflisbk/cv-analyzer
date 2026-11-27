@@ -86,7 +86,7 @@ it("switches the full report between Indonesian and English", async () => {
   expect(
     await screen.findByRole("heading", { name: "Laporan lengkap" }),
   ).toBeInTheDocument();
-  expect(screen.getByText("Balik ke editor")).toBeInTheDocument();
+  expect(screen.getByText("Kembali ke editor")).toBeInTheDocument();
   expect(document.body.textContent).not.toMatch(rawKey);
   fireEvent.click(screen.getByRole("button", { name: "EN" }));
   expect(
