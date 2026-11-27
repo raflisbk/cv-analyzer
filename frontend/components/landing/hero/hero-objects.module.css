@@ -5,10 +5,10 @@
 }
 .sheet {
   position: absolute;
-  width: min(76%, 400px);
+  width: min(66%, 340px);
   aspect-ratio: 1;
-  right: 12%;
-  top: 4%;
+  right: 0;
+  top: 10%;
   rotate: 8deg;
   filter: drop-shadow(0 30px 24px rgba(80, 8, 0, 0.4));
 }
@@ -17,19 +17,25 @@
 }
 .bullet {
   position: absolute;
-  left: 35%;
-  top: 57%;
-  width: 45%;
-  height: 4%;
+  left: 37%;
+  top: 44%;
+  width: 34%;
+  height: 6%;
 }
 .note {
   position: absolute;
   z-index: 3;
-  top: 25%;
-  left: 13%;
+  top: 24%;
+  left: 0;
+  width: 33%;
 }
 .note > span {
   color: var(--brand-ink);
+  font-size: clamp(18px, 1.8vw, 24px);
+}
+.note :global([data-pen-mark="arrow"]) {
+  width: 100%;
+  margin-left: 0;
 }
 .callout {
   position: absolute;
@@ -56,8 +62,8 @@
 .ats {
   color: var(--brand-ink);
   background: var(--brand-snow);
-  top: 12%;
-  left: 6%;
+  top: 4%;
+  left: 0;
 }
 .ats i {
   left: 100%;
@@ -66,7 +72,7 @@
 .impact {
   color: var(--brand-ink);
   background: var(--brand-punk);
-  top: 49%;
+  top: 66%;
   left: 0;
 }
 .impact i {
@@ -76,7 +82,7 @@
 .gap {
   color: var(--brand-snow);
   background: var(--brand-ink);
-  bottom: 13%;
+  bottom: 4%;
   right: 0;
 }
 .gap i {
@@ -90,12 +96,11 @@
 }
 @media (max-width: 520px) {
   .stage {
-    height: 320px;
+    height: 400px;
   }
   .sheet {
-    width: 78%;
-    right: 10%;
-    top: 11%;
+    width: 62%;
+    top: 14%;
   }
   .callout {
     font-size: 15px;
@@ -105,16 +110,19 @@
     width: 12px;
   }
   .ats {
-    left: 0;
+    top: 2%;
   }
   .impact {
-    top: 65%;
+    top: 66%;
   }
   .gap {
     bottom: 0;
   }
   .note {
-    top: 30%;
-    left: 4%;
+    top: 24%;
+    width: 36%;
+  }
+  .note > span {
+    font-size: 19px;
   }
 }
