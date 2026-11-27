@@ -4,14 +4,16 @@ import Dock from "@/components/dock/dock";
 import { useAuthStore } from "@/stores/auth-store";
 import { DockHarness } from "./dock-harness";
 
+const usePathnameMock = vi.hoisted(() => vi.fn(() => "/"));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn(), replace: vi.fn() }),
-  usePathname: () => "/",
+  usePathname: usePathnameMock,
 }));
 
 const user = { id: "u1", email: "a@b.co", name: "Rafli", picture: null };
 
 beforeEach(() => {
+  usePathnameMock.mockReturnValue("/");
   useAuthStore.setState({ user: null, isHydrated: true });
 });
 afterEach(() => useAuthStore.setState({ user: null, isHydrated: false }));
@@ -24,23 +26,28 @@ function renderDock() {
   );
 }
 
-it("renders theme, language and login controls when logged out", () => {
+it("renders only the theme and language controls when logged out", () => {
   renderDock();
   expect(screen.getByRole("switch", { name: "Dark mode" })).toBeInTheDocument();
   expect(screen.getByRole("group", { name: "Language" })).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Log in" })).toHaveAttribute(
-    "href",
-    "/app",
-  );
+  expect(screen.queryByRole("link", { name: "Log in" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Account menu" })).toBeNull();
 });
 
-it("swaps login for the account button when logged in", () => {
+it("keeps the account out of the dock when logged in", () => {
   useAuthStore.setState({ user, isHydrated: true });
   renderDock();
   expect(screen.queryByRole("link", { name: "Log in" })).toBeNull();
-  expect(
-    screen.getByRole("button", { name: "Account menu" }),
-  ).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Account menu" })).toBeNull();
+  expect(screen.getByRole("switch", { name: "Dark mode" })).toBeInTheDocument();
+});
+
+it("keeps the dock to theme and language inside the app", () => {
+  usePathnameMock.mockReturnValue("/app/cvs");
+  useAuthStore.setState({ user, isHydrated: true });
+  renderDock();
+  expect(screen.queryByRole("button", { name: "Account menu" })).toBeNull();
+  expect(screen.getByRole("group", { name: "Language" })).toBeInTheDocument();
 });
 
 it("theme switch reflects and toggles aria-checked", () => {
