@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   fileMeta,
   formatMonthYear,
@@ -7,6 +7,15 @@ import {
 
 const now = Date.parse("2026-11-20T12:00:00Z");
 const daysAgo = (days: number) => new Date(now - days * 86400000).toISOString();
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(now);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("relativeDate", () => {
   it("uses Indonesian words", () => {
