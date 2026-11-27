@@ -49,3 +49,11 @@ describe("hero handwritten note", () => {
     );
   });
 });
+
+it("lets the note leave with the callouts when the hero scrolls away", () => {
+  const source = readFileSync(
+    "components/landing/hero/hero-objects.tsx",
+    "utf8",
+  );
+  expect(source).toMatch(/className=\{styles\.note\} data-hero-sticker/);
+});
