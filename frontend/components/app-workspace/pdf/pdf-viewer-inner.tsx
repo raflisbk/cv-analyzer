@@ -32,7 +32,7 @@ function PageLoadingSkeleton({ width }: { width: number }) {
   const height = Math.round(width * 1.414);
   return (
     <div
-      className="animate-pulse bg-[rgba(17,17,17,0.06)]"
+      className="animate-pulse bg-[var(--app-paper)]"
       style={{ width, height }}
       aria-label={t("appWorkspace.pdf.loadingPage")}
     />
@@ -85,14 +85,14 @@ export default function PdfViewerInner({
   if (loadError) {
     return (
       <div
-        className="flex items-center justify-center bg-[rgba(17,17,17,0.04)]"
+        className="flex items-center justify-center bg-[var(--app-glass)]"
         style={{
           width: containerWidth,
           height: Math.round(containerWidth * 1.414),
         }}
         role="alert"
       >
-        <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
+        <p className="text-sm text-[var(--app-ink-soft)] text-center max-w-[280px]">
           {t("appWorkspace.pdf.loadFailed")}
         </p>
       </div>

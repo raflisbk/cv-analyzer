@@ -39,7 +39,7 @@ export function PdfViewer({
         className="flex min-h-[1080px] items-center justify-center"
         role="alert"
       >
-        <p className="text-sm text-[rgba(17,17,17,0.45)] text-center max-w-[280px]">
+        <p className="text-sm text-[var(--app-ink-soft)] text-center max-w-[280px]">
           {t("appWorkspace.state.fileMissing")}
         </p>
       </div>

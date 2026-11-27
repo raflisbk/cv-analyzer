@@ -40,9 +40,9 @@ export function AnnotationCardActions({
         }}
         className="px-4 py-2 text-xs font-semibold rounded-md transition-all"
         style={{
-          background: "rgba(17,17,17,0.06)",
-          color: "rgba(17,17,17,0.60)",
-          border: "1px solid rgba(17,17,17,0.10)",
+          background: "var(--app-popover-line)",
+          color: "var(--app-popover-ink)",
+          border: "1px solid var(--app-popover-line)",
           cursor: "pointer",
           flex: 1,
           textAlign: "center",
