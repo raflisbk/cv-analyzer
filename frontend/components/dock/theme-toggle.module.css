@@ -1,0 +1,120 @@
+.toggle {
+  --w: 72px;
+  --h: 36px;
+  --pad: 3px;
+  position: relative;
+  flex: none;
+  width: var(--w);
+  height: var(--h);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #9ccdf7;
+  box-shadow:
+    inset 0 2px 5px rgba(20, 50, 90, 0.28),
+    0 0 0 2px rgba(255, 255, 255, 0.7);
+  transition: box-shadow 0.5s ease;
+}
+.toggle[data-dark="true"] {
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.5),
+    0 0 14px rgba(200, 205, 255, 0.35);
+}
+.toggle:focus-visible {
+  outline: 3px solid var(--dock-ring);
+  outline-offset: 3px;
+}
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.skyLight {
+  background: linear-gradient(180deg, #7fc0f5 0%, #bfe1fb 100%);
+}
+.skyDark {
+  background: linear-gradient(180deg, #0c1230 0%, #1d2550 100%);
+  opacity: 0;
+}
+.stars,
+.darkCloud {
+  opacity: 0;
+}
+.stars circle {
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+.toggle[data-dark="true"] .skyDark,
+.toggle[data-dark="true"] .stars,
+.toggle[data-dark="true"] .darkCloud {
+  opacity: 1;
+}
+.toggle[data-dark="true"] .skyLight,
+.toggle[data-dark="true"] .clouds {
+  opacity: 0;
+}
+.cloudDrift {
+  animation: drift 7s ease-in-out infinite alternate;
+}
+.thumb {
+  position: absolute;
+  top: var(--pad);
+  left: var(--pad);
+  width: calc(var(--h) - var(--pad) * 2);
+  height: calc(var(--h) - var(--pad) * 2);
+  transition: translate 0.5s cubic-bezier(0.5, 0, 0.2, 1.2);
+  filter: drop-shadow(0 0 5px rgba(255, 190, 100, 0.7));
+}
+.toggle[data-dark="true"] .thumb {
+  translate: calc(var(--w) - var(--h)) 0;
+  filter: drop-shadow(0 0 7px rgba(230, 228, 255, 0.75));
+}
+.sun,
+.moon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition:
+    opacity 0.4s ease,
+    rotate 0.5s ease;
+}
+.moon {
+  opacity: 0;
+  rotate: -50deg;
+}
+.toggle[data-dark="true"] .sun {
+  opacity: 0;
+  rotate: 70deg;
+}
+.toggle[data-dark="true"] .moon {
+  opacity: 1;
+  rotate: 0deg;
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes drift {
+  from {
+    transform: translateX(-4px);
+  }
+  to {
+    transform: translateX(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stars circle,
+  .cloudDrift {
+    animation: none;
+  }
+}

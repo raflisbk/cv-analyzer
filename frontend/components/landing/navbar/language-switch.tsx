@@ -1,20 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { LOCALE_COOKIE, LOCALES, type Locale } from "@/lib/i18n/locales";
+import { LOCALES } from "@/lib/i18n/locales";
+import { useLanguageSwitch } from "@/components/dock/use-language-switch";
 import { useT } from "@/components/i18n/i18n-provider";
 
 export default function LanguageSwitch() {
-  const { locale, setLocale, t } = useT();
-  const router = useRouter();
-  function choose(next: Locale) {
-    if (next === locale) {
-      return;
-    }
-    document.cookie = `${LOCALE_COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
-    setLocale(next);
-    router.refresh();
-  }
+  const { t } = useT();
+  const { locale, choose } = useLanguageSwitch();
   return (
     <div
       role="group"

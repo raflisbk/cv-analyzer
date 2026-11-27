@@ -1,7 +1,6 @@
 "use client";
 
 import { useT } from "@/components/i18n/i18n-provider";
-import LanguageSwitch from "./navbar/language-switch";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuthStore } from "@/stores/auth-store";
@@ -45,23 +44,7 @@ export default function Navbar() {
           ))}
         </div>
         <div className={styles.actions}>
-          <LanguageSwitch />
-          {isHydrated && user ? (
-            <AccountMenu user={user} />
-          ) : (
-            <Link href="/app" className={styles.action}>
-              <span>{t("nav.login")}</span>
-              <span className={styles.keyWrap} aria-hidden="true">
-                <Image
-                  src="/landing/3d/login-key.webp"
-                  alt=""
-                  width={50}
-                  height={50}
-                  className={styles.key}
-                />
-              </span>
-            </Link>
-          )}
+          {isHydrated && user && <AccountMenu user={user} />}
         </div>
         <MobileMenu />
       </nav>
