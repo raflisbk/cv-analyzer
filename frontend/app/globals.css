@@ -100,6 +100,83 @@ main[data-landing] {
     --dock-bg: rgba(42, 20, 16, 0.92);
     --dock-ring: #f2ff00;
   }
+
+  :root {
+    --app-on-red: #fdfdff;
+    --app-on-punk: #1a0b07;
+    --app-page: #f42902;
+    --app-snow-fill: linear-gradient(
+      180deg,
+      #fff 0%,
+      #fff4ee 58%,
+      #ffd3c6 100%
+    );
+    --app-snow-edge: #d6461e61;
+    --app-shadow: #3c060099;
+    --app-dots: #b81d0021;
+    --app-skeleton: linear-gradient(90deg, #fff4ee, #ffd3c6, #fff4ee);
+    --app-paper: #fdfdff;
+    --app-paper-ink: #111111;
+    --app-paper-accent: #b81d00;
+    --app-paper-skeleton: rgba(17, 17, 17, 0.07);
+    --app-chip: #1a0b07;
+    --app-line-soft: #f3dcd5;
+    --app-tag: #ffe1d8;
+    --app-glass: rgba(253, 253, 255, 0.6);
+    --app-good-tint: rgba(242, 255, 0, 0.35);
+    --app-hero-glow: #ffeb9a;
+    --app-mark-bg: linear-gradient(180deg, transparent 52%, #f2ff00 52%);
+    --app-mark-ink: #1a0b07;
+    --app-deep-text: #b81d00;
+    --app-overlay: rgba(80, 8, 0, 0.5);
+    --app-ring-track: rgba(26, 11, 7, 0.35);
+    --app-wave-1: #d72503;
+    --app-wave-2: #df2300;
+    --app-wave-3: #bd1d00;
+    --app-glass-deep: rgba(80, 8, 0, 0.3);
+    --app-popover: #ffffff;
+    --app-popover-ink: #111111;
+    --app-popover-line: rgba(17, 17, 17, 0.15);
+  }
+
+  [data-theme="dark"],
+  [data-theme="dark"] .app-root {
+    --app-red: #d62f16;
+    --app-red-deep: #3d0a03;
+    --app-snow: #2a1410;
+    --app-blush: #1a0b07;
+    --app-ink: #fdfdff;
+    --app-ink-soft: #dcc6bf;
+    --app-page: #6f1100;
+    --app-snow-fill: linear-gradient(
+      180deg,
+      #3a1a14 0%,
+      #2a1410 58%,
+      #1f0f0b 100%
+    );
+    --app-snow-edge: #00000066;
+    --app-shadow: #000000b3;
+    --app-dots: #ff6a4d1f;
+    --app-chip: #0d0503;
+    --app-line-soft: rgba(253, 253, 255, 0.16);
+    --app-tag: #4a1d14;
+    --app-glass: rgba(253, 253, 255, 0.08);
+    --app-good-tint: rgba(242, 255, 0, 0.2);
+    --app-hero-glow: #3d2b0a;
+    --app-mark-bg: #f2ff00;
+    --app-mark-ink: #1a0b07;
+    --app-deep-text: #ff8a73;
+    --app-overlay: rgba(0, 0, 0, 0.62);
+    --app-ring-track: rgba(253, 253, 255, 0.25);
+    --app-wave-1: #7a1400;
+    --app-wave-2: #801700;
+    --app-wave-3: #5e0e00;
+    --app-glass-deep: rgba(0, 0, 0, 0.3);
+    --app-popover: #2a1410;
+    --app-popover-ink: #fdfdff;
+    --app-popover-line: rgba(253, 253, 255, 0.2);
+    --app-skeleton: linear-gradient(90deg, #2a1410, #3a1a14, #2a1410);
+  }
 }
 
 @layer base {
