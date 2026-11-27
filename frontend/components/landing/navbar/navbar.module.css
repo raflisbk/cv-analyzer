@@ -11,9 +11,6 @@
   height: var(--bar-rest);
   box-sizing: border-box;
 }
-:global([data-nav-tone]) {
-  scroll-margin-top: 68px;
-}
 .spacer {
   background: var(--red-section);
 }
