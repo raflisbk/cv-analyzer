@@ -1,5 +1,5 @@
 .footer.footer {
-  background: var(--brand-ink);
+  background: var(--ink-section);
   color: var(--brand-snow);
   margin-top: -48px;
   padding-block: calc(clamp(36px, 5vw, 64px) + 48px) 32px;

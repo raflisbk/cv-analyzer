@@ -2,7 +2,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--brand-red);
+  background: var(--red-section);
   color: var(--brand-snow);
   border-radius: 0 0 48px 48px;
   max-width: 1320px;
@@ -51,8 +51,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: var(--brand-snow);
-  color: var(--brand-ink);
+  background: var(--surface-raised);
+  color: var(--text);
   border-radius: 999px;
   padding: 8px 16px 8px 10px;
   font-weight: 600;

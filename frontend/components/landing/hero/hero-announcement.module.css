@@ -33,7 +33,7 @@
     max-width: none;
     margin: 0;
     border-radius: 0;
-    background: var(--brand-red-deep);
+    background: var(--red-section-deep);
     color: var(--brand-snow);
   }
   .announcement a {
