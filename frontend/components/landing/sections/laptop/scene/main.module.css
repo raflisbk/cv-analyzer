@@ -1,7 +1,7 @@
 .main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .main mark {
   background: transparent;
@@ -15,21 +15,22 @@
   font-weight: 700;
 }
 .role {
+  margin-bottom: 2.5px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
 }
 .role b {
-  font-size: 6.8px;
+  font-size: 7.6px;
 }
 .role span {
-  font-size: 5.8px;
+  font-size: 6.4px;
   font-style: normal;
   color: #6b5c57;
   font-weight: 600;
 }
 .job + .job {
-  margin-top: 5px;
+  margin-top: 6px;
 }
 .editLine {
   min-height: 8px;
@@ -61,7 +62,7 @@
   margin-top: 2px;
   text-decoration: none;
   font:
-    800 5px Inter,
+    800 5.6px Inter,
     sans-serif;
   background: #b81d00;
   color: #fdfdff;
