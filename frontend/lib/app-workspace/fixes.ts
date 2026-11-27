@@ -32,10 +32,10 @@ export function flattenFixes(
         explanation: item.explanation ?? item.text,
         label:
           item.type === "impact_metric"
-            ? "No number"
+            ? "noNumber"
             : item.type === "action_verb"
-              ? "Vague verb"
-              : "Missing section",
+              ? "vagueVerb"
+              : "missingSection",
         points: item.priority === "high_impact" ? 3 : 1,
         needsInput: item.needsInput ?? [],
       }))

@@ -38,7 +38,9 @@ const METRICS = new Set([
 const EVIDENCE = new Set(["suggested", "strongBullet"]);
 
 export function reportVerdict(t: T, verdict: Detail["verdict"]) {
-  if (!verdict.key || !VERDICTS.has(verdict.key)) return verdict;
+  if (!verdict.key || !VERDICTS.has(verdict.key)) {
+    return verdict;
+  }
   return {
     title: t(`appReport.copy.verdict.${verdict.key}.title`),
     body: t(`appReport.copy.verdict.${verdict.key}.body`),
@@ -53,7 +55,9 @@ function pageFact(t: T, pages: number) {
 
 export function reportFacts(t: T, data: Detail): string[] {
   const counts = data.factCounts;
-  if (!counts) return data.facts;
+  if (!counts) {
+    return data.facts;
+  }
   return [
     pageFact(t, counts.pages),
     t("appReport.copy.facts.bullets", { count: counts.bullets }),
@@ -67,7 +71,9 @@ export function reportFacts(t: T, data: Detail): string[] {
 }
 
 export function reportAtsFacts(t: T, ats: Detail["ats"]): string[] {
-  if (ats.pages === undefined || ats.sizeKb === undefined) return ats.facts;
+  if (ats.pages === undefined || ats.sizeKb === undefined) {
+    return ats.facts;
+  }
   return [
     ats.format ?? "",
     ats.pages ? pageFact(t, ats.pages) : "",
@@ -76,9 +82,13 @@ export function reportAtsFacts(t: T, ats: Detail["ats"]): string[] {
 }
 
 export function reportFixTitle(t: T, fix: Detail["fixes"][number]) {
-  if (!fix.section || !fix.type) return fix.title;
+  if (!fix.section || !fix.type) {
+    return fix.title;
+  }
   const pair = `${fix.section.toLowerCase()}_${fix.type}`;
-  if (FIX_TITLE_PAIRS.has(pair)) return t(`appReport.copy.fixTitles.${pair}`);
+  if (FIX_TITLE_PAIRS.has(pair)) {
+    return t(`appReport.copy.fixTitles.${pair}`);
+  }
   const section = fix.section.toLowerCase();
   return t("appReport.copy.fixTitle", {
     section: SECTIONS.has(section)

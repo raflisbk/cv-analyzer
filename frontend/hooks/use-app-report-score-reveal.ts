@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useT } from "@/components/i18n/i18n-provider";
 import { usePathy } from "@/components/pathy/pathy-context";
 
 export function useAppReportScoreReveal(score: number) {
   const [shown, setShown] = useState(0);
   const pathy = usePathy();
+  const { t } = useT();
   useEffect(() => {
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -14,7 +16,7 @@ export function useAppReportScoreReveal(score: number) {
       setShown(score);
       pathy.react(
         score >= 75 ? "proud" : "think",
-        `Your CV scored ${score} out of 100.`,
+        t("pathy.ui.scoreBubble", { score }),
       );
       return;
     }
@@ -27,11 +29,11 @@ export function useAppReportScoreReveal(score: number) {
       else
         pathy.react(
           score >= 75 ? "proud" : "think",
-          `Your CV scored ${score} out of 100.`,
+          t("pathy.ui.scoreBubble", { score }),
         );
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [score, pathy]);
+  }, [score, pathy, t]);
   return shown;
 }
