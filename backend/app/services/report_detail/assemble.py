@@ -41,7 +41,13 @@ def report_detail(job: Job, jobs_by_id: dict) -> ReportDetail:
         ats=ats(job),
         versions=[
             ReportVersion(
-                label=item.label, score=item.score, at=item.at, summary=item.summary
+                label=item.label,
+                score=item.score,
+                at=item.at,
+                summary=item.summary,
+                summary_kind=item.summary_kind,
+                changed_dimension=item.changed_dimension,
+                changed_delta=item.changed_delta,
             )
             for item in history
         ],

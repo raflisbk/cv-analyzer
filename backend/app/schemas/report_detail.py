@@ -115,7 +115,15 @@ class ReportFactCounts(ReportModel):
     words: int
 
 
-class VersionData(ReportModel):
+class VersionSummaryFields(ReportModel):
+    summary_kind: Literal["first", "unchanged", "changed"] | None = None
+    changed_dimension: (
+        Literal["impact", "clarity", "relevance", "completeness"] | None
+    ) = None
+    changed_delta: int | None = None
+
+
+class VersionData(VersionSummaryFields):
     id: str
     label: str
     at: str
@@ -130,7 +138,7 @@ class VersionDiff(ReportModel):
     after: str
 
 
-class ReportVersion(ReportModel):
+class ReportVersion(VersionSummaryFields):
     label: str
     score: int
     at: str

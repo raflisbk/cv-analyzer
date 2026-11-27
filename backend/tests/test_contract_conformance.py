@@ -26,7 +26,11 @@ INTERFACES = {
         "report-detail.types.ts",
         "fileName role version score previousScore projectedScore verdict topPercent facts factCounts fixes dimensions sections bullets grammar keywords ats versions",
     ),
-    "VersionData": ("history.types.ts", "id label at score delta summary current"),
+    "VersionData": (
+        "history.types.ts",
+        "id label at score delta summary current "
+        "summaryKind changedDimension changedDelta",
+    ),
     "AtsData": (
         "ats.types.ts",
         "score summary compat parsed plainText checks hiddenText",
@@ -54,7 +58,9 @@ NESTED = {
     "ReportDetail.keywords.present.0": "name count",
     "ReportDetail.ats": "score facts format pages sizeKb checks",
     "ReportDetail.ats.checks.0": "text ok",
-    "ReportDetail.versions.0": "label score at summary",
+    "ReportDetail.versions.0": (
+        "label score at summary summaryKind changedDimension changedDelta"
+    ),
     "AtsData.compat.0": "system rating",
     "AtsData.parsed.0": "field value confidence",
     "AtsData.plainText": "lines note",
@@ -73,7 +79,7 @@ def typescript_fields(file_name: str, interface: str) -> set[str]:
     fields = set()
     for line in source[start:].splitlines():
         if depth == 1:
-            match = re.match(r"\s+([A-Za-z][A-Za-z0-9]*):", line)
+            match = re.match(r"\s+([A-Za-z][A-Za-z0-9]*)\??:", line)
             if match:
                 fields.add(match[1])
         depth += line.count("{") - line.count("}")
