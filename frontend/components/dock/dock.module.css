@@ -59,6 +59,9 @@
     display: grid;
   }
   .controls {
+    position: absolute;
+    right: 0;
+    bottom: 60px;
     flex-direction: column;
     padding: 8px;
     border-radius: 36px;
