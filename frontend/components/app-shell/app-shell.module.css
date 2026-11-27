@@ -126,6 +126,19 @@
   grid-column: 6;
   justify-self: end;
 }
+.avatarButton {
+  display: none;
+  grid-column: 4;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-snow);
+  box-shadow: inset 0 -3px #781e0a33;
+  cursor: pointer;
+}
 .main {
   flex: 1;
   min-height: 0;
@@ -146,7 +159,10 @@
 }
 @media (max-width: 860px) {
   .header {
-    grid-template-columns: 48px 1fr auto;
+    grid-template-columns: 48px 1fr auto auto;
+  }
+  .avatarButton {
+    display: grid;
   }
   .logo,
   .account {
