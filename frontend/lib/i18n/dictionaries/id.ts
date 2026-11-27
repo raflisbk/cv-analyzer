@@ -26,6 +26,15 @@ const id = {
     connect: "Cari kerja",
     comingSoon: "Segera hadir",
   },
+  dock: {
+    label: "Pengaturan cepat",
+    open: "Buka pengaturan cepat",
+    close: "Tutup pengaturan cepat",
+    theme: "Mode gelap",
+    themeLight: "Ganti ke mode gelap",
+    themeDark: "Ganti ke mode terang",
+    language: "Bahasa",
+  },
   auth: {
     title: "Masuk dulu, yuk",
     body: "Biar lu bisa analisis CV dan cek lagi hasilnya kapan aja.",

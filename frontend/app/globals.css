@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 main[data-landing] {
-  background: var(--brand-red);
+  background: var(--red-section);
 }
 
 @layer base {
@@ -58,6 +58,45 @@ main[data-landing] {
        Accent borders:         keep per-color with /15 opacity */
     --border-dark-card: rgba(255, 255, 255, 0.07);
     --border-light-card: rgba(17, 17, 17, 0.1);
+
+    --surface: #fdfdff;
+    --surface-raised: #ffffff;
+    --surface-tint: #ffd9cf;
+    --text: #1a0b07;
+    --text-muted: rgba(26, 11, 7, 0.72);
+    --line: rgba(26, 11, 7, 0.14);
+    --accent-red: #f42902;
+    --accent-red-deep: #b81d00;
+    --red-section: #f42902;
+    --red-section-deep: #b81d00;
+    --dock-bg: rgba(253, 253, 255, 0.92);
+    --dock-ring: #1a0b07;
+  }
+
+  [data-theme="dark"] {
+    --background: 15 57% 6%;
+    --foreground: 240 100% 99%;
+    --card: 15 45% 9%;
+    --card-foreground: 240 100% 99%;
+    --muted: 15 35% 14%;
+    --muted-foreground: 15 25% 76%;
+    --border: 15 28% 22%;
+    --input: 15 28% 22%;
+    --secondary: 15 45% 12%;
+    --secondary-foreground: 240 100% 99%;
+
+    --surface: #1a0b07;
+    --surface-raised: #2a1410;
+    --surface-tint: #3a1a14;
+    --text: #fdfdff;
+    --text-muted: #dcc6bf;
+    --line: rgba(253, 253, 255, 0.18);
+    --accent-red: #ff6a4d;
+    --accent-red-deep: #ff8a73;
+    --red-section: #6f1100;
+    --red-section-deep: #3d0a03;
+    --dock-bg: rgba(42, 20, 16, 0.92);
+    --dock-ring: #f2ff00;
   }
 }
 
@@ -266,5 +305,19 @@ main[data-landing] {
   to {
     visibility: hidden;
     pointer-events: none;
+  }
+}
+
+body > * {
+  transition: opacity 170ms ease;
+}
+
+html[data-locale-fade="out"] body > *:not([data-dock]) {
+  opacity: 0.08;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-locale-fade="out"] body > *:not([data-dock]) {
+    opacity: 1;
   }
 }
