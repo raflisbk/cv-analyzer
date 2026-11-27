@@ -7,7 +7,7 @@
   padding: 20px;
   border-radius: 26px;
   background: var(--app-red-deep);
-  color: var(--app-snow);
+  color: var(--app-on-red);
 }
 .insights h2 {
   color: var(--app-punk);

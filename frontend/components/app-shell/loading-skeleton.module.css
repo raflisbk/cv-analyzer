@@ -9,7 +9,7 @@
   display: block;
   height: 18px;
   border-radius: 10px;
-  background: linear-gradient(90deg, #fff4ee, #ffd3c6, #fff4ee);
+  background: var(--app-skeleton);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }

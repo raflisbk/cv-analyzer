@@ -3,7 +3,7 @@
   inset: 0;
   z-index: 79;
   border: 0;
-  background: rgba(80, 8, 0, 0.5);
+  background: var(--app-overlay);
 }
 .drawer {
   position: fixed;
@@ -17,7 +17,7 @@
   box-sizing: border-box;
   border-radius: 0 32px 32px 0;
   background: var(--app-red-deep);
-  color: var(--app-snow);
+  color: var(--app-on-red);
   box-shadow: 30px 0 60px -30px #3c0600cc;
   translate: -105% 0;
   transition: translate 0.25s;
@@ -73,7 +73,7 @@
 }
 .cvTag {
   background: var(--app-punk);
-  color: var(--app-ink);
+  color: var(--app-on-punk);
 }
 .drawerFooter {
   display: none;
@@ -91,6 +91,7 @@
   padding: 9px;
   background: var(--app-punk);
   font-weight: 700;
+  color: var(--app-on-punk);
 }
 @media (max-width: 860px) {
   .drawerFooter {
