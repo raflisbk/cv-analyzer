@@ -1,19 +1,16 @@
 import { describe, expect, it } from "vitest";
-import quadsData from "@/public/landing/laptop/screen-quads.json";
 import {
   clampObjectPosition,
-  screenSize,
   containScreen,
+  laptopBody,
+  screenSize,
 } from "@/lib/landing-laptop-screen";
 
 describe("laptop screen geometry", () => {
-  it("sizes the mount from the final visible quad", () => {
-    expect(quadsData.frameCount).toBe(15);
-    expect(quadsData.quads).toHaveLength(quadsData.frameCount);
-    expect(quadsData.quads.every(Boolean)).toBe(true);
+  it("sizes the screen to fit the lid with an even bezel", () => {
     expect(screenSize.width).toBe(1000);
-    expect(screenSize.height).toBeGreaterThan(590);
-    expect(screenSize.height).toBeLessThan(630);
+    expect(laptopBody.width - screenSize.width).toBe(laptopBody.bezel * 2);
+    expect(laptopBody.lidHeight - screenSize.height).toBe(laptopBody.bezel * 2);
   });
 
   it("keeps the entire object inside the screen", () => {
