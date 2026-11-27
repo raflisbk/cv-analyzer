@@ -176,7 +176,7 @@
 @media (max-width: 520px) {
   .spacer,
   .header {
-    --inset: 36px;
+    --inset: 28px;
     --pad-top: 20px;
     --bar-rest: 64px;
   }
@@ -190,7 +190,7 @@
   }
   .logo img,
   .header[data-condensed="true"] .logo img {
-    width: 112px;
+    width: 96px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

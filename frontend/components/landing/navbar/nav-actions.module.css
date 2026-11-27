@@ -100,8 +100,13 @@
     display: none;
   }
   .cta {
-    padding-left: 14px;
-    font-size: 15px;
+    gap: 4px;
+    padding-left: 12px;
+    font-size: 14px;
+  }
+  .plane {
+    width: 32px;
+    height: 32px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
