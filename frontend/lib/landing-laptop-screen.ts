@@ -1,11 +1,10 @@
-import quadsData from "@/public/landing/laptop/screen-quads.json";
-import { quadAspect, type Quad } from "./landing-laptop";
+export const screenSize = { width: 1000, height: 608 };
 
-const finalQuad = quadsData.quads[quadsData.frameCount - 1] as Quad;
-
-export const screenSize = {
-  width: 1000,
-  height: Math.round(1000 / quadAspect(finalQuad)),
+export const laptopBody = {
+  width: 1080,
+  lidHeight: 688,
+  baseDepth: 700,
+  bezel: 40,
 };
 
 export function containScreen(width: number, height: number, aspect: number) {

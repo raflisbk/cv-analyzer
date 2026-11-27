@@ -1,21 +1,14 @@
 import { useEffect, type RefObject } from "react";
 import { loadGsap } from "@/lib/gsap-loader";
+import { STATIC_PROGRESS } from "@/lib/landing-laptop";
 import { paintLaptop } from "@/components/landing/motion/laptop";
 
 async function createLaptopTrigger(
   panel: HTMLElement,
-  canvas: HTMLCanvasElement,
   isCancelled: () => boolean,
   setTrigger: (trigger: { kill: () => void }) => void,
 ) {
   await document.fonts.ready;
-  if (canvas.dataset.framesReady !== "true") {
-    await new Promise<void>((resolve) =>
-      canvas.addEventListener("laptop-frames-ready", () => resolve(), {
-        once: true,
-      }),
-    );
-  }
   const { ScrollTrigger } = await loadGsap();
   if (isCancelled()) {
     return;
@@ -45,21 +38,17 @@ export function useLandingLaptop(ref: RefObject<HTMLElement | null>) {
     if (!panel) {
       return;
     }
-    const canvas = panel.querySelector<HTMLCanvasElement>("canvas");
-    if (!canvas) {
-      return;
-    }
     let cancelled = false;
     let trigger: { kill: () => void } | undefined;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
-      paintLaptop(panel, 1, true);
+      paintLaptop(panel, STATIC_PROGRESS, true);
       return;
     }
+    paintLaptop(panel, 0);
     const start = () =>
       void createLaptopTrigger(
         panel,
-        canvas,
         () => cancelled,
         (value) => {
           trigger = value;

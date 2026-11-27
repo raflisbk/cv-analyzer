@@ -1,22 +1,7 @@
-import quadsData from "@/public/landing/laptop/screen-quads.json";
 import { paintLaptopScene } from "./laptop-scene";
-import {
-  homographyCss,
-  interpolateQuad,
-  laptopProgress,
-  scaleQuad,
-  type Quad,
-} from "@/lib/landing-laptop";
-import { containScreen, screenSize } from "@/lib/landing-laptop-screen";
-
-const quads = quadsData.quads as (Quad | null)[];
-const finalQuad = quads[quadsData.frameCount - 1] as Quad;
-const screenQuad: Quad = [
-  [0, 0],
-  [screenSize.width, 0],
-  [screenSize.width, screenSize.height],
-  [0, screenSize.height],
-];
+import { paintLaptopCamera } from "./laptop-camera";
+import { paintLaptopLid } from "./laptop-lid";
+import { laptopProgress } from "@/lib/landing-laptop";
 
 function expandPanel(panel: HTMLElement, progress: number) {
   if (window.innerWidth <= 860) {
@@ -31,69 +16,6 @@ function expandPanel(panel: HTMLElement, progress: number) {
   panel.style.borderRadius = `${48 * (1 - amount)}px`;
 }
 
-function screenTarget(
-  anchor: HTMLElement,
-  panel: HTMLElement,
-  aspect: number,
-  staticView: boolean,
-): Quad {
-  const bounds = anchor.getBoundingClientRect();
-  const contained = containScreen(
-    window.innerWidth,
-    window.innerHeight,
-    aspect,
-  );
-  const width = Math.min(
-    contained.width,
-    window.innerWidth <= 860 ? panel.clientWidth : Infinity,
-  );
-  const height = width / aspect;
-  const center = staticView
-    ? panel.getBoundingClientRect()
-    : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
-  const left = center.left + (center.width - width) / 2 - bounds.left;
-  const top = center.top + (center.height - height) / 2 - bounds.top;
-  return [
-    [left, top],
-    [left + width, top],
-    [left + width, top + height],
-    [left, top + height],
-  ];
-}
-
-function paintScreen(
-  panel: HTMLElement,
-  anchor: HTMLElement,
-  stage: HTMLElement,
-  screen: HTMLElement,
-  frame: number,
-  zoom: number,
-  staticView: boolean,
-) {
-  const scaleX = anchor.offsetWidth / quadsData.width;
-  const scaleY = anchor.offsetHeight / quadsData.height;
-  const current = quads[frame];
-  const final = scaleQuad(finalQuad, scaleX, scaleY);
-  const target = screenTarget(
-    anchor,
-    panel,
-    screenSize.width / screenSize.height,
-    staticView,
-  );
-  screen.style.opacity = current ? "1" : "0";
-  if (staticView || zoom === 1) {
-    stage.style.transform = "none";
-    screen.style.transform = `translate(${target[0][0]}px, ${target[0][1]}px) scale(${(target[1][0] - target[0][0]) / screenSize.width})`;
-    return;
-  }
-  stage.style.transform = zoom
-    ? homographyCss(final, interpolateQuad(final, target, zoom))
-    : "none";
-  screen.style.transform = current
-    ? homographyCss(screenQuad, scaleQuad(current, scaleX, scaleY))
-    : "none";
-}
-
 export function paintLaptop(
   panel: HTMLElement,
   progress: number,
@@ -104,17 +26,16 @@ export function paintLaptop(
   const anchor = panel.querySelector<HTMLElement>("[data-laptop-anchor]");
   const stage = panel.querySelector<HTMLElement>("[data-laptop-stage]");
   const screen = panel.querySelector<HTMLElement>("[data-laptop-screen]");
-  const canvas = panel.querySelector<HTMLCanvasElement>("[data-laptop-canvas]");
   const copy = panel.querySelector<HTMLElement>("[data-laptop-text]");
-  if (!anchor || !stage || !screen || !canvas || !copy) {
+  if (!anchor || !stage || !screen || !copy) {
     return;
   }
-  const { frame, zoom, content } = laptopProgress(progress);
-  canvas.dispatchEvent(new CustomEvent("laptop-frame", { detail: frame }));
-  paintScreen(panel, anchor, stage, screen, frame, zoom, staticView);
-  canvas.style.opacity = String(1 - Math.max(0, (zoom - 0.9) / 0.1));
+  const { lid, zoom, content } = laptopProgress(progress);
+  paintLaptopLid(stage, lid);
+  paintLaptopCamera(panel, anchor, stage, lid, zoom, staticView);
   copy.style.opacity = String(1 - Math.min(1, zoom * 2.2));
   copy.style.transform = `translateY(${-30 * zoom}px)`;
+  stage.dataset.laptopLid = lid.toFixed(3);
   screen.dataset.contentProgress = content.toFixed(3);
   screen.style.setProperty("--laptop-content-progress", String(content));
   paintLaptopScene(screen, content, staticView);
