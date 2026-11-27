@@ -5,6 +5,10 @@ from json_repair import repair_json
 from pydantic import ValidationError
 
 from app.core.logging import structured_logger as logger
+from app.services.llm.suggestion_rewrite_repair import (
+    fallback_rewrite,
+    normalize_placeholders,
+)
 from app.services.llm.protocol import (
     SuggestionCardOutput,
     SuggestionItemOutput,
@@ -35,8 +39,25 @@ def _original_text(suggestion: dict, cv_text: str) -> str:
     return str(suggestion.get("text", ""))[:100]
 
 
+def _squash(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _repair_rewrite(suggestion: dict, cv_text: str) -> None:
+    original = suggestion.get("original_text")
+    if not isinstance(original, str) or not original.strip():
+        return
+    original = _squash(original)
+    after = suggestion.get("after_text")
+    if isinstance(after, str) and after.strip():
+        suggestion["after_text"] = normalize_placeholders(_squash(after), original)
+    elif _squash(cv_text).find(original) >= 0:
+        suggestion["after_text"] = fallback_rewrite(suggestion, original)
+
+
 def _repair_item(suggestion: dict, cv_text: str) -> None:
     _infer_type(suggestion)
+    _repair_rewrite(suggestion, cv_text)
     if not suggestion.get("original_text"):
         suggestion["original_text"] = _original_text(suggestion, cv_text)
     if "after_text" not in suggestion:
