@@ -57,6 +57,14 @@ export default function MobileMenu() {
             alt="pathkr"
             width={140}
             height={38}
+            className={mobileStyles.logoLight}
+          />
+          <Image
+            src="/landing/logo/pathkr-lockup-on-ink.svg"
+            alt=""
+            width={140}
+            height={38}
+            className={mobileStyles.logoDark}
           />
           <SheetClose asChild>
             <button

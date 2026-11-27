@@ -1,6 +1,6 @@
 .sheet {
-  background: var(--brand-snow);
-  color: var(--brand-ink);
+  background: var(--surface);
+  color: var(--text);
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  border-bottom: 1px solid var(--brand-blush);
+  border-bottom: 1px solid var(--line);
 }
 .closeButton {
   width: 44px;
@@ -18,7 +18,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--brand-blush);
+  background: var(--surface-tint);
 }
 .mobileLinks {
   display: grid;
@@ -35,7 +35,7 @@
   font-weight: 700;
 }
 .mobileLinks a:hover {
-  background: var(--brand-blush);
+  background: var(--surface-tint);
 }
 .mobileLinks small {
   font-weight: 600;
@@ -44,7 +44,7 @@
 .sheetBottom {
   margin-top: auto;
   padding: 20px;
-  border-top: 1px solid var(--brand-blush);
+  border-top: 1px solid var(--line);
 }
 .user {
   display: flex;
@@ -92,7 +92,7 @@
   padding: 10px 12px;
   border: 0;
   border-radius: 16px;
-  color: var(--brand-ink);
+  color: var(--text);
   background: transparent;
   font-weight: 800;
   text-decoration: none;
@@ -119,10 +119,19 @@
   text-transform: uppercase;
 }
 .logout {
-  color: #b81d00;
+  color: var(--accent-red-deep);
   cursor: pointer;
 }
 .logout:hover {
   background: #f42902;
   color: var(--brand-snow);
+}
+.logoDark {
+  display: none;
+}
+:global([data-theme="dark"]) .logoLight {
+  display: none;
+}
+:global([data-theme="dark"]) .logoDark {
+  display: block;
 }

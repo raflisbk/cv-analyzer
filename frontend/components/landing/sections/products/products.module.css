@@ -23,7 +23,7 @@
   max-width: 42%;
 }
 .note > span {
-  color: var(--brand-ink);
+  color: var(--text);
 }
 .note svg {
   transform: scaleX(-1);
@@ -60,7 +60,7 @@
   text-transform: uppercase;
 }
 .card0 .cardInner {
-  background: var(--brand-red);
+  background: var(--red-section);
   color: var(--brand-snow);
 }
 .card0 .status {
@@ -71,15 +71,15 @@
   font-weight: 700;
 }
 .card1 .cardInner {
-  background: var(--brand-blush);
-  color: var(--brand-ink);
+  background: var(--surface-tint);
+  color: var(--text);
 }
 .card1 .status {
   background: var(--brand-ink);
   color: var(--brand-snow);
 }
 .card2 .cardInner {
-  background: var(--brand-ink);
+  background: var(--ink-section);
   color: var(--brand-snow);
 }
 .card2 .status {

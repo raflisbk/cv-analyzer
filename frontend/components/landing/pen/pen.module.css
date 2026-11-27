@@ -71,3 +71,14 @@
 .note .arrow {
   color: currentColor;
 }
+
+:global([data-theme="dark"]) .highlight {
+  mix-blend-mode: normal;
+  opacity: 0.3;
+}
+:global([data-theme="dark"]) .note:not(.noteLight) {
+  color: #ff9b83;
+}
+:global([data-theme="dark"]) .mark:not(.light) {
+  color: #ff8a73;
+}

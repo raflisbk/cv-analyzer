@@ -9,7 +9,7 @@
   display: grid;
   gap: 6px;
   padding-top: 16px;
-  border-top: 2px solid var(--brand-ink);
+  border-top: 2px solid var(--text);
 }
 .fact b {
   font: 800 clamp(36px, 4vw, 56px)/1 var(--font-display);

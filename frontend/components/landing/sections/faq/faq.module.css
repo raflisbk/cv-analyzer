@@ -4,7 +4,8 @@
   gap: 40px;
 }
 .item {
-  background: var(--brand-blush);
+  background: var(--surface-tint);
+  color: var(--text);
   border-radius: 20px;
   margin-bottom: 12px;
   overflow: hidden;
