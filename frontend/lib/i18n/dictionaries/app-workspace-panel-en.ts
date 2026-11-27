@@ -15,6 +15,11 @@ const appWorkspacePanelEn = {
     fixesLeft: "{count} fixes left to review",
   },
   fixes: {
+    labels: {
+      noNumber: "No number",
+      vagueVerb: "Vague verb",
+      missingSection: "Missing section",
+    },
     title: "Suggested fixes",
     error: "Fixes could not load.",
     loading: "Loading suggested fixes",

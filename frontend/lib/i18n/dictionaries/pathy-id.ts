@@ -174,6 +174,7 @@ const pathyId = {
     intro: "Butuh bantuan?",
     quipIdea: "Coba fitur Cocokkan lowongan.",
     quipProud: "Aku baca CV buat sarapan.",
+    scoreBubble: "Skor CV kamu {score} dari 100.",
     quipDetective: "Kata kerja lemah kelihatan dari jauh.",
   },
 } as const satisfies Shape<typeof pathyEn>;

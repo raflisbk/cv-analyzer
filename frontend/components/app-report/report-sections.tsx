@@ -1,4 +1,5 @@
 import { useT } from "@/components/i18n/i18n-provider";
+import { reportSectionName, reportSectionNote } from "@/lib/app-report/copy";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
 import { ReportHeading } from "./report-heading";
 import styles from "./report.module.css";
@@ -24,19 +25,19 @@ export function ReportSections({
             key={section.name}
             data-low={section.score < 70}
           >
-            <span>{section.name}</span>
+            <span>{reportSectionName(t, section)}</span>
             <span
               className={styles.track}
               role="img"
               aria-label={t("appReport.sections.label", {
-                name: section.name,
+                name: reportSectionName(t, section),
                 score: section.score,
               })}
             >
               <i style={{ width: `${section.score}%` }} />
             </span>
             <strong>{section.score}</strong>
-            <small>{section.note}</small>
+            <small>{reportSectionNote(t, section)}</small>
           </div>
         ))}
       </div>

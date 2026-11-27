@@ -1,6 +1,7 @@
 "use client";
 
 import { useT } from "@/components/i18n/i18n-provider";
+import { reportFacts } from "@/lib/app-report/copy";
 import { useAppReportFormat } from "@/hooks/use-app-report-format";
 import { useAppReportScoreReveal } from "@/hooks/use-app-report-score-reveal";
 import type { ReportDetail } from "@/lib/app-api/report-detail.types";
@@ -33,7 +34,7 @@ export function ReportOverallCard({ data }: { data: ReportDetail }) {
         <ReportPercentile topPercent={data.topPercent} />
       )}
       <div className={styles.facts}>
-        {data.facts.map((fact) => (
+        {reportFacts(t, data).map((fact) => (
           <span key={fact}>{fact}</span>
         ))}
       </div>

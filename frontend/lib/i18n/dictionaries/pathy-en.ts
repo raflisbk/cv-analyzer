@@ -171,6 +171,7 @@ const pathyEn = {
     quipIdea: "Try Match it to a job.",
     quipProud: "I read CVs for breakfast.",
     quipDetective: "I spot weak verbs from a mile.",
+    scoreBubble: "Your CV scored {score} out of 100.",
   },
 };
 export default pathyEn;

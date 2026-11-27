@@ -1,4 +1,5 @@
 import type appReportEn from "./app-report-en";
+import appReportCopyId from "./app-report-copy-id";
 
 type Shape<T> = { [K in keyof T]: T[K] extends string ? string : Shape<T[K]> };
 
@@ -140,5 +141,6 @@ const appReportId = {
     ifFixed: " kalau diperbaiki",
     afterFixes: "setelah perbaikan",
   },
+  copy: appReportCopyId,
 } as const satisfies Shape<typeof appReportEn>;
 export default appReportId;
