@@ -3,6 +3,7 @@ import { screen } from "@testing-library/react";
 import { render } from "../i18n/render-with-locale";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
+import { scrollEdges } from "@/lib/app-workspace/tabs";
 import { PanelTabs } from "@/components/app-workspace/panel-tabs";
 import type { WorkspaceTab } from "@/components/app-workspace/workspace-panel";
 
@@ -35,4 +36,11 @@ it("scrolls the active tab into view", async () => {
     inline: "nearest",
     behavior: "instant",
   });
+});
+
+it("flags the scroll edges when the row overflows", () => {
+  expect(scrollEdges(0, 300, 500)).toEqual({ start: false, end: true });
+  expect(scrollEdges(100, 300, 500)).toEqual({ start: true, end: true });
+  expect(scrollEdges(200, 300, 500)).toEqual({ start: true, end: false });
+  expect(scrollEdges(0, 500, 500)).toEqual({ start: false, end: false });
 });
