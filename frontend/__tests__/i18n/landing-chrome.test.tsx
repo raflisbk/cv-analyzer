@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
 import Navbar from "@/components/landing/navbar";
 import { LoginRequiredDialog } from "@/components/auth/login-required-dialog";
+import { stubNavBrowser } from "../components/landing/nav-browser-stubs";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: vi.fn(), replace: vi.fn(), push: vi.fn() }),
@@ -29,6 +30,8 @@ describe.each([
   ["en", "Products", "Sign in to continue"],
   ["id", "Produk", "Masuk dulu, yuk"],
 ] as const)("landing chrome in %s", (locale, navText, dialogTitle) => {
+  beforeEach(() => stubNavBrowser());
+  afterEach(() => vi.unstubAllGlobals());
   it("renders translated navigation", () => {
     render(
       <I18nProvider initialLocale={locale}>
