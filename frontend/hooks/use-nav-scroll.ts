@@ -65,7 +65,9 @@ function startFlight(
   stop: () => void,
 ) {
   const target = section.closest(".pin-spacer") ?? section;
-  const destination = target.getBoundingClientRect().top + window.scrollY;
+  const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+  const destination =
+    target.getBoundingClientRect().top + window.scrollY - margin;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     target.scrollIntoView({ behavior: "instant" });
     return;
