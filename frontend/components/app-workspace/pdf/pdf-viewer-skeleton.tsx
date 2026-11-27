@@ -31,7 +31,7 @@ export function PdfViewerSkeleton() {
         <div className="mb-2 h-4 w-[88%] rounded bg-[rgba(17,17,17,0.07)] animate-pulse" />
         <div className="mb-2 h-4 w-[55%] rounded bg-[rgba(17,17,17,0.07)] animate-pulse" />
       </div>
-      <p className="mt-4 text-center text-sm text-[rgba(245,242,216,0.65)]">
+      <p className="mt-4 text-center text-sm text-[var(--app-ink-soft)]">
         {t("appWorkspace.pdf.loadingDocument")}
       </p>
     </div>

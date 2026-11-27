@@ -58,7 +58,7 @@
   outline-offset: 2px;
 }
 .snow {
-  background: linear-gradient(180deg, #fff 0%, #fff4ee 58%, #ffd3c6 100%);
+  background: var(--app-snow-fill);
   color: var(--app-ink);
 }
 .punk {
@@ -68,11 +68,11 @@
     var(--app-punk) 68%,
     #d7df00 100%
   );
-  color: var(--app-ink);
+  color: var(--app-on-punk);
 }
 .deep {
   background: var(--app-red-deep);
-  color: var(--app-snow);
+  color: var(--app-on-red);
 }
 .switch {
   position: relative;

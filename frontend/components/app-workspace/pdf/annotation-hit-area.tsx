@@ -167,13 +167,13 @@ export function AnnotationHitArea({
               ...floatingStyles,
               zIndex: 9999,
               borderRadius: 8,
-              background: "#ffffff",
+              background: "var(--app-popover)",
               border: `1px solid ${color.border}`,
               padding: "14px 18px",
               boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
               minWidth: 260,
               maxWidth: 320,
-              color: "#1a1a1a",
+              color: "var(--app-popover-ink)",
             }}
           >
             <div style={{ marginBottom: "12px" }}>
@@ -196,7 +196,7 @@ export function AnnotationHitArea({
                 </span>
                 <span
                   className="text-[11px] font-medium"
-                  style={{ color: "rgba(17,17,17,0.40)" }}
+                  style={{ color: "var(--app-popover-ink)", opacity: 0.7 }}
                 >
                   {anchor.section}
                 </span>
@@ -206,7 +206,7 @@ export function AnnotationHitArea({
             <p
               className="text-[13px] leading-snug"
               style={{
-                color: "#141414",
+                color: "var(--app-popover-ink)",
                 marginBottom: suggestion?.text ? "10px" : "16px",
                 lineHeight: "1.5",
                 fontWeight: "500",
@@ -218,7 +218,7 @@ export function AnnotationHitArea({
             {suggestion?.text && suggestion.text !== suggestionText && (
               <div
                 style={{
-                  background: "#F5F2D8",
+                  background: "var(--app-popover-line)",
                   padding: "8px 10px",
                   borderRadius: "6px",
                   marginBottom: "12px",
@@ -230,7 +230,7 @@ export function AnnotationHitArea({
                   style={{
                     margin: "0 0 4px 0",
                     fontWeight: "600",
-                    color: "rgba(17,17,17,0.40)",
+                    color: "var(--app-popover-ink)", opacity: 0.7,
                   }}
                 >
                   {t("appWorkspace.pdf.current")}
@@ -238,7 +238,7 @@ export function AnnotationHitArea({
                 <p
                   className="text-[11px] leading-snug"
                   style={{
-                    color: "rgba(17,17,17,0.55)",
+                    color: "var(--app-popover-ink)", opacity: 0.8,
                     margin: 0,
                     fontStyle: "italic",
                     lineHeight: "1.4",

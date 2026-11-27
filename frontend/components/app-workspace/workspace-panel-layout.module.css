@@ -6,7 +6,7 @@
   height: calc(100vh - 300px);
   min-height: 420px;
   background: var(--app-red-deep);
-  color: var(--app-snow);
+  color: var(--app-on-red);
   border-radius: 28px;
   padding: 18px 20px 20px;
   box-shadow: 0 22px 34px -18px rgba(60, 6, 0, 0.7);
@@ -46,7 +46,7 @@
   background: none;
   min-height: 44px;
   padding: 0 4px;
-  color: var(--app-snow);
+  color: var(--app-on-red);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -64,6 +64,7 @@
   transition:
     left 0.25s,
     width 0.25s;
+  color: var(--app-on-punk);
 }
 .count {
   display: inline-grid;
@@ -73,7 +74,7 @@
   margin-left: 3px;
   border-radius: 50%;
   background: var(--app-punk);
-  color: var(--app-ink);
+  color: var(--app-on-punk);
   font-size: 12px;
 }
 .body {
@@ -127,6 +128,7 @@
   height: 100%;
   background: var(--app-punk);
   border-radius: 999px;
+  color: var(--app-on-punk);
 }
 .parserTrack[data-empty="true"] {
   background: repeating-linear-gradient(

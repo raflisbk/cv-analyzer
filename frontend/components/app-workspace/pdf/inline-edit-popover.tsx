@@ -142,43 +142,43 @@ export function InlineEditPopover({
       ref={popoverRef}
       role="dialog"
       aria-label={t("appWorkspace.inline.label")}
-      className="fixed z-50 w-[380px] max-w-[90vw] rounded-lg border border-[#111111]/15 bg-white shadow-[0_6px_20px_rgba(0,0,0,0.2)] animate-in fade-in slide-in-from-bottom-2 duration-200"
+      className="fixed z-50 w-[380px] max-w-[90vw] rounded-lg border border-[var(--app-popover-line)] bg-[var(--app-popover)] shadow-[0_6px_20px_rgba(0,0,0,0.2)] animate-in fade-in slide-in-from-bottom-2 duration-200"
       style={{
         top: `${top}px`,
         left: `${left}px`,
         transform: "translateX(-50%)",
       }}
     >
-      <div className="flex items-center justify-between rounded-t-lg border-b border-[#111111]/10 bg-white px-4 py-3">
+      <div className="flex items-center justify-between rounded-t-lg border-b border-[var(--app-popover-line)] bg-[var(--app-popover)] px-4 py-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-[#111111]" />
-          <span className="text-sm font-bold text-[#111111] uppercase tracking-wider">
+          <Sparkles className="h-4 w-4 text-[var(--app-popover-ink)]" />
+          <span className="text-sm font-bold text-[var(--app-popover-ink)] uppercase tracking-wider">
             {t("appWorkspace.popover.title")}
           </span>
         </div>
         <button
           onClick={onClose}
           aria-label={t("appWorkspace.inline.close")}
-          className="rounded-md border border-transparent p-1 text-[#111111] transition-colors hover:border-[#111111]/15 hover:bg-[#F5F2D8]"
+          className="rounded-md border border-transparent p-1 text-[var(--app-popover-ink)] transition-colors hover:border-[var(--app-popover-line)] hover:bg-[var(--app-popover-line)]"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="rounded-b-lg bg-white p-4">
+      <div className="rounded-b-lg bg-[var(--app-popover)] p-4">
         {popoverState === "too_long" && (
           <div className="space-y-3">
-            <p className="text-sm text-[#111111]">
+            <p className="text-sm text-[var(--app-popover-ink)]">
               {t("appWorkspace.popover.tooLong")}
             </p>
-            <p className="text-xs text-[#111111]/70 font-mono">
+            <p className="text-xs text-[var(--app-popover-ink)] opacity-70 font-mono">
               {t("appWorkspace.popover.selection", {
                 count: selectedText.length,
               })}
             </p>
             <button
               onClick={onClose}
-              className="w-full rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35]"
+              className="w-full rounded-md border border-[var(--app-popover-line)] bg-[#CAFF43] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#141414] transition-colors hover:bg-[#b9ed35]"
             >
               {t("appWorkspace.popover.gotIt")}
             </button>
@@ -187,11 +187,11 @@ export function InlineEditPopover({
 
         {popoverState === "prompt" && (
           <div className="space-y-4">
-            <div className="rounded-lg border border-[#111111]/15 bg-white p-3">
-              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[#111111]">
+            <div className="rounded-lg border border-[var(--app-popover-line)] bg-[var(--app-popover)] p-3">
+              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-[var(--app-popover-ink)]">
                 {t("appWorkspace.popover.selected")}
               </p>
-              <p className="text-sm text-[#111111] line-clamp-3 font-serif italic">
+              <p className="text-sm text-[var(--app-popover-ink)] line-clamp-3 font-serif italic">
                 {selectedText}
               </p>
             </div>
@@ -199,7 +199,7 @@ export function InlineEditPopover({
             <div>
               <label
                 htmlFor="prompt-input"
-                className="mb-2 block text-[10px] font-black uppercase tracking-widest text-[#111111]"
+                className="mb-2 block text-[10px] font-black uppercase tracking-widest text-[var(--app-popover-ink)]"
               >
                 {t("appWorkspace.popover.how")}
               </label>
@@ -209,7 +209,7 @@ export function InlineEditPopover({
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={t("appWorkspace.popover.placeholder")}
                 maxLength={1000}
-                className="w-full min-h-[80px] resize-y rounded-md border border-[#111111]/15 bg-white px-3 py-2 text-sm text-[#111111] placeholder:text-[#111111]/40 transition-colors focus:border-[#111111]/40 focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30"
+                className="w-full min-h-[80px] resize-y rounded-md border border-[var(--app-popover-line)] bg-[var(--app-popover)] px-3 py-2 text-sm text-[var(--app-popover-ink)] placeholder:text-[var(--app-popover-ink)] opacity-40 transition-colors focus:border-[var(--app-popover-line)] focus:outline-none focus:ring-2 focus:ring-[#CAFF43]/30"
                 rows={3}
                 autoFocus
               />
@@ -219,7 +219,7 @@ export function InlineEditPopover({
               type="button"
               onClick={handleGenerate}
               disabled={!prompt.trim()}
-              className="w-full rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35] disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-md border border-[var(--app-popover-line)] bg-[#CAFF43] px-4 py-2.5 text-xs font-black uppercase tracking-wider text-[#141414] transition-colors hover:bg-[#b9ed35] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("appWorkspace.popover.generate")}
             </button>
@@ -229,7 +229,7 @@ export function InlineEditPopover({
         {popoverState === "loading" && (
           <div className="flex flex-col items-center gap-3 py-6">
             <Loader2 className="h-8 w-8 animate-spin text-[#CAFF43]" />
-            <p className="text-sm font-medium text-[#111111]/80">
+            <p className="text-sm font-medium text-[var(--app-popover-ink)] opacity-80">
               {t("appWorkspace.popover.generating")}
             </p>
           </div>
@@ -245,22 +245,22 @@ export function InlineEditPopover({
 
         {popoverState === "error" && (
           <div className="space-y-4">
-            <div className="rounded-lg border border-[#ff5555]/35 border-t border-t-[#ff5555] bg-white p-3">
-              <p className="text-sm font-bold text-[#111111]">
+            <div className="rounded-lg border border-[#ff5555]/35 border-t border-t-[#ff5555] bg-[var(--app-popover)] p-3">
+              <p className="text-sm font-bold text-[var(--app-popover-ink)]">
                 {t("appWorkspace.popover.failedTitle")}
               </p>
-              <p className="text-xs text-[#111111]/70 mt-1">{error}</p>
+              <p className="text-xs text-[var(--app-popover-ink)] opacity-70 mt-1">{error}</p>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={handleReset}
-                className="flex-1 rounded-md border border-[#111111]/15 bg-[#CAFF43] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#b9ed35]"
+                className="flex-1 rounded-md border border-[var(--app-popover-line)] bg-[#CAFF43] px-4 py-2 text-xs font-black uppercase tracking-wider text-[#141414] transition-colors hover:bg-[#b9ed35]"
               >
                 {t("appWorkspace.popover.tryAgain")}
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 rounded-md border border-[#111111]/15 bg-white px-4 py-2 text-xs font-black uppercase tracking-wider text-[#111111] transition-colors hover:bg-[#F5F2D8]"
+                className="flex-1 rounded-md border border-[var(--app-popover-line)] bg-[var(--app-popover)] px-4 py-2 text-xs font-black uppercase tracking-wider text-[var(--app-popover-ink)] transition-colors hover:bg-[var(--app-popover-line)]"
               >
                 {t("appWorkspace.popover.cancel")}
               </button>
