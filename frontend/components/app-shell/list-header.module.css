@@ -23,10 +23,11 @@
   border-radius: 99px;
   font-size: 12px;
   font-weight: 800;
+  color: var(--app-on-punk);
 }
 .note {
   font: 700 28px var(--app-font-hand);
-  color: var(--app-red-deep);
+  color: var(--app-deep-text);
   rotate: -3deg;
   white-space: nowrap;
 }
