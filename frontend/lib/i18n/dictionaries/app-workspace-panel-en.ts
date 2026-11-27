@@ -25,6 +25,18 @@ const appWorkspacePanelEn = {
     applyFailed:
       "Could not apply this fix. Check the original text and supplied facts.",
     editYourself: "Edit this line yourself",
+    questions: {
+      percentage: "What percentage?",
+      amount: "What amount?",
+      number: "What number?",
+      count: "How many?",
+      timeframe: "What timeframe?",
+      teamSize: "What was the team size?",
+      year: "What year?",
+      monthYear: "Which month and year?",
+      projectName: "What is the project name?",
+    },
+    answerPlaceholder: "Enter the real value, not an estimate",
     apply: "Apply",
   },
   ats: {

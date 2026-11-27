@@ -29,6 +29,18 @@ const appWorkspacePanelId = {
     applyFailed:
       "Perbaikan ini belum bisa diterapkan. Cek teks aslinya dan fakta yang kamu isi.",
     editYourself: "Edit baris ini sendiri",
+    questions: {
+      percentage: "Berapa persennya?",
+      amount: "Berapa jumlahnya?",
+      number: "Angkanya berapa?",
+      count: "Berapa banyak?",
+      timeframe: "Dalam jangka waktu berapa lama?",
+      teamSize: "Berapa orang di timmu?",
+      year: "Tahun berapa?",
+      monthYear: "Bulan dan tahun berapa?",
+      projectName: "Nama proyeknya apa?",
+    },
+    answerPlaceholder: "Isi angka atau teks asli, jangan perkiraan",
     apply: "Terapkan",
   },
   ats: {
