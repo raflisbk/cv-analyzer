@@ -10,10 +10,10 @@ SKILL_POINTS = {"three": 60, "six": 80, "grouped": 20}
 SUMMARY_POINTS = {"present": 40, "sentences": 30, "specific": 30}
 EXPERIENCE_POINTS = {"dates": 30, "actions": 35, "metrics": 35}
 NOTES = (
-    (80, "Strong evidence in this section."),
-    (50, "Add one more concrete detail to this section."),
-    (1, "Add the missing details for this section."),
-    (0, "This section is empty."),
+    (80, "strong", "Strong evidence in this section."),
+    (50, "more", "Add one more concrete detail to this section."),
+    (1, "missing", "Add the missing details for this section."),
+    (0, "empty", "This section is empty."),
 )
 EMAIL = re.compile(r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b")
 PHONE = re.compile(r"(?:\+?\d[\d ()-]{7,}\d)")
@@ -116,6 +116,16 @@ def sections(job: Job) -> list[ReportSection]:
         text = str(item.get("text") or "")
         kind = str(item.get("type") or "Other")
         score = section_score(text, kind)
-        note = next(note for floor, note in NOTES if score >= floor)
-        output.append(ReportSection(name=kind.title(), score=score, note=note))
+        note_key, note = next(
+            (key, note) for floor, key, note in NOTES if score >= floor
+        )
+        output.append(
+            ReportSection(
+                key=kind.lower(),
+                name=kind.title(),
+                score=score,
+                note=note,
+                note_key=note_key,
+            )
+        )
     return output

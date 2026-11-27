@@ -52,6 +52,8 @@ def fixes(job: Job) -> tuple[list[ReportFix], dict[str, int]]:
                 ),
                 text=str(item["text"]),
                 points=points,
+                section=str(item["section"]),
+                type=item.get("type"),
             )
         )
     return output, points_by_dimension

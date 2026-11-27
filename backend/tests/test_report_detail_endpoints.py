@@ -89,6 +89,7 @@ def test_report_shape_matches_frontend_contract(api):
         "verdict",
         "topPercent",
         "facts",
+        "factCounts",
         "fixes",
         "dimensions",
         "sections",
@@ -110,8 +111,16 @@ def test_report_shape_matches_frontend_contract(api):
     }
     assert set(data["grammar"]) == {"spelling", "grammar", "style", "notes"}
     assert set(data["keywords"]) == {"present", "missing", "total"}
-    assert set(data["ats"]) == {"score", "facts", "checks"}
-    assert set(data["verdict"]) == {"title", "body"}
+    assert set(data["ats"]) == {
+        "score",
+        "facts",
+        "format",
+        "pages",
+        "sizeKb",
+        "checks",
+    }
+    assert set(data["verdict"]) == {"key", "title", "body"}
+    assert set(data["factCounts"]) == {"pages", "bullets", "words"}
     assert set(data["versions"][0]) == {"label", "score", "at", "summary"}
 
 
@@ -138,14 +147,26 @@ def test_nested_report_shapes_match_frontend_contract(api):
     job.ats_checks = [{"check": "Readable text", "status": "pass"}]
     jobs.append(job)
     data = client.get(f"/api/v1/jobs/{job.id}/report").json()["data"]
-    assert set(data["fixes"][0]) == {"title", "text", "points"}
-    assert set(data["sections"][0]) == {"name", "score", "note"}
-    assert set(data["bullets"][0]) == {"text", "source", "strength", "tags"}
+    assert set(data["fixes"][0]) == {"title", "text", "points", "section", "type"}
+    assert set(data["sections"][0]) == {"key", "name", "score", "note", "noteKey"}
+    assert set(data["bullets"][0]) == {"text", "source", "strength", "tags", "tagKeys"}
     assert set(data["grammar"]["notes"][0]) == {"before", "after", "location"}
     assert set(data["keywords"]["present"][0]) == {"name", "count"}
     assert set(data["ats"]["checks"][0]) == {"text", "ok"}
-    assert set(data["dimensions"][0]["metrics"][0]) == {"label", "value", "percent"}
-    assert set(data["dimensions"][0]["evidence"][0]) == {"text", "note", "positive"}
+    assert set(data["dimensions"][0]["metrics"][0]) == {
+        "key",
+        "label",
+        "count",
+        "total",
+        "value",
+        "percent",
+    }
+    assert set(data["dimensions"][0]["evidence"][0]) == {
+        "text",
+        "note",
+        "noteKey",
+        "positive",
+    }
 
 
 def test_versions_and_diff_shapes(api):

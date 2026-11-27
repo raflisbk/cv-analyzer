@@ -46,11 +46,11 @@ def bullet_view(text: str, source: str) -> ReportBullet:
     length = MIN_WORDS <= len(words) <= MAX_WORDS
     signals = sum((action, number, length))
     tags = [
-        label
-        for flag, label in (
-            (action, "Action verb"),
-            (number, "Number"),
-            (length, "Scannable length"),
+        (key, label)
+        for flag, key, label in (
+            (action, "actionVerb", "Action verb"),
+            (number, "number", "Number"),
+            (length, "scannableLength", "Scannable length"),
         )
         if flag
     ]
@@ -58,7 +58,8 @@ def bullet_view(text: str, source: str) -> ReportBullet:
         text=text,
         source=source,
         strength="strong" if signals == 3 else "fair" if signals >= 2 else "weak",
-        tags=tags,
+        tags=[label for _, label in tags],
+        tag_keys=[key for key, _ in tags],
     )
 
 

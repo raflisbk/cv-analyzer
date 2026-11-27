@@ -4,9 +4,21 @@ export interface ReportDimension {
   previous: number;
   projected: number;
   description: string;
-  metrics: { label: string; value: string; percent: number }[];
+  metrics: {
+    key?: string;
+    label: string;
+    count?: number;
+    total?: number;
+    value: string;
+    percent: number;
+  }[];
   hint: string;
-  evidence: { text: string; note: string; positive: boolean }[];
+  evidence: {
+    text: string;
+    note: string;
+    noteKey?: string;
+    positive: boolean;
+  }[];
 }
 
 export interface ReportDetail {
@@ -16,9 +28,10 @@ export interface ReportDetail {
   score: number;
   previousScore: number;
   projectedScore: number;
-  verdict: { title: string; body: string };
+  verdict: { key?: string; title: string; body: string };
   topPercent: number;
   facts: string[];
+  factCounts: { pages: number; bullets: number; words: number };
   fixes: {
     title: string;
     text: string;
@@ -27,12 +40,19 @@ export interface ReportDetail {
     type?: string;
   }[];
   dimensions: ReportDimension[];
-  sections: { name: string; score: number; note: string }[];
+  sections: {
+    key?: string;
+    name: string;
+    score: number;
+    note: string;
+    noteKey?: string;
+  }[];
   bullets: {
     text: string;
     source: string;
     strength: "weak" | "fair" | "strong";
     tags: string[];
+    tagKeys?: string[];
   }[];
   grammar: {
     spelling: number;
@@ -48,6 +68,9 @@ export interface ReportDetail {
   ats: {
     score: number;
     facts: string[];
+    format?: string;
+    pages?: number;
+    sizeKb?: number;
     checks: { text: string; ok: boolean }[];
   };
   versions: { label: string; score: number; at: string; summary: string }[];
