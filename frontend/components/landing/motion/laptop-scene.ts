@@ -36,13 +36,14 @@ export function measureLaptopScene(scene: HTMLElement) {
     height: `${target.offsetHeight + y - top + pad * 2}px`,
   });
   const object = scene.querySelector<HTMLElement>(
-    `[data-sc-object="${insight.object}"]`,
+    `[data-sc-object="${insight.key}"]`,
   );
   if (object) {
     const paperLeft = paper.offsetLeft;
     const paperTop = paper.offsetTop;
-    object.style.left = `${clampObjectPosition(paperLeft + x + target.offsetWidth - 52, screenSize.width, object.offsetWidth)}px`;
-    object.style.top = `${clampObjectPosition(paperTop + y - 30, screenSize.height, object.offsetHeight)}px`;
+    const right = paperLeft + x + target.offsetWidth;
+    object.style.left = `${clampObjectPosition(right - object.offsetWidth / 2, screenSize.width, object.offsetWidth)}px`;
+    object.style.top = `${clampObjectPosition(paperTop + y - object.offsetHeight / 2, screenSize.height, object.offsetHeight)}px`;
   }
 }
 
@@ -61,9 +62,7 @@ function activateLaptopScene(scene: HTMLElement, step: number) {
       dot.dataset.scActive = String(index === step - 1);
     });
   scene.querySelectorAll<HTMLElement>("[data-sc-object]").forEach((object) => {
-    object.dataset.scActive = String(
-      object.dataset.scObject === insight.object,
-    );
+    object.dataset.scActive = String(object.dataset.scObject === insight.key);
   });
   const highlight = scene.querySelector<HTMLElement>("[data-sc-highlight]");
   if (highlight) {
