@@ -16,6 +16,7 @@ export default function ProductsSection() {
     <section
       ref={ref}
       id="products"
+      data-nav-tone="snow"
       className={`${base.panel} ${base.snow} ${base.calm}`}
     >
       <div className={base.head}>

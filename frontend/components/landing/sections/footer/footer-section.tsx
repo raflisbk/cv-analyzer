@@ -13,7 +13,12 @@ export default function FooterSection() {
   const { t } = useT();
   const ref = useLandingStory(footerMotion, 60, undefined, footerScroll);
   return (
-    <footer ref={ref} id="footer" className={`${base.panel} ${styles.footer}`}>
+    <footer
+      ref={ref}
+      id="footer"
+      data-nav-tone="ink"
+      className={`${base.panel} ${styles.footer}`}
+    >
       <div className={styles.top}>
         <div data-footer-column className={styles.brand}>
           <p>{t("landing.footer.body")}</p>

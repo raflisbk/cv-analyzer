@@ -17,6 +17,7 @@ export default function FeaturesSection() {
     <section
       ref={ref}
       id="inside"
+      data-nav-tone="snow"
       className={`${base.panel} ${base.snow} ${base.calm} ${styles.grid}`}
     >
       <div className={`${base.head} ${styles.head}`}>

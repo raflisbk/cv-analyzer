@@ -25,6 +25,7 @@ export default function HeroSection() {
       <Navbar />
       <section
         id="hero"
+        data-nav-tone="red"
         ref={heroRef}
         className={styles.hero}
         data-landing-hero

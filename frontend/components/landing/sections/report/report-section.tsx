@@ -19,6 +19,7 @@ export default function ReportSection() {
     <section
       ref={ref}
       id="report"
+      data-nav-tone="snow"
       className={`${base.panel} ${base.snow} ${base.calm} ${styles.layout}`}
     >
       <div>

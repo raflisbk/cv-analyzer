@@ -14,6 +14,7 @@ export default function LaptopSection() {
   return (
     <section
       id="features"
+      data-nav-tone="snow"
       ref={ref}
       className={`${base.panel} ${base.blush} ${base.calm} ${styles.section}`}
     >

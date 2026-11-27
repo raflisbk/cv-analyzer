@@ -21,6 +21,7 @@ export default function CtaSection() {
         expandRef.current = node;
       }}
       id="start"
+      data-nav-tone="red"
       className={`${base.panel} ${base.red} ${styles.layout}`}
     >
       <CtaCopy />
