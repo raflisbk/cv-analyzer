@@ -11,7 +11,7 @@ import AccountMenu from "./navbar/account-menu";
 import NavAvatarLink from "./navbar/nav-avatar-link";
 import NavCta from "./navbar/nav-cta";
 import NavLogin from "./navbar/nav-login";
-import { useNavCondensed } from "./navbar/use-nav-condensed";
+import { useNavBar } from "./navbar/use-nav-bar";
 import { NAV_LINKS } from "./navbar/nav-links";
 import styles from "./navbar/navbar.module.css";
 
@@ -20,12 +20,13 @@ export default function Navbar() {
   const user = useAuthStore((state) => state.user);
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const onNavScroll = useNavScroll();
-  const condensed = useNavCondensed();
+  const { spacerRef, headerRef, condensed } = useNavBar();
   const account = isHydrated && user;
   return (
     <>
-      <div className={styles.spacer} aria-hidden="true" />
+      <div ref={spacerRef} className={styles.spacer} aria-hidden="true" />
       <header
+        ref={headerRef}
         className={styles.header}
         data-landing-nav
         data-condensed={condensed}

@@ -63,26 +63,24 @@ describe("landing navbar actions", () => {
     expect(document.querySelector("[data-landing-nav]")).not.toBeNull();
   });
 
-  it("condenses once the page scrolls and relaxes back at the top", () => {
+  it("condenses once the page scrolls past the rest strip and relaxes at the top", () => {
+    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect");
     renderNavbar();
-    const header = document.querySelector("[data-landing-nav]")!;
+    const header = document.querySelector<HTMLElement>("[data-landing-nav]")!;
     expect(header).toHaveAttribute("data-condensed", "false");
+    rect.mockReturnValue({ top: -300 } as DOMRect);
     act(() => {
-      Object.defineProperty(window, "scrollY", {
-        value: 300,
-        configurable: true,
-      });
       window.dispatchEvent(new Event("scroll"));
     });
     expect(header).toHaveAttribute("data-condensed", "true");
+    expect(header.style.top).toBe("0px");
+    rect.mockReturnValue({ top: 56 } as DOMRect);
     act(() => {
-      Object.defineProperty(window, "scrollY", {
-        value: 0,
-        configurable: true,
-      });
       window.dispatchEvent(new Event("scroll"));
     });
     expect(header).toHaveAttribute("data-condensed", "false");
+    expect(header.style.top).toBe("56px");
+    rect.mockRestore();
   });
 });
 
