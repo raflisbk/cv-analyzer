@@ -2,6 +2,7 @@
 
 import { useState, type Dispatch, type SetStateAction } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useT } from "@/components/i18n/i18n-provider";
 import { sendMessage } from "@/lib/app-api/conversations";
 import type { ChatMessage } from "@/lib/app-api/conversations.types";
 
@@ -29,6 +30,7 @@ async function streamReply(
 }
 
 export function useConversationSend(getId: () => Promise<string>) {
+  const { t } = useT();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -54,7 +56,7 @@ export function useConversationSend(getId: () => Promise<string>) {
       await streamReply(getId, text, pendingId, setMessages);
       void queryClient.invalidateQueries({ queryKey: ["app-conversations"] });
     } catch {
-      setError("Could not send your message. Try again.");
+      setError(t("errors.chat.sendFailed"));
       setFailedText(text);
     } finally {
       setBusy(false);
