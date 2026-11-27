@@ -82,6 +82,11 @@ const appReportCopyId = {
     relevance: "Tunjukkan keahlian yang relevan lewat konteksnya.",
     completeness: "Lengkapi bagian CV yang masih kurang.",
   },
+  versionSummary: {
+    first: "Analisis pertama.",
+    unchanged: "Tidak ada dimensi yang berubah.",
+    changed: "Skor {score}; {dimension} {change}.",
+  },
   evidence: {
     suggested: "Perubahan yang disarankan",
     strongBullet: "Poin yang kuat",

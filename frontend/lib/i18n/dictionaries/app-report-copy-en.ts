@@ -76,6 +76,11 @@ const appReportCopyEn = {
     relevance: "Show relevant skills in context.",
     completeness: "Fill in missing CV sections.",
   },
+  versionSummary: {
+    first: "First analysis.",
+    unchanged: "No dimension changed.",
+    changed: "Score {score}; {dimension} {change}.",
+  },
   evidence: {
     suggested: "Suggested change",
     strongBullet: "Strong bullet",

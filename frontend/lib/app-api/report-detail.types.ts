@@ -1,3 +1,5 @@
+import type { VersionData } from "./history.types";
+
 export interface ReportDimension {
   key: "impact" | "clarity" | "relevance" | "completeness";
   score: number;
@@ -73,5 +75,8 @@ export interface ReportDetail {
     sizeKb?: number;
     checks: { text: string; ok: boolean }[];
   };
-  versions: { label: string; score: number; at: string; summary: string }[];
+  versions: (Pick<VersionData, "label" | "score" | "at" | "summary"> &
+    Partial<
+      Pick<VersionData, "summaryKind" | "changedDimension" | "changedDelta">
+    >)[];
 }

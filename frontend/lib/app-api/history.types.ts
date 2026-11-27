@@ -1,3 +1,10 @@
+export type VersionSummaryKind = "first" | "unchanged" | "changed";
+export type VersionDimension =
+  | "impact"
+  | "clarity"
+  | "relevance"
+  | "completeness";
+
 export interface VersionData {
   id: string;
   label: string;
@@ -6,6 +13,9 @@ export interface VersionData {
   delta: number | null;
   summary: string;
   current: boolean;
+  summaryKind?: VersionSummaryKind | null;
+  changedDimension?: VersionDimension | null;
+  changedDelta?: number | null;
 }
 
 export interface VersionDiff {
