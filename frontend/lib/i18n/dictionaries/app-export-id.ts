@@ -6,43 +6,44 @@ const appExportId = {
   title: "Ekspor",
   heading: "Pilih template ATS",
   close: "Tutup ekspor",
-  loading: "Lagi muat pratinjau ekspor",
+  loading: "Memuat pratinjau ekspor",
   loadError: "Opsi ekspor belum bisa dimuat.",
   retry: "Coba lagi",
   noTemplates: "Belum ada template ekspor.",
-  checkingOriginal: "Lagi ngecek file asli…",
+  checkingOriginal: "Memeriksa file asli…",
   originalMissing:
-    "Layout asli nggak tersedia karena file yang lu upload hilang. Pilih template lain buat ekspor.",
+    "Layout asli tidak tersedia karena file yang kamu unggah hilang. Pilih template lain untuk ekspor.",
   templates: "Template ATS",
   atsBadge: "ATS {score}",
-  yourUpload: "Upload lu",
+  yourUpload: "Unggahan kamu",
   originalPreserved:
-    "Layout dari file lu dipertahanin di hasil akhir. Cuma perbaikan yang diterapkan yang berubah.",
+    "Layout dari file kamu dipertahankan di hasil akhir. Hanya perbaikan yang diterapkan yang berubah.",
   format: "Format",
   pdfMeta: "A4 · teks bisa dipilih",
   docxMeta: "Dokumen bisa diedit",
   bannerOriginal:
-    "Cuma perbaikan yang lu terapkan yang berubah; sisanya tetap kayak yang lu tulis.",
+    "Hanya perbaikan yang kamu terapkan yang berubah; sisanya tetap seperti yang kamu tulis.",
   bannerTemplate:
-    "Template {name}: isi CV lu disusun ulang ke layout ini. Perbaikan yang diterapkan tetap disorot.",
+    "Template {name}: isi CV kamu disusun ulang ke layout ini. Perbaikan yang diterapkan tetap disorot.",
   previewLabel: "Pratinjau {name} {format}",
   skippedFixes: "Perbaikan yang dilewati",
   fixFallback: "Perbaikan {id}",
-  preparing: "Lagi nyiapin {format}…",
+  preparing: "Menyiapkan {format}…",
   retryDownload: "Coba unduh lagi",
   download: "Unduh {format}",
   cancel: "Batal",
   ready:
-    "{format} lu udah siap! {applied} perbaikan diterapkan, {skipped} dilewati.",
+    "{format} kamu sudah siap! {applied} perbaikan diterapkan, {skipped} dilewati.",
   failed: "PDF belum bisa diekspor. Coba lagi, ya.",
   emptyExport: "PDF hasil ekspor kosong.",
   skipped: {
     no_room:
-      "Nggak ada ruang di layout asli lu: baris ini tetap kayak yang lu tulis.",
-    needs_input: "Perbaikan ini butuh jawaban lu dulu sebelum bisa diterapkan.",
-    text_not_found: "Baris aslinya nggak ketemu di file ini.",
-    missing_text: "Perbaikan ini nggak punya teks pengganti buat diekspor.",
-    other: "Perbaikan ini nggak bisa diterapkan ke file hasil ekspor.",
+      "Tidak ada ruang di layout asli kamu: baris ini tetap seperti yang kamu tulis.",
+    needs_input:
+      "Perbaikan ini butuh jawaban kamu dulu sebelum bisa diterapkan.",
+    text_not_found: "Baris aslinya tidak ketemu di file ini.",
+    missing_text: "Perbaikan ini tidak punya teks pengganti untuk diekspor.",
+    other: "Perbaikan ini tidak bisa diterapkan ke file hasil ekspor.",
   },
 } as const satisfies Shape<typeof appExportEn>;
 export default appExportId;

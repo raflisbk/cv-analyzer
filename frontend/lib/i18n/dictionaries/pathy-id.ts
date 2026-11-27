@@ -5,64 +5,64 @@ type Shape<T> = { [K in keyof T]: T[K] extends string ? string : Shape<T[K]> };
 const pathyId = {
   help: {
     home: {
-      title: "Tanya apa aja",
-      text: "Tanya soal CV atau karier lu. Upload CV dulu, jadi jawaban gua pakai angka lu sendiri.",
+      title: "Tanya apa saja",
+      text: "Tanya soal CV atau kariermu. Unggah CV dulu, jadi jawabanku pakai angka kamu sendiri.",
     },
     cvs: {
-      title: "CV gua",
-      text: "Semua file yang lu upload. Laporan buka skornya, Edit buka editornya.",
+      title: "CV kamu",
+      text: "Semua file yang kamu unggah. Laporan membuka skornya, Edit membuka editornya.",
     },
     reports: {
       title: "Laporan",
-      text: "Satu laporan per versi CV. Bandingin skornya dan lihat apa yang berubah.",
+      text: "Satu laporan per versi CV. Bandingkan skornya dan lihat apa yang berubah.",
     },
     views: {
       title: "Tiga tampilan",
-      text: "Editor buat ngubah teks, PDF nampilin file asli, Laporan lengkap nampilin semua skor.",
+      text: "Editor untuk mengubah teks, PDF menampilkan file asli, Laporan lengkap menampilkan semua skor.",
     },
     editor: {
       title: "Edit langsung",
-      text: "Pilih teks lalu minta AI nulis ulang. Garis kuning itu saran yang bisa lu terima.",
+      text: "Pilih teks lalu minta AI menulis ulang. Garis kuning itu saran yang bisa kamu terima.",
     },
     paneReport: {
       title: "Tab Laporan",
-      text: "Ringkasan skor lu. Buka Laporan lengkap buat lihat grafik dan buktinya.",
+      text: "Ringkasan skor kamu. Buka Laporan lengkap untuk melihat grafik dan buktinya.",
     },
     paneFixes: {
       title: "Saran perbaikan",
-      text: "Tiap saran nunjukin bagian mana yang kena. Terapkan bakal nulisnya ke CV lu.",
+      text: "Tiap saran menunjukkan bagian mana yang kena. Terapkan akan menuliskannya ke CV kamu.",
     },
     ats: {
       title: "Cek ATS",
-      text: "Lihat apa yang bisa dan nggak bisa dibaca software penyaring otomatis.",
+      text: "Lihat apa yang bisa dan tidak bisa dibaca software penyaring otomatis.",
     },
     match: {
-      title: "Cocokin lowongan",
-      text: "Tempel lowongan buat bandingin skill, pengalaman, dan kata kunci sama CV lu.",
+      title: "Cocokkan lowongan",
+      text: "Tempel lowongan untuk membandingkan skill, pengalaman, dan kata kunci dengan CV kamu.",
     },
     chat: {
       title: "Chat CV",
-      text: "Tanya soal CV ini. Jawabannya bisa nunjuk ke bagian dokumennya.",
+      text: "Tanya soal CV ini. Jawabannya bisa menunjuk ke bagian dokumennya.",
     },
     grammarTab: {
       title: "Tab Tata bahasa",
-      text: "Terima atau abaikan tiap catatan. Kalau diterima, perbaikannya ditulis ke CV lu.",
+      text: "Terima atau abaikan tiap catatan. Kalau diterima, perbaikannya ditulis ke CV kamu.",
     },
     historyTab: {
       title: "Riwayat versi",
-      text: "Bandingin perubahan atau balikin ke versi lama.",
+      text: "Bandingkan perubahan atau kembalikan ke versi lama.",
     },
     verdict: {
       title: "Hasil akhirnya",
-      text: "Ringkasan yang gampang dicerna dan langkah terbaik berikutnya.",
+      text: "Ringkasan yang mudah dicerna dan langkah terbaik berikutnya.",
     },
     overall: {
       title: "Skor total",
       text: "Dampak 35%, Kejelasan 30%, Relevansi 20%, Kelengkapan 15%.",
     },
     radar: {
-      title: "Bentuk CV lu",
-      text: "Bandingin empat skor lu dengan versi sebelumnya atau rata-rata posisi.",
+      title: "Bentuk CV kamu",
+      text: "Bandingkan empat skor kamu dengan versi sebelumnya atau rata-rata posisi.",
     },
     fixesCard: {
       title: "Kalau perbaikan diterapkan",
@@ -70,11 +70,11 @@ const pathyId = {
     },
     dims: {
       title: "Empat skor",
-      text: "Buka Bukti buat lihat baris-baris di balik tiap skor.",
+      text: "Buka Bukti untuk melihat baris-baris di balik tiap skor.",
     },
     sections: {
       title: "Per bagian",
-      text: "Klik satu baris buat loncat ke bagian itu di editor.",
+      text: "Klik satu baris untuk lompat ke bagian itu di editor.",
     },
     bullets: {
       title: "Semua poin",
@@ -82,50 +82,50 @@ const pathyId = {
     },
     grammar: {
       title: "Tata bahasa dan gaya",
-      text: "Ejaan dan tata bahasa layak dibenerin. Catatan gaya sifatnya opsional.",
+      text: "Ejaan dan tata bahasa layak diperbaiki. Catatan gaya sifatnya opsional.",
     },
     keywords: {
       title: "Kata kunci",
-      text: "Kata yang sering diminta lowongan asli. Tambahin cuma skill yang lu punya beneran.",
+      text: "Kata yang sering diminta lowongan asli. Tambahkan hanya skill yang benar-benar kamu punya.",
     },
     atsCard: {
       title: "Kesiapan ATS",
-      text: "Lihat seberapa bagus sistem otomatis bisa baca file lu.",
+      text: "Lihat seberapa baik sistem otomatis bisa membaca file kamu.",
     },
     history: {
       title: "Riwayat skor",
-      text: "Tiap analisis nambah satu titik. Garis putus-putus nunjukin potensi dari perbaikan yang masih terbuka.",
+      text: "Tiap analisis menambah satu titik. Garis putus-putus menunjukkan potensi dari perbaikan yang masih terbuka.",
     },
     exportHelp: {
       title: "Ekspor",
-      text: "Pertahanin layout asli atau pilih template ATS.",
+      text: "Pertahankan layout asli atau pilih template ATS.",
     },
     exAts: {
       title: "Skor ATS sebuah template",
-      text: "Peringatannya jelasin apa yang bisa salah waktu sistem otomatis baca layout ini.",
+      text: "Peringatannya menjelaskan apa yang bisa salah saat sistem otomatis membaca layout ini.",
     },
   },
   tour: {
     full: {
       s0: {
-        title: "Hai, gua Pathy",
-        text: "Tanya soal CV atau karier lu di sini. Upload CV biar jawabannya personal.",
+        title: "Hai, aku Pathy",
+        text: "Tanya soal CV atau kariermu di sini. Unggah CV supaya jawabannya personal.",
       },
       s1: {
-        title: "Tiga tempat buat dituju",
-        text: "Chat buat nanya. CV gua nampilin file lu. Laporan nampilin semua skor.",
+        title: "Tiga tempat untuk dituju",
+        text: "Chat untuk bertanya. CV kamu menampilkan file kamu. Laporan menampilkan semua skor.",
       },
       s2: {
-        title: "Akun lu",
-        text: "Buka buat ke CV gua, Pengaturan, dan Keluar.",
+        title: "Akun kamu",
+        text: "Buka untuk ke CV kamu, Pengaturan, dan Keluar.",
       },
       s3: {
         title: "Semua CV ada di sini",
-        text: "Laporan buka skornya. Edit buka editornya.",
+        text: "Laporan membuka skornya. Edit membuka editornya.",
       },
       s4: {
         title: "Satu laporan per versi",
-        text: "Empat skor, perbaikan teratas, dan perkembangan lu.",
+        text: "Empat skor, perbaikan teratas, dan perkembanganmu.",
       },
       s5: {
         title: "Laporan lengkap",
@@ -148,7 +148,7 @@ const pathyId = {
     },
     score: {
       s0: {
-        title: "Arti skor lu",
+        title: "Arti skor kamu",
         text: "Dampak 35%, Kejelasan 30%, Relevansi 20%, Kelengkapan 15%.",
       },
     },
@@ -156,13 +156,13 @@ const pathyId = {
   ui: {
     helpLabel: "Bantuan: {title}",
     gotIt: "Paham",
-    showTour: "Tunjukin tur-nya",
+    showTour: "Tampilkan turnya",
     helperLabel: "Bantuan Pathy",
-    greeting: "Hai, gua Pathy",
+    greeting: "Hai, aku Pathy",
     tourFull: "Ikut tur 60 detik",
-    tourExport: "Gimana cara ekspor?",
-    tourScore: "Skor gua artinya apa?",
-    askQuestion: "Tanya gua sesuatu",
+    tourExport: "Bagaimana cara ekspor?",
+    tourScore: "Skor aku artinya apa?",
+    askQuestion: "Tanya aku sesuatu",
     tourLabel: "Tur Pathy",
     step: "Langkah {index} dari {total}",
     missing: "Bagian ini belum siap. Lanjut ke langkah berikutnya.",
@@ -172,8 +172,8 @@ const pathyId = {
     skip: "Lewati",
     progress: "Progres tur",
     intro: "Butuh bantuan?",
-    quipIdea: "Coba fitur Cocokin lowongan.",
-    quipProud: "Gua baca CV buat sarapan.",
+    quipIdea: "Coba fitur Cocokkan lowongan.",
+    quipProud: "Aku baca CV buat sarapan.",
     quipDetective: "Kata kerja lemah kelihatan dari jauh.",
   },
 } as const satisfies Shape<typeof pathyEn>;
