@@ -26,9 +26,33 @@
   padding: 15px 24px;
   text-align: left;
 }
-.item button span {
+.icon {
   font-family: var(--font-display);
   font-size: 28px;
+  transition: transform 0.3s ease;
+}
+.toggle[aria-expanded="true"] .icon {
+  transform: rotate(45deg);
+}
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.3s ease,
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+.panel > div {
+  overflow: hidden;
+  min-height: 0;
+}
+.item[data-open="true"] .panel {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
 }
 .item p {
   margin: 0;
@@ -39,5 +63,11 @@
   .grid {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon,
+  .panel {
+    transition: none;
   }
 }
