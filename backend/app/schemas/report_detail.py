@@ -10,7 +10,10 @@ class ReportModel(BaseModel):
 
 
 class ReportMetric(ReportModel):
+    key: str = ""
     label: str
+    count: int = 0
+    total: int = 0
     value: str
     percent: int
 
@@ -18,6 +21,7 @@ class ReportMetric(ReportModel):
 class ReportEvidence(ReportModel):
     text: str
     note: str
+    note_key: str = ""
     positive: bool
 
 
@@ -36,12 +40,16 @@ class ReportFix(ReportModel):
     title: str
     text: str
     points: int
+    section: str = ""
+    type: str | None = None
 
 
 class ReportSection(ReportModel):
+    key: str = ""
     name: str
     score: int
     note: str
+    note_key: str = ""
 
 
 class ReportBullet(ReportModel):
@@ -49,6 +57,7 @@ class ReportBullet(ReportModel):
     source: str
     strength: Literal["weak", "fair", "strong"]
     tags: list[str]
+    tag_keys: list[str] = Field(default_factory=list)
 
 
 class GrammarNote(ReportModel):
@@ -88,12 +97,22 @@ class AtsCheckView(ReportModel):
 class ReportAts(ReportModel):
     score: int
     facts: list[str]
+    format: str = ""
+    pages: int = 0
+    size_kb: int = 0
     checks: list[AtsCheckView]
 
 
 class ReportVerdict(ReportModel):
+    key: str = ""
     title: str
     body: str
+
+
+class ReportFactCounts(ReportModel):
+    pages: int
+    bullets: int
+    words: int
 
 
 class VersionData(ReportModel):
@@ -128,6 +147,7 @@ class ReportDetail(ReportModel):
     verdict: ReportVerdict
     top_percent: int
     facts: list[str]
+    fact_counts: ReportFactCounts | None = None
     fixes: list[ReportFix]
     dimensions: list[ReportDimension]
     sections: list[ReportSection]

@@ -13,9 +13,12 @@ HINTS = {
 }
 
 
-def metric(label: str, count: int, total: int) -> ReportMetric:
+def metric(key: str, label: str, count: int, total: int) -> ReportMetric:
     return ReportMetric(
+        key=key,
         label=label,
+        count=count,
+        total=total,
         value=f"{count} of {total}",
         percent=round(100 * count / total) if total else 0,
     )
@@ -32,22 +35,36 @@ def dimension_metrics(job: Job) -> dict[str, list[ReportMetric]]:
     return {
         "impact": [
             metric(
+                "bulletsWithNumber",
                 "Bullets with a number",
                 round(count * float(stored.get("quantification_ratio") or 0)),
                 count,
             )
         ],
         "clarity": [
-            metric("Strong action verbs", int(verbs.get("strong") or 0), count),
             metric(
+                "strongActionVerbs",
+                "Strong action verbs",
+                int(verbs.get("strong") or 0),
+                count,
+            ),
+            metric(
+                "activeVoice",
                 "Active voice",
                 round(100 * (1 - float(stored.get("passive_voice_ratio") or 0))),
                 100,
             ),
         ],
-        "relevance": [metric("Keywords found", len(terms.present), terms.total)],
+        "relevance": [
+            metric("keywordsFound", "Keywords found", len(terms.present), terms.total)
+        ],
         "completeness": [
-            metric("Sections present", len(found), len(found) + len(missing))
+            metric(
+                "sectionsPresent",
+                "Sections present",
+                len(found),
+                len(found) + len(missing),
+            )
         ],
     }
 
@@ -66,6 +83,7 @@ def dimensions(
             ReportEvidence(
                 text=str(item.get("original_text")),
                 note="Suggested change",
+                note_key="suggested",
                 positive=False,
             )
             for item in items
@@ -73,7 +91,12 @@ def dimensions(
         ][:3]
         if key == "impact":
             evidence += [
-                ReportEvidence(text=bullet.text, note="Strong bullet", positive=True)
+                ReportEvidence(
+                    text=bullet.text,
+                    note="Strong bullet",
+                    note_key="strongBullet",
+                    positive=True,
+                )
                 for bullet in bullets
                 if bullet.strength == "strong"
             ][:2]

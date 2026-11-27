@@ -8,7 +8,7 @@ from app.services.report_detail.grammar import grammar
 from app.services.report_detail.identity import role, top_percent
 from app.services.report_detail.keywords import keywords
 from app.services.report_detail.sections import sections
-from app.services.report_detail.verdict import facts, verdict
+from app.services.report_detail.verdict import fact_counts, facts, verdict
 from app.services.versions_view.chain import versions
 
 
@@ -31,6 +31,7 @@ def report_detail(job: Job, jobs_by_id: dict) -> ReportDetail:
         verdict=verdict(score),
         top_percent=top_percent(job),
         facts=facts(job),
+        fact_counts=fact_counts(job),
         fixes=changes,
         dimensions=dimensions(job, previous, gains),
         sections=sections(job),

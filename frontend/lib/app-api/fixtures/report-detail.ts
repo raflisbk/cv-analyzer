@@ -8,11 +8,13 @@ export const reportDetailFixture: ReportDetail = {
   previousScore: 71,
   projectedScore: 88,
   verdict: {
+    key: "good",
     title: "Good, not yet strong.",
     body: "Your CV reads clearly and covers every section. It loses points because most bullets describe tasks, not results. Three edits could lift the score to 88.",
   },
   topPercent: 35,
   facts: ["9 bullets", "6 sections", "1 page", "187 words"],
+  factCounts: { pages: 1, bullets: 9, words: 187 },
   fixes: [
     {
       title: "Biggest win",
