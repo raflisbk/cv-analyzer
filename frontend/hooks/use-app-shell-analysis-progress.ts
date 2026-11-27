@@ -5,6 +5,7 @@ import { useJobStream } from "@/hooks/use-job-stream";
 import { useJobResults } from "@/hooks/use-job-results";
 import { useT } from "@/components/i18n/i18n-provider";
 import { usePathy } from "@/components/pathy/pathy-context";
+import { toUiStage } from "@/lib/upload/stage";
 import { useAppShellScoreCount } from "./use-app-shell-score-count";
 
 const stages: Record<string, number> = {
@@ -44,7 +45,9 @@ export function useAppShellAnalysisProgress(
   }, [complete, pathy, t]);
   return {
     active: stages[progress?.stage ?? "extracting"] ?? 0,
-    message: progress?.message,
+    message: progress
+      ? t(`upload.stages.${toUiStage(progress.stage, "analyzing")}`)
+      : undefined,
     failed: Boolean(error || progress?.stage === "failed" || result.isError),
     complete: Boolean(complete && result.data?.scores),
     count,
