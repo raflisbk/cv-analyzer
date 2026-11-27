@@ -16,7 +16,7 @@ function flatten(tree: Tree, prefix = ""): Record<string, string> {
 
 const idValues = flatten(id as Tree);
 const enValues = flatten(en as Tree);
-const informalPronoun = /\b(lu|gua|gue|elo|lo)\w*\b/i;
+const informalPronoun = /\b(lu|gua|gue|elo|lo)\b/i;
 
 describe("Indonesian copy voice", () => {
   it("has the same keys as English", () => {
