@@ -10,17 +10,17 @@ export default function HeroWaves() {
     >
       <path
         d="M0 520 C220 380 380 640 620 500 S980 300 1200 430 V760 H0Z"
-        fill="var(--brand-red-deep)"
+        fill="var(--red-section-deep)"
         opacity=".55"
       />
       <path
         d="M0 610 C260 480 440 720 700 600 S1040 450 1200 550 V760 H0Z"
-        fill="var(--brand-blush)"
+        fill="var(--surface-tint)"
         opacity=".2"
       />
       <path
         d="M640 0 C720 130 880 150 990 90 S1160 30 1200 120 V0Z"
-        fill="var(--brand-red-deep)"
+        fill="var(--red-section-deep)"
         opacity=".5"
       />
     </svg>

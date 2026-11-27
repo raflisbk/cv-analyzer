@@ -60,8 +60,8 @@
   }
 }
 .ats {
-  color: var(--brand-ink);
-  background: var(--brand-snow);
+  color: var(--text);
+  background: var(--surface-raised);
   top: 4%;
   left: 0;
 }

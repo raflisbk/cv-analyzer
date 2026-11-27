@@ -4,7 +4,7 @@
   z-index: 40;
   max-width: none;
   margin: 0;
-  background: var(--brand-red);
+  background: var(--red-section);
   border-radius: 0;
   padding: 24px var(--edge) 0;
 }
