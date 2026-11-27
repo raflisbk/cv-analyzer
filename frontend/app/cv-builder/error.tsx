@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export default function Error({
   error,
@@ -10,6 +11,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useT();
   useEffect(() => {
     console.error("[CvBuilderError]", error);
   }, [error]);
@@ -33,23 +35,23 @@ export default function Error({
           </svg>
         </div>
         <h2 className="text-lg font-bold text-[#141414]">
-          Something went wrong
+          {t("errors.boundary.title")}
         </h2>
         <p className="mt-2 text-sm text-[#141414]/60">
-          {error.message || "An unexpected error occurred."}
+          {t("errors.boundary.body")}
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
           <button
             onClick={reset}
             className="rounded-full bg-[#141414] px-5 py-2 text-sm font-bold text-[#F5F2D8] transition-colors hover:bg-[#141414]/80"
           >
-            Try again
+            {t("errors.boundary.retry")}
           </button>
           <Link
             href="/"
             className="rounded-full border border-[#141414]/15 px-5 py-2 text-sm font-bold text-[#141414]/70 transition-colors hover:bg-[#141414]/5"
           >
-            Go home
+            {t("errors.boundary.home")}
           </Link>
         </div>
       </div>
