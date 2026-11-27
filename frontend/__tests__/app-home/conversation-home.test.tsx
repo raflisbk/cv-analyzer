@@ -2,6 +2,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
+import { localeWrapper } from "../i18n/render-with-locale";
 import { useConversationHome } from "@/hooks/use-conversation-home";
 import { createConversation, sendMessage } from "@/lib/app-api/conversations";
 
@@ -15,9 +16,12 @@ afterEach(() => vi.clearAllMocks());
 function show() {
   const client = new QueryClient();
   return renderHook(() => useConversationHome(), {
-    wrapper: ({ children }: { children: ReactNode }) => (
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
-    ),
+    wrapper: ({ children }: { children: ReactNode }) =>
+      localeWrapper({
+        children: (
+          <QueryClientProvider client={client}>{children}</QueryClientProvider>
+        ),
+      }),
   });
 }
 

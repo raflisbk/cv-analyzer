@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
+import { localeWrapper } from "../i18n/render-with-locale";
 import { useDraftSave } from "@/hooks/use-draft-save";
 
 vi.mock("sonner", () => ({
@@ -19,9 +20,13 @@ function createWrapper() {
     defaultOptions: { mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
+    return localeWrapper({
+      children: (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      ),
+    });
   };
 }
 

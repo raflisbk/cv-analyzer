@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
+import { localeWrapper } from "../i18n/render-with-locale";
 
 const mockConnect = vi.fn();
 const mockClose = vi.fn();
@@ -26,21 +27,23 @@ describe("useJobStream", () => {
   });
 
   it("returns null progress when jobId is null", () => {
-    const { result } = renderHook(() => useJobStream(null));
+    const { result } = renderHook(() => useJobStream(null), {
+      wrapper: localeWrapper,
+    });
     expect(result.current.progress).toBeNull();
     expect(result.current.isConnected).toBe(false);
     expect(result.current.error).toBeNull();
   });
 
   it("creates SSE connection when jobId is provided", () => {
-    renderHook(() => useJobStream("job-123"));
+    renderHook(() => useJobStream("job-123"), { wrapper: localeWrapper });
     expect(mockConnect).toHaveBeenCalled();
   });
 
   it("resets state and closes previous connection when jobId changes", () => {
     const { rerender, result } = renderHook(
       ({ jobId }) => useJobStream(jobId),
-      { initialProps: { jobId: "job-1" } },
+      { initialProps: { jobId: "job-1" }, wrapper: localeWrapper },
     );
 
     rerender({ jobId: "job-2" });
@@ -49,7 +52,7 @@ describe("useJobStream", () => {
   });
 
   it("does not connect when jobId is empty string (falsy)", () => {
-    renderHook(() => useJobStream(""));
+    renderHook(() => useJobStream(""), { wrapper: localeWrapper });
     expect(mockConnect).not.toHaveBeenCalled();
   });
 });

@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { withLocale } from "../i18n/with-locale";
+import { ApiError } from "@/lib/api";
 import ExportDialog from "@/components/app-export/export-dialog";
 import { PathyContext } from "@/components/pathy/pathy-context";
 import { exportPreview, exportTemplates } from "@/lib/app-api/fixtures/export";
@@ -141,7 +142,7 @@ describe("ExportDialog", () => {
   });
   it("shows the error and allows a retry", async () => {
     exportCv
-      .mockRejectedValueOnce(new Error("Network unavailable"))
+      .mockRejectedValueOnce(new ApiError("NETWORK_ERROR", "offline"))
       .mockResolvedValueOnce({
         blob: new Blob(["pdf"]),
         applied: 0,
@@ -152,11 +153,11 @@ describe("ExportDialog", () => {
       await screen.findByRole("button", { name: "Download PDF" }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Network unavailable",
+      "Network unavailable. Check your connection.",
     );
     expect(react).toHaveBeenCalledWith(
       "sad",
-      "Network unavailable",
+      "Network unavailable. Check your connection.",
       expect.any(HTMLElement),
     );
     fireEvent.click(screen.getByRole("button", { name: "Retry download" }));
