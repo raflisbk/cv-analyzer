@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
 import Navbar from "@/components/landing/navbar";
 import { useAuthStore } from "@/stores/auth-store";
+import { stubNavBrowser } from "./nav-browser-stubs";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
@@ -22,8 +23,14 @@ function renderNavbar(locale: "en" | "id" = "en") {
   );
 }
 
-beforeEach(() => useAuthStore.setState({ user: null, isHydrated: true }));
-afterEach(() => useAuthStore.setState({ user: null, isHydrated: false }));
+beforeEach(() => {
+  stubNavBrowser();
+  useAuthStore.setState({ user: null, isHydrated: true });
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+  useAuthStore.setState({ user: null, isHydrated: false });
+});
 
 describe("landing navbar actions", () => {
   it("shows login and the main call to action when logged out", () => {
@@ -62,26 +69,6 @@ describe("landing navbar actions", () => {
     renderNavbar();
     expect(document.querySelector("[data-landing-nav]")).not.toBeNull();
   });
-
-  it("condenses once the page scrolls past the rest strip and relaxes at the top", () => {
-    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect");
-    renderNavbar();
-    const header = document.querySelector<HTMLElement>("[data-landing-nav]")!;
-    expect(header).toHaveAttribute("data-condensed", "false");
-    rect.mockReturnValue({ top: -300 } as DOMRect);
-    act(() => {
-      window.dispatchEvent(new Event("scroll"));
-    });
-    expect(header).toHaveAttribute("data-condensed", "true");
-    expect(header.style.top).toBe("0px");
-    rect.mockReturnValue({ top: 56 } as DOMRect);
-    act(() => {
-      window.dispatchEvent(new Event("scroll"));
-    });
-    expect(header).toHaveAttribute("data-condensed", "false");
-    expect(header.style.top).toBe("56px");
-    rect.mockRestore();
-  });
 });
 
 describe("landing navbar css contract", () => {
@@ -101,7 +88,8 @@ describe("landing navbar css contract", () => {
     expect(css).toMatch(/height:\s*var\(--bar-rest\)/);
   });
 
-  it("tints the condensed bar with the theme red", () => {
-    expect(css).toMatch(/color-mix\(in srgb, var\(--red-section\)/);
+  it("drives the glide from the scroll variable instead of a top offset", () => {
+    expect(css).toMatch(/translate:\s*0 var\(--bar-y/);
+    expect(css).not.toMatch(/data-condensed/);
   });
 });
