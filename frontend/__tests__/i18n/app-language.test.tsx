@@ -1,4 +1,4 @@
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import {
   cleanup,
   fireEvent,
@@ -7,6 +7,7 @@ import {
   within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Dock from "@/components/dock/dock";
 import AppHeader from "@/components/app-shell/app-header";
 import EmptyState from "@/components/app-shell/empty-state";
 import HistoryDrawer from "@/components/app-shell/history-drawer";
@@ -18,6 +19,7 @@ import { listConversations } from "@/lib/app-api/conversations";
 import { reportFixtures } from "@/lib/app-api/fixtures/reports";
 import { localeFromRequest } from "@/lib/i18n/locale-from-request";
 import { withLocale } from "./with-locale";
+import { stubReducedMotion } from "./reduced-motion";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }),
@@ -29,7 +31,10 @@ vi.mock("@/lib/app-api/conversations", () => ({ listConversations: vi.fn() }));
 
 const rawKey = /\bapp\.[a-z]+\.[A-Za-z]+/;
 
+beforeEach(stubReducedMotion);
+
 afterEach(() => {
+  vi.unstubAllGlobals();
   cleanup();
   vi.resetAllMocks();
 });
@@ -56,6 +61,7 @@ function showApp(locale: "id" | "en" = "id") {
     <QueryClientProvider client={client}>
       {withLocale(
         <>
+          <Dock />
           <AppHeader openDrawer={vi.fn()} drawerOpen newChat={vi.fn()} />
           <HistoryDrawer open close={vi.fn()} newChat={vi.fn()} />
           <CvsList />
