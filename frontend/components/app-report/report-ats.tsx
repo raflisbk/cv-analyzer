@@ -27,8 +27,8 @@ export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
             width="88"
             height="118"
             rx="10"
-            fill="#fdfdff"
-            stroke="#b81d00"
+            fill="var(--app-snow)"
+            stroke="var(--app-deep-text)"
             strokeWidth="2"
           />
           <rect
@@ -37,13 +37,13 @@ export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
             width="88"
             height="118"
             rx="10"
-            fill="#fdfdff"
-            stroke="#b81d00"
+            fill="var(--app-snow)"
+            stroke="var(--app-deep-text)"
             strokeWidth="2"
           />
           <path
             d="M20 28h60M20 45h55M120 28h60M120 45h55"
-            stroke="#e9c9c0"
+            stroke="var(--app-line-soft)"
             strokeWidth="8"
             strokeLinecap="round"
           />
@@ -54,10 +54,10 @@ export function ReportAts({ ats }: { ats: ReportDetail["ats"] }) {
             strokeWidth="3"
             strokeDasharray="4 4"
           />
-          <text x="73" y="84" fill="#b81d00" fontWeight="800">
+          <text x="73" y="84" fill="var(--app-deep-text)" fontWeight="800">
             1
           </text>
-          <text x="150" y="84" fill="#b81d00" fontWeight="800">
+          <text x="150" y="84" fill="var(--app-deep-text)" fontWeight="800">
             3
           </text>
         </svg>

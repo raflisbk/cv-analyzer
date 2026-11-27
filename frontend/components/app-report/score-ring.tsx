@@ -25,7 +25,7 @@ export function ScoreRing({
           cy={center}
           r={radius}
           fill="none"
-          stroke={large ? "rgba(26,11,7,.35)" : "#f3dcd5"}
+          stroke={large ? "var(--app-ring-track)" : "var(--app-line-soft)"}
           strokeWidth={large ? 18 : 10}
         />
         <circle
