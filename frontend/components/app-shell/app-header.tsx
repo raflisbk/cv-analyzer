@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import styles from "./app-shell.module.css";
 import AppNav from "./app-nav";
 import AppLogo from "./app-logo";
+import AppHeaderAvatar from "./app-header-avatar";
 
 export default function AppHeader({
   openDrawer,
@@ -35,6 +36,7 @@ export default function AppHeader({
       <div className={styles.account} data-tour="account">
         {user && <AccountMenu user={user} app />}
       </div>
+      {user && <AppHeaderAvatar user={user} onClick={openDrawer} />}
     </header>
   );
 }
