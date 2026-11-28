@@ -29,15 +29,9 @@ const id = {
     connect: "Cari kerja",
     comingSoon: "Segera hadir",
   },
-  dock: {
-    label: "Pengaturan cepat",
-    open: "Buka pengaturan cepat",
-    close: "Tutup pengaturan cepat",
-    theme: "Mode gelap",
-    themeLight: "Ganti ke mode gelap",
-    themeDark: "Ganti ke mode terang",
-    language: "Bahasa",
-    switchLanguage: "Ganti ke English",
+  toggles: {
+    theme: "Ganti tema",
+    language: "Ganti bahasa",
   },
   auth: {
     title: "Masuk dulu, yuk",

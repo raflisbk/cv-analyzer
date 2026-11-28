@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import AppHeader from "@/components/app-shell/app-header";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -15,13 +16,15 @@ const user = { id: "u1", email: "a@b.co", name: "Rafli", picture: null };
 function renderHeader(openDrawer = vi.fn()) {
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <I18nProvider initialLocale="en">
-        <AppHeader
-          openDrawer={openDrawer}
-          drawerOpen={false}
-          newChat={vi.fn()}
-        />
-      </I18nProvider>
+      <ThemeProvider initialTheme="light">
+        <I18nProvider initialLocale="en">
+          <AppHeader
+            openDrawer={openDrawer}
+            drawerOpen={false}
+            newChat={vi.fn()}
+          />
+        </I18nProvider>
+      </ThemeProvider>
     </QueryClientProvider>,
   );
   return openDrawer;

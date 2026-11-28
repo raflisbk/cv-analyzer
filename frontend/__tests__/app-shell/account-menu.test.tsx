@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import AccountMenu from "@/components/landing/navbar/account-menu";
 
 const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
@@ -20,9 +21,11 @@ describe("AccountMenu", () => {
     const client = new QueryClient();
     render(
       <QueryClientProvider client={client}>
-        <I18nProvider initialLocale={locale}>
-          <AccountMenu user={user} app={app} />
-        </I18nProvider>
+        <ThemeProvider initialTheme="light">
+          <I18nProvider initialLocale={locale}>
+            <AccountMenu user={user} app={app} />
+          </I18nProvider>
+        </ThemeProvider>
       </QueryClientProvider>,
     );
     return client;

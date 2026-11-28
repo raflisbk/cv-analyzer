@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import Navbar from "@/components/landing/navbar";
 import { useAuthStore } from "@/stores/auth-store";
 import { intersectionObservers, stubNavBrowser } from "./nav-browser-stubs";
@@ -18,9 +19,11 @@ function mountPage(withHero: boolean) {
     <div id="root"></div>`;
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <I18nProvider initialLocale="en">
-        <Navbar />
-      </I18nProvider>
+      <ThemeProvider initialTheme="light">
+        <I18nProvider initialLocale="en">
+          <Navbar />
+        </I18nProvider>
+      </ThemeProvider>
     </QueryClientProvider>,
     { container: document.getElementById("root")! },
   );

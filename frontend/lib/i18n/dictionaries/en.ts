@@ -26,15 +26,9 @@ const en = {
     connect: "Job Connect",
     comingSoon: "Coming soon",
   },
-  dock: {
-    label: "Quick settings",
-    open: "Open quick settings",
-    close: "Close quick settings",
-    theme: "Dark mode",
-    themeLight: "Switch to dark mode",
-    themeDark: "Switch to light mode",
-    language: "Language",
-    switchLanguage: "Switch to Bahasa Indonesia",
+  toggles: {
+    theme: "Toggle theme",
+    language: "Switch language",
   },
   auth: {
     title: "Sign in to continue",

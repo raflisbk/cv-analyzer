@@ -25,7 +25,6 @@ const semanticTokens = [
   "--red-section",
   "--red-section-deep",
   "--ink-section",
-  "--dock-bg",
   "--dock-ring",
 ];
 

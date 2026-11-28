@@ -1,0 +1,18 @@
+.pair {
+  --toggle-size: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 3px;
+}
+@media (max-width: 520px) {
+  .pair {
+    --toggle-size: 30px;
+    gap: 5px;
+  }
+}
+@media (min-width: 861px) {
+  .phoneOnly {
+    display: none;
+  }
+}

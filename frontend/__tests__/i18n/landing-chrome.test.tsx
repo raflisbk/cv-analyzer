@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import Navbar from "@/components/landing/navbar";
 import { LoginRequiredDialog } from "@/components/auth/login-required-dialog";
 import { stubNavBrowser } from "../components/landing/nav-browser-stubs";
@@ -34,17 +35,21 @@ describe.each([
   afterEach(() => vi.unstubAllGlobals());
   it("renders translated navigation", () => {
     render(
-      <I18nProvider initialLocale={locale}>
-        <Navbar />
-      </I18nProvider>,
+      <ThemeProvider initialTheme="light">
+        <I18nProvider initialLocale={locale}>
+          <Navbar />
+        </I18nProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByRole("link", { name: navText })).toBeInTheDocument();
   });
   it("renders the translated login dialog", async () => {
     render(
-      <I18nProvider initialLocale={locale}>
-        <LoginRequiredDialog />
-      </I18nProvider>,
+      <ThemeProvider initialTheme="light">
+        <I18nProvider initialLocale={locale}>
+          <LoginRequiredDialog />
+        </I18nProvider>
+      </ThemeProvider>,
     );
     expect(
       await screen.findByRole("heading", { name: dialogTitle }),

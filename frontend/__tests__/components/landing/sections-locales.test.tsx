@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import en from "@/lib/i18n/dictionaries/en";
 import id from "@/lib/i18n/dictionaries/id";
 import HeroSection from "@/components/landing/hero/hero-section";
@@ -35,9 +36,11 @@ describe.each([
     "renders %s with its translated heading",
     (_name, Section, key) => {
       const html = renderToStaticMarkup(
-        <I18nProvider initialLocale={locale}>
-          <Section />
-        </I18nProvider>,
+        <ThemeProvider initialTheme="light">
+          <I18nProvider initialLocale={locale}>
+            <Section />
+          </I18nProvider>
+        </ThemeProvider>,
       );
       const copy = dictionary.landing[key];
       if ("heading" in copy) {
@@ -56,9 +59,11 @@ describe.each([
   it("renders inside and FAQ without decorative images", () => {
     for (const Section of [FeaturesSection, FaqSection]) {
       const html = renderToStaticMarkup(
-        <I18nProvider initialLocale={locale}>
-          <Section />
-        </I18nProvider>,
+        <ThemeProvider initialTheme="light">
+          <I18nProvider initialLocale={locale}>
+            <Section />
+          </I18nProvider>
+        </ThemeProvider>,
       );
       expect(html).not.toMatch(/<img\b/);
     }
