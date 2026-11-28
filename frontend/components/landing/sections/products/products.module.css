@@ -60,7 +60,7 @@
   text-transform: uppercase;
 }
 .card0 .cardInner {
-  background: var(--red-section);
+  background: var(--red-surface-text);
   color: var(--brand-snow);
 }
 .card0 .status {
