@@ -1,6 +1,6 @@
 import { paintLaptopScene } from "./laptop-scene";
-import { paintLaptopCamera } from "./laptop-camera";
-import { paintLaptopLid } from "./laptop-lid";
+import { paintLaptopScreen } from "./laptop-screen";
+import { LAPTOP_PROGRESS_EVENT } from "@/components/landing/sections/laptop/three/progress-event";
 import { laptopProgress } from "@/lib/landing-laptop";
 
 function expandPanel(panel: HTMLElement, progress: number) {
@@ -24,20 +24,20 @@ export function paintLaptop(
 ) {
   panel.dataset.laptopProgress = progress.toFixed(3);
   expandPanel(panel, progress);
-  const anchor = panel.querySelector<HTMLElement>("[data-laptop-anchor]");
-  const stage = panel.querySelector<HTMLElement>("[data-laptop-stage]");
   const screen = panel.querySelector<HTMLElement>("[data-laptop-screen]");
   const copy = panel.querySelector<HTMLElement>("[data-laptop-text]");
-  if (!anchor || !stage || !screen || !copy) {
+  if (!screen || !copy) {
     return;
   }
-  const { lid, zoom, content } = laptopProgress(progress);
-  paintLaptopLid(stage, lid);
-  paintLaptopCamera(panel, anchor, stage, lid, zoom, staticView);
+  const { scene, zoom, content } = laptopProgress(progress);
   copy.style.opacity = String(1 - Math.min(1, zoom * 2.2));
   copy.style.transform = `translateY(${-30 * zoom}px)`;
-  stage.dataset.laptopLid = lid.toFixed(3);
+  panel.dataset.laptopScene = scene.toFixed(4);
   screen.dataset.contentProgress = content.toFixed(3);
   screen.style.setProperty("--laptop-content-progress", String(content));
+  paintLaptopScreen(panel, screen, zoom, staticView);
   paintLaptopScene(screen, content, staticView);
+  panel.dispatchEvent(
+    new CustomEvent(LAPTOP_PROGRESS_EVENT, { detail: { scene } }),
+  );
 }

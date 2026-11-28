@@ -12,14 +12,14 @@ const html = renderToStaticMarkup(
 );
 
 describe("laptop stage markup", () => {
-  it("builds the laptop from DOM, with no raster canvas", () => {
-    expect(html).not.toContain("<canvas");
-    expect(html).toContain("data-laptop-lid");
+  it("renders the WebGL host and keeps the sample scene as real DOM", () => {
+    expect(html).toContain("data-laptop-canvas");
     expect(html).toContain("data-laptop-screen");
+    expect(html).toContain("data-laptop-scene");
   });
 
-  it("puts the lid back mark and the sample scene on opposite faces", () => {
-    expect(html).toContain("/landing/logo/pathkr-icon.svg");
-    expect(html).toContain("data-laptop-scene");
+  it("no longer builds the laptop body from DOM", () => {
+    expect(html).not.toContain("data-laptop-lid");
+    expect(html).not.toContain("data-laptop-sweep");
   });
 });
