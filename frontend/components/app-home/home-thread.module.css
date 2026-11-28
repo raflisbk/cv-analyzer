@@ -1,36 +1,20 @@
 .progress {
+  box-sizing: border-box;
   width: 100%;
-}
-.steps {
+  max-width: 700px;
+  min-width: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin: 14px 0;
-  font-size: 13px;
-  font-weight: 800;
-}
-.steps div {
-  display: grid;
-  gap: 6px;
-}
-.steps b {
-  height: 10px;
-  border-radius: 99px;
-  background: #b81d0033;
-}
-.steps i {
-  display: block;
-  height: 100%;
-  border-radius: 99px;
-  background: var(--app-red);
-  transform-origin: left;
-  transition: scale 0.3s;
+  gap: 22px;
+  padding-bottom: 24px;
 }
 .scoreCard {
   position: relative;
   display: grid;
   gap: 10px;
+  box-sizing: border-box;
   width: min(540px, 100%);
+  min-width: 0;
+  animation: scoreIn 0.2s both;
   padding: 22px 24px;
   border-radius: 28px;
   background: var(--app-red-deep);
@@ -68,8 +52,14 @@
   background: var(--app-snow);
   color: var(--app-ink);
 }
+@keyframes scoreIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .steps i {
-    transition: none;
+  .scoreCard {
+    animation: none;
   }
 }
