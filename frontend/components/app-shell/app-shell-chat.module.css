@@ -23,8 +23,3 @@
 :global([data-theme="dark"]) .logoInk {
   display: block;
 }
-@media (max-width: 860px) {
-  :global(body):has(.chat) :global([data-dock][data-app="true"]) {
-    bottom: calc(16px + env(safe-area-inset-bottom));
-  }
-}

@@ -8,6 +8,7 @@ import styles from "./app-shell.module.css";
 import AppNav from "./app-nav";
 import AppLogo from "./app-logo";
 import AppHeaderAvatar from "./app-header-avatar";
+import TogglePair from "@/components/toggles/toggle-pair";
 
 export default function AppHeader({
   openDrawer,
@@ -37,6 +38,9 @@ export default function AppHeader({
       <AppNav />
       <div className={styles.account} data-tour="account">
         {user && <AccountMenu user={user} app />}
+      </div>
+      <div className={styles.toggles}>
+        <TogglePair compact />
       </div>
       {user && <AppHeaderAvatar user={user} onClick={openDrawer} />}
     </header>
