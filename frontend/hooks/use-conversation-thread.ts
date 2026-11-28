@@ -10,14 +10,16 @@ export function useConversationThread(id: string) {
     queryKey: ["app-messages", id],
     queryFn: () => listMessages(id),
   });
+  const messages = data ? [...data, ...state.messages] : null;
   return {
-    messages: data ? [...data, ...state.messages] : null,
+    messages,
     busy: state.busy,
     error: state.error,
     isLoading,
     isError,
     refetch,
     send: state.send,
+    regenerate: () => state.regenerate(messages ?? []),
     retry: state.retry,
   };
 }
