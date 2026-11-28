@@ -10,7 +10,6 @@ import { useNavScroll } from "@/hooks/use-nav-scroll";
 import MobileMenu from "./navbar/mobile-menu";
 import AccountMenu from "./navbar/account-menu";
 import NavAvatarLink from "./navbar/nav-avatar-link";
-import NavCta from "./navbar/nav-cta";
 import NavLogin from "./navbar/nav-login";
 import { useNavBar } from "./navbar/use-nav-bar";
 import { NAV_LINKS } from "./navbar/nav-links";
@@ -22,7 +21,7 @@ export default function Navbar() {
   const user = useAuthStore((state) => state.user);
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const onNavScroll = useNavScroll();
-  const { spacerRef, headerRef, slotRef, ctaShown } = useNavBar();
+  const { spacerRef, headerRef } = useNavBar();
   const account = isHydrated && user;
   return (
     <>
@@ -32,7 +31,6 @@ export default function Navbar() {
         className={`${styles.header} ${surface.surface}`}
         data-landing-nav
         data-tone="red"
-        data-cta={ctaShown ? "shown" : "hidden"}
       >
         <div className={`${styles.glide} ${surface.bar}`}>
           <nav className={styles.nav} aria-label={t("nav.main")}>
@@ -71,10 +69,7 @@ export default function Navbar() {
               ))}
             </div>
             <div className={styles.actions}>
-              <div className={styles.lead}>
-                {account ? <AccountMenu user={user} /> : <NavLogin />}
-              </div>
-              <NavCta slotRef={slotRef} shown={ctaShown} />
+              {account ? <AccountMenu user={user} /> : <NavLogin />}
               {account && <NavAvatarLink user={user} />}
             </div>
             <MobileMenu />

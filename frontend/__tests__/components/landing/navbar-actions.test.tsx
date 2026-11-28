@@ -33,14 +33,11 @@ afterEach(() => {
 });
 
 describe("landing navbar actions", () => {
-  it("shows login and the main call to action when logged out", () => {
+  it("shows only login as the call to action when logged out", () => {
     renderNavbar();
     const links = screen.getAllByRole("link", { name: "Log in" });
     expect(links[0]).toHaveAttribute("href", "/app");
-    expect(screen.getByRole("link", { name: "Analyze my CV" })).toHaveAttribute(
-      "href",
-      "/app",
-    );
+    expect(screen.queryByRole("link", { name: "Analyze my CV" })).toBeNull();
   });
 
   it("uses the casual Indonesian labels", () => {
@@ -48,21 +45,17 @@ describe("landing navbar actions", () => {
     expect(
       screen.getAllByRole("link", { name: "Masuk" }).length,
     ).toBeGreaterThan(0);
-    expect(
-      screen.getByRole("link", { name: "Analisis CV kamu" }),
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Analisis CV kamu" })).toBeNull();
   });
 
-  it("shows the account menu and the call to action when logged in", () => {
+  it("shows the account menu without a call to action when logged in", () => {
     useAuthStore.setState({ user, isHydrated: true });
     renderNavbar();
     expect(
       screen.getAllByRole("button", { name: "Account menu" }).length,
     ).toBeGreaterThan(0);
     expect(screen.queryByRole("link", { name: "Log in" })).toBeNull();
-    expect(
-      screen.getByRole("link", { name: "Analyze my CV" }),
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Analyze my CV" })).toBeNull();
   });
 
   it("keeps the nav landmark attribute used by the hero entrance", () => {
