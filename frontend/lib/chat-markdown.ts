@@ -1,7 +1,13 @@
 import { createElement, type ReactNode } from "react";
 
-const INLINE =
-  /\*\*([^*\n]+?)\*\*|==([^=\n]+?)==|`([^`\n]+?)`|\[([^\]\n]+?)\]\(([^)\s]+)\)|\*([^*\s][^*\n]*?)\*/;
+const INLINE_PATTERNS = [
+  "\\*\\*([^*\\n]+?)\\*\\*",
+  "==([^=\\n]+?)==",
+  "`([^`\\n]+?)`",
+  "\\[([^\\]\\n]+?)\\]\\(([^)\\s]+)\\)",
+  "\\*([^*\\s][^*\\n]*?)\\*",
+];
+const INLINE = new RegExp(INLINE_PATTERNS.join("|"));
 const SAFE_URL = /^(https?:\/\/|mailto:)/i;
 const BULLET = /^\s*[-*•]\s+(.*)$/;
 const NUMBERED = /^\s*\d+[.)]\s+(.*)$/;
@@ -84,44 +90,58 @@ function listItem(line: string, kind: "ul" | "ol"): string {
   return (kind === "ul" ? BULLET : NUMBERED).exec(line)?.[1] ?? line;
 }
 
+interface Pending {
+  paragraph: string[];
+  list: { kind: "ul" | "ol"; items: string[] } | null;
+}
+
+function flush(blocks: ReactNode[], pending: Pending) {
+  const key = `b${blocks.length}`;
+  if (pending.paragraph.length) {
+    blocks.push(
+      createElement("p", { key }, lineBreaks(pending.paragraph, key)),
+    );
+  }
+  if (pending.list) {
+    blocks.push(listNode(pending.list.kind, pending.list.items, key));
+  }
+  pending.paragraph = [];
+  pending.list = null;
+}
+
+function addListItem(blocks: ReactNode[], pending: Pending, line: string) {
+  const kind = listKind(line);
+  if (!kind) {
+    return false;
+  }
+  if (pending.list?.kind !== kind) {
+    flush(blocks, pending);
+    pending.list = { kind, items: [] };
+  }
+  pending.list?.items.push(listItem(line, kind));
+  return true;
+}
+
 export function renderChatMarkdown(text: string): ReactNode[] {
   const blocks: ReactNode[] = [];
-  const lines = text.replace(/\r\n?/g, "\n").split("\n");
-  let paragraph: string[] = [];
-  let list: { kind: "ul" | "ol"; items: string[] } | null = null;
-  const flush = () => {
-    const key = `b${blocks.length}`;
-    if (paragraph.length) {
-      blocks.push(createElement("p", { key }, lineBreaks(paragraph, key)));
-    }
-    if (list) {
-      blocks.push(listNode(list.kind, list.items, key));
-    }
-    paragraph = [];
-    list = null;
-  };
-  for (const line of lines) {
-    const kind = listKind(line);
+  const pending: Pending = { paragraph: [], list: null };
+  for (const line of text.replace(/\r\n?/g, "\n").split("\n")) {
     const heading = HEADING.exec(line);
     if (!line.trim()) {
-      flush();
-    } else if (kind) {
-      if (list?.kind !== kind) {
-        flush();
-        list = { kind, items: [] };
-      }
-      list.items.push(listItem(line, kind));
+      flush(blocks, pending);
+    } else if (addListItem(blocks, pending, line)) {
+      continue;
     } else if (heading) {
-      flush();
-      paragraph = [`**${heading[1]}**`];
-      flush();
+      flush(blocks, pending);
+      pending.paragraph = [`**${heading[1]}**`];
+      flush(blocks, pending);
     } else {
-      if (list) {
-        flush();
+      if (pending.list) {
+        flush(blocks, pending);
       }
-      paragraph.push(line);
+      pending.paragraph.push(line);
     }
   }
-  flush();
+  flush(blocks, pending);
   return blocks;
 }
