@@ -3,6 +3,7 @@ import http from "node:http";
 const PORT = Number(process.env.MOCK_PORT ?? 3113);
 const HEARTBEAT = process.env.MOCK_HEARTBEAT === "1";
 const LEGACY = process.env.MOCK_LEGACY === "1";
+const STREAM_DEAD_AT_MS = Number(process.env.MOCK_STREAM_DEAD_AT_MS ?? 0);
 const HEARTBEAT_MS = 10000;
 const COMPLETE_AT_MS = 51200;
 const CHUNKS = 15;
@@ -112,15 +113,23 @@ const json = (res, status, body) => {
 };
 
 const stream = (req, res, jobId) => {
+  const now = elapsed(jobId);
+  if (STREAM_DEAD_AT_MS && now >= STREAM_DEAD_AT_MS) {
+    res.writeHead(503);
+    res.end();
+    return;
+  }
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
+    "Cache-Control": LEGACY ? "no-cache" : "no-cache, no-transform",
     Connection: "keep-alive",
   });
   const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
   send({ type: "connected", job_id: jobId });
-  const now = elapsed(jobId);
   const timers = [];
+  if (STREAM_DEAD_AT_MS) {
+    timers.push(setTimeout(() => res.destroy(), STREAM_DEAD_AT_MS - now));
+  }
   const terminal = timeline.at(-1);
   if (now >= COMPLETE_AT_MS) {
     send(payload(jobId, terminal));
@@ -159,7 +168,13 @@ const route = (req, res) => {
   }
   if (workspaceMatch) {
     return json(res, 200, {
-      data: { job_id: workspaceMatch[1], status: "preparing" },
+      data: {
+        job_id: workspaceMatch[1],
+        status: "preparing",
+        file: { filename: "mock-cv.pdf", mime_type: "application/pdf" },
+        document: { source_text: "" },
+        analysis: { suggestions: [] },
+      },
     });
   }
   if (pathname === "/api/v1/auth/me") {
