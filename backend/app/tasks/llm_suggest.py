@@ -14,6 +14,11 @@ from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.services.llm.protocol import SuggestionsOutput
 from app.services.llm.suggestions_parse import parse_suggestions
 from app.services.memory.indexer import index_analysis_summary, index_cv_sections
+from app.services.progress.stages import (
+    indexing_message,
+    indexing_percentage,
+    stage_percentage,
+)
 from app.services.rag.embeddings import get_rag_embedding
 from app.services.rag.ingestor import ingest_cv_for_user
 from app.services.rag.retriever import retrieve_relevant_chunks
@@ -79,13 +84,6 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
             self.update_progress(job_id, "complete", 100, "Analysis complete!")
             return {"status": "complete", "job_id": job_id, "from_cache": True}
 
-        self.update_progress(
-            job_id,
-            "generating_suggestions",
-            90,
-            "Generating AI improvement suggestions...",
-        )
-
         if not cv_text:
             logger.warning("llm_suggest_no_text", job_id=job_id)
             await _persist_results(job_id, None, 0, file_id, nlp_result, scores)
@@ -94,11 +92,21 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
 
         sections = sections or []
 
+        def report_indexing(done: int, total: int) -> None:
+            self.update_progress(
+                job_id,
+                "indexing_cv",
+                indexing_percentage(done, total),
+                indexing_message(done, total),
+            )
+
         # RAG ingestion (optional, non-blocking on failure)
         if user_id:
             try:
                 async with async_session_maker() as session:
-                    await ingest_cv_for_user(cv_text, job_id, user_id, session)
+                    await ingest_cv_for_user(
+                        cv_text, job_id, user_id, session, report_indexing
+                    )
                 logger.info("cv_ingested_for_user", job_id=job_id, user_id=user_id)
             except Exception as ingest_error:
                 logger.warning(
@@ -121,6 +129,12 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
         # LLM generation — wrapped so a bad LLM response still yields COMPLETE
         suggestions_list: list | None = None
         total_tokens = 0
+        self.update_progress(
+            job_id,
+            "generating_suggestions",
+            stage_percentage("generating_suggestions"),
+            "Generating AI improvement suggestions...",
+        )
         try:
             result = _llm_service.generate_suggestions(
                 cv_text=cv_text,
@@ -148,6 +162,13 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
 
         await _persist_results(
             job_id, suggestions_list, total_tokens, file_id, nlp_result, scores
+        )
+
+        self.update_progress(
+            job_id,
+            "preparing_results",
+            stage_percentage("preparing_results"),
+            "Preparing your results...",
         )
 
         # Job Memory indexing — best-effort, must never block completion

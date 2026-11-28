@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +14,7 @@ async def ingest_cv_for_user(
     job_id: str,
     user_id: str,
     session: AsyncSession,
+    on_progress: Callable[[int, int], None] | None = None,
 ) -> int:
     """
     Chunk and embed CV text, store in knowledge_chunks with user_id.
@@ -35,7 +38,10 @@ async def ingest_cv_for_user(
         return 0
 
     saved = 0
-    for chunk in chunks:
+    total = len(chunks)
+    if on_progress:
+        on_progress(0, total)
+    for done, chunk in enumerate(chunks, start=1):
         try:
             embedding = get_rag_embedding(chunk)
             session.add(
@@ -50,6 +56,8 @@ async def ingest_cv_for_user(
             saved += 1
         except Exception as e:
             logger.warning("ingestor_chunk_failed", job_id=job_id, error=str(e))
+        if on_progress:
+            on_progress(done, total)
 
     logger.info("ingestor_done", job_id=job_id, user_id=user_id, chunks=saved)
     return saved
