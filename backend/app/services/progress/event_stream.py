@@ -8,7 +8,7 @@ TERMINAL_STAGE_NAMES = {"complete", "failed"}
 HEARTBEAT_INTERVAL_SECONDS = 10.0
 STATUS_RECHECK_INTERVAL_SECONDS = 5.0
 POLL_TIMEOUT_SECONDS = 1.0
-HEARTBEAT_FRAME = ": ping\n\n"
+HEARTBEAT_FRAME = 'data: {"type": "heartbeat"}\n\n'
 
 StatusFetcher = Callable[[], Awaitable[str | None]]
 
