@@ -21,6 +21,7 @@ const en = {
     openMenu: "Open navigation menu",
     closeMenu: "Close menu",
     language: "Language",
+    switchLanguage: "Switch to Bahasa Indonesia",
     analyzer: "CV Analyzer",
     builder: "CV Builder",
     connect: "Job Connect",
@@ -34,6 +35,7 @@ const en = {
     themeLight: "Switch to dark mode",
     themeDark: "Switch to light mode",
     language: "Language",
+    switchLanguage: "Switch to Bahasa Indonesia",
   },
   auth: {
     title: "Sign in to continue",

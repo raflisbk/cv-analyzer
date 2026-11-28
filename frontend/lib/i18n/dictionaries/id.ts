@@ -24,6 +24,7 @@ const id = {
     openMenu: "Buka menu navigasi",
     closeMenu: "Tutup menu",
     language: "Bahasa",
+    switchLanguage: "Ganti ke English",
     analyzer: "Analisis CV",
     builder: "Buat CV",
     connect: "Cari kerja",
@@ -37,6 +38,7 @@ const id = {
     themeLight: "Ganti ke mode gelap",
     themeDark: "Ganti ke mode terang",
     language: "Bahasa",
+    switchLanguage: "Ganti ke English",
   },
   auth: {
     title: "Masuk dulu, yuk",

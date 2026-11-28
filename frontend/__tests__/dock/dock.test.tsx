@@ -29,7 +29,9 @@ function renderDock() {
 it("renders only the theme and language controls when logged out", () => {
   renderDock();
   expect(screen.getByRole("switch", { name: "Dark mode" })).toBeInTheDocument();
-  expect(screen.getByRole("group", { name: "Language" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Switch to Bahasa Indonesia" }),
+  ).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "Log in" })).toBeNull();
   expect(screen.queryByRole("button", { name: "Account menu" })).toBeNull();
 });
@@ -47,7 +49,9 @@ it("keeps the dock to theme and language inside the app", () => {
   useAuthStore.setState({ user, isHydrated: true });
   renderDock();
   expect(screen.queryByRole("button", { name: "Account menu" })).toBeNull();
-  expect(screen.getByRole("group", { name: "Language" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Switch to Bahasa Indonesia" }),
+  ).toBeInTheDocument();
 });
 
 it("theme switch reflects and toggles aria-checked", () => {
