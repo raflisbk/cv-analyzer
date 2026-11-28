@@ -12,12 +12,16 @@ describe("laptop progress", () => {
     expect(laptopProgress(0.32).zoom).toBe(0);
   });
 
-  it("overlaps the zoom with the screen content", () => {
+  it("holds the first insight frame until the zoom has landed", () => {
     expect(laptopProgress(0.4).zoom).toBeGreaterThan(0);
-    expect(laptopProgress(0.4).content).toBeGreaterThan(0);
+    expect(laptopProgress(0.4).content).toBe(0);
     expect(laptopProgress(0.52).zoom).toBe(1);
     expect(laptopProgress(0.52).scene).toBe(1);
-    expect(laptopProgress(0.9).content).toBe(1);
+    expect(laptopProgress(0.52).content).toBe(0);
+  });
+
+  it("runs the insight steps over the rest of the pin", () => {
+    expect(laptopProgress(0.76).content).toBeCloseTo(0.5, 6);
     expect(laptopProgress(1).content).toBe(1);
   });
 

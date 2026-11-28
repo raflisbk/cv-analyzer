@@ -45,6 +45,7 @@ export function buildEnvironment(
   const room = new kit.RoomEnvironment();
   const target = pmrem.fromScene(room, 0.04);
   scene.environment = target.texture;
+  scene.environmentIntensity = 0.55;
   room.traverse((object) => {
     const mesh = object as import("three").Mesh;
     mesh.geometry?.dispose();

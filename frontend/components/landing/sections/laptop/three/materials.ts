@@ -3,10 +3,10 @@ import type { ThreeKit } from "@/lib/three-loader";
 export function createMaterials({ THREE }: ThreeKit) {
   return {
     body: new THREE.MeshPhysicalMaterial({
-      color: 0xf2330a,
+      color: 0xe82a05,
       metalness: 0.78,
-      roughness: 0.4,
-      clearcoat: 0.35,
+      roughness: 0.42,
+      clearcoat: 0.3,
       clearcoatRoughness: 0.35,
       envMapIntensity: 1.1,
     }),

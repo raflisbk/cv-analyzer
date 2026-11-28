@@ -2,7 +2,7 @@ import { loadThree, type ThreeKit } from "@/lib/three-loader";
 import { containScreen, screenSize } from "@/lib/landing-laptop-screen";
 import type { Fit } from "@/lib/landing-laptop-camera";
 import { LAPTOP_PROGRESS_EVENT } from "./progress-event";
-import { createLaptopRenderer, type LaptopRenderer } from "./scene";
+import type { LaptopRenderer } from "./scene";
 
 export type LaptopStatus = "ready" | "failed";
 
@@ -63,10 +63,12 @@ function drawFrame(state: LaptopState, host: HTMLElement, panel: HTMLElement) {
   host.dataset.glTextures = String(textures);
 }
 
+type SceneModule = typeof import("./scene");
+
 function attachRenderer(
   state: LaptopState,
   host: HTMLElement,
-  kit: ThreeKit,
+  [kit, scene]: [ThreeKit, SceneModule],
   label: string,
   request: () => void,
 ) {
@@ -74,7 +76,12 @@ function attachRenderer(
   canvas.setAttribute("role", "img");
   canvas.setAttribute("aria-label", label);
   host.appendChild(canvas);
-  const renderer = createLaptopRenderer(kit, canvas, host.clientWidth, request);
+  const renderer = scene.createLaptopRenderer(
+    kit,
+    canvas,
+    host.clientWidth,
+    request,
+  );
   if (!renderer) {
     canvas.remove();
     return false;
@@ -114,11 +121,11 @@ export function mountLaptopController(
     state.progress = (event as CustomEvent<{ scene: number }>).detail.scene;
     request();
   };
-  const build = (kit: ThreeKit) => {
+  const build = (modules: [ThreeKit, SceneModule]) => {
     if (state.disposed) {
       return;
     }
-    if (!attachRenderer(state, host, kit, label, request)) {
+    if (!attachRenderer(state, host, modules, label, request)) {
       onStatus("failed");
       return;
     }
@@ -133,7 +140,7 @@ export function mountLaptopController(
     (near) => {
       if (near && !started) {
         started = true;
-        loadThree()
+        Promise.all([loadThree(), import("./scene")])
           .then(build)
           .catch(() => !state.disposed && onStatus("failed"));
       }
