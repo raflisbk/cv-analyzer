@@ -79,11 +79,11 @@ async def find_owned_including_deleted(
     return conversation
 
 
-def deleted_payload(conversation: Conversation) -> DeletedConversation:
+def deleted_payload(conversation_id: UUID, deleted_at: datetime) -> DeletedConversation:
     return DeletedConversation(
-        id=str(conversation.id),
-        deletedAt=conversation.deleted_at,
-        restoreUntil=conversation.deleted_at + retention(),
+        id=str(conversation_id),
+        deletedAt=deleted_at,
+        restoreUntil=deleted_at + retention(),
     )
 
 
@@ -92,6 +92,7 @@ async def soft_delete_conversation(
 ) -> DeletedConversation:
     conversation = await find_owned_including_deleted(db, user_id, conversation_id)
     now = datetime.now(UTC)
+    deleted_at = conversation.deleted_at or now
     if conversation.deleted_at is None:
         await db.execute(
             update(Conversation)
@@ -99,10 +100,9 @@ async def soft_delete_conversation(
             .values(deleted_at=now, updated_at=Conversation.updated_at)
         )
         await db.commit()
-        await db.refresh(conversation)
-    elif now - conversation.deleted_at >= retention():
+    elif now - deleted_at >= retention():
         raise HTTPException(status_code=404, detail="Conversation not found.")
-    return deleted_payload(conversation)
+    return deleted_payload(conversation.id, deleted_at)
 
 
 async def restore_conversation(
