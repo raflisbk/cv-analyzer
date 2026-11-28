@@ -5,19 +5,8 @@ import { useJobStream } from "@/hooks/use-job-stream";
 import { useJobResults } from "@/hooks/use-job-results";
 import { useT } from "@/components/i18n/i18n-provider";
 import { usePathy } from "@/components/pathy/pathy-context";
-import { toUiStage } from "@/lib/upload/stage";
+import { stageMessageKey } from "@/lib/upload/stage";
 import { useAppShellScoreCount } from "./use-app-shell-score-count";
-
-const stages: Record<string, number> = {
-  extracting: 0,
-  parsing: 0,
-  analyzing: 1,
-  scoring: 2,
-  grammar: 3,
-  generating: 4,
-  suggesting: 4,
-  complete: 5,
-};
 
 export function useAppShellAnalysisProgress(
   jobId: string,
@@ -44,9 +33,12 @@ export function useAppShellAnalysisProgress(
     }
   }, [complete, pathy, t]);
   return {
-    active: stages[progress?.stage ?? "extracting"] ?? 0,
+    active: progress?.step ?? 0,
     message: progress
-      ? t(`upload.stages.${toUiStage(progress.stage, "analyzing")}`)
+      ? t(`upload.stages.${stageMessageKey(progress.stage)}`, {
+          done: progress.done ?? 0,
+          total: progress.total ?? 0,
+        })
       : undefined,
     failed: Boolean(error || progress?.stage === "failed" || result.isError),
     complete: Boolean(complete && result.data?.scores),
