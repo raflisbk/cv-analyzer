@@ -1,7 +1,5 @@
 from unittest.mock import AsyncMock, patch
 
-import pytest
-
 from app.tasks.scoring import score_cv_task
 from tests.pipeline_fakes import SCORES, EventRecorder, make_job, session_maker_for
 
