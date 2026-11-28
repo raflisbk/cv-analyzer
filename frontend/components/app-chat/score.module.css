@@ -34,7 +34,7 @@
 }
 .dims > div {
   display: grid;
-  grid-template-columns: 74px 1fr;
+  grid-template-columns: 88px 1fr;
   gap: 8px;
   align-items: center;
 }
