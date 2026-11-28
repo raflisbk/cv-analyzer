@@ -21,7 +21,6 @@ import {
   parseTheme,
   type Theme,
 } from "@/components/theme/theme-cookie";
-import Dock from "@/components/dock/dock";
 
 export const metadata: Metadata = {
   icons: { icon: "/landing/logo/pathkr-icon.svg" },
@@ -61,7 +60,6 @@ export default async function RootLayout({
             <QueryProvider>
               <AuthProvider>
                 {children}
-                <Dock />
                 <Toaster />
               </AuthProvider>
             </QueryProvider>
