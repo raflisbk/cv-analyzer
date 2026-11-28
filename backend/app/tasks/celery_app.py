@@ -25,6 +25,7 @@ celery_app = Celery(
         "app.tasks.llm_suggest",
         "app.tasks.comparison",
         "app.tasks.cleanup",
+        "app.tasks.cleanup_conversations",
     ],
 )
 
@@ -47,6 +48,10 @@ celery_app.conf.beat_schedule = {
     "cleanup-expired-files": {
         "task": "app.tasks.cleanup.cleanup_expired_files",
         "schedule": crontab(minute="0", hour="*/1"),
+    },
+    "purge-deleted-conversations": {
+        "task": "app.tasks.cleanup_conversations.purge_deleted_conversations",
+        "schedule": crontab(minute="15", hour="*/1"),
     },
 }
 
