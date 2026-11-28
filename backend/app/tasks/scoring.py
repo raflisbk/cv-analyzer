@@ -7,6 +7,7 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.scoring.scorer import score_cv
+from app.services.progress.stages import stage_percentage
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask, mark_job_failed
 
@@ -19,7 +20,9 @@ from app.tasks.document_processing import ProgressTask, mark_job_failed
 )
 def score_cv_task(self: Task, job_id: str) -> dict:
     async def _run() -> dict:
-        self.update_progress(job_id, "scoring", 75, "Scoring CV with AI...")
+        self.update_progress(
+            job_id, "scoring", stage_percentage("scoring"), "Scoring CV with AI..."
+        )
 
         # Load CV text and job metadata
         async with async_session_maker() as session:
