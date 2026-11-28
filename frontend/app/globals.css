@@ -71,7 +71,6 @@ main[data-landing] {
     --ink-section: #1a0b07;
     --red-section-deep: #b81d00;
     --red-surface-text: #de2802;
-    --dock-bg: rgba(253, 253, 255, 0.92);
     --dock-ring: #1a0b07;
     --nav-tone-red: var(--red-section);
     --nav-tone-snow: var(--surface);
@@ -107,7 +106,6 @@ main[data-landing] {
     --ink-section: #0d0503;
     --red-section-deep: #3d0a03;
     --red-surface-text: #6f1100;
-    --dock-bg: rgba(42, 20, 16, 0.92);
     --dock-ring: #f2ff00;
   }
 
@@ -401,12 +399,12 @@ body > * {
   transition: opacity 170ms ease;
 }
 
-html[data-locale-fade="out"] body > *:not([data-dock]) {
+html[data-locale-fade="out"] body > * {
   opacity: 0.08;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-locale-fade="out"] body > *:not([data-dock]) {
+  html[data-locale-fade="out"] body > * {
     opacity: 1;
   }
 }
