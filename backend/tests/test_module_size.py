@@ -10,7 +10,6 @@ OVERSIZED_BASELINE = {
     "services/scoring/llm_scorer.py": 644,
     "services/ats/checker.py": 618,
     "api/v1/endpoints/workspace.py": 593,
-    "tasks/llm_suggest.py": 392,
     "services/llm/koboi_llm_service.py": 338,
     "services/scoring/anchors.py": 359,
     "services/nlp/section_detector.py": 333,
