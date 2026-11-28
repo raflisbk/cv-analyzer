@@ -44,9 +44,10 @@ class ProgressTask(Task):
         message: str,
         done: int | None = None,
         total: int | None = None,
+        extra: dict | None = None,
     ):
         progress_data = build_progress_payload(
-            job_id, stage, message, percentage, done, total
+            job_id, stage, message, percentage, done, total, extra
         )
         redis_client.setex(f"job:progress:{job_id}", 3600, json.dumps(progress_data))
         redis_client.publish(f"job:updates:{job_id}", json.dumps(progress_data))

@@ -16,6 +16,7 @@ REAL_PIPELINE_STAGE_NAMES = [
     "extracting_skills",
     "detecting_archetype",
     "scoring",
+    "scores_ready",
     "grammar_check",
     "indexing_cv",
     "generating_suggestions",
@@ -49,6 +50,7 @@ def test_each_backend_stage_maps_to_its_ui_step():
         "extracting_skills": 1,
         "detecting_archetype": 1,
         "scoring": 2,
+        "scores_ready": 3,
         "grammar_check": 3,
         "generating_suggestions": 4,
         "indexing_cv": 4,
@@ -104,3 +106,19 @@ def test_indexing_percentage_handles_empty_total_and_overshoot():
 
 def test_indexing_message_carries_real_counts():
     assert indexing_message(7, 15) == "Indexing your CV (7/15)"
+
+
+def test_extra_fields_are_merged_into_the_payload():
+    payload = build_progress_payload(
+        "job", "scores_ready", "m", extra={"scores": {"overall": 7}}
+    )
+    assert payload["scores"] == {"overall": 7}
+    assert payload["step"] == 3
+
+
+def test_scores_ready_sits_between_scoring_and_grammar_check():
+    assert (
+        stage_percentage("scoring")
+        < stage_percentage("scores_ready")
+        < stage_percentage("grammar_check")
+    )
