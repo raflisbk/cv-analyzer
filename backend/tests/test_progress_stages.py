@@ -75,6 +75,12 @@ def test_explicit_percentage_overrides_table_value():
     assert build_progress_payload("job", "scoring", "m", 71)["percentage"] == 71
 
 
+def test_counts_are_added_only_when_both_are_given():
+    with_counts = build_progress_payload("job", "indexing_cv", "m", 81, 3, 15)
+    assert (with_counts["done"], with_counts["total"]) == (3, 15)
+    assert "done" not in build_progress_payload("job", "indexing_cv", "m", 81, 3)
+
+
 def test_unknown_and_failed_stages_carry_no_step():
     for stage in ("failed", "comparing_job"):
         payload = build_progress_payload("job", stage, "m", 0)
