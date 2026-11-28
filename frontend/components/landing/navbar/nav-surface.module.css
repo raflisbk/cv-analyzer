@@ -34,10 +34,10 @@
   translate: 0 -50%;
   opacity: 0;
 }
-.surface[data-tone="snow"] .lockupLight {
+:root:not([data-theme="dark"]) .surface[data-tone="snow"] .lockupLight {
   opacity: 0;
 }
-.surface[data-tone="snow"] .lockupInk {
+:root:not([data-theme="dark"]) .surface[data-tone="snow"] .lockupInk {
   opacity: 1;
 }
 @media (prefers-reduced-motion: reduce) {
