@@ -19,6 +19,7 @@ PIPELINE_STAGES: tuple[Stage, ...] = (
     Stage("extracting_skills", 1, 40),
     Stage("detecting_archetype", 1, 52),
     Stage("scoring", 2, 62),
+    Stage("scores_ready", 3, 68),
     Stage("grammar_check", 3, 76),
     Stage("indexing_cv", 4, 80),
     Stage("generating_suggestions", 4, 90),
@@ -58,6 +59,7 @@ def build_progress_payload(
     percentage: int | None = None,
     done: int | None = None,
     total: int | None = None,
+    extra: dict | None = None,
 ) -> dict:
     payload = {
         "stage": stage,
@@ -72,4 +74,6 @@ def build_progress_payload(
     if done is not None and total is not None:
         payload["done"] = done
         payload["total"] = total
+    if extra:
+        payload.update(extra)
     return payload
