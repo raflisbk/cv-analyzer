@@ -1,12 +1,18 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useT } from "@/components/i18n/i18n-provider";
 import { useAppShellFocusTrap } from "@/hooks/use-app-shell-focus-trap";
 import ArtifactPanelBody from "./artifact-panel-body";
 import { useNarrowViewport } from "./use-narrow-viewport";
 import styles from "./artifact.module.css";
+
+function overDock(node: ReactNode, sheet: boolean): ReactNode {
+  const root = document.querySelector(".app-root");
+  return sheet && root ? createPortal(node, root) : node;
+}
 
 export default function ArtifactPanel({
   jobId,
@@ -19,7 +25,7 @@ export default function ArtifactPanel({
   const ref = useRef<HTMLElement>(null);
   const sheet = useNarrowViewport();
   useAppShellFocusTrap(sheet, ref, close);
-  return (
+  return overDock(
     <>
       {sheet && (
         <div className={styles.backdrop} onClick={close} aria-hidden="true" />
@@ -45,6 +51,7 @@ export default function ArtifactPanel({
         </header>
         <ArtifactPanelBody jobId={jobId} />
       </aside>
-    </>
+    </>,
+    sheet,
   );
 }

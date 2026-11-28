@@ -25,6 +25,9 @@
 .drawer[data-open="true"] {
   translate: 0;
 }
+.drawer:not([data-open="true"]) {
+  box-shadow: none;
+}
 .drawerTop {
   display: flex;
   align-items: center;

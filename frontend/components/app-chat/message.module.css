@@ -56,6 +56,12 @@
   gap: 4px;
   padding-left: 22px;
 }
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
 .prose a {
   color: var(--accent-red-deep);
   text-decoration: underline;
