@@ -1,12 +1,12 @@
 "use client";
 import { faqItems } from "@/lib/landing-faq";
-import { useLandingFaq } from "@/hooks/use-landing-faq";
+import { useFaqSection } from "./use-faq-section";
 import base from "../section.module.css";
 import styles from "./faq.module.css";
 import FaqHeader from "./faq-header";
 import FaqItem from "./faq-item";
 export default function FaqSection() {
-  const { ref, open, toggle } = useLandingFaq();
+  const { ref, open, toggle } = useFaqSection();
   return (
     <section
       ref={ref}
