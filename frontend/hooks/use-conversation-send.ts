@@ -62,5 +62,20 @@ export function useConversationSend(getId: () => Promise<string>) {
       setBusy(false);
     }
   };
-  return { messages, busy, error, send, retry: () => send(failedText, true) };
+  const regenerate = (visible: ChatMessage[] = messages) => {
+    const lastUser = [...visible]
+      .reverse()
+      .find((item) => item.role === "user");
+    if (lastUser) {
+      void send(lastUser.text, messages.length >= 2);
+    }
+  };
+  return {
+    messages,
+    busy,
+    error,
+    send,
+    regenerate,
+    retry: () => send(failedText, true),
+  };
 }
