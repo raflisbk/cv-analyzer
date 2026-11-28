@@ -1,0 +1,115 @@
+.panel {
+  box-sizing: border-box;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  margin: 0 0 14px;
+  padding: 16px;
+  overflow-y: auto;
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  background: var(--chat-soft);
+  color: var(--text);
+  animation: slide-in 0.25s ease-out both;
+}
+.panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel h3 {
+  margin: 0;
+  font: 800 17px var(--app-font-display);
+}
+.close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.close:hover {
+  background: var(--line);
+}
+.panel :is(button, a):focus-visible {
+  outline: 3px solid var(--dock-ring);
+  outline-offset: 2px;
+}
+.file {
+  margin: -6px 0 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skeleton {
+  display: grid;
+  gap: 12px;
+}
+.skeleton i {
+  display: block;
+  height: 64px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--line), transparent, var(--line));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+.error {
+  margin: 0;
+  color: var(--accent-red-deep);
+}
+.error button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--app-overlay);
+}
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (max-width: 899px) {
+  .panel {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 90;
+    max-height: 82dvh;
+    margin: 0;
+    padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+    border-radius: 24px 24px 0 0;
+    background: var(--surface);
+    animation-name: slide-up;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .skeleton i {
+    animation: none;
+  }
+}

@@ -1,0 +1,101 @@
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ring {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--accent-red) 0 var(--pct),
+    var(--line) var(--pct) 100%
+  );
+}
+.ring span {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  font: 800 30px var(--app-font-display);
+}
+.dims {
+  display: grid;
+  flex: 1;
+  gap: 7px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dims > div {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+.dims dt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dims dd {
+  display: grid;
+  grid-template-columns: 1fr 24px;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+}
+.dims i {
+  position: relative;
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--line);
+}
+.dims i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: var(--v);
+  border-radius: 6px;
+  background: var(--accent-red);
+}
+.fixes {
+  display: grid;
+  gap: 8px;
+}
+.fixes h4 {
+  margin: 0;
+  font: 800 14px var(--app-font-display);
+}
+.fixes ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fixes li {
+  padding: 9px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-raised);
+  font-size: 13px;
+}
+.fixes li b {
+  display: block;
+}
+.applyAll {
+  justify-self: start;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--app-punk);
+  color: var(--app-on-punk);
+  font: 700 14px var(--app-font-body);
+  text-decoration: none;
+}
