@@ -111,5 +111,10 @@
   }
   .copy p {
     font-size: 17px;
+    background: var(--red-surface-text);
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin: 12px -16px 18px;
+    max-width: calc(32ch + 32px);
   }
 }
