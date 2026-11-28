@@ -1,6 +1,5 @@
 import asyncio
 import json
-from datetime import UTC, datetime
 
 import redis as redis_lib
 from celery import Task
@@ -10,6 +9,7 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.anchor_service import compute_suggestion_anchors
+from app.services.cv_document import build_cv_document
 from app.services.llm.koboi_llm_service import KoboiLLMService
 from app.services.llm.protocol import SuggestionsOutput
 from app.services.llm.suggestions_parse import parse_suggestions
@@ -29,53 +29,6 @@ def _get_redis_client() -> redis_lib.Redis:
     if _redis_client is None:
         _redis_client = redis_lib.from_url(celery_app.conf.broker_url)
     return _redis_client
-
-
-def _build_cv_document(
-    nlp_result: dict | None,
-    suggestions_json: list | None,
-    scores: dict | None,
-) -> dict:
-    cv_document: dict = {
-        "sections": [],
-        "metadata": {
-            "extracted_at": datetime.now(UTC).isoformat(),
-            "parser_version": "1.0",
-        },
-    }
-
-    if nlp_result and "sections" in nlp_result:
-        for section_data in nlp_result["sections"]:
-            cv_document["sections"].append(
-                {
-                    "type": section_data.get("type", "unknown"),
-                    "title": section_data.get("title", ""),
-                    "content": section_data.get("text", ""),
-                    "items": section_data.get("items", []),
-                }
-            )
-
-    if suggestions_json:
-        cv_document["suggestions"] = suggestions_json
-
-    if scores:
-        _s = scores if isinstance(scores, dict) else scores.__dict__
-        clarity = _s.get("clarity", 0) or 0
-        impact = _s.get("impact", 0) or 0
-        completeness = _s.get("completeness", 0) or 0
-        relevance = _s.get("relevance", 0) or 0
-        overall = _s.get("overall") or int(
-            impact * 0.35 + clarity * 0.30 + relevance * 0.20 + completeness * 0.15
-        )
-        cv_document["scores"] = {
-            "overall": overall,
-            "clarity": clarity,
-            "impact": impact,
-            "completeness": completeness,
-            "relevance": relevance,
-        }
-
-    return cv_document
 
 
 @celery_app.task(
@@ -292,7 +245,7 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
                     file_id, suggestions_json
                 )
 
-            job.cv_document = _build_cv_document(nlp_result, suggestions_json, scores)
+            job.cv_document = build_cv_document(nlp_result, suggestions_json, scores)
             job.status = JobStatus.COMPLETE
             await session.commit()
 
