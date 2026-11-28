@@ -2,12 +2,18 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SSEConnection, SSEMessage } from "@/lib/sse";
+import { resolveStep } from "@/lib/upload/stage";
 import { useT } from "@/components/i18n/i18n-provider";
+
+const POLL_INTERVAL_MS = 3000;
 
 interface ProgressUpdate {
   stage: string;
   percentage: number;
   message: string;
+  step: number;
+  done?: number;
+  total?: number;
 }
 
 interface UseJobStreamOptions {
@@ -25,6 +31,7 @@ export function useJobStream(
   const tRef = useRef(t);
   tRef.current = t;
   const completedRef = useRef(false);
+  const stepRef = useRef(0);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onCompleteRef = useRef(options?.onComplete);
   onCompleteRef.current = options?.onComplete;
@@ -48,7 +55,7 @@ export function useJobStream(
           return;
         }
         try {
-          const res = await fetch(`${apiUrl}/jobs/${id}/results`, {
+          const res = await fetch(`${apiUrl}/jobs/${id}`, {
             credentials: "include",
           });
           if (!res.ok) return;
@@ -60,9 +67,11 @@ export function useJobStream(
             if (status === "complete") {
               onComplete(id);
             }
+            stepRef.current = status === "complete" ? 5 : stepRef.current;
             setProgress({
               stage: status,
               percentage: 100,
+              step: stepRef.current,
               message:
                 status === "complete"
                   ? tRef.current("errors.stream.complete")
@@ -78,7 +87,7 @@ export function useJobStream(
       if (!pollIntervalRef.current) {
         pollIntervalRef.current = setInterval(() => {
           void checkStatus();
-        }, 4000);
+        }, POLL_INTERVAL_MS);
       }
     },
     [apiUrl, stopPolling],
@@ -89,6 +98,7 @@ export function useJobStream(
     setIsConnected(false);
     setError(null);
     completedRef.current = false;
+    stepRef.current = 0;
     stopPolling();
 
     if (!jobId) return;
@@ -107,10 +117,14 @@ export function useJobStream(
           data.percentage !== undefined &&
           data.message
         ) {
+          stepRef.current = resolveStep(data.stage, data.step, stepRef.current);
           setProgress({
             stage: data.stage,
             percentage: data.percentage,
             message: data.message,
+            step: stepRef.current,
+            done: data.done,
+            total: data.total,
           });
           if (data.stage === "complete" && onCompleteRef.current && jobId) {
             completedRef.current = true;
@@ -125,8 +139,7 @@ export function useJobStream(
           }
         }
       },
-      (err: Error) => {
-        setError(err);
+      () => {
         setIsConnected(false);
         if (!completedRef.current && jobId && onCompleteRef.current) {
           startFallbackPoll(jobId, onCompleteRef.current);
