@@ -1,18 +1,25 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import AppHeader from "./app-header";
 import HistoryDrawer from "./history-drawer";
 import PathyProvider from "@/components/pathy/pathy-provider";
+import { isChatRoute } from "./chat-route";
 import styles from "./app-shell.module.css";
+import chatStyles from "./app-shell-chat.module.css";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [chatKey, setChatKey] = useState(0);
+  const chat = isChatRoute(usePathname());
   const newChat = () => setChatKey((value) => value + 1);
   return (
     <PathyProvider>
-      <div className={styles.app}>
+      <div
+        className={`${styles.app} ${chat ? chatStyles.chat : ""}`}
+        data-chat={chat}
+      >
         <svg
           className={styles.waves}
           viewBox="0 0 1440 900"
@@ -27,6 +34,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           openDrawer={() => setDrawerOpen(true)}
           drawerOpen={drawerOpen}
           newChat={newChat}
+          chat={chat}
         />
         <main className={styles.main} key={chatKey}>
           {children}

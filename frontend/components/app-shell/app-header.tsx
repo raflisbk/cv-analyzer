@@ -13,10 +13,12 @@ export default function AppHeader({
   openDrawer,
   drawerOpen,
   newChat,
+  chat = false,
 }: {
   openDrawer: () => void;
   drawerOpen: boolean;
   newChat: () => void;
+  chat?: boolean;
 }) {
   const user = useAuthStore((state) => state.user);
   const { t } = useT();
@@ -31,7 +33,7 @@ export default function AppHeader({
       >
         <Menu size={21} />
       </button>
-      <AppLogo newChat={newChat} />
+      <AppLogo newChat={newChat} chat={chat} />
       <AppNav />
       <div className={styles.account} data-tour="account">
         {user && <AccountMenu user={user} app />}
