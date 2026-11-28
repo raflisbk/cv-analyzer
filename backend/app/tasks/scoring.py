@@ -7,9 +7,19 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.scoring.scorer import score_cv
+from app.services.progress.scores_event import SCORES_READY_MESSAGE, summary_scores
 from app.services.progress.stages import stage_percentage
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask, mark_job_failed
+
+
+async def _save_scores(job_id: str, scores: dict) -> None:
+    async with async_session_maker() as session:
+        result = await session.execute(select(Job).where(Job.id == job_id))
+        job = result.scalar_one_or_none()
+        if job:
+            job.scores = scores
+            await session.commit()
 
 
 @celery_app.task(
@@ -182,14 +192,14 @@ def score_cv_task(self: Task, job_id: str) -> dict:
         except Exception as e:
             logger.warning("ats_score_computation_failed", error=str(e))
 
-        # Save scores
-        async with async_session_maker() as session:
-            stmt = select(Job).where(Job.id == job_id)
-            result = await session.execute(stmt)
-            job = result.scalar_one_or_none()
-            if job:
-                job.scores = scores
-                await session.commit()
+        await _save_scores(job_id, scores)
+        self.update_progress(
+            job_id,
+            "scores_ready",
+            stage_percentage("scores_ready"),
+            SCORES_READY_MESSAGE,
+            extra={"scores": summary_scores(scores)},
+        )
 
         logger.info(
             "scoring_done",
