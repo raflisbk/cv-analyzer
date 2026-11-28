@@ -15,8 +15,10 @@ from app.models.user import User
 from app.services.progress.event_stream import (
     TERMINAL_STAGE_NAMES,
     iter_job_events,
+    sse_frame,
     terminal_event_frame,
 )
+from app.services.progress.scores_event import scores_ready_payload
 
 router = APIRouter()
 settings = get_settings()
@@ -27,6 +29,12 @@ async def fetch_status_for(job_id: str) -> str | None:
         res = await session.execute(select(Job.status).where(Job.id == job_id))
         status = res.scalar_one_or_none()
     return status.value if status else None
+
+
+async def fetch_scores_for(job_id: str) -> dict | None:
+    async with async_session_maker() as session:
+        res = await session.execute(select(Job.scores).where(Job.id == job_id))
+        return res.scalar_one_or_none()
 
 
 @router.get("/stream/{job_id}")
@@ -60,6 +68,10 @@ async def stream_job_progress(
                     stage=stage,
                 )
                 return
+
+            ready = scores_ready_payload(job_id, await fetch_scores_for(job_id))
+            if ready:
+                yield sse_frame(json.dumps(ready))
 
             async for frame in iter_job_events(
                 pubsub, job_id, lambda: fetch_status_for(job_id)
