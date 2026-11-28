@@ -13,6 +13,7 @@ from app.services.chat_stream.store import (
     list_messages,
     owned_conversation,
     save_user_message,
+    summary,
     title_from_text,
 )
 
@@ -88,3 +89,18 @@ async def test_message_history_is_in_database_order():
         ("user", "Hello"),
         ("assistant", "Hi"),
     ]
+
+
+def test_summary_always_reports_pin_state():
+    pinned_at = datetime(2026, 11, 1, tzinfo=UTC)
+    item = Conversation(
+        id=uuid.uuid4(),
+        user_id=uuid.uuid4(),
+        title="A",
+        pinned=True,
+        pinned_at=pinned_at,
+    )
+    item.updated_at = pinned_at
+    result = summary(item, None)
+    assert {"pinned", "pinnedAt"} <= result.model_fields_set
+    assert result.pinnedAt == pinned_at
