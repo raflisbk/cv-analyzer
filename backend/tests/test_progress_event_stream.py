@@ -134,11 +134,11 @@ async def _drain_endpoint(status: str | None):
         ),
     ):
         response = await stream_endpoint.stream_job_progress("job-1", db, None)
-        return [frame async for frame in response.body_iterator]
+        return [frame async for frame in response.body_iterator], response
 
 
 async def test_terminal_event_on_connect_still_works():
-    frames = await _drain_endpoint("complete")
+    frames, _ = await _drain_endpoint("complete")
     assert json.loads(frames[0][6:])["type"] == "connected"
     assert frames[1] == terminal_event_frame("job-1", "complete")
     assert len(frames) == 2
@@ -149,3 +149,9 @@ async def test_terminal_frame_names_the_status(status):
     payload = json.loads(terminal_event_frame("job-1", status)[6:])
     assert payload["stage"] == status
     assert payload["percentage"] == 100
+
+
+async def test_stream_response_opts_out_of_proxy_compression_buffering():
+    _, response = await _drain_endpoint("complete")
+    assert response.media_type == "text/event-stream"
+    assert "no-transform" in response.headers["cache-control"]
