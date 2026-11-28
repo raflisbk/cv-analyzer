@@ -10,13 +10,23 @@ from app.api.dependencies import check_job_access, get_current_user
 from app.core.config import get_settings
 from app.core.logging import structured_logger as logger
 from app.db.session import AsyncSession, async_session_maker, get_db
-from app.models.job import Job, JobStatus
+from app.models.job import Job
 from app.models.user import User
+from app.services.progress.event_stream import (
+    TERMINAL_STAGE_NAMES,
+    iter_job_events,
+    terminal_event_frame,
+)
 
 router = APIRouter()
 settings = get_settings()
 
-TERMINAL_STAGES = {JobStatus.COMPLETE, JobStatus.FAILED}
+
+async def fetch_status_for(job_id: str) -> str | None:
+    async with async_session_maker() as session:
+        res = await session.execute(select(Job.status).where(Job.id == job_id))
+        status = res.scalar_one_or_none()
+    return status.value if status else None
 
 
 @router.get("/stream/{job_id}")
@@ -41,16 +51,9 @@ async def stream_job_progress(
             yield f"data: {json.dumps({'type': 'connected', 'job_id': job_id})}\n\n"
             logger.info("sse_connected", job_id=job_id)
 
-            async with async_session_maker() as session:
-                res = await session.execute(select(Job).where(Job.id == job_id))
-                current_job = res.scalar_one_or_none()
-
-            if current_job and current_job.status in TERMINAL_STAGES:
-                stage = current_job.status.value
-                terminal_event = json.dumps(
-                    {"stage": stage, "percentage": 100, "message": f"Analysis {stage}."}
-                )
-                yield f"data: {terminal_event}\n\n"
+            stage = await fetch_status_for(job_id)
+            if stage in TERMINAL_STAGE_NAMES:
+                yield terminal_event_frame(job_id, stage)
                 logger.info(
                     "sse_terminal_on_connect",
                     job_id=job_id,
@@ -58,19 +61,11 @@ async def stream_job_progress(
                 )
                 return
 
-            async for message in pubsub.listen():
-                if message["type"] == "message":
-                    data = message["data"].decode("utf-8")
-                    yield f"data: {data}\n\n"
-
-                    progress = json.loads(data)
-                    if progress.get("stage") in ["complete", "failed"]:
-                        logger.info(
-                            "sse_terminal",
-                            job_id=job_id,
-                            stage=progress.get("stage"),
-                        )
-                        break
+            async for frame in iter_job_events(
+                pubsub, job_id, lambda: fetch_status_for(job_id)
+            ):
+                yield frame
+            logger.info("sse_closed", job_id=job_id)
 
         except asyncio.CancelledError:
             logger.info("sse_disconnected", job_id=job_id)
