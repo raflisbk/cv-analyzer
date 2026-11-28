@@ -5,6 +5,7 @@ import { parseRules, readSource } from "./css-blocks";
 
 const appFolders = [
   "app-shell",
+  "app-chat",
   "app-home",
   "app-cvs",
   "app-reports",

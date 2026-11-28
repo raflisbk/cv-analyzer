@@ -4,44 +4,62 @@ import { useQuery } from "@tanstack/react-query";
 import { useT } from "@/components/i18n/i18n-provider";
 import { listCvs } from "@/lib/app-api/cvs";
 import { useConversationHome } from "@/hooks/use-conversation-home";
-import ChatComposer from "./chat-composer";
-import ChatThread from "./chat-thread";
+import { useChatArtifact } from "@/hooks/use-chat-artifact";
+import ChatComposer from "@/components/app-chat/chat-composer";
+import ChatConversation from "@/components/app-chat/chat-conversation";
+import ChatLayout from "@/components/app-chat/chat-layout";
+import ChatNote from "@/components/app-chat/chat-note";
+import {
+  panelProps,
+  threadArtifact,
+} from "@/components/app-chat/thread-artifact";
 import AnalysisProgress from "./analysis-progress";
 import HomeHero from "./home-hero";
 import HomeQuickLinks from "./home-quick-links";
-import shell from "@/components/app-shell/app-shell.module.css";
-import styles from "./home.module.css";
-import threadStyles from "./home-thread.module.css";
 
 export default function HomeChat() {
   const { t } = useT();
-  const { messages, busy, error, jobId, setJobId, send, retry } =
-    useConversationHome();
+  const chat = useConversationHome();
+  const { messages, busy, jobId } = chat;
   const { data: cvs } = useQuery({ queryKey: ["app-cvs"], queryFn: listCvs });
-  const latest = cvs?.[0];
+  const artifact = useChatArtifact({ jobId, messages, busy });
+  const started = messages.length > 0 || Boolean(jobId);
+  const last = messages[messages.length - 1];
   return (
-    <div
-      className={messages.length || jobId ? threadStyles.openHome : styles.home}
-    >
-      {!messages.length && !jobId && <HomeHero />}
-      {(messages.length > 0 || jobId) && (
-        <section className={`${shell.sheet} ${threadStyles.threadSheet}`}>
-          <ChatThread messages={messages} typing={busy} />
-          {jobId && <AnalysisProgress jobId={jobId} />}
-          {error && (
-            <p className={threadStyles.assistantMessage} role="alert">
-              {error}{" "}
-              <button type="button" onClick={retry}>
-                {t("app.home.retry")}
-              </button>
-            </p>
+    <ChatLayout
+      empty={!started}
+      scrollSignature={`${messages.length}:${last?.text.length ?? 0}:${jobId}`}
+      panel={panelProps(jobId, artifact)}
+      bottom={
+        <>
+          <ChatComposer
+            onSend={chat.send}
+            busy={busy}
+            onUploaded={chat.setJobId}
+            placeholder={t(started ? "app.chat.reply" : "app.home.composer")}
+          />
+          {started ? (
+            <ChatNote />
+          ) : (
+            <HomeQuickLinks latest={cvs?.[0]} send={chat.send} />
           )}
-        </section>
+        </>
+      }
+    >
+      {started ? (
+        <ChatConversation
+          messages={messages}
+          busy={busy}
+          error={chat.error}
+          onRetry={chat.retry}
+          onRegenerate={() => chat.regenerate()}
+          artifact={threadArtifact(jobId, artifact)}
+        >
+          {jobId && <AnalysisProgress jobId={jobId} />}
+        </ChatConversation>
+      ) : (
+        <HomeHero />
       )}
-      <ChatComposer onSend={send} busy={busy} onUploaded={setJobId} />
-      {!messages.length && !jobId && (
-        <HomeQuickLinks latest={latest} send={send} />
-      )}
-    </div>
+    </ChatLayout>
   );
 }

@@ -1,0 +1,126 @@
+.composer {
+  box-sizing: border-box;
+  width: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 12px 12px 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface-raised);
+  color: var(--text);
+  box-shadow: 0 10px 30px -14px rgba(60, 6, 0, 0.3);
+  transition: border-color 0.18s;
+}
+.composer:focus-within {
+  border-color: var(--accent-red);
+}
+.composer textarea {
+  width: 100%;
+  min-height: 26px;
+  max-height: 168px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  color: inherit;
+  font: 500 16px/1.6 var(--app-font-body);
+}
+.composer textarea::placeholder {
+  color: var(--text-muted);
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 14px 0 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  color: var(--text);
+  font: 600 14px var(--app-font-body);
+  cursor: pointer;
+  transition:
+    border-color 0.18s,
+    translate 0.18s;
+}
+.pill:hover:not(:disabled) {
+  border-color: var(--accent-red);
+  translate: 0 -1px;
+}
+.pill:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.send {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-red);
+  color: var(--app-on-red);
+  cursor: pointer;
+  transition:
+    scale 0.2s,
+    opacity 0.2s;
+}
+.send svg {
+  transition: rotate 0.2s;
+}
+.send:hover:not(:disabled) {
+  scale: 1.06;
+}
+.send:hover:not(:disabled) svg {
+  animation: wiggle 0.45s ease-in-out;
+}
+.send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tools [class*="helpCard"] {
+  top: auto;
+  bottom: 38px;
+}
+.composer :is(button, textarea):focus-visible {
+  outline: 3px solid var(--dock-ring);
+  outline-offset: 2px;
+}
+.composer textarea:focus-visible {
+  outline: 0;
+}
+@keyframes wiggle {
+  25% {
+    rotate: -16deg;
+  }
+  60% {
+    rotate: 12deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .composer,
+  .pill,
+  .send,
+  .send svg {
+    transition: none;
+  }
+  .send:hover:not(:disabled) svg {
+    animation: none;
+  }
+}
