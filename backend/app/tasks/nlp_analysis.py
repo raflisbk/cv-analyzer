@@ -8,6 +8,7 @@ from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.llm.cv_profile_extractor import attach_entities, extract_cv_profile
 from app.services.nlp.section_detector import detect_sections
+from app.services.progress.stages import stage_percentage
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask, mark_job_failed
 
@@ -40,11 +41,17 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
 
         # NLP work (sync, potentially slow) — outside DB session
         self.update_progress(
-            job_id, "analyzing_sections", 30, "Detecting CV sections..."
+            job_id,
+            "analyzing_sections",
+            stage_percentage("analyzing_sections"),
+            "Detecting CV sections...",
         )
         sections = detect_sections(text)
         self.update_progress(
-            job_id, "extracting_skills", 60, "Extracting skills, entities and role..."
+            job_id,
+            "extracting_skills",
+            stage_percentage("extracting_skills"),
+            "Extracting skills, entities and role...",
         )
         profile = extract_cv_profile(text)
         skills = profile["skills"]
@@ -53,7 +60,10 @@ def nlp_analyze_task(self: Task, job_id: str) -> dict:
         attach_entities(sections, entities)
 
         self.update_progress(
-            job_id, "detecting_archetype", 88, "Detecting AI role archetype..."
+            job_id,
+            "detecting_archetype",
+            stage_percentage("detecting_archetype"),
+            "Detecting AI role archetype...",
         )
         from app.services.llm.archetype_detector import detect_archetype
 

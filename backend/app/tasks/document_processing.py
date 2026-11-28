@@ -11,6 +11,7 @@ from app.core.logging import structured_logger as logger
 from app.db.session import async_session_maker
 from app.models import Job, JobStatus
 from app.services.parser import ParsingError, parse_document
+from app.services.progress.stages import build_progress_payload, stage_percentage
 from app.services.storage import storage_service
 from app.tasks.celery_app import celery_app
 
@@ -36,12 +37,7 @@ async def mark_job_failed(job_id: str, error_msg: str) -> None:
 
 class ProgressTask(Task):
     def update_progress(self, job_id: str, stage: str, percentage: int, message: str):
-        progress_data = {
-            "stage": stage,
-            "percentage": percentage,
-            "message": message,
-            "job_id": job_id,
-        }
+        progress_data = build_progress_payload(job_id, stage, message, percentage)
         redis_client.setex(f"job:progress:{job_id}", 3600, json.dumps(progress_data))
         redis_client.publish(f"job:updates:{job_id}", json.dumps(progress_data))
         logger.info(
@@ -86,7 +82,10 @@ class ProgressTask(Task):
 def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
     async def _run() -> dict:
         self.update_progress(
-            job_id, "extracting", 25, "Extracting text from document..."
+            job_id,
+            "extracting",
+            stage_percentage("extracting"),
+            "Extracting text from document...",
         )
         file_content = storage_service.get_file(file_id)
         text, metadata = parse_document(file_content, file_metadata["extension"])
@@ -100,7 +99,10 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
         )
 
         self.update_progress(
-            job_id, "validating", 70, "Validating extraction quality..."
+            job_id,
+            "validating",
+            stage_percentage("validating"),
+            "Validating extraction quality...",
         )
         quality_score = metadata.get("quality_score", 0.0)
 
@@ -133,7 +135,12 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
                 job.result = result_data
                 await session.commit()
 
-        self.update_progress(job_id, "parsing", 100, "Document parsed successfully!")
+        self.update_progress(
+            job_id,
+            "parsing",
+            stage_percentage("parsing"),
+            "Document parsed successfully!",
+        )
         logger.info(
             "document_processing_done",
             job_id=job_id,
@@ -154,7 +161,7 @@ def process_document_task(self, job_id: str, file_id: str, file_metadata: dict):
         self.update_progress(
             job_id,
             "extracting",
-            25,
+            stage_percentage("extracting"),
             f"Extraction failed, retrying... (attempt {self.request.retries + 1}/3)",
         )
         countdown = 60 * (2**self.request.retries)

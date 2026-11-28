@@ -10,6 +10,7 @@ from app.services.ats.checker import check_ats_compatibility
 from app.services.ats.hidden_text_check import hidden_text_check
 from app.services.grammar.checker import check_grammar
 from app.services.nlp.section_detector import CvSection, detect_sections
+from app.services.progress.stages import stage_percentage
 from app.tasks.celery_app import celery_app
 from app.tasks.document_processing import ProgressTask, mark_job_failed
 
@@ -23,7 +24,10 @@ from app.tasks.document_processing import ProgressTask, mark_job_failed
 def grammar_check_task(self: Task, job_id: str) -> dict:
     async def _run() -> dict:
         self.update_progress(
-            job_id, "grammar_check", 90, "Checking grammar and ATS compatibility..."
+            job_id,
+            "grammar_check",
+            stage_percentage("grammar_check"),
+            "Checking grammar and ATS compatibility...",
         )
 
         # Load job data
