@@ -15,7 +15,7 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   padding: 6px;
   border-radius: 999px;
   background: var(--dock-bg);

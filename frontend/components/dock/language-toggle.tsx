@@ -8,25 +8,18 @@ import styles from "./language-toggle.module.css";
 export default function LanguageToggle() {
   const { t } = useT();
   const { locale, choose } = useLanguageSwitch();
+  const other = LOCALES.find((item) => item !== locale) ?? locale;
+  const label = t("dock.switchLanguage");
   return (
-    <div
-      role="group"
-      aria-label={t("dock.language")}
-      className={styles.pill}
-      data-locale={locale}
+    <button
+      type="button"
+      className={styles.button}
+      aria-label={label}
+      title={label}
+      lang={locale}
+      onClick={() => choose(other)}
     >
-      <span className={styles.thumb} aria-hidden="true" />
-      {LOCALES.map((item) => (
-        <button
-          key={item}
-          type="button"
-          aria-pressed={locale === item}
-          onClick={() => choose(item)}
-          className={styles.option}
-        >
-          {item.toUpperCase()}
-        </button>
-      ))}
-    </div>
+      {locale.toUpperCase()}
+    </button>
   );
 }

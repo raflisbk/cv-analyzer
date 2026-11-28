@@ -37,19 +37,25 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const switchButton = () => screen.getByRole("button");
+
+it("shows the current code and names the other language", () => {
+  expect(switchButton()).toHaveTextContent("ID");
+  expect(switchButton()).toHaveAttribute("aria-label", "Ganti ke English");
+  expect(switchButton()).toHaveAttribute("title", "Ganti ke English");
+});
+
 it("fades out, then updates state, cookie and html lang before refreshing", () => {
-  fireEvent.click(screen.getByRole("button", { name: "EN" }));
+  fireEvent.click(switchButton());
   expect(document.documentElement.dataset.localeFade).toBe("out");
-  expect(screen.getByRole("button", { name: "EN" })).toHaveAttribute(
-    "aria-pressed",
-    "false",
-  );
+  expect(switchButton()).toHaveTextContent("ID");
   act(() => {
     vi.advanceTimersByTime(170);
   });
-  expect(screen.getByRole("button", { name: "EN" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
+  expect(switchButton()).toHaveTextContent("EN");
+  expect(switchButton()).toHaveAttribute(
+    "aria-label",
+    "Switch to Bahasa Indonesia",
   );
   expect(document.cookie).toContain("pathkr-locale=en");
   expect(document.documentElement.lang).toBe("en");
@@ -63,12 +69,9 @@ it("fades out, then updates state, cookie and html lang before refreshing", () =
 
 it("skips the fade under reduced motion", () => {
   mockReducedMotion(true);
-  fireEvent.click(screen.getByRole("button", { name: "EN" }));
+  fireEvent.click(switchButton());
   expect(document.documentElement.dataset.localeFade).toBeUndefined();
-  expect(screen.getByRole("button", { name: "EN" })).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
+  expect(switchButton()).toHaveTextContent("EN");
   expect(refresh).not.toHaveBeenCalled();
   act(() => {
     vi.advanceTimersByTime(0);
@@ -76,10 +79,21 @@ it("skips the fade under reduced motion", () => {
   expect(refresh).toHaveBeenCalledOnce();
 });
 
-it("ignores choosing the active locale", () => {
-  fireEvent.click(screen.getByRole("button", { name: "ID" }));
+it("switches back to the first language on a second click", () => {
+  fireEvent.click(switchButton());
   act(() => {
-    vi.advanceTimersByTime(500);
+    vi.advanceTimersByTime(340);
   });
-  expect(refresh).not.toHaveBeenCalled();
+  fireEvent.click(switchButton());
+  act(() => {
+    vi.advanceTimersByTime(340);
+  });
+  expect(switchButton()).toHaveTextContent("ID");
+  expect(document.cookie).toContain("pathkr-locale=id");
+});
+
+it("is operable from the keyboard as a native button", () => {
+  expect(switchButton().tagName).toBe("BUTTON");
+  switchButton().focus();
+  expect(document.activeElement).toBe(switchButton());
 });
