@@ -51,9 +51,13 @@ async def owned_job(db: AsyncSession, user_id: UUID, job_id: UUID) -> Job:
 
 def summary(conversation: Conversation, job: Job | None) -> ConversationSummary:
     scope = (
-        CvScope(jobId=str(job.id), fileName=job.file_metadata.get("filename", "CV"))
+        CvScope(
+            type="cv",
+            jobId=str(job.id),
+            fileName=job.file_metadata.get("filename", "CV"),
+        )
         if job
-        else GeneralScope()
+        else GeneralScope(type="general")
     )
     return ConversationSummary(
         id=str(conversation.id),

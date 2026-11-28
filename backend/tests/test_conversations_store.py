@@ -104,3 +104,21 @@ def test_summary_always_reports_pin_state():
     result = summary(item, None)
     assert {"pinned", "pinnedAt"} <= result.model_fields_set
     assert result.pinnedAt == pinned_at
+
+
+def conversation_item() -> Conversation:
+    moment = datetime(2026, 11, 28, tzinfo=UTC)
+    item = Conversation(id=uuid.uuid4(), user_id=uuid.uuid4(), title="A")
+    item.updated_at = moment
+    return item
+
+
+def test_general_scope_keeps_its_type_when_unset_fields_are_excluded():
+    dumped = summary(conversation_item(), None).model_dump(exclude_unset=True)
+    assert dumped["scope"] == {"type": "general"}
+
+
+def test_cv_scope_keeps_its_type_when_unset_fields_are_excluded():
+    job = Job(id=uuid.uuid4(), file_metadata={"filename": "cv.pdf"})
+    dumped = summary(conversation_item(), job).model_dump(exclude_unset=True)
+    assert dumped["scope"] == {"type": "cv", "jobId": str(job.id), "fileName": "cv.pdf"}
