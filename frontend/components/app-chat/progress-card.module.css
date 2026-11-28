@@ -1,0 +1,123 @@
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 112px;
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: 16px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface-tint);
+  color: var(--text);
+}
+.card[data-failed="true"] {
+  border-color: var(--accent-red);
+  background: color-mix(in srgb, var(--accent-red) 8%, var(--surface-tint));
+}
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.head p {
+  margin: 0;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.step {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.step[data-state="done"],
+.step[data-state="current"] {
+  color: var(--text);
+}
+.mark {
+  display: grid;
+  place-items: center;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--line);
+  color: var(--app-on-red);
+  transition: background-color 0.3s;
+}
+.mark svg {
+  display: none;
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.step[data-state="done"] .mark,
+.step[data-state="current"] .mark {
+  background: var(--accent-red);
+}
+.step[data-state="current"] .mark {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (max-width: 479px) {
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .step {
+    grid-template-columns: 18px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .mark {
+    width: 18px;
+    height: 18px;
+    background: transparent;
+    border: 1.5px solid var(--line);
+    box-sizing: border-box;
+  }
+  .step[data-state="done"] .mark {
+    border-color: var(--accent-red);
+    background: var(--accent-red);
+  }
+  .step[data-state="done"] .mark svg {
+    display: block;
+  }
+  .step[data-state="current"] .mark {
+    border-color: var(--accent-red);
+    background: radial-gradient(var(--accent-red) 0 4px, transparent 5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .step[data-state="current"] .mark {
+    animation: none;
+  }
+  .mark {
+    transition: none;
+  }
+}
