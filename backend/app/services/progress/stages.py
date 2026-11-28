@@ -20,8 +20,8 @@ PIPELINE_STAGES: tuple[Stage, ...] = (
     Stage("detecting_archetype", 1, 52),
     Stage("scoring", 2, 62),
     Stage("grammar_check", 3, 76),
-    Stage("generating_suggestions", 4, 82),
-    Stage("indexing_cv", 4, 86),
+    Stage("indexing_cv", 4, 80),
+    Stage("generating_suggestions", 4, 90),
     Stage("preparing_results", 4, 96),
     Stage("complete", COMPLETE_STEP, 100),
 )
@@ -29,7 +29,7 @@ PIPELINE_STAGES: tuple[Stage, ...] = (
 STAGES_BY_NAME = {stage.name: stage for stage in PIPELINE_STAGES}
 
 INDEXING_PERCENTAGE_SPAN = (
-    STAGES_BY_NAME["preparing_results"].percentage
+    STAGES_BY_NAME["generating_suggestions"].percentage
     - STAGES_BY_NAME["indexing_cv"].percentage
     - 1
 )
@@ -45,6 +45,10 @@ def indexing_percentage(done: int, total: int) -> int:
     if total <= 0:
         return base
     return base + INDEXING_PERCENTAGE_SPAN * min(done, total) // total
+
+
+def indexing_message(done: int, total: int) -> str:
+    return f"Indexing your CV ({done}/{total})"
 
 
 def build_progress_payload(
