@@ -42,7 +42,7 @@ export default function PathyMenu({ close }: { close: () => void }) {
           requestAnimationFrame(() =>
             document
               .querySelector<HTMLInputElement>(
-                "[data-tour='home-composer'] input",
+                "[data-tour='home-composer'] textarea",
               )
               ?.focus(),
           );

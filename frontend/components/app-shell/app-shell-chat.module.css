@@ -1,0 +1,25 @@
+.chat {
+  --shell-bg: var(--surface);
+  --shell-waves: none;
+  --nav-bg: var(--surface-tint);
+  --nav-fg: var(--text-muted);
+  --nav-fg-active: var(--text);
+  --nav-pill: var(--surface-raised);
+  --nav-pill-shadow: 0 1px 0 var(--line);
+  --pill-bg: var(--surface-raised);
+  --pill-shadow: 0 0 0 1.5px var(--line);
+  color: var(--text);
+}
+.logoLight,
+.logoInk {
+  display: block;
+}
+.logoInk {
+  display: none;
+}
+:global([data-theme="dark"]) .logoLight {
+  display: none;
+}
+:global([data-theme="dark"]) .logoInk {
+  display: block;
+}
