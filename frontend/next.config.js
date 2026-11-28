@@ -6,6 +6,9 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   reactStrictMode: true,
   devIndicators: false,
+  experimental: {
+    proxyTimeout: 300000,
+  },
   images: {
     remotePatterns: [
       {
