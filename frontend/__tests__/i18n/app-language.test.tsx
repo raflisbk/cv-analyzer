@@ -7,7 +7,6 @@ import {
   within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Dock from "@/components/dock/dock";
 import AppHeader from "@/components/app-shell/app-header";
 import EmptyState from "@/components/app-shell/empty-state";
 import HistoryDrawer from "@/components/app-shell/history-drawer";
@@ -61,7 +60,6 @@ function showApp(locale: "id" | "en" = "id") {
     <QueryClientProvider client={client}>
       {withLocale(
         <>
-          <Dock />
           <AppHeader openDrawer={vi.fn()} drawerOpen newChat={vi.fn()} />
           <HistoryDrawer open close={vi.fn()} newChat={vi.fn()} />
           <CvsList />

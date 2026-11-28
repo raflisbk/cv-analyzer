@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import Navbar from "@/components/landing/navbar";
 import { useAuthStore } from "@/stores/auth-store";
 import { stubNavBrowser } from "./nav-browser-stubs";
@@ -16,9 +17,11 @@ const user = { id: "u1", email: "a@b.co", name: "Rafli", picture: null };
 function renderNavbar(locale: "en" | "id" = "en") {
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <I18nProvider initialLocale={locale}>
-        <Navbar />
-      </I18nProvider>
+      <ThemeProvider initialTheme="light">
+        <I18nProvider initialLocale={locale}>
+          <Navbar />
+        </I18nProvider>
+      </ThemeProvider>
     </QueryClientProvider>,
   );
 }
