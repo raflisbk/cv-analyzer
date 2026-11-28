@@ -21,6 +21,8 @@ def _run_simulated_pipeline(chunks: int) -> list[dict]:
                         "indexing_cv",
                         indexing_percentage(done, chunks),
                         indexing_message(done, chunks),
+                        done,
+                        chunks,
                     )
                 continue
             task.update_progress("job-1", stage.name, stage.percentage, stage.name)
@@ -44,6 +46,16 @@ def test_every_event_carries_step_fields_and_job_id():
     for event in _run_simulated_pipeline(3):
         assert event["steps"] == 5
         assert event["job_id"] == "job-1"
+
+
+def test_indexing_events_carry_real_counts():
+    indexing = [
+        event
+        for event in _run_simulated_pipeline(15)
+        if event["stage"] == "indexing_cv"
+    ]
+    assert [(e["done"], e["total"]) for e in indexing][:2] == [(0, 15), (1, 15)]
+    assert indexing[-1]["message"] == "Indexing your CV (15/15)"
 
 
 def test_update_progress_publishes_and_caches_the_same_payload():

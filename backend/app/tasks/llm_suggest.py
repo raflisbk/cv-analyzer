@@ -98,6 +98,8 @@ def llm_suggest_task(self: Task, job_id: str) -> dict:
                 "indexing_cv",
                 indexing_percentage(done, total),
                 indexing_message(done, total),
+                done,
+                total,
             )
 
         # RAG ingestion (optional, non-blocking on failure)

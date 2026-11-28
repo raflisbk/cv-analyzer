@@ -56,6 +56,8 @@ def build_progress_payload(
     stage: str,
     message: str,
     percentage: int | None = None,
+    done: int | None = None,
+    total: int | None = None,
 ) -> dict:
     payload = {
         "stage": stage,
@@ -67,4 +69,7 @@ def build_progress_payload(
     if known:
         payload["step"] = known.step
         payload["steps"] = STEP_COUNT
+    if done is not None and total is not None:
+        payload["done"] = done
+        payload["total"] = total
     return payload
