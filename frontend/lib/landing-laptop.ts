@@ -14,6 +14,6 @@ export function laptopProgress(value: number) {
   return {
     scene: sceneProgress(t),
     zoom: inOut(seg(t, SCROLL_ZOOM_START, SCROLL_ZOOM_END)),
-    content: clamp((t - 0.3) / 0.6),
+    content: clamp((t - SCROLL_ZOOM_END) / (1 - SCROLL_ZOOM_END)),
   };
 }
