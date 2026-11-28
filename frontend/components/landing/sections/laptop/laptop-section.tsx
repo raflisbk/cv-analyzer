@@ -18,6 +18,7 @@ export default function LaptopSection() {
       ref={ref}
       className={`${base.panel} ${base.blush} ${base.calm} ${styles.section}`}
     >
+      <LaptopStage />
       <div className={styles.text} data-laptop-text>
         <h2>{t("landing.inside.heading")}</h2>
         <span className={base.hand}>{t("landing.inside.hint")}</span>
@@ -29,7 +30,7 @@ export default function LaptopSection() {
         </ul>
       </div>
       <div className={styles.visual}>
-        <LaptopStage />
+        <div className={styles.anchor} data-laptop-anchor />
       </div>
     </section>
   );
