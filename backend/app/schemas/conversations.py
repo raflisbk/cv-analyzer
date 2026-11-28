@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 
 class CreateConversation(BaseModel):
@@ -28,6 +28,31 @@ class ConversationSummary(BaseModel):
     title: str
     scope: GeneralScope | CvScope
     updatedAt: datetime
+    pinned: bool = False
+    pinnedAt: datetime | None = None
+    snippet: str | None = None
+
+
+class UpdateConversation(BaseModel):
+    title: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+        ]
+        | None
+    ) = None
+    pinned: bool | None = None
+
+    @model_validator(mode="after")
+    def require_a_change(self) -> "UpdateConversation":
+        if self.title is None and self.pinned is None:
+            raise ValueError("Provide a title or pinned.")
+        return self
+
+
+class DeletedConversation(BaseModel):
+    id: str
+    deletedAt: datetime
+    restoreUntil: datetime
 
 
 class ChatMessage(BaseModel):

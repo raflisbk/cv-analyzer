@@ -15,13 +15,22 @@ from app.schemas.conversations import (
     GeneralScope,
 )
 
+LIST_ORDER = (
+    Conversation.pinned.desc(),
+    Conversation.pinned_at.desc().nulls_last(),
+    Conversation.updated_at.desc(),
+    Conversation.id.desc(),
+)
+
 
 async def owned_conversation(
     db: AsyncSession, user_id: UUID, conversation_id: UUID
 ) -> Conversation:
     result = await db.execute(
         select(Conversation).where(
-            Conversation.id == conversation_id, Conversation.user_id == user_id
+            Conversation.id == conversation_id,
+            Conversation.user_id == user_id,
+            Conversation.deleted_at.is_(None),
         )
     )
     conversation = result.scalar_one_or_none()
@@ -51,6 +60,8 @@ def summary(conversation: Conversation, job: Job | None) -> ConversationSummary:
         title=conversation.title,
         scope=scope,
         updatedAt=conversation.updated_at,
+        pinned=bool(conversation.pinned),
+        pinnedAt=conversation.pinned_at,
     )
 
 
@@ -60,8 +71,8 @@ async def list_conversations(
     result = await db.execute(
         select(Conversation, Job)
         .outerjoin(Job, Conversation.job_id == Job.id)
-        .where(Conversation.user_id == user_id)
-        .order_by(Conversation.updated_at.desc(), Conversation.id.desc())
+        .where(Conversation.user_id == user_id, Conversation.deleted_at.is_(None))
+        .order_by(*LIST_ORDER)
         .limit(100)
     )
     return [summary(conversation, job) for conversation, job in result.all()]
