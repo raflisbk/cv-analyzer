@@ -66,14 +66,18 @@ describe("SSEConnection", () => {
 
   it("caps the backoff delay at thirty seconds", () => {
     new SSEConnection("/s", vi.fn(), vi.fn()).connect();
-    for (let i = 0; i < 8; i++) {
+    [1000, 2000, 4000, 8000, 16000].forEach((delay) => {
       latest().onerror?.();
-      vi.advanceTimersByTime(30000);
+      vi.advanceTimersByTime(delay);
+    });
+    for (let i = 0; i < 2; i++) {
+      latest().onerror?.();
+      const count = FakeEventSource.instances.length;
+      vi.advanceTimersByTime(29999);
+      expect(FakeEventSource.instances).toHaveLength(count);
+      vi.advanceTimersByTime(1);
+      expect(FakeEventSource.instances).toHaveLength(count + 1);
     }
-    const count = FakeEventSource.instances.length;
-    latest().onerror?.();
-    vi.advanceTimersByTime(30000);
-    expect(FakeEventSource.instances).toHaveLength(count + 1);
   });
 
   it("resets the backoff once a message arrives", () => {
@@ -97,6 +101,29 @@ describe("SSEConnection", () => {
     vi.advanceTimersByTime(60000);
     expect(FakeEventSource.instances).toHaveLength(1);
     expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("treats a silent connection as dropped after the stale window", () => {
+    const onError = vi.fn();
+    new SSEConnection("/s", vi.fn(), onError).connect();
+    vi.advanceTimersByTime(24999);
+    expect(onError).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(onError).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(1000);
+    expect(FakeEventSource.instances).toHaveLength(2);
+    expect(FakeEventSource.instances[0].closed).toBe(true);
+  });
+
+  it("keeps a heartbeating connection alive past the stale window", () => {
+    const onError = vi.fn();
+    new SSEConnection("/s", vi.fn(), onError).connect();
+    for (let i = 0; i < 6; i++) {
+      vi.advanceTimersByTime(10000);
+      latest().emit({ type: "heartbeat" });
+    }
+    expect(onError).not.toHaveBeenCalled();
+    expect(FakeEventSource.instances).toHaveLength(1);
   });
 
   it("does not reconnect after close", () => {

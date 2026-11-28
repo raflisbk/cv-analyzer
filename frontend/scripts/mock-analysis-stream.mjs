@@ -145,7 +145,12 @@ const stream = (req, res, jobId) => {
     );
   }
   if (HEARTBEAT) {
-    timers.push(setInterval(() => res.write(": ping\n\n"), HEARTBEAT_MS));
+    timers.push(
+      setInterval(
+        () => res.write('data: {"type":"heartbeat"}\n\n'),
+        HEARTBEAT_MS,
+      ),
+    );
   }
   req.on("close", () =>
     timers.forEach((timer) => (clearTimeout(timer), clearInterval(timer))),

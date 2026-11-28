@@ -58,9 +58,9 @@ async def test_heartbeat_is_emitted_when_no_message_arrives():
     assert len(frames) == 2
 
 
-async def test_heartbeat_is_an_sse_comment_not_a_data_event():
-    assert HEARTBEAT_FRAME.startswith(":")
-    assert "data:" not in HEARTBEAT_FRAME
+async def test_heartbeat_is_a_data_event_the_browser_can_observe():
+    assert HEARTBEAT_FRAME.startswith("data:")
+    assert json.loads(HEARTBEAT_FRAME[6:]) == {"type": "heartbeat"}
 
 
 async def test_pubsub_messages_are_forwarded_until_terminal_then_closed():
