@@ -14,9 +14,13 @@ export function useFaqSection() {
   const [open, setOpen] = useState<number | null>(0);
   useEffect(() => {
     const panel = ref.current;
-    if (!panel) return;
+    if (!panel) {
+      return;
+    }
     const advance = (event: Event) => {
-      if (manual.current) return;
+      if (manual.current) {
+        return;
+      }
       const index = (event as CustomEvent<number>).detail;
       setOpen(index >= 0 ? index : null);
     };
