@@ -1,6 +1,6 @@
 import { Settings } from "lucide-react";
 import { useT } from "@/components/i18n/i18n-provider";
-import styles from "./account-menu.module.css";
+import styles from "./account-tiles.module.css";
 
 export default function AccountSettingsRow() {
   const { t } = useT();

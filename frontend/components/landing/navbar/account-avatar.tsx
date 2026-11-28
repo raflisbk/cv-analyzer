@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { accountInitial, accountPhotoUrl } from "@/lib/account-menu";
 import type { AuthUser } from "@/stores/auth-store";
-import styles from "./account-menu.module.css";
+import styles from "./account-avatar.module.css";
 
 export default function AccountAvatar({ user }: { user: AuthUser }) {
   const photo = accountPhotoUrl(user.picture);
