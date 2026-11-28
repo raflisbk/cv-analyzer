@@ -1,33 +1,22 @@
 import { describe, expect, it } from "vitest";
-import {
-  LID_CLOSED_DEGREES,
-  LID_OPEN_DEGREES,
-  STATIC_PROGRESS,
-  laptopProgress,
-  lidDegrees,
-} from "@/lib/landing-laptop";
+import { STATIC_PROGRESS, laptopProgress } from "@/lib/landing-laptop";
 import { laptopStepFromProgress } from "@/lib/landing-laptop-steps";
 
 describe("laptop progress", () => {
-  it("starts with the lid closed and nothing zoomed", () => {
-    expect(laptopProgress(0)).toEqual({ lid: 0, zoom: 0, content: 0 });
-    expect(lidDegrees(0)).toBe(LID_CLOSED_DEGREES);
+  it("starts closed with nothing zoomed", () => {
+    expect(laptopProgress(0)).toEqual({ scene: 0, zoom: 0, content: 0 });
   });
 
-  it("opens the lid fully before the zoom starts", () => {
-    expect(laptopProgress(0.3).lid).toBe(1);
+  it("reaches the zoom start of the scene when the scroll zoom begins", () => {
+    expect(laptopProgress(0.32).scene).toBeCloseTo(0.76, 6);
     expect(laptopProgress(0.32).zoom).toBe(0);
-    expect(lidDegrees(1)).toBe(LID_OPEN_DEGREES);
-  });
-
-  it("rotates the lid about one hundred degrees", () => {
-    expect(LID_OPEN_DEGREES - LID_CLOSED_DEGREES).toBe(100);
   });
 
   it("overlaps the zoom with the screen content", () => {
     expect(laptopProgress(0.4).zoom).toBeGreaterThan(0);
     expect(laptopProgress(0.4).content).toBeGreaterThan(0);
     expect(laptopProgress(0.52).zoom).toBe(1);
+    expect(laptopProgress(0.52).scene).toBe(1);
     expect(laptopProgress(0.9).content).toBe(1);
     expect(laptopProgress(1).content).toBe(1);
   });
@@ -39,7 +28,7 @@ describe("laptop progress", () => {
 
   it("shows the static view open, unzoomed and on the intro step", () => {
     const view = laptopProgress(STATIC_PROGRESS);
-    expect(view.lid).toBe(1);
+    expect(view.scene).toBeLessThan(0.76);
     expect(view.zoom).toBe(0);
     expect(laptopStepFromProgress(view.content)).toBe(0);
   });
