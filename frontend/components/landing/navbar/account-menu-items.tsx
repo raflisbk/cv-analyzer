@@ -3,7 +3,7 @@ import { useT } from "@/components/i18n/i18n-provider";
 import { ArrowUpRight, LayoutGrid, LogOut, Monitor } from "lucide-react";
 import type { useAccountMenu } from "@/hooks/use-account-menu";
 import AccountSessionsAllDevices from "./account-sessions-all-devices";
-import styles from "./account-menu.module.css";
+import styles from "./account-tiles.module.css";
 
 type Menu = ReturnType<typeof useAccountMenu>;
 interface AccountMenuItemsProps {

@@ -1,7 +1,7 @@
 import { ShieldOff } from "lucide-react";
 import { useT } from "@/components/i18n/i18n-provider";
 import type { useAccountMenu } from "@/hooks/use-account-menu";
-import styles from "./account-menu.module.css";
+import styles from "./account-tiles.module.css";
 
 type Menu = ReturnType<typeof useAccountMenu>;
 

@@ -3,6 +3,8 @@
 import { useT } from "@/components/i18n/i18n-provider";
 import { ChevronDown } from "lucide-react";
 import { useAccountMenu } from "@/hooks/use-account-menu";
+import { useAccountMenuLayout } from "@/hooks/use-account-menu-layout";
+import TogglePair from "@/components/toggles/toggle-pair";
 import { accountDisplayName, accountShortName } from "@/lib/account-menu";
 import type { AuthUser } from "@/stores/auth-store";
 import AccountAvatar from "./account-avatar";
@@ -54,20 +56,30 @@ function AccountTrigger({
 
 export default function AccountMenu({ user, app = false }: AccountMenuProps) {
   const menu = useAccountMenu();
+  const layout = useAccountMenuLayout(menu.open, menu.rootRef);
   const { t } = useT();
   return (
     <div className={styles.account} ref={menu.rootRef}>
       <div className={styles.wrapper}>
-        <div className={styles.surface} data-open={menu.open}>
-          <AccountTrigger user={user} menu={menu} />
+        <div
+          className={styles.surface}
+          data-open={menu.open}
+          data-scrolled={layout.scrolled}
+        >
+          <div className={styles.hd}>
+            <AccountTrigger user={user} menu={menu} />
+            <div className={styles.toggles}>
+              <TogglePair />
+            </div>
+          </div>
           <div
             className={styles.grid}
-            style={{ gridTemplateRows: "repeat(3, 1fr)" }}
             role="menu"
             aria-label={t("account.menu")}
             aria-hidden={!menu.open}
             inert={!menu.open}
             onKeyDown={menu.onMenuKeyDown}
+            onScroll={layout.onScroll}
           >
             <AccountMenuItems menu={menu} app={app} />
           </div>
