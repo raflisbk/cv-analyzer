@@ -119,13 +119,6 @@
   gap: 8px;
   translate: calc(var(--bar-p, 0) * var(--shift-x)) 0;
 }
-.lead {
-  display: flex;
-  transition: translate 0.35s;
-}
-.header[data-cta="hidden"] .lead {
-  translate: var(--cta-shift, 0px) 0;
-}
 .menuButton {
   display: none;
 }
@@ -185,10 +178,5 @@
   }
   .logo img {
     width: 96px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lead {
-    transition: none;
   }
 }

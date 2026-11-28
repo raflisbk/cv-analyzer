@@ -18,7 +18,6 @@ const id = {
     how: "Cara kerja",
     features: "Fitur",
     login: "Masuk",
-    ctaShort: "Analisis CV",
     menu: "Menu navigasi",
     mobile: "Navigasi mobile",
     openMenu: "Buka menu navigasi",

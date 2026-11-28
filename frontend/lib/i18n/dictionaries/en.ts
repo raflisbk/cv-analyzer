@@ -15,7 +15,6 @@ const en = {
     how: "How it works",
     features: "Features",
     login: "Log in",
-    ctaShort: "Analyze CV",
     menu: "Navigation menu",
     mobile: "Mobile navigation",
     openMenu: "Open navigation menu",

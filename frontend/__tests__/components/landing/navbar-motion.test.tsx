@@ -30,21 +30,6 @@ function header() {
   return document.querySelector<HTMLElement>("[data-landing-nav]")!;
 }
 
-function cta() {
-  return document.querySelector<HTMLElement>("[data-nav-cta]")!;
-}
-
-function reportHero(ratio: number) {
-  const observer = intersectionObservers.find((item) =>
-    item.targets.some((target) => target.hasAttribute("data-hero-cta")),
-  )!;
-  act(() =>
-    observer.callback([
-      { isIntersecting: ratio > 0, intersectionRatio: ratio },
-    ]),
-  );
-}
-
 beforeEach(() => {
   stubNavBrowser();
   useAuthStore.setState({ user: null, isHydrated: true });
@@ -132,37 +117,17 @@ describe("landing navbar section tone in a gap", () => {
   });
 });
 
-describe("landing navbar call to action handoff", () => {
-  it("hides the bar button while the hero button is in view", () => {
+describe("landing navbar call to action", () => {
+  it("never renders a bar button beside the login link", () => {
     mountPage(true);
-    reportHero(0.8);
-    expect(header()).toHaveAttribute("data-cta", "hidden");
-    expect(cta()).toHaveAttribute("tabindex", "-1");
-    expect(cta().parentElement).toHaveAttribute("aria-hidden", "true");
+    expect(document.querySelector("[data-nav-cta]")).toBeNull();
+    expect(header()).not.toHaveAttribute("data-cta");
   });
 
-  it("shows the bar button once the hero button leaves", () => {
+  it("keeps login as the only action link in the bar", () => {
     mountPage(true);
-    reportHero(0.8);
-    reportHero(0);
-    expect(header()).toHaveAttribute("data-cta", "shown");
-    expect(cta()).not.toHaveAttribute("tabindex");
-    expect(cta().parentElement).toHaveAttribute("aria-hidden", "false");
-  });
-
-  it("shows the bar button when the hero button has faded out in place", async () => {
-    mountPage(true);
-    reportHero(1);
-    const hero = document.querySelector<HTMLElement>("[data-hero-cta]")!;
-    hero.style.opacity = "0.2";
-    await act(async () => {
-      await Promise.resolve();
-    });
-    expect(header()).toHaveAttribute("data-cta", "shown");
-  });
-
-  it("always shows the bar button on pages without a hero button", () => {
-    mountPage(false);
-    expect(header()).toHaveAttribute("data-cta", "shown");
+    const actions = header().querySelectorAll('a[href="/app"]');
+    expect(actions).toHaveLength(1);
+    expect(actions[0]).toHaveAttribute("aria-label", "Log in");
   });
 });
