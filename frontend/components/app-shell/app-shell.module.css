@@ -129,6 +129,11 @@
   grid-column: 6;
   justify-self: end;
 }
+.toggles {
+  display: none;
+  grid-column: 2;
+  justify-self: end;
+}
 .avatarButton {
   display: none;
   grid-column: 4;
@@ -167,6 +172,9 @@
   .avatarButton {
     display: grid;
   }
+  .toggles {
+    display: block;
+  }
   .logo,
   .account {
     display: none;
@@ -178,6 +186,12 @@
 @media (max-width: 560px) {
   .header {
     gap: 8px;
+  }
+  .toggles {
+    grid-column: 4;
+  }
+  .avatarButton {
+    display: none;
   }
   .nav a {
     width: 73px;

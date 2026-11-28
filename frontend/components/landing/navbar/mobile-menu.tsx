@@ -1,7 +1,6 @@
 "use client";
 
 import { useT } from "@/components/i18n/i18n-provider";
-import LanguageSwitch from "./language-switch";
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -74,9 +73,6 @@ export default function MobileMenu() {
               <X aria-hidden="true" />
             </button>
           </SheetClose>
-        </div>
-        <div className="px-5 pt-4">
-          <LanguageSwitch />
         </div>
         <MobileNavigation
           onNavigate={(event, sectionId, anchor) => {

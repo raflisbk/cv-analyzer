@@ -1,7 +1,7 @@
 "use client";
 
 import { LOCALES } from "@/lib/i18n/locales";
-import { useLanguageSwitch } from "@/components/dock/use-language-switch";
+import { useLanguageSwitch } from "@/hooks/use-language-switch";
 import { useT } from "@/components/i18n/i18n-provider";
 
 export default function LanguageSwitch() {

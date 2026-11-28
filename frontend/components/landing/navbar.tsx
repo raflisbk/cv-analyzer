@@ -11,6 +11,7 @@ import MobileMenu from "./navbar/mobile-menu";
 import AccountMenu from "./navbar/account-menu";
 import NavAvatarLink from "./navbar/nav-avatar-link";
 import NavLogin from "./navbar/nav-login";
+import TogglePair from "@/components/toggles/toggle-pair";
 import { useNavBar } from "./navbar/use-nav-bar";
 import { NAV_LINKS } from "./navbar/nav-links";
 import styles from "./navbar/navbar.module.css";
@@ -69,6 +70,7 @@ export default function Navbar() {
               ))}
             </div>
             <div className={styles.actions}>
+              <TogglePair compact={Boolean(account)} />
               {account ? <AccountMenu user={user} /> : <NavLogin />}
               {account && <NavAvatarLink user={user} />}
             </div>
